@@ -5,6 +5,8 @@ import cls from "./style.module.sass"
 
 import Select from "components/platform/platformUI/select";
 import Input from "components/platform/platformUI/input";
+import {useDispatch, useSelector} from "react-redux";
+import dataToChange, {fetchDataToChange} from "slices/dataToChangeSlice";
 
 const ConfirmReason = ({getConfirm,text,student,reason}) => {
 
@@ -13,6 +15,13 @@ const ConfirmReason = ({getConfirm,text,student,reason}) => {
     const [typeReason,setTypeReason] = useState()
     const [otherReason,setOtherReason] = useState()
 
+    const {dataToChange} = useSelector(state => state.dataToChange)
+
+
+    const dispatch = useDispatch()
+    useEffect(() => {
+        dispatch(fetchDataToChange())
+    },[])
 
     const listOptions = [
         {
@@ -25,20 +34,20 @@ const ConfirmReason = ({getConfirm,text,student,reason}) => {
         }
     ]
 
-    const typeReasons = [
-        {
-            name: "O'qituvchi yoqmadi",
-        },
-        {
-            name: "O'quvchi o'qishni eplolmadi"
-        },
-        {
-            name: "Pul oilaviy sharoit"
-        },
-        {
-            name: "boshqa"
-        }
-    ]
+    // const typeReasons = [
+    //     {
+    //         name: "O'qituvchi yoqmadi",
+    //     },
+    //     {
+    //         name: "O'quvchi o'qishni eplolmadi"
+    //     },
+    //     {
+    //         name: "Pul oilaviy sharoit"
+    //     },
+    //     {
+    //         name: "boshqa"
+    //     }
+    // ]
 
     const onSubmit = (e) => {
         e.preventDefault()
@@ -52,7 +61,6 @@ const ConfirmReason = ({getConfirm,text,student,reason}) => {
 
         getConfirm(data)
     }
-
 
 
     return (
@@ -74,7 +82,8 @@ const ConfirmReason = ({getConfirm,text,student,reason}) => {
                                 {
                                     typeLocation === "deletedStudents" ?
                                         <Select
-                                            options={typeReasons}
+                                            keyValue={"name"}
+                                            options={dataToChange?.group_reasons}
                                             onChangeOption={setTypeReason}
                                             defaultValue={typeReason}
                                             title={"Sabablar"}

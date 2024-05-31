@@ -29,47 +29,55 @@ const PlatformGroupDeletedStudents = () => {
     const {filters} = useSelector(state => state.filters)
     const {location,role} = useSelector(state => state.me)
     const {isCheckedPassword} = useSelector(state => state.me)
+    const {dataToChange} = useSelector(state => state.dataToChange)
+
 
     const [activeCheckPassword,setActiveCheckPassword] = useState(false)
     const [activeModal,setActiveModal] = useState(false)
     const [deleteStId,setDeleteStId] = useState()
     const [activeOption,setActiveOption] = useState("Hammasi")
 
-
-
     const dispatch = useDispatch()
 
-    const options = [
-        {
-            value: "O'qituvchi yoqmadi",
-            name: "O'qituvchi yoqmadi",
-            disabled: false
-        },
-        {
-            value: "O'quvchi o'qishni eplolmadi",
-            name: "O'quvchi o'qishni eplolmadi",
-            disabled: false
-        },
-        {
-            value: "Pul oilaviy sharoit",
-            name: "Pul oilaviy sharoit",
-            disabled: false
-        },
-        {
-            value: "Boshqa",
-            name: "Boshqa",
-            disabled: false
-        }
-    ]
+    // const options = [
+    //     {
+    //         value: "O'qituvchi yoqmadi",
+    //         name: "O'qituvchi yoqmadi",
+    //         disabled: false
+    //     },
+    //     {
+    //         value: "O'quvchi o'qishni eplolmadi",
+    //         name: "O'quvchi o'qishni eplolmadi",
+    //         disabled: false
+    //     },
+    //     {
+    //         value: "Pul oilaviy sharoit",
+    //         name: "Pul oilaviy sharoit",
+    //         disabled: false
+    //     },
+    //     {
+    //         value: "Boshqa",
+    //         name: "Boshqa",
+    //         disabled: false
+    //     }
+    // ]
+
+
+
     useEffect(()=> {
         const newData = {
             name: "deletedGroupStudents",
             location: locationId
         }
 
+
         dispatch(fetchFilters(newData))
     },[dispatch,locationId])
 
+
+    useEffect(() => {
+        dispatch(fetchDataToChange())
+    },[])
 
     useEffect(()=> {
         if (activeOption) {
@@ -205,7 +213,7 @@ const PlatformGroupDeletedStudents = () => {
                 pageName={"newStudents"}
                 locationId={locationId}
                 isChangePage={true}
-                options={options}
+                options={dataToChange?.group_reasons}
                 selectedOption={activeOption}
             />
 
