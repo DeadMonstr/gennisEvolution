@@ -93,6 +93,7 @@ const PlatformHome = () => {
     return (
         <motion.div className={cls.platformHome}>
             <News/>
+            <h1>sidssdfsdf</h1>
             {
                 rate.length ?
                     <GradesOfSubjects subjects={rate}/>
