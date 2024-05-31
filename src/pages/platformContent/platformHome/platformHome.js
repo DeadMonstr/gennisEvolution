@@ -92,6 +92,7 @@ const PlatformHome = () => {
 
     return (
         <motion.div className={cls.platformHome}>
+            <h1>New git</h1>
             <News/>
             {
                 rate.length ?
