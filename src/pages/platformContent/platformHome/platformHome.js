@@ -92,6 +92,7 @@ const PlatformHome = () => {
 
     return (
         <motion.div className={cls.platformHome}>
+            <h1>isdoihhsads</h1>
             <h1>Hellodas dasd as dasd asd aadsasdasd asdasdasda</h1>
             <h1>adasdasdasdasd asd asd asd as</h1>
             <h1>
