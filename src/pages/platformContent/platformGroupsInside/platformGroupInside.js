@@ -349,7 +349,7 @@ const InformationsGroup = ({data, id,locationId}) => {
                                     </div>
                                     <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Teacher]}>
                                         <div>
-                                            <div className={`${cls.money} ${item.moneyType}`}>{item.money}</div>
+                                            <div className={`${cls.money} ${cls[item.moneyType]}`}>{item.money}</div>
                                         </div>
                                     </RequireAuthChildren>
                                 </div>
@@ -403,7 +403,7 @@ const links = [
     {
         title: "Observe Lesson",
         icon: "fa-user-check",
-        href: "observedTeacherLessons",
+        href: "observeTeacherLesson",
         role: [ROLES.Admin,ROLES.Director]
     },
     {
