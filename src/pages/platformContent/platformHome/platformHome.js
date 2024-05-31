@@ -93,6 +93,7 @@ const PlatformHome = () => {
     return (
         <motion.div className={cls.platformHome}>
             <News/>
+            <h1>Hello wesds</h1>
             {
                 rate.length ?
                     <GradesOfSubjects subjects={rate}/>
@@ -312,13 +313,9 @@ const News = () => {
 
     const [activeAdd,setActiveAdd] = useState(false)
 
-
     const onToggleActive = () => {
         setActiveAdd(!activeAdd)
     }
-
-
-
 
     return (
         <motion.div className={cls.platformHome__item}>
