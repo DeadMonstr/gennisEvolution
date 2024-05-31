@@ -212,13 +212,13 @@ const ChangeGroupInfo = () => {
                     defaultValue={level?.id}
                 />
 
-                <Link to={`../changeGroupTime/${groupId}`}>
+                <Link to={`../changeGroupTime`}>
                     <Button>
                         Change Time
                     </Button>
                 </Link>
 
-                <Link to={`../changeGroupTeacher/${groupId}`}>
+                <Link to={`../changeGroupTeacher`}>
                     <Button>
                         Change Teacher
                     </Button>

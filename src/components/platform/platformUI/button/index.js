@@ -17,7 +17,7 @@ const Button = ({children = "",active,onClickBtn,name,extraMsg,extraClass,formId
 
     return (
         <button
-            type={formId ? "submit" : reset ? "reset" : "button"}
+
             name={name}
             form={formId}
             className={classNames(cls.btnPlatform,cls[type],{

@@ -56,15 +56,12 @@ const LessonPlan = ({backBtn}) => {
                         setMonth(res.month_list[0])
                     }
                     setMonths(res.month_list)
-
                     if (res.years_list.length === 1) {
                         setYear(res.years_list[0])
                     }
                     setYears(res.years_list)
-
                     setMonth(res.month)
                     setYear(res.year)
-
                 })
         }
     },[groupId])
@@ -74,10 +71,8 @@ const LessonPlan = ({backBtn}) => {
         if (year && month ) {
             request(`${BackUrl}lesson_plan_list/${groupId}/${year}-${month}`, "GET", null, headers())
                 .then(res => {
-
+                    console.log(res)
                     setDays(res.days)
-
-
                 })
         }
 
@@ -149,7 +144,7 @@ const LessonPlan = ({backBtn}) => {
     const {name,teacher} = data
     const {id: meId} = useAuth()
 
-
+    console.log(days)
     return (
         <div className={cls.lessonPlan}>
             {backBtn ? <BackButton/> : null}
@@ -167,6 +162,7 @@ const LessonPlan = ({backBtn}) => {
                 {
                     years.length > 1 ?
                         <Select
+                            name={"years"}
                             value={year}
                             title={"Yil"}
                             options={years}
@@ -178,12 +174,12 @@ const LessonPlan = ({backBtn}) => {
                 {
                     months.length > 1 ?
                         <Select
+                            name={"month"}
                             value={month}
                             title={"Oy"}
                             options={months}
                             onChangeOption={(e) => {
-                                setDays([])
-                                setDay(null)
+                                setDay("")
                                 setMonth(e)
                             }}
                         /> : null
@@ -191,6 +187,7 @@ const LessonPlan = ({backBtn}) => {
                 {
                     days.length > 0 ?
                         <Select
+                            name={"day"}
                             value={day}
                             title={"Kun"}
                             options={days}
@@ -218,6 +215,23 @@ const LessonPlan = ({backBtn}) => {
                 </div>
             </Form>
 
+            <div className={cls.commentedStudents}>
+                {
+                    students.filter(item => item.comment.length).map(item => {
+
+                        return (
+                            <div className={cls.item}>
+                                <h1>{item.student.name} {item.student.surname}</h1>
+                                <p>
+                                    {item.comment}
+                                </p>
+
+                            </div>
+                        )
+                    })
+                }
+            </div>
+
             <div className={cls.footer}>
                 {
                     teacher?.id === meId && canChange ?  <Button form={"lessonPlan"} type={"submit"} >Tasdiqlash</Button> : null
@@ -244,9 +258,7 @@ const Students = ({students = [],setStudents}) => {
     // const [students,setStudents] = useState([])
     //
     //
-    // useEffect(() => {
-    //     setStudents(data)
-    // },[data])
+
     //
     //
     // const onSubmit = (id,text) => {
@@ -255,12 +267,14 @@ const Students = ({students = [],setStudents}) => {
 
     const onOpen = (index) => {
         for (let i = 0; i < insideRefArray.current.length; i++) {
-            console.log(index)
-            console.log(insideRefArray.current)
-            const elem = insideRefArray.current[i]
 
-            elem.querySelector(".arrow").style.transform = "rotate(-90deg)"
-            elem.querySelector(".accordion").style.height = 0
+
+            if (insideRefArray.current[i]) {
+                const elem = insideRefArray.current[i]
+
+                elem.querySelector(".arrow").style.transform = "rotate(-90deg)"
+                elem.querySelector(".accordion").style.height = 0
+            }
         }
         const elem = insideRefArray.current[index]
 
@@ -301,7 +315,6 @@ const Students = ({students = [],setStudents}) => {
     // },[students])
 
     const renderStudents = useCallback( () => {
-        console.log(students)
         return students.map((user,index) => {
             return (
                 <div className={cls.item} ref={(element) => insideRefArray.current[index] = element}>

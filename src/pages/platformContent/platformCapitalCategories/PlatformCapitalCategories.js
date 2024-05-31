@@ -106,12 +106,12 @@ const PlatformCapitalIndex = () => {
                 }
             </div>
             <Modal activeModal={add} setActiveModal={setAdd}>
-                <form className={cls.addModal} onSubmit={handleSubmit(onSubmit)}>
+                <form  className={cls.addModal} onSubmit={handleSubmit(onSubmit)}>
                     <h1>Kategoriya qo'shmoq</h1>
                     <ImgInput img={img} setImg={setImg}/>
                     <InputForm title={"Nomi"} register={register} name={"name"} type={"text"} required />
                     <InputForm title={"Raqami"} register={register} name={"number_category"} type={"text"} required />
-                    { loading ? <DefaultLoaderSmall/> : <Button type={"submit"}>Tasdiqlash</Button> }
+                    { loading ? <DefaultLoaderSmall/> : <Button  type={"submit"}>Tasdiqlash</Button> }
                 </form>
             </Modal>
 

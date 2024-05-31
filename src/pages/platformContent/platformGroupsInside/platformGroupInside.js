@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import classNames from "classnames";
 
-import "./platformGroupInside.sass"
+import cls from "./platformGroupInside.module.sass"
 import {Link, Route, useNavigate, useParams, Routes, Navigate, NavLink} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchGroup, setActiveBtn} from "slices/groupSlice";
@@ -16,6 +16,8 @@ import {useAuth} from "hooks/useAuth";
 import BackButton from "../../../components/platform/platformUI/backButton/backButton";
 import ObserveTeacherLesson from "pages/platformContent/platformGroupsInside/observeTeacherLesson/ObserveTeacherLesson";
 import LessonPlan from "pages/platformContent/platformGroupsInside/lessonPlan/LessonPlan";
+import ObservedTeacherLessons
+    from "pages/platformContent/platformGroupsInside/observedTeacherLessons/ObservedTeacherLessons";
 
 
 const PlatformMakeAttendance =  React.lazy(() => import('./makeAttendance/makeAttendance'));
@@ -35,17 +37,18 @@ const PlatformGroupInside = () => {
     return (
         <Routes>
             <Route path="info" element={<GroupInfo groupId={groupId}/>}/>
-            <Route path="makeAttendance/:groupId/:teacherId" element={<PlatformMakeAttendance/>}/>
-            <Route path="listAttendance/:groupId" element={<PlatformListAttendance/>}/>
-            <Route path="changeGroupInfo/:groupId" element={<PlatformChangeGroupInfo/>}/>
-            <Route path="changeGroupTime/:groupId" element={<PlatformChangeGroupTime/>}/>
-            <Route path="changeGroupTeacher/:groupId" element={<PlatformChangeGroupTeacher/>}/>
-            <Route path="changeGroupStudents/:groupId/:locationId" element={<PlatformChangeGroupStudents/>}/>
-            <Route path="addToGroup/:groupId/:locationId" element={<PlatformAddToGroup/>}/>
-            <Route path="groupTime/:groupId" element={<PlatformGroupTime/>}/>
+            <Route path="makeAttendance" element={<PlatformMakeAttendance/>}/>
+            <Route path="listAttendance" element={<PlatformListAttendance/>}/>
+            <Route path="changeGroupInfo" element={<PlatformChangeGroupInfo/>}/>
+            <Route path="changeGroupTime" element={<PlatformChangeGroupTime/>}/>
+            <Route path="changeGroupTeacher" element={<PlatformChangeGroupTeacher/>}/>
+            <Route path="changeGroupStudents" element={<PlatformChangeGroupStudents/>}/>
+            <Route path="addToGroup" element={<PlatformAddToGroup/>}/>
+            <Route path="groupTime" element={<PlatformGroupTime/>}/>
             <Route path="moveToGroup/:oldGroupId/:newGroupId" element={<PlatformMoveToGroup/>}/>
             <Route path="lessonPlan" element={<LessonPlan backBtn={true}/>}/>
             <Route path="observeTeacherLesson/*" element={<ObserveTeacherLesson/>}/>
+            <Route path="observedTeacherLessons" element={<ObservedTeacherLessons/>}/>
 
             <Route path="*"  element={
                 <Navigate to="info" replace />
@@ -71,8 +74,8 @@ const GroupInfo = ({groupId}) => {
             return (
                 <div
                     onClick={() => activateBtn(btn.id)}
-                    className={classNames('subheader__links-item', {
-                        active: btn.active
+                    className={classNames(cls.subheader__linksItem, {
+                        [cls.active]: btn.active
                     })}
                 >
                     {btn.title}
@@ -89,14 +92,14 @@ const GroupInfo = ({groupId}) => {
             if (btn.active) {
                 if (btn.name === "information") {
                     return(
-                        <main className="main">
+                        <main className={cls.main}>
                             <InformationsGroup data={data} id={id} locationId={locationId}/>
                         </main>
                     )
                 }
                 if (btn.name === "addition") {
                     return (
-                        <main className="main main-flex">
+                        <main className={classNames(cls.main,cls.mainFlex)}>
                             <AdditionGroup id={id} teacherId={teacherId}/>
                         </main>
                     )
@@ -127,8 +130,8 @@ const GroupInfo = ({groupId}) => {
         return links.map(link => {
             if (link.type === "link") {
                 return (
-                    <Link to={`../../../${link.link}/${locationId}/${groupId}`} className="option">
-                        <span className="icon">
+                    <Link to={`../../../${link.link}/${locationId}/${groupId}`} className={cls.option}>
+                        <span className={cls.icon}>
                             <i className={`fas ${link.iconClazz}`} />
                         </span>
                         <span>{link.title}</span>
@@ -146,9 +149,9 @@ const GroupInfo = ({groupId}) => {
                 return (
                     <div
                         onClick={() => changeModal(link.name)}
-                        className="option"
+                        className={cls.option}
                     >
-                        <span className="icon">
+                        <span className={cls.icon}>
                             <i className={`fas ${link.iconClazz}`} />
                         </span>
                         <span>{link.title}</span>
@@ -193,8 +196,8 @@ const GroupInfo = ({groupId}) => {
 
 
     return (
-        <div className="insideGroup">
-            <header className="header">
+        <div className={cls.insideGroup}>
+            <header className={cls.header}>
                 <div>
                     <BackButton/>
                 </div>
@@ -205,14 +208,14 @@ const GroupInfo = ({groupId}) => {
                     <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director,ROLES.Programmer]}>
                         <div
                             onClick={() => setActiveOptions(!activeOptions)}
-                            className="header-btn"
+                            className={cls.headerBtn}
                         >
 
                             <i className="fas fa-ellipsis-v" />
 
                             <div
-                                className={classNames('modalOptions', {
-                                    "active": activeOptions
+                                className={classNames(cls.modalOptions, {
+                                    [cls.active]: activeOptions
                                 })}
                             >
                                 {renderedLinks}
@@ -221,12 +224,12 @@ const GroupInfo = ({groupId}) => {
                     </RequireAuthChildren>
                 </div>
             </header>
-            <div className="error">
+            <div className={cls.error}>
                 <h1>{!isTime ? "Guruhga dars jadvali belgilanmagan !" : null}</h1>
             </div>
 
-            <div className="subheader">
-                <div className="subheader__links ">
+            <div className={cls.subheader}>
+                <div className={cls.subheader__links}>
                     {renderedBtns}
                 </div>
             </div>
@@ -258,24 +261,24 @@ const InformationsGroup = ({data, id,locationId}) => {
     const renderInformation = (data) => {
         const dataKeys = Object.keys(data)
         return (
-            <div className="main__item information">
-                <div className="information__header">
+            <div className={classNames(cls.main__item, cls.information)}>
+                <div className={cls.information__header}>
                     <h1>Gruppa ma'lumotlari</h1>
                     <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director,ROLES.Programmer]}>
                         <Link
-                            to={`../changeGroupInfo/${id}`}
-                            className="information__icons"
+                            to={`../changeGroupInfo`}
+                            className={cls.information__icons}
                         >
                             <i className="fas fa-edit" />
                         </Link>
                     </RequireAuthChildren>
 
                 </div>
-                <div className="information__container">
+                <div className={cls.information__container}>
                     {
                         dataKeys.map(item => {
                             return (
-                                <div className="information__item">
+                                <div className={cls.information__item}>
                                     <span>{data[item].name}: </span>
                                     <span>{data[item].value}</span>
                                 </div>
@@ -319,34 +322,34 @@ const InformationsGroup = ({data, id,locationId}) => {
 
     const renderStudents = (data) => {
         return (
-            <div className="main__item students">
-                <div className="students__header">
+            <div className={classNames(cls.main__item,cls.students)}>
+                <div className={cls.students__header}>
                     <h1>O'quvchilar</h1>
                     <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director,ROLES.Programmer]}>
                         <Link
-                            to={`../changeGroupStudents/${id}/${locationId}`}
-                            className="students__icons"
+                            to={`../changeGroupStudents`}
+                            className={cls.students__icons}
                         >
                             <i className="fas fa-edit" />
                         </Link>
                     </RequireAuthChildren>
                 </div>
-                <div className="students__container">
+                <div className={cls.students__container}>
                     {
                         data.map(item => {
                             const userImg = item.photo_profile ? `${BackUrlForDoc}${item.photo_profile}` : user_img
                             return (
-                                <div className="students__item" onClick={e => LinkToUser(e,item.id)}>
+                                <div className={cls.students__item} onClick={e => LinkToUser(e,item.id)}>
                                     <div>
                                         <img src={userImg} alt=""/>
                                     </div>
-                                    <div className="info">
+                                    <div className={cls.info}>
                                         <span>{stringCheck(item.name)}</span>
                                         <span>{stringCheck(item.surname)}</span>
                                     </div>
                                     <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Teacher]}>
                                         <div>
-                                            <div className={`money ${item.moneyType}`}>{item.money}</div>
+                                            <div className={`${cls.money} ${item.moneyType}`}>{item.money}</div>
                                         </div>
                                     </RequireAuthChildren>
                                 </div>
@@ -371,55 +374,134 @@ const InformationsGroup = ({data, id,locationId}) => {
     })
 }
 
+
+const links = [
+    {
+        title: "Baholash",
+        icon: "fa-calendar-check",
+        href: "makeAttendance",
+        role: [ROLES.Teacher]
+    },
+    {
+        title: "Dars vaqtlari",
+        icon: "fa-clock",
+        href: "groupTime",
+        role: [ROLES.Admin,ROLES.Teacher,ROLES.Director]
+    },
+    {
+        title: "Davomat",
+        icon: "fa-calendar-alt",
+        href: "listAttendance",
+        role: [ROLES.Admin,ROLES.Teacher,ROLES.Director]
+    },
+    {
+        title: "Darslik Reja",
+        icon: "fa-list",
+        href: "lessonPlan",
+        role: [ROLES.Admin,ROLES.Director]
+    },
+    {
+        title: "Observe Lesson",
+        icon: "fa-user-check",
+        href: "observedTeacherLessons",
+        role: [ROLES.Admin,ROLES.Director]
+    },
+    {
+        title: "Observed Dates",
+        icon: "fa-tasks",
+        href: "observedTeacherLessons",
+        role: [ROLES.Admin,ROLES.Director]
+    },
+
+]
+
 const AdditionGroup = ({id,teacherId}) => {
+
+
+    const renderLinks = () => {
+        return links.map(item => {
+            return (
+                <RequireAuthChildren allowedRules={item.role}>
+                    <div className={cls.addition__item} onClick={() => onNavigate(item.href)}>
+                        <div className={cls.icon}>
+                            <i className={`fas ${item.icon}`} />
+                        </div>
+                        <div className={cls.info}>{item.title}</div>
+                    </div>
+                </RequireAuthChildren>
+            )
+        })
+    }
+
+
+    const navigate = useNavigate()
+
+    const onNavigate = (href) => {
+        navigate(`../${href}`)
+    }
+
     return (
-        <>
-            <RequireAuthChildren allowedRules={[ROLES.Teacher,ROLES.Admin]}>
-                <Link to={`../makeAttendance/${id}/${teacherId}`} className="main__item checkAttendance">
-                    <div className="checkAttendance__container">
-                        <div  className="subheader__item">
-                            <i className="fas fa-calendar-check" />
-                        </div>
-                    </div>
-                </Link>
-            </RequireAuthChildren>
-            <RequireAuthChildren allowedRules={[ROLES.Teacher,ROLES.Admin,ROLES.Director]}>
-                <Link to={`../listAttendance/${id}`} className="main__item checkAttendance">
-                    <div className="checkAttendance__container">
-                        <div  className="subheader__item">
-                            <i className="fas fa-calendar-alt" />
-                        </div>
-                    </div>
-                </Link>
-            </RequireAuthChildren>
-            <RequireAuthChildren allowedRules={[ROLES.Teacher,ROLES.Admin,ROLES.Director]}>
-                <Link to={`../groupTime/${id}`} className="main__item checkAttendance">
-                    <div className="checkAttendance__container">
-                        <div  className="subheader__item">
-                            <i className="fas fa-clock" />
-                        </div>
-                    </div>
-                </Link>
-            </RequireAuthChildren>
-            <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director]}>
-                <Link to={`../observeTeacherLesson`} className="main__item checkAttendance">
-                    <div className="checkAttendance__container">
-                        <div  className="subheader__item">
-                            <i className="fas fa-user-check" />
-                        </div>
-                    </div>
-                </Link>
-            </RequireAuthChildren>
-            <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director]}>
-                <Link to={`../lessonPlan`} className="main__item checkAttendance">
-                    <div className="checkAttendance__container">
-                        <div  className="subheader__item">
-                            <i className="fas fa-tasks" />
-                        </div>
-                    </div>
-                </Link>
-            </RequireAuthChildren>
-        </>
+        <div className={cls.addition}>
+            {renderLinks()}
+            {/*<RequireAuthChildren allowedRules={[ROLES.Teacher,ROLES.Admin]}>*/}
+            {/*    <Link to={`../makeAttendance/${id}/${teacherId}`} className="main__item checkAttendance">*/}
+            {/*        <div className="checkAttendance__container">*/}
+            {/*            <div  className="subheader__item">*/}
+            {/*                <i className="fas fa-calendar-check" />*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*    </Link>*/}
+            {/*</RequireAuthChildren>*/}
+            {/*<RequireAuthChildren allowedRules={[ROLES.Teacher,ROLES.Admin,ROLES.Director]}>*/}
+            {/*    <Link to={`../listAttendance/${id}`} className="main__item checkAttendance">*/}
+            {/*        <div className="checkAttendance__container">*/}
+            {/*            <div  className="subheader__item">*/}
+            {/*                <i className="fas fa-calendar-alt" />*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*    </Link>*/}
+            {/*</RequireAuthChildren>*/}
+            {/*<RequireAuthChildren allowedRules={[ROLES.Teacher,ROLES.Admin,ROLES.Director]}>*/}
+            {/*    <Link to={`../groupTime/${id}`} className="main__item checkAttendance">*/}
+            {/*        <div className="checkAttendance__container">*/}
+            {/*            <div  className="subheader__item">*/}
+            {/*                <i className="fas fa-clock" />*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*    </Link>*/}
+            {/*</RequireAuthChildren>*/}
+
+            {/*<RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director]}>*/}
+            {/*    <Link to={`../observeTeacherLesson`} className="main__item checkAttendance">*/}
+            {/*        <div className="checkAttendance__container">*/}
+            {/*            <div  className="subheader__item">*/}
+            {/*                <i className="fas fa-user-check" />*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*    </Link>*/}
+            {/*</RequireAuthChildren>*/}
+            {/*<RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director]}>*/}
+            {/*    <Link to={`../lessonPlan`} className="main__item checkAttendance">*/}
+            {/*        <div className="checkAttendance__container">*/}
+            {/*            <div  className="subheader__item">*/}
+            {/*                <i className="fas fa-list"></i>*/}
+            {/*            </div>*/}
+
+            {/*            <div className={"checkAttendance__info"}>{item.title}</div>*/}
+
+            {/*        </div>*/}
+            {/*    </Link>*/}
+            {/*</RequireAuthChildren>*/}
+            {/*<RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director]}>*/}
+            {/*    <Link to={`../observedTeacherLessons`} className="main__item checkAttendance">*/}
+            {/*        <div className="checkAttendance__container">*/}
+            {/*            <div  className="subheader__item">*/}
+            {/*                <i className="fas fa-tasks" />*/}
+            {/*            </div>*/}
+            {/*        </div>*/}
+            {/*    </Link>*/}
+            {/*</RequireAuthChildren>*/}
+        </div>
 
     )
 }

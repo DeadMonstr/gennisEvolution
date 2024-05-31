@@ -1,13 +1,8 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import cls from "./observeTeacherLesson.module.sass"
-// import Select from "components/ui/form/select";
-// import Textarea from "components/ui/form/textarea";
-// import {useForm} from "react-hook-form";
-// import {useHttp} from "hooks/http.hook";
-// import {headersOldToken, PlatformUrlApi} from "constants/global";
-// import Button from "components/ui/button";
-// import Form from "components/ui/form";
-// import {useParams} from "react-router";
+
+
+
 import {Navigate, NavLink, Route, Routes, useParams} from "react-router-dom";
 import BackButton from "components/platform/platformUI/backButton/backButton";
 import Select from "components/platform/platformUI/select";
@@ -51,7 +46,7 @@ const ObserveTeacherLesson = () => {
                         isActive ? `${cls.item} ${cls.active}` : `${cls.item}`
                     }
                 >
-                    <i className="fas fa-tasks"></i>
+                    <i className="fas fa-list"></i>
                     <span>Lesson Plan</span>
                 </NavLink>
 

@@ -197,11 +197,15 @@ const ObservationStatistics = (props) => {
                 year
             }), headers())
                 .then(res => {
+                    console.log(res)
                     setData(res.teachers_list.map((item, index) => {
                         return {
                             y: item.percentage,
-                            label: `${item.name} ${item.surname}`,
-                            x: index++
+                            label: `${item.name} ${item.surname} `,
+                            indexLabel: `${item.observation_len}`,
+                            x: index++,
+                            indexLabelFontColor: "white",
+                            indexLabelPlacement: "inside"
                         }
                     }))
                 })
