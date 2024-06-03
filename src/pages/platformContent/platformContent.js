@@ -69,6 +69,7 @@ const PlatformQrCode =  React.lazy(() => import('./qrCode/qrCodeStudents/qrCodeS
 const PlatformWebsiteEdit =  React.lazy(() => import('./platformWebsiteEdit/platformWebsiteEdit'));
 const PlatformLead =  React.lazy(() => import('./platformLead/PlatformLead'));
 const PlatformCapital =  React.lazy(() => import('pages/platformContent/platformCapitalCategories/PlatformCapitalCategories'));
+const PlatformTaskManager = React.lazy(() => import('./platformTaskManager/platformTaskManager'))
 
 
 
@@ -90,6 +91,7 @@ const PlatformContent = () => {
             <Suspense fallback={<DefaultLoader/>} >
                 <Routes>
                     <Route path="home" element={<PlatformHome/>}/>
+                    <Route path="taskManager" element={<PlatformTaskManager/>}/>
                     {/*<Route path="registerStudent/*" element={<RegisterUser/>}/>*/}
                     <Route path="profile/:userId/*" element={<PlatformUserProfile/>}/>
                     <Route path="me/:userId" element={<PlatformUserMeProfile/>}/>

@@ -2,15 +2,15 @@ import {useMemo} from "react";
 
 
 
-// export const BackUrlForDoc = `http://192.168.0.104:5002/`
-// export const BackUrl = `${BackUrlForDoc}api/`
-// export const ClassroomUrl = `http://localhost:3000/`
-// export const ClassroomUrlForDoc = "http://192.168.0.104:5001/"
+export const BackUrlForDoc = `http://192.168.0.100:5002/`
+export const BackUrl = `${BackUrlForDoc}api/`
+export const ClassroomUrl = `http://localhost:3000/`
+export const ClassroomUrlForDoc = "http://192.168.0.104:5001/"
 
-export const BackUrl = "/api/"
-export const ClassroomUrl = `https://classroom.gennis.uz/`
-export const BackUrlForDoc = "/"
-export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
+// export const BackUrl = "/api/"
+// export const ClassroomUrl = `https://classroom.gennis.uz/`
+// export const BackUrlForDoc = "/"
+// export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
 
 export const headers = () => {
     const token = sessionStorage.getItem("token")
@@ -47,6 +47,12 @@ export const requireMenuItems = (id) => {
             name: "Bosh sahifa",
             classIcon: "fa-home",
             roles: [ROLES.Admin,ROLES.User,ROLES.Director,ROLES.Programmer,ROLES.Teacher,ROLES.Student,ROLES.Editor,ROLES.Smm]
+        },
+        {
+            to : "taskManager",
+            name: "taskManager",
+            classIcon: "fa-tasks",
+            roles: [ROLES.Admin,ROLES.Director]
         },
         {
             to : "/registerStudent",

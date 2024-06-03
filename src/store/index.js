@@ -29,6 +29,7 @@ import ui from "slices/uiSlice";
 import leads from "slices/leadsSlice";
 import teacherInfo from "slices/teacherInfoSlice";
 import capitalCategory from "slices/capitalCategorySlice";
+import taskManager from "slices/taskManagerSlice";
 
 const stringMiddlewere = () => (next) => (action) => {
     if (typeof action === 'string') {
@@ -69,7 +70,8 @@ const store = configureStore({
         ui,
         leads,
         teacherInfo,
-        capitalCategory
+        capitalCategory,
+        taskManager
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware().concat(
