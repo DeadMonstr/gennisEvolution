@@ -9,7 +9,7 @@
     border-radius: 2rem
 
     .wrapper
-      height: 250px
+      //height: 250px
       display: flex
       flex-direction: column
       justify-content: space-around
@@ -126,7 +126,7 @@
 
                 &.active
                   color: rgba(26, 26, 26, 0.6)
-                  //border-bottom: 2px solid #05C4FF
+      //border-bottom: 2px solid #05C4FF
       &__date
         width: 30%
         display: flex
@@ -141,16 +141,41 @@
       flex-direction: column
       gap: 5rem
 
+      .scroll
+        display: flex
+        gap: 3rem
+        overflow: hidden
+
+        &__inner
+          display: flex
+          align-items: center
+          gap: 3rem
+          cursor: w-resize
+
       &__red
         display: flex
         gap: 3rem
+        overflow: hidden
+
+      &__yellow
+        display: flex
+        gap: 3rem
+        overflow: hidden
 
 .item
   width: 450px
   height: 240px
   border-radius: 2rem
   display: flex
+  position: relative
   //box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4)
+
+  .icon
+    color: black
+    font-size: 1.6rem
+    position: absolute
+    top: 1.5rem
+    left: 1.5rem
 
   &__info
     width: 60%
