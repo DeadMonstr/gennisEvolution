@@ -21,9 +21,12 @@ import {
     changeDebtorStudents,
     changeDebtorStudentsDel,
     changeLead,
+    deleteLead,
+    fetchedProgress,
+    fetchingProgress,
     fetchNewStudentsData,
     fetchDebtorStudentsData,
-    fetchLeadsData
+    fetchLeadsData,
 } from "slices/taskManagerSlice";
 
 import cls from "./platformTaskManager.module.sass";
@@ -31,6 +34,10 @@ import unknownUser from "assets/user-interface/user_image.png";
 import taskCardBack from "assets/background-img/TaskCardBack.png";
 import taskCardBack2 from "assets/background-img/TaskCardBack2.png";
 import taskCardBack4 from "assets/background-img/TaskCardBack4.png";
+import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
+import {setMessage} from "slices/messageSlice";
+import {info} from "sass";
+// daily_statistics/location
 
 
 const options = [
@@ -60,10 +67,25 @@ const menuList = [
 const colorStatusList = ["red", "yellow", "green"]
 
 const PlatformTaskManager = () => {
+    const [activeMenu, setActiveMenu] = useState(menuList[0]?.name)
+
+    useEffect(() => {
+        if (activeMenu === "newStudents") {
+            dispatch(fetchNewStudentsData(location))
+        } else if (activeMenu === "lead") {
+            dispatch(fetchLeadsData(location))
+        } else {
+            dispatch(fetchDebtorStudentsData(location))
+        }
+
+        // dispatch(fetchNewStudentsData(location))
+        // dispatch(fetchDebtorStudentsData(location))
+        // dispatch(fetchLeadsData(location))
+    }, [activeMenu])
+
     const {request} = useHttp()
     const dispatch = useDispatch()
     const {register, handleSubmit} = useForm()
-    const [activeMenu, setActiveMenu] = useState(menuList[0]?.name)
     const [activeModal, setActiveModal] = useState(false)
     const [date, setDate] = useState(new Date())
     const [studentId, setStudentId] = useState()
@@ -78,15 +100,28 @@ const PlatformTaskManager = () => {
         debtorStudent,
         debtorStudentStatus,
         leads,
-        leadsStatus
+        leadsStatus,
+        progress,
+        progressStatus
     } = useSelector(state => state.taskManager)
-    const {location} = useSelector(state => state.me)
+    const {location, surname, name} = useSelector(state => state.me)
 
     useEffect(() => {
-        dispatch(fetchNewStudentsData(location))
-        dispatch(fetchDebtorStudentsData(location))
-        dispatch(fetchLeadsData(location))
-    }, [location])
+        dispatch(fetchingProgress())
+        request(`${BackUrl}daily_statistics/${location}`, "POST", JSON.stringify(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`), headers())
+            .then(res => {
+                console.log(res)
+                dispatch(fetchedProgress(res.info))
+                if (!res.info) {
+                    dispatch(setMessage({
+                        msg: res?.status,
+                        type: "success",
+                        active: true
+                    }))
+                }
+            })
+            .catch(err => console.log(err))
+    }, [date, leads, debtorStudent, newStudents])
 
     const onSubmit = (data) => {
         const res = {
@@ -96,6 +131,7 @@ const PlatformTaskManager = () => {
         if (activeMenu === "newStudents") {
             request(`${BackUrl}new_students_calling`, "POST", JSON.stringify(res), headers())
                 .then(res => {
+                    console.log(res)
                     if (res?.student.name) {
                         dispatch(changeNewStudents(res?.student))
                     } else {
@@ -110,7 +146,7 @@ const PlatformTaskManager = () => {
             }
             request(`${BackUrl}student_in_debts`, "POST", JSON.stringify(result), headers())
                 .then(res => {
-                    console.log(res, "debts")
+                    console.log(res)
                     if (res?.student.name) {
                         dispatch(changeDebtorStudents(res?.student))
                     } else {
@@ -121,7 +157,6 @@ const PlatformTaskManager = () => {
         } else if (activeMenu === "lead") {
             request(`${BackUrl}lead_crud/${studentId}`, "POST", JSON.stringify(res), headers())
                 .then(res => {
-                    console.log(res, "post lead")
                     dispatch(changeLead(res?.lead))
                 })
                 .catch(err => console.log(err))
@@ -138,10 +173,16 @@ const PlatformTaskManager = () => {
     }
 
     const onDelete = (data) => {
-        request(`${BackUrl}lead_crud/${studentId}`, "DELETE", JSON.stringify(data), headers())
+        const res = {
+            location_id: location,
+            status: studentId?.status,
+            ...data
+        }
+        request(`${BackUrl}lead_crud/${studentId?.id}`, "DELETE", JSON.stringify(res), headers())
             .then((res) => {
                 setIsConfirm(false)
                 setDellLead(false)
+                dispatch(deleteLead({id: studentId?.id}))
                 // setChangeLead(false)
                 // dispatch(onDeleteLead({id: changeLeadData.id}))
                 // dispatch(setMessage({
@@ -165,8 +206,9 @@ const PlatformTaskManager = () => {
                     index={index}
                     ref={ref}
                     activeMenu={activeMenu}
+                    setStudentId={setStudentId}
                     onClick={onClick}
-                    onDelete={onDelete}
+                    onDelete={setDellLead}
                 />
             )
         }
@@ -180,7 +222,7 @@ const PlatformTaskManager = () => {
                     <div className={cls.header__userInfo}>
                         <img src={unknownUser} alt=""/>
                         <div className={cls.inner}>
-                            <h2>Albert Flores</h2>
+                            <h2>{name} {surname}</h2>
                             <p>Project Manager</p>
                         </div>
                     </div>
@@ -196,7 +238,12 @@ const PlatformTaskManager = () => {
                                         </div>
                                         <h2>Tasks <br/> In Progress</h2>
                                     </div>
-                                    <h1>17</h1>
+                                    <Completed
+                                        progress={`${
+                                            progress ? progress?.in_progress_tasks : 0
+                                        }`}
+                                        progressStatus={progressStatus}
+                                    />
                                 </div>
                                 <div className={cls.taskItem}>
                                     <div className={cls.taskItem__info}>
@@ -205,12 +252,22 @@ const PlatformTaskManager = () => {
                                         </div>
                                         <h2>Project <br/> Completed</h2>
                                     </div>
-                                    <h1>17</h1>
+                                    <Completed
+                                        progress={`${
+                                            progress ? progress?.completed_tasks : 0
+                                        }`}
+                                        progressStatus={progressStatus}
+                                    />
                                 </div>
                             </div>
                             <div className={cls.completeTask__precent}>
                                 <div className={cls.circleProgress}>
-                                    <h1>75%</h1>
+                                    <Completed
+                                        progress={`${
+                                            progress ? progress?.completed_tasks_percentage : 0
+                                        }%`}
+                                        progressStatus={progressStatus}
+                                    />
                                 </div>
                                 <h2>All Rating</h2>
                             </div>
@@ -279,12 +336,14 @@ const PlatformTaskManager = () => {
                         onSubmit={handleSubmit(onSubmit)}
                     >
                         <InputForm
+                            title={"Kament"}
                             placeholder={"Kament"}
                             name={"comment"}
                             register={register}
                             required
                         />
                         <InputForm
+                            title={"Sana"}
                             type={"date"}
                             placeholder={"Keyinga qoldirish"}
                             name={"date"}
@@ -297,7 +356,7 @@ const PlatformTaskManager = () => {
                                 onChangeOption={onChange}
                             /> : null
                         }
-                        <Button>Add</Button>
+                        <Button type={"submit"}>Add</Button>
                     </form>
                 </div>
             </Modal>
@@ -319,6 +378,16 @@ const PlatformTaskManager = () => {
         </div>
     );
 };
+
+const Completed = ({progress, progressStatus}) => {
+    if (progressStatus === "loading" || progressStatus === "idle") {
+        return <DefaultLoaderSmall/>
+    } else {
+        return (
+            <h1>{progress}</h1>
+        )
+    }
+}
 
 const Leads = ({arr, arrStatus, renderCards}) => {
     if (arrStatus === "loading" || arrStatus === "idle") {
@@ -360,6 +429,7 @@ const Debtors = ({arr, arrStatus, renderCards}) => {
 }
 
 const NewStudents = ({arr, arrStatus, renderCards}) => {
+    // useEffect(() => {}. [])
     if (arrStatus === "loading" || arrStatus === "idle") {
         return <DefaultLoader/>
     } else {
@@ -456,23 +526,34 @@ const TaskCard = ({activeMenu, onClick, item, index, ref, onDelete, setStudentId
                     <i
                         className={classNames("fas fa-trash", cls.icon)}
                         onClick={() => {
+                            console.log(true, item.id)
                             onDelete(true)
-                            setStudentId(item.id)
+                            setStudentId({id: item.id, status: item.status})
                         }}
                     /> : null
             }
-            <div className={cls.item__info}>
-                <h2
-                    className={cls.debt}
-                    style={{backgroundColor: style.strBack}}
-                >
-                    {
-                        activeMenu === "debtors" ? item?.balance : item?.registered_date
-                    }
-                </h2>
+            <div
+                className={classNames(cls.item__info, {
+                    [cls.active]: activeMenu === "lead"
+                })}
+            >
+                {
+                    activeMenu === "lead" ? null : <h2
+                        className={cls.debt}
+                        style={{backgroundColor: style.strBack}}
+                    >
+                        {
+                            activeMenu === "debtors" ? item?.balance : item?.registered_date
+                        }
+                    </h2>
+                }
                 <h2 className={cls.username}>{item?.name} {item?.surname}</h2>
-                <ul className={cls.infoList}>
-                    <li className={cls.infoList__item}>Number: <span>{item?.number}</span></li>
+                <ul
+                    className={classNames(cls.infoList, {
+                        [cls.active]: activeMenu === "lead"
+                    })}
+                >
+                    <li className={cls.infoList__item}>Number: <span>{item?.phone}</span></li>
                     {
                         activeMenu === "newStudents" ? item?.subject.map(item => {
                             return (
@@ -486,9 +567,11 @@ const TaskCard = ({activeMenu, onClick, item, index, ref, onDelete, setStudentId
                             <li className={cls.infoList__item}>IT: <span>390000</span></li>
                         </> : null
                     }
-                    <li className={cls.infoList__item}>
-                        Koment: <span>{item?.history[item?.history.length - 1]?.comment}</span>
-                    </li>
+                    {
+                        activeMenu === "lead" ? null : <li className={cls.infoList__item}>
+                            Koment: <span>{item?.history[item?.history.length - 1]?.comment}</span>
+                        </li>
+                    }
                     {
                         activeMenu === "newStudents" ?
                             <li className={cls.infoList__item}>Smen: <span>{item?.shift}</span></li> : null
@@ -506,7 +589,7 @@ const TaskCard = ({activeMenu, onClick, item, index, ref, onDelete, setStudentId
             >
                 <div
                     className={cls.circle}
-                    onClick={() => onClick(item?.id)}
+                    onClick={() => item.status === "green" ? null : onClick(item?.id)}
                 >
                     <img src={unknownUser} alt=""/>
                 </div>
