@@ -8,17 +8,18 @@ import InputForm from "components/platform/platformUI/inputForm";
 import Button from "components/platform/platformUI/button";
 import ImgInput from "components/platform/platformUI/imgInput";
 import {useHttp} from "hooks/http.hook";
-import {BackUrl, BackUrlForDoc, headersImg} from "constants/global";
+import {BackUrl, BackUrlForDoc, headersImg, ROLES} from "constants/global";
 import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 import {setMessage} from "slices/messageSlice";
 import {useDispatch, useSelector} from "react-redux";
-import {Link, Route, Routes} from "react-router-dom";
+import {Link, Route, Routes, useParams} from "react-router-dom";
 import {fetchCategories, onAddCategory} from "slices/capitalCategorySlice";
 import DefaultLoader from "components/loader/defaultLoader/DefaultLoader";
 
 
 import CapitalCategory from "./capitalCategory/CapitalCategory";
 import Capital from "pages/platformContent/platformCapitalCategories/capital/Capital";
+import RequireAuthChildren from "components/requireAuthChildren/requireAuthChildren";
 
 const PlatformCapitalCategories = () => {
 
@@ -38,8 +39,10 @@ const PlatformCapitalCategories = () => {
 const PlatformCapitalIndex = () => {
 
 
-    const {categories,fetchCategoriesStatus} = useSelector(state => state.capitalCategory)
+    const {categories,fetchCategoriesStatus,totalDownCost} = useSelector(state => state.capitalCategory)
 
+
+    const {locationId} = useParams()
     const [add, setAdd] = useState(false)
     const [loading, setLoading] = useState(false)
     const {register,handleSubmit} = useForm()
@@ -50,8 +53,8 @@ const PlatformCapitalIndex = () => {
 
 
     useEffect(() => {
-        dispatch(fetchCategories())
-    },[])
+        dispatch(fetchCategories(locationId))
+    },[locationId])
 
 
     const onSubmit = (data) => {
@@ -83,10 +86,13 @@ const PlatformCapitalIndex = () => {
         <div className={cls.categories}>
             <div className={cls.headers}>
                 <h1  >Capital</h1>
-                <div className={cls.plus} onClick={setAdd}>
-                    <i className="fas fa-plus"></i>
-                </div>
+                <RequireAuthChildren allowedRules={[ROLES.Accountant]}>
+                    <div className={cls.plus} onClick={setAdd}>
+                        <i className="fas fa-plus"></i>
+                    </div>
+                </RequireAuthChildren>
             </div>
+            <h1 className={cls.totalDownCost}>Jami (Down cost): <span>{totalDownCost}</span></h1>
             <div className={cls.wrapper}>
                 {
                     categories.map(item => {
@@ -105,16 +111,17 @@ const PlatformCapitalIndex = () => {
                     })
                 }
             </div>
-            <Modal activeModal={add} setActiveModal={setAdd}>
-                <form  className={cls.addModal} onSubmit={handleSubmit(onSubmit)}>
-                    <h1>Kategoriya qo'shmoq</h1>
-                    <ImgInput img={img} setImg={setImg}/>
-                    <InputForm title={"Nomi"} register={register} name={"name"} type={"text"} required />
-                    <InputForm title={"Raqami"} register={register} name={"number_category"} type={"text"} required />
-                    { loading ? <DefaultLoaderSmall/> : <Button  type={"submit"}>Tasdiqlash</Button> }
-                </form>
-            </Modal>
-
+            <RequireAuthChildren allowedRules={[ROLES.Accountant]}>
+                <Modal activeModal={add} setActiveModal={setAdd}>
+                    <form  className={cls.addModal} onSubmit={handleSubmit(onSubmit)}>
+                        <h1>Kategoriya qo'shmoq</h1>
+                        <ImgInput img={img} setImg={setImg}/>
+                        <InputForm title={"Nomi"} register={register} name={"name"} type={"text"} required />
+                        <InputForm title={"Raqami"} register={register} name={"number_category"} type={"text"} required />
+                        { loading ? <DefaultLoaderSmall/> : <Button  type={"submit"}>Tasdiqlash</Button> }
+                    </form>
+                </Modal>
+            </RequireAuthChildren>
         </div>
     );
 };

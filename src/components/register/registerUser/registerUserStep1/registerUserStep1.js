@@ -152,7 +152,7 @@ const RegisterUserStep1 = ({updateUserData,userData}) => {
                     }
                 </label>
                 <label htmlFor="surname">
-                    <span className="name-field">Familiya</span>
+                    <span className="name-field" >Familiya</span>
                     <input
                         defaultValue={""}
                         id="surname"

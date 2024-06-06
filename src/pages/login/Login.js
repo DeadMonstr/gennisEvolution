@@ -44,6 +44,7 @@ const Login = () => {
         setPostDataStatus("loading")
         request(`${BackUrl}login2`,"POST",JSON.stringify(user))
             .then(res => {
+                console.log(res)
                 if (res.class) {
                     window.location.replace(`${ClassroomUrl}get_user/${res.access_token}/${res.refresh_token}`)
                     return {success: false}

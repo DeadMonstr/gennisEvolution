@@ -2,6 +2,52 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
 
+
+
+const pages = [
+    {
+        value: "studentsPayments",
+        name: "O'quvchilar tolovlari",
+        disabled: true
+    },
+    {
+        value: "bookPayment",
+        name: "Kitob tolovlari",
+        disabled: false
+    },
+    {
+        value: "teachersSalary",
+        name: "O'qituvchilar oyligi",
+        disabled: false
+    },
+    {
+        value: "employeesSalary",
+        name: "Ishchilar oyligi",
+        disabled: false
+    },
+    {
+        value: "studentsDiscounts",
+        name: "O'quvchilar chegirmalari",
+        disabled: false
+    },
+    {
+        value: "debtStudents",
+        name: "Qarzdor o'quvchilar",
+        disabled: false
+    },
+    {
+        value: "overhead",
+        name: "Qo'shimcha xarajatlar",
+        disabled: false
+    },
+    {
+        value: "capital",
+        name: "Kapital xarajatlari",
+        disabled: false
+    }
+]
+
+
 const initialState = {
     data: {
         typeOfMoney: "",
@@ -54,48 +100,7 @@ const initialState = {
         }
     ],
 
-    pages: [
-        {
-            value: "studentsPayments",
-            name: "O'quvchilar tolovlari",
-            disabled: true
-        },
-        {
-            value: "bookPayment",
-            name: "Kitob tolovlari",
-            disabled: false
-        },
-        {
-            value: "teachersSalary",
-            name: "O'qituvchilar oyligi",
-            disabled: false
-        },
-        {
-            value: "employeesSalary",
-            name: "Ishchilar oyligi",
-            disabled: false
-        },
-        {
-            value: "studentsDiscounts",
-            name: "O'quvchilar chegirmalari",
-            disabled: false
-        },
-        {
-            value: "debtStudents",
-            name: "Qarzdor o'quvchilar",
-            disabled: false
-        },
-        {
-            value: "overhead",
-            name: "Qo'shimcha xarajatlar",
-            disabled: false
-        },
-        {
-            value: "capital",
-            name: "Kapital xarajatlari",
-            disabled: false
-        }
-    ],
+    pages: pages,
 
     fetchedDataType: "",
     fetchAccDataStatus: "idle",

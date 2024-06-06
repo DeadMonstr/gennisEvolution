@@ -15,7 +15,7 @@ const Information = ({data, statistics}) => {
                 <h1>Gruppa ma'lumotlari</h1>
                 <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director,ROLES.Programmer]}>
                     <Link
-                        to={`../changeGroupInfo`}
+                        to={`../../changeGroupInfo`}
                         className={cls.information__icons}
                     >
                         <i className="fas fa-edit" />
@@ -29,7 +29,7 @@ const Information = ({data, statistics}) => {
                         return (
                             <div className={cls.information__item}>
                                 <span>{data[item].name}: </span>
-                                <span>{data[item].value}</span>
+                                <span>{data[item].value} </span>
                             </div>
                         )
                     })

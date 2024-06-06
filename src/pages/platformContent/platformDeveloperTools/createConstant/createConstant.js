@@ -222,7 +222,6 @@ const ItemsForm = ({setData,data}) => {
             }
             <div className="extraTools">
                 <div className="extraTools__container">
-
                     {
                         changeItem.item ?
                             <ChangeItem
@@ -241,10 +240,8 @@ const ItemsForm = ({setData,data}) => {
                                 setExtraTools={setExtraTools}
                                 setItems={setItems}
                                 items={items}
-
                             />
                     }
-
                     {/*<AddListForm/>*/}
                 </div>
                 <div className="extraTools__container column">

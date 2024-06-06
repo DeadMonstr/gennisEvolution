@@ -3,7 +3,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 
 import "./select.sass"
 
-const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaultValue,number,group,all,extra,keyValue,autoSelect,value}) => {
+const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaultValue,number,group,all,extra,keyValue,autoSelect,value,required}) => {
 
     const [optionsData,setOptionsData] = useState(null)
     const [selectOption,setSelectOption] = useState("")
@@ -104,9 +104,10 @@ const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaul
 
 
     return (
-        <label className={`select-label`} htmlFor={`select_field-${name}`}>
+        <label className={`select-label`} htmlFor={name ? `select_field-${name}` :null}>
             <span className="name-field">{title}</span>
             <select
+                required={required}
                 id={`select_field-${name}`}
                 className="input-fields"
                 onChange={e => {

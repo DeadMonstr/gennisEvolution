@@ -43,7 +43,12 @@ const links = [
         href: "observedTeacherLessons",
         role: [ROLES.Admin, ROLES.Director]
     },
-
+    {
+        title: "Test",
+        icon: "fa-spell-check",
+        href: "test",
+        role: [ROLES.Admin, ROLES.Director]
+    },
 ]
 
 const Addition = () => {

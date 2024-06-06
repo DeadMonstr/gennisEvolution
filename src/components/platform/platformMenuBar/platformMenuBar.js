@@ -44,7 +44,7 @@ const PlatformMenuBar = ({menuActive, setMenuActive}) => {
 
     const renderMultipleMenu = useCallback(() => {
         return requireMenuItems(id).map((item, index) => {
-            if (item.children && role === ROLES.Director) {
+            if (item.children && (role === ROLES.Director || role === ROLES.Accountant)) {
                 return (
                     <MultipleLink
                         key={index}
@@ -95,14 +95,6 @@ const PlatformMenuBar = ({menuActive, setMenuActive}) => {
 const MultipleLink = React.memo(({item, activeElem, onDropMenu, setMenuActive, role}) => {
 
     const {locations} = useSelector(state => state.locations)
-
-
-
-
-
-
-
-
 
     if (item.roles.includes(role)) {
         return (

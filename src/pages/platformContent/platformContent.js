@@ -6,13 +6,13 @@ import {fetchNewStudents} from "slices/newStudentsSlice";
 import {fetchFilters} from "slices/filtersSlice";
 import {setSelectedLocation} from "slices/meSlice";
 import {useDispatch, useSelector} from "react-redux";
-import PlatformBooks from "pages/platformContent/platformBooks/platformBooks";
-import BooksProfile from "pages/platformContent/platformBooks/profileBooks/booksProfile";
 import {fetchLocations} from "slices/locationsSlice";
-import RegisterUser from "components/register/registerUser/registerUser";
+
+
+import PlatformBooks from "pages/platformContent/platformBooks/platformBooks";
 import PlatformTeachersRating from "pages/platformContent/platformTeachersRating/platformTeachersRating";
 import TeacherDebtStudents from "pages/platformContent/platformTeacherDebtStudents/TeacherDebtStudents";
-import WebSite from "pages/webSite";
+import PlatformCentreInfo from "pages/platformContent/platformCentreInfo/PlatformCentreInfo";
 
 
 
@@ -93,6 +93,7 @@ const PlatformContent = () => {
                     <Route path="home" element={<PlatformHome/>}/>
                     <Route path="taskManager" element={<PlatformTaskManager/>}/>
                     {/*<Route path="registerStudent/*" element={<RegisterUser/>}/>*/}
+
                     <Route path="profile/:userId/*" element={<PlatformUserProfile/>}/>
                     <Route path="me/:userId" element={<PlatformUserMeProfile/>}/>
                     <Route path="changeInfo/:userId/:userRole" element={<PlatformUserProfileChange/>}/>
@@ -173,6 +174,7 @@ const PlatformContent = () => {
                     {/*<Route path="webSiteEdit/*" element={<WebSite/>}/>*/}
                     <Route path="lead/:locationId" element={<PlatformLead/>}/>
                     <Route path="capitalsCategory/:locationId/*" element={<PlatformCapital/>}/>
+                    <Route path="centreInfo/:locationId/*" element={<PlatformCentreInfo/>}/>
 
                     <Route
                         path="accounting/:locationId"

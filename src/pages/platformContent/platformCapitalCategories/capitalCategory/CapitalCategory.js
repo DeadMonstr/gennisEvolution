@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 
 import cls from "pages/platformContent/platformCapitalCategories/capitalCategory/capitalCategory.module.sass"
 import {Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams} from "react-router-dom";
-import {BackUrl, BackUrlForDoc, headers, headersImg} from "constants/global";
+import {BackUrl, BackUrlForDoc, headers, headersImg, ROLES} from "constants/global";
 
 import img from "assets/book.png"
 import Button from "components/platform/platformUI/button";
@@ -26,6 +26,7 @@ import Select from "components/platform/platformUI/select";
 import {fetchDataToChange} from "slices/dataToChangeSlice";
 import DefaultLoader from "components/loader/defaultLoader/DefaultLoader";
 import Table from "components/platform/platformUI/table";
+import RequireAuthChildren from "components/requireAuthChildren/requireAuthChildren";
 
 
 const CapitalCategory = () => {
@@ -393,7 +394,6 @@ const CapitalCategoryIndex = (props) => {
         capitals,
         category,
         setActiveAddCapital,
-        onChangeCapital,
         deletedCapitals
     } = props
     const {request} = useHttp()
@@ -429,7 +429,7 @@ const CapitalCategoryIndex = (props) => {
             });
     };
 
-
+    console.log(capitals)
     return (
         <>
             <div className={cls.infoCategory}>
@@ -439,9 +439,10 @@ const CapitalCategoryIndex = (props) => {
                     <h2>Kategoriya raqami: {category.number_category}</h2>
 
                     <div className={cls.btns}>
-                        <Button onClickBtn={() => toggleChangeAddModal("change")} type={"submit"}>O'zgartirish</Button>
-                        {category.is_delete &&
-                            <Button onClickBtn={() => setCanDelete(true)} type={"danger"}>O'chirish</Button>}
+                        <RequireAuthChildren allowedRules={[ROLES.Accountant]}>
+                            <Button onClickBtn={() => toggleChangeAddModal("change")} type={"submit"}>O'zgartirish</Button>
+                            {category.is_delete && <Button onClickBtn={() => setCanDelete(true)} type={"danger"}>O'chirish</Button>}
+                        </RequireAuthChildren>
 
 
                         <Button onClickBtn={handleDownload}>Kapitallar ro'yhati</Button>
@@ -455,11 +456,21 @@ const CapitalCategoryIndex = (props) => {
 
 
                 <div>
-                    <div className={cls.plus} onClick={() => setActiveAddCapital(true)}>
+                    {!isDeletedCapital && <h1>Jami (Down Cost): <span>{category.total_down_cost}</span></h1>}
+
+                    <div
+                        className={cls.plus}
+                        onClick={() => setActiveAddCapital(true)}
+                    >
                         <i className="fas fa-plus"></i>
                     </div>
-                    <Button type={"danger"} active={isDeletedCapital}
-                            onClickBtn={() => setIsDeletedCapital(!isDeletedCapital)}>O'chirilganlar</Button>
+                    <Button
+                        type={"danger"}
+                        active={isDeletedCapital}
+                        onClickBtn={() => setIsDeletedCapital(!isDeletedCapital)}
+                    >
+                        O'chirilganlar
+                    </Button>
                 </div>
             </div>
 
@@ -482,11 +493,12 @@ const CapitalCategoryIndex = (props) => {
                             )
                         })
                         :
-                        capitals.map(item => {
+                        capitals?.map(item => {
+                            if (item)
                             return (
                                 <Link to={`../capital/${item.id}`}>
-                                    <div className={cls.capital}>
-                                        <img src={`${BackUrlForDoc}${item.img}`} alt=""/>
+                                    <div className={cls?.capital}>
+                                        <img src={`${BackUrlForDoc}${item?.img}`} alt=""/>
                                         <div className={cls.info}>
                                             <h1>Nomi: <span>{item.name}</span></h1>
                                             <h1>Raqami: <span>{item.number}</span></h1>
@@ -568,9 +580,14 @@ const CapitalSubCategoryIndex = ({subcategories, toggleChangeAddModal}) => {
             <div className={cls.subHeader}>
                 <h1>Qo'shimcha kategoriyalar</h1>
 
-                <div className={cls.plus} onClick={() => toggleChangeAddModal("add")}>
-                    <i className="fas fa-plus"></i>
-                </div>
+
+                <RequireAuthChildren allowedRules={[ROLES.Accountant]}>
+                    <div className={cls.plus} onClick={() => toggleChangeAddModal("add")}>
+                        <i className="fas fa-plus"></i>
+                    </div>
+                </RequireAuthChildren>
+
+
             </div>
 
             <div className={cls.wrapper}>

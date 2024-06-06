@@ -1,5 +1,4 @@
 
-import Input from "components/platform/platformUI/input";
 import Modal from "components/platform/platformUI/modal";
 import Select from "components/platform/platformUI/select";
 import React, {useCallback, useEffect, useMemo, useState} from 'react';

@@ -144,7 +144,6 @@ const LessonPlan = ({backBtn}) => {
     const {name,teacher} = data
     const {id: meId} = useAuth()
 
-    console.log(days)
     return (
         <div className={cls.lessonPlan}>
             {backBtn ? <BackButton/> : null}
@@ -267,11 +266,9 @@ const Students = ({students = [],setStudents}) => {
 
     const onOpen = (index) => {
         for (let i = 0; i < insideRefArray.current.length; i++) {
-
-
             if (insideRefArray.current[i]) {
-                const elem = insideRefArray.current[i]
 
+                const elem = insideRefArray.current[i]
                 elem.querySelector(".arrow").style.transform = "rotate(-90deg)"
                 elem.querySelector(".accordion").style.height = 0
             }

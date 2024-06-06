@@ -8,11 +8,10 @@ const initialState = {
 
     category: {},
     categories: [],
+    totalDownCost: "",
     deletedCapitals: [],
     capital: {},
     terms: [],
-
-
     tools: [],
     fetchCategoriesStatus: "idle",
     fetchCategoryStatus: "idle",
@@ -29,9 +28,9 @@ export const  fetchCategory = createAsyncThunk(
 
 export const  fetchCategories = createAsyncThunk(
     'capitalCategory/fetchCategories',
-    async () => {
+    async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_capital_categories`,"GET",null,headers())
+        return await request(`${BackUrl}get_capital_categories/${id}`,"GET",null,headers())
     }
 )
 
@@ -64,21 +63,15 @@ const capitalCategory = createSlice({
         onAddSubCategory: (state,action) => {
             state.category.addition_categories = [...state.category.addition_categories,action.payload.category]
         },
-
-
         onAddCategory: (state,action) => {
             state.categories.push(action.payload.category)
         },
-
         onAddCapitalReducer: (state,action) => {
             state.category.capitals = [...state.category.capitals,action.payload.capital]
         },
-
         onChangeCapitalReducer: (state,action) => {
             state.capital = action.payload.capital
         },
-
-
         onDeleteCapitalReducer: (state,action) => {
             state.category.capitals = state.category.capitals.filter(item => item.id !== action.payload.id)
         },
@@ -98,6 +91,7 @@ const capitalCategory = createSlice({
             .addCase(fetchCategories.fulfilled,(state, action) => {
                 state.fetchCategoriesStatus = 'success';
                 state.categories = action.payload.categories
+                state.totalDownCost = action.payload.total_down_cost
             })
             .addCase(fetchCategories.rejected,state => {state.fetchCategoriesStatus = 'error'} )
 

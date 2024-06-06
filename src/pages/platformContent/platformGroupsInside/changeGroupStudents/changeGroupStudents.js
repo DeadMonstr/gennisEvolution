@@ -38,11 +38,13 @@ const ChangeGroupStudents = () => {
     }, [groupId])
 
     useEffect(() => {
-        request(`${BackUrl}filtered_groups/${locationId}`, "GET", null, headers())
+        console.log("route naxxuy")
+        request(`${BackUrl}filtered_groups/${groupId}`, "GET", null, headers())
             .then(res => {
+                console.log(res,"keldi naxxuy")
                 setGroups(res.groups)
             })
-    }, [locationId])
+    }, [groupId])
 
 
     const activeItems = useMemo(() => {

@@ -12,7 +12,8 @@ const initialState = {
     level: '',
     levels: [],
     data: {},
-
+    percentageTest: [],
+    msg: "",
     links: [
         // {
         //     type: "link",
@@ -125,6 +126,8 @@ const groupSlice = createSlice({
                 state.locationId = action.payload.locationId
                 state.level = action.payload.level
                 state.levels = action.payload.levels
+                state.percentageTest = action.payload.test_info
+                state.msg = action.payload.msg
             })
             .addCase(fetchGroup.rejected,state => {state.fetchGroupStatus = 'error'})
             .addCase(fetchStatistics.pending, state => {state.fetchStatisticsStatus = 'loading'})

@@ -15,7 +15,7 @@ const Students = ({data, stringCheck, LinkToUser}) => {
                 <h1>O'quvchilar</h1>
                 <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director,ROLES.Programmer]}>
                     <Link
-                        to={`../changeGroupStudents`}
+                        to={`../../changeGroupStudents`}
                         className={cls.students__icons}
                     >
                         <i className="fas fa-edit" />

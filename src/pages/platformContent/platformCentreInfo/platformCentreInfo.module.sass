@@ -1,0 +1,47 @@
+@import "styles/abstracts/variables"
+@import "styles/abstracts/mixins"
+
+.centreInfo
+  padding: 4rem
+  .header
+    display: flex
+    align-items: center
+    justify-content: space-between
+    .plus
+      background-color: $color-grey-dark
+      border-radius: 50%
+      padding: 1.7rem
+      transition: all .2s
+      @include btn-active
+      i
+        font-size: 1.7rem
+  .wrapper
+    display: flex
+    align-items: center
+    justify-content: center
+    .box
+      width: 50rem
+      display: flex
+      flex-direction: column
+      padding: 2rem
+      border-radius: 10px
+      box-shadow: $box-shadow
+      gap: 1rem
+      h1
+        font-size: 2rem
+        color: $color-grey-dark
+        font-weight: normal
+        span
+          font-weight: bold
+          color: black
+  .changeInfo
+    background-color: white
+    border-radius: 15px
+    padding: 2rem
+    display: flex
+    flex-direction: column
+    justify-content: flex-start
+    gap: .5rem
+    width: 60rem
+    height: 60rem
+    overflow: auto

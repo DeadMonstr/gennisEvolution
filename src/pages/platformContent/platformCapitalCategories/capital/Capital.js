@@ -7,13 +7,13 @@ import Select from "components/platform/platformUI/select";
 import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 import Button from "components/platform/platformUI/button";
 import Modal from "components/platform/platformUI/modal";
-import {BackUrl, BackUrlForDoc, headersImg} from "constants/global";
+import {BackUrl, BackUrlForDoc, headers, headersImg} from "constants/global";
 import {fetchCapital, onAddCapitalReducer, onChangeCapitalReducer} from "slices/capitalCategorySlice";
 import {setMessage} from "slices/messageSlice";
 import {useForm} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 import {useHttp} from "hooks/http.hook";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {fetchDataToChange} from "slices/dataToChangeSlice";
 import Confirm from "components/platform/platformModals/confirm/confirm";
 import Table from "components/platform/platformUI/table";
@@ -70,8 +70,20 @@ const Capital = () => {
         }
     },[capital])
 
-    const onDelete = () => {
+    const navigate = useNavigate()
 
+    const onDelete = (data) => {
+        if (data === "yes") {
+            request(`${BackUrl}add_capital/${locationId}`,"DELETE", JSON.stringify({capital_id:capital.id}), headers())
+                .then(res => {
+                    dispatch(setMessage({
+                        msg: res.msg,
+                        type: "success",
+                        active: true
+                    }))
+                    navigate(-1)
+                })
+        }
     }
     const onChange = (data) => {
         const formData = new FormData()
@@ -142,7 +154,6 @@ const Capital = () => {
 
     const renderedDays = renderDate()
 
-    console.log(terms)
     return (
         <div className={cls.capital}>
             <div className={cls.subheader}>

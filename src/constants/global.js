@@ -2,15 +2,15 @@ import {useMemo} from "react";
 
 
 
-export const BackUrlForDoc = `http://192.168.0.109:5002/`
-export const BackUrl = `${BackUrlForDoc}api/`
-export const ClassroomUrl = `http://localhost:3000/`
-export const ClassroomUrlForDoc = "http://192.168.0.105:5001/"
+// export const BackUrlForDoc = `http://192.168.0.105:5002/`
+// export const BackUrl = `${BackUrlForDoc}api/`
+// export const ClassroomUrl = `http://localhost:3000/`
+// export const ClassroomUrlForDoc = "http://192.168.0.105:5001/"
 
-// export const BackUrl = "/api/"
-// export const ClassroomUrl = `https://classroom.gennis.uz/`
-// export const BackUrlForDoc = "/"
-// export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
+export const BackUrl = "/api/"
+export const ClassroomUrl = `https://classroom.gennis.uz/`
+export const BackUrlForDoc = "/"
+export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
 
 export const headers = () => {
     const token = sessionStorage.getItem("token")
@@ -36,7 +36,8 @@ export const ROLES = {
     Teacher: "b00c11a31",
     Student: "a43c33b82",
     Smm: "a21b00q41",
-    Editor: "n41c88z45"
+    Editor: "n41c88z45",
+    Accountant: "ak47a76m69",
 }
 
 
@@ -46,7 +47,7 @@ export const requireMenuItems = (id) => {
             to : "home",
             name: "Bosh sahifa",
             classIcon: "fa-home",
-            roles: [ROLES.Admin,ROLES.User,ROLES.Director,ROLES.Programmer,ROLES.Teacher,ROLES.Student,ROLES.Editor,ROLES.Smm]
+            roles: [ROLES.Admin,ROLES.User,ROLES.Director,ROLES.Programmer,ROLES.Teacher,ROLES.Student,ROLES.Editor,ROLES.Smm,ROLES.Accountant]
         },
         {
             to : "taskManager",
@@ -88,6 +89,14 @@ export const requireMenuItems = (id) => {
             roles: [ROLES.Admin,ROLES.Director]
         },
         {
+            to : "centreInfo",
+            name: "Centre info",
+            classIcon: "fa-info",
+            location: true,
+            children: true,
+            roles: [ROLES.Admin,ROLES.Director]
+        },
+        {
             to : "newStudents",
             name : "Yangi oq'uvchilar",
             classIcon: "fa-user",
@@ -114,7 +123,7 @@ export const requireMenuItems = (id) => {
         },
         {
             to : "groups",
-            name : "Gruppalar",
+            name : "Guruhlar",
             classIcon: "fa-users",
             location: true,
             children: true,
@@ -330,8 +339,7 @@ export const requireMenuItems = (id) => {
             classIcon: "fa-coins",
             location: true,
             children: true,
-
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Accountant]
         },
     ]
 }

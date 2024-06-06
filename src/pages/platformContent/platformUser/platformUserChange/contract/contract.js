@@ -10,19 +10,21 @@ import {BackUrl, BackUrlForDoc, headers} from "constants/global";
 import {useHttp} from "hooks/http.hook";
 import {useDispatch, useSelector} from "react-redux";
 import {setMessage} from "slices/messageSlice";
+import {useForm} from "react-hook-form";
+import InputForm from "components/platform/platformUI/inputForm";
 
 
 const Contract = ({userId,accessData}) => {
 
     const {user} = useSelector(state => state.usersProfile)
 
-    const [name, setName] = useState("")
-    const [surname, setSurname] = useState("")
-    const [fatherName, setFatherName] = useState("")
-    const [passportSeries, setPassportSeries] = useState("")
-    const [givenTime, setGivenTime] = useState("")
-    const [givenPlace, setGivenPlace] = useState("")
-    const [place, setPlace] = useState("")
+    const {register,
+        handleSubmit,
+        formState: {errors},
+        setValue
+    } = useForm()
+
+
     const [date,setDate] = useState({
         ot: "",
         do: ""
@@ -40,13 +42,14 @@ const Contract = ({userId,accessData}) => {
             ot: user?.contract_data?.ot,
             do: user?.contract_data?.do
         })
-        setName(user?.contract_data?.representative_name)
-        setSurname(user?.contract_data?.representative_surname)
-        setFatherName(user?.contract_data?.representative_fatherName)
-        setPassportSeries(user?.contract_data?.representative_passportSeries)
-        setGivenTime(user?.contract_data?.representative_givenTime)
-        setGivenPlace(user?.contract_data?.representative_givenPlace)
-        setPlace(user?.contract_data?.representative_place)
+        setValue("name",user?.contract_data?.representative_name)
+        setValue("surname",user?.contract_data?.representative_surname)
+        setValue("fatherName",user?.contract_data?.representative_fatherName)
+        setValue("passportSeries",user?.contract_data?.representative_passportSeries)
+        setValue("givenTime",user?.contract_data?.representative_givenTime)
+        setValue("givenPlace",user?.contract_data?.representative_givenPlace)
+        setValue("place",user?.contract_data?.representative_place)
+
     },[user])
 
     useEffect(() => {
@@ -58,22 +61,16 @@ const Contract = ({userId,accessData}) => {
     const {request} = useHttp()
     const dispatch = useDispatch()
 
-    const onSubmitCreate = (e) => {
-        e.preventDefault()
+    const onSubmitCreate = (data) => {
 
-        const data = {
-            name,
-            surname,
-            passportSeries,
-            fatherName,
-            givenPlace,
-            givenTime,
-            place,
+
+        const newData = {
+            ...data,
             date
         }
 
 
-        request(`${BackUrl}create_contract/${userId}`, "POST",JSON.stringify(data),headers())
+        request(`${BackUrl}create_contract/${userId}`, "POST",JSON.stringify(newData),headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -161,14 +158,65 @@ const Contract = ({userId,accessData}) => {
 
             <div className="contract_create">
                 <h1>Shartnoma yaratish</h1>
-                <form action="" onSubmit={onSubmitCreate}>
-                    <Input defaultValue={user?.contract_data?.representative_name} type={"text"} onChange={setName} name={"name"} title={"Ism"} />
-                    <Input defaultValue={user?.contract_data?.representative_surname} type={"text"} onChange={setSurname} name={"surname"} title={"Familya"} />
-                    <Input defaultValue={user?.contract_data?.representative_fatherName} type={"text"} onChange={setFatherName} name={"fatherName"} title={"Otasining ismi"} />
-                    <Input defaultValue={user?.contract_data?.representative_passportSeries} type={"text"} onChange={setPassportSeries} name={"passportSeries"} title={"Pasport seriasi"} />
-                    <Input defaultValue={user?.contract_data?.representative_givenTime} type={"text"} onChange={setGivenTime} name={"givenTime"} title={"Berilgan vaqti"} />
-                    <Input defaultValue={user?.contract_data?.representative_givenPlace} type={"text"} onChange={setGivenPlace} name={"givenPlace"} title={"Berilgan joyi"} />
-                    <Input defaultValue={user?.contract_data?.representative_place} type={"text"} onChange={setPlace} name={"place"} title={"Manzili"} />
+
+                <form action="" onSubmit={handleSubmit(onSubmitCreate)}>
+
+                    <InputForm
+                        register={register}
+                        type={"text"}
+                        name={"name"}
+                        title={"Ism"}
+                        required={true}
+                    />
+                    <InputForm
+                        register={register}
+                        type={"text"}
+                        name={"surname"}
+                        title={"Familya"}
+                        required={true}
+
+                    />
+                    <InputForm
+                        register={register}
+                        type={"text"}
+                        name={"fatherName"}
+                        title={"Otasining ismi"}
+                        required={true}
+
+                    />
+                    <InputForm
+                        register={register}
+                        type={"text"}
+                        name={"passportSeries"}
+                        title={"Pasport seriasi"}
+                        required={true}
+
+                    />
+                    <InputForm
+                        register={register}
+                        type={"text"}
+                        name={"givenTime"}
+                        title={"Berilgan vaqti"}
+                        required={true}
+
+                    />
+                    <InputForm
+                        register={register}
+                        type={"text"}
+                        name={"givenPlace"}
+                        title={"Berilgan joyi"}
+                        required={true}
+
+                    />
+                    <InputForm
+                        register={register}
+                        type={"text"}
+                        name={"place"}
+                        title={"Manzili"}
+                        required={true}
+
+                    />
+
                     <label htmlFor="">
                         <h1>Dan</h1>
                         <input

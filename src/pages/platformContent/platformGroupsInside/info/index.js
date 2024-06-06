@@ -10,10 +10,11 @@ import DefaultLoader from "components/loader/defaultLoader/DefaultLoader";
 import {fetchStatistics} from "slices/groupSlice";
 
 import cls from "./style.module.sass";
+import PercentageTests from "pages/platformContent/platformGroupsInside/info/percentageTests/PercentageTests";
 
 const Info = () => {
 
-    const {data, id, statistics, fetchGroupStatus} = useSelector(state => state.group)
+    const {data, id, statistics, fetchGroupStatus,percentageTest} = useSelector(state => state.group)
     const {role} = useAuth()
     const dispatch = useDispatch()
     const stringCheck = (name, length = 10) => {
@@ -48,27 +49,20 @@ const Info = () => {
     // eslint-disable-next-line array-callback-return
     return (
         <div className={cls.main}>
-            {
-                keys.map(key => {
-                    if (key === "information") {
-                        return <Information
-                            data={data[key]}
-                            statistics={statistics}
-                        />
-                    }
-                    if (key === "students") {
-                        return (
-                            <div className={cls.wrapper}>
-                                <Students
-                                    data={data[key]}
-                                    LinkToUser={LinkToUser}
-                                    stringCheck={stringCheck}
-                                />
-                            </div>
-                        )
-                    }
-                })
-            }
+            <Information
+                data={data.information}
+                statistics={statistics}
+            />
+
+            <PercentageTests data={percentageTest}/>
+
+            <Students
+                data={data.students}
+                LinkToUser={LinkToUser}
+                stringCheck={stringCheck}
+            />
+
+
         </div>
     )
 };

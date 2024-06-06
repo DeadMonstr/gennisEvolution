@@ -1,4 +1,4 @@
-import React, {useRef, useState, UIEvent, useEffect} from 'react';
+import React, {useRef, useState, UIEvent, useEffect, useCallback} from 'react';
 import {Link, Route, Routes, useLocation, useNavigate, useParams} from "react-router-dom";
 
 import EmployeeSalary from "./employeeSalary/employeeSalary";
@@ -35,6 +35,7 @@ const PlatformAccounting = () => {
     const location = useLocation()
     const {pages,search} = useSelector(state => state.accounting)
     const {filters} = useSelector(state => state.filters)
+
     const scrollPosition = useSelector((state) => getUIScrollByPath(state, location.pathname))
 
 
@@ -48,12 +49,12 @@ const PlatformAccounting = () => {
 
 
 
-    const setPage = (e) => {
-
+    const setPage = useCallback((e) => {
+        console.log("render eeee")
         dispatch(onChangeAccountingPage({value: e}))
-        dispatch(clearAccData())
+        // dispatch(clearAccData())
         navigate(`./${e}`)
-    }
+    },[])
 
 
     const setSearch = (e) => {
@@ -72,6 +73,8 @@ const PlatformAccounting = () => {
         }, 500);
         return () => clearTimeout(timeoutId);
     },[])
+
+
 
 
 

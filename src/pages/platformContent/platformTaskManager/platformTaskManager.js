@@ -101,6 +101,8 @@ const PlatformTaskManager = () => {
         progress,
         progressStatus
     } = useSelector(state => state.taskManager)
+
+
     const {location, surname, name} = useSelector(state => state.me)
 
     console.log(newStudents, "newStudents")
@@ -111,7 +113,6 @@ const PlatformTaskManager = () => {
         dispatch(fetchingProgress())
         request(`${BackUrl}daily_statistics/${location}`, "POST", JSON.stringify(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`), headers())
             .then(res => {
-                console.log(res)
                 dispatch(fetchedProgress(res.info))
                 if (!res.info) {
                     dispatch(setMessage({
@@ -132,7 +133,6 @@ const PlatformTaskManager = () => {
         if (activeMenu === "newStudents") {
             request(`${BackUrl}new_students_calling`, "POST", JSON.stringify(res), headers())
                 .then(res => {
-                    console.log(res)
                     if (res?.student.name) {
                         dispatch(changeNewStudents(res?.student))
                     } else {
@@ -148,7 +148,6 @@ const PlatformTaskManager = () => {
             }
             request(`${BackUrl}student_in_debts`, "POST", JSON.stringify(result), headers())
                 .then(res => {
-                    console.log(res)
                     if (res?.student.name) {
                         dispatch(changeDebtorStudents(res?.student))
                     } else {

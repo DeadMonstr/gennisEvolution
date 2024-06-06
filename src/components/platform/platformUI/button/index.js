@@ -17,7 +17,7 @@ const Button = ({children = "",active,onClickBtn,name,extraMsg,extraClass,formId
 
     return (
         <button
-
+            disabled={disabled}
             name={name}
             form={formId}
             className={classNames(cls.btnPlatform,cls[type],{

@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import {useSelector} from "react-redux";
 
-const useFilteredData = (data, currentPage, PageSize) => {
+const useFilteredData = (data = [], currentPage, PageSize) => {
 
     const {filters} = useSelector(state => state.filters)
     const {search} = useSelector(state => state.accounting)
@@ -9,9 +9,8 @@ const useFilteredData = (data, currentPage, PageSize) => {
     const multiPropsFilter = useMemo(() => {
         const filterKeys = Object.keys(filters);
 
-        console.log(filters)
-        console.log(data)
-        return data?.filter(user => {
+        if (data.length)
+        return data.filter(user => {
             return filterKeys?.every(key => {
                 if (!filters[key]?.activeFilters?.length) return true;
                 if (Array.isArray(user[key])) {

@@ -45,7 +45,11 @@
     filter: brightness(93%)
   &:active
     transform: scale(0.9)
-
+  &.disabled
+    &:hover
+      filter: brightness(100%) !important
+    &:active
+      transform: scale(1)
   &.simple
     padding: 0.7rem 1.5rem
     border: 1px solid $color-grey-dark
@@ -60,7 +64,7 @@
       svg
         fill: white
     &.active
-      border: 2px solid $color-main-dark
+      border: 1px solid $color-main-dark
       color: white
       background-color: $color-main-dark
       i
@@ -70,6 +74,7 @@
     &.disabled
       color: $color-grey-dark
       background-color: $color-grey-light
+
       i
         color: $color-grey-dark
       svg
@@ -89,6 +94,7 @@
       background-color: $color-main-light
     &.disabled
       background-color: $color-main-light
+      border: 2px solid rgba($color-main-light,.6)
 
 
   &.danger

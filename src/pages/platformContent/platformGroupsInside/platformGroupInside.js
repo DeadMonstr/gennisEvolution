@@ -17,6 +17,7 @@ import ObserveTeacherLesson from "pages/platformContent/platformGroupsInside/obs
 import LessonPlan from "pages/platformContent/platformGroupsInside/lessonPlan/LessonPlan";
 import ObservedTeacherLessons
     from "pages/platformContent/platformGroupsInside/observedTeacherLessons/ObservedTeacherLessons";
+import GroupTest from "pages/platformContent/platformGroupsInside/groupTest/groupTest";
 import Info from "pages/platformContent/platformGroupsInside/info";
 import Addition from "pages/platformContent/platformGroupsInside/addition";
 
@@ -34,6 +35,10 @@ const PlatformGroupTime = React.lazy(() => import('pages/platformContent/platfor
 const PlatformGroupInside = () => {
     const {groupId} = useParams()
 
+    const dispatch = useDispatch()
+    useEffect(() => {
+        dispatch(fetchGroup(groupId))
+    },[groupId])
 
     return (
         <Routes>
@@ -53,6 +58,7 @@ const PlatformGroupInside = () => {
             <Route path="lessonPlan" element={<LessonPlan backBtn={true}/>}/>
             <Route path="observeTeacherLesson/*" element={<ObserveTeacherLesson/>}/>
             <Route path="observedTeacherLessons" element={<ObservedTeacherLessons/>}/>
+            <Route path="test" element={<GroupTest/>}/>
 
             <Route path="*" element={
                 <Navigate to="info/information" replace/>
@@ -70,7 +76,8 @@ const GroupInfo = ({groupId}) => {
         links,
         locationId,
         fetchGroupStatus,
-        isTime
+        isTime,
+        msg
     } = useSelector(state => state.group)
     const {isCheckedPassword} = useSelector(state => state.me)
 
@@ -78,6 +85,7 @@ const GroupInfo = ({groupId}) => {
     const [activeChangeModal, setActiveChangeModal] = useState(false)
     const [activeChangeModalName, setActiveChangeModalName] = useState("")
     const [activeCheckPassword, setActiveCheckPassword] = useState(false)
+
 
     const renderBtns = useCallback(() => {
         return btns.map(btn => {
@@ -89,7 +97,6 @@ const GroupInfo = ({groupId}) => {
                     to={btn.name}
                     onClick={() => activateBtn(btn.id)}
                 >
-
                     {btn.title}
 
                 </NavLink>
@@ -163,9 +170,8 @@ const GroupInfo = ({groupId}) => {
 
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        dispatch(fetchGroup(groupId))
-    }, [dispatch, groupId])
+
+
 
     const activateBtn = (id) => {
         dispatch(setActiveBtn({id}))
@@ -180,6 +186,7 @@ const GroupInfo = ({groupId}) => {
     // } else if (fetchGroupsStatus === "error") {
     //     console.log('error')
     // }
+
 
 
     return (
@@ -213,6 +220,7 @@ const GroupInfo = ({groupId}) => {
             </header>
             <div className={cls.error}>
                 <h1>{!isTime ? "Guruhga dars jadvali belgilanmagan !" : null}</h1>
+                <h1>{msg}</h1>
             </div>
 
             <div className={cls.subheader}>
