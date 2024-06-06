@@ -48,6 +48,8 @@ const initialState = {
             active: false
         }
     ],
+    statistics: {},
+    fetchStatisticsStatus: "idle",
     fetchGroupStatus: "idle",
 }
 
@@ -60,8 +62,13 @@ export const  fetchGroup = createAsyncThunk(
     }
 )
 
-
-
+export const  fetchStatistics = createAsyncThunk(
+    'groupSlice/fetchStatistics',
+    async (id) => {
+        const {request} = useHttp();
+        return await request(`${BackUrl}group_statistics/${id}`,"GET",null,headers())
+    }
+)
 
 
 
@@ -103,9 +110,9 @@ const groupSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(fetchGroup.pending,state => {state.fetchGroupsStatus = 'loading'} )
+            .addCase(fetchGroup.pending,state => {state.fetchGroupStatus = 'loading'} )
             .addCase(fetchGroup.fulfilled,(state, action) => {
-                state.fetchGroupsStatus = 'success';
+                state.fetchGroupStatus = 'success';
                 state.data = action.payload.data
                 state.time_table = action.payload.time_table
                 state.isTime = action.payload.isTime
@@ -119,7 +126,13 @@ const groupSlice = createSlice({
                 state.level = action.payload.level
                 state.levels = action.payload.levels
             })
-            .addCase(fetchGroup.rejected,state => {state.fetchGroupsStatus = 'error'})
+            .addCase(fetchGroup.rejected,state => {state.fetchGroupStatus = 'error'})
+            .addCase(fetchStatistics.pending, state => {state.fetchStatisticsStatus = 'loading'})
+            .addCase(fetchStatistics.fulfilled, (state, action) => {
+                state.statistics = action.payload.info
+                state.fetchStatisticsStatus = 'success'
+            })
+            .addCase(fetchStatistics.rejected, state => {state.fetchStatisticsStatus = 'error'})
     }
 })
 

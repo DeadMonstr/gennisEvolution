@@ -91,7 +91,10 @@ const Footer = () => {
 
     const onSubmitLoc = (data) => {
         const res = {
-            link: data?.locLink,
+            link: data?.locLink?.slice(
+                data?.locLink.indexOf("src") + 5,
+                data?.locLink.indexOf("style") - 7
+            ),
             number: data?.locNumber,
             location: data?.locLocation
         }
@@ -311,7 +314,6 @@ const Footer = () => {
                                                 onClick={() => onChangeLoc(item.id)}
                                             />
                                         </RequireAuthChildren>
-
                                     </div>
                                 )
                             })

@@ -36,9 +36,6 @@ import taskCardBack2 from "assets/background-img/TaskCardBack2.png";
 import taskCardBack4 from "assets/background-img/TaskCardBack4.png";
 import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 import {setMessage} from "slices/messageSlice";
-import {info} from "sass";
-// daily_statistics/location
-
 
 const options = [
     {
@@ -106,6 +103,10 @@ const PlatformTaskManager = () => {
     } = useSelector(state => state.taskManager)
     const {location, surname, name} = useSelector(state => state.me)
 
+    console.log(newStudents, "newStudents")
+    console.log(debtorStudent, "debtorStudent")
+    console.log(leads, "leads")
+
     useEffect(() => {
         dispatch(fetchingProgress())
         request(`${BackUrl}daily_statistics/${location}`, "POST", JSON.stringify(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`), headers())
@@ -137,6 +138,7 @@ const PlatformTaskManager = () => {
                     } else {
                         dispatch(changeNewStudentsDel(res?.student))
                     }
+                    setActiveModal(false)
                 })
                 .catch(err => console.log(err))
         } else if (activeMenu === "debtors") {
@@ -152,12 +154,14 @@ const PlatformTaskManager = () => {
                     } else {
                         dispatch(changeDebtorStudentsDel(res?.student))
                     }
+                    setActiveModal(false)
                 })
                 .catch(err => console.log(err))
         } else if (activeMenu === "lead") {
             request(`${BackUrl}lead_crud/${studentId}`, "POST", JSON.stringify(res), headers())
                 .then(res => {
                     dispatch(changeLead(res?.lead))
+                    setActiveModal(false)
                 })
                 .catch(err => console.log(err))
         }
@@ -240,7 +244,11 @@ const PlatformTaskManager = () => {
                                     </div>
                                     <Completed
                                         progress={`${
-                                            progress ? progress?.in_progress_tasks : 0
+                                            progress
+                                                ?
+                                                progress?.in_progress_tasks - progress?.completed_tasks
+                                                :
+                                                0
                                         }`}
                                         progressStatus={progressStatus}
                                     />
@@ -290,9 +298,6 @@ const PlatformTaskManager = () => {
                                         )
                                     }
                                 </div>
-                                <div className={cls.completed}>
-                                    <h2>Completed</h2>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -312,13 +317,13 @@ const PlatformTaskManager = () => {
                             :
                             activeMenu === "newStudents"
                                 ?
-                                <NewStudents
+                                <Student
                                     arr={newStudents}
                                     arrStatus={newStudentsStatus}
                                     renderCards={renderCards}
                                 />
                                 :
-                                <Debtors
+                                <Student
                                     arr={debtorStudent}
                                     arrStatus={debtorStudentStatus}
                                     renderCards={renderCards}
@@ -408,28 +413,7 @@ const Leads = ({arr, arrStatus, renderCards}) => {
     }
 }
 
-const Debtors = ({arr, arrStatus, renderCards}) => {
-    if (arrStatus === "loading" || arrStatus === "idle") {
-        return <DefaultLoader/>
-    } else {
-        return (
-            colorStatusList.map((item, i) => {
-                if (item === "green") return null
-                return (
-                    <RenderItem
-                        arr={arr}
-                        renderCards={renderCards}
-                        status={item}
-                        index={i}
-                    />
-                )
-            })
-        )
-    }
-}
-
-const NewStudents = ({arr, arrStatus, renderCards}) => {
-    // useEffect(() => {}. [])
+const Student = ({arr, arrStatus, renderCards}) => {
     if (arrStatus === "loading" || arrStatus === "idle") {
         return <DefaultLoader/>
     } else {
@@ -450,6 +434,13 @@ const NewStudents = ({arr, arrStatus, renderCards}) => {
 }
 
 const RenderItem = ({arr, renderCards, status, index}) => {
+    useEffect(() => {
+        const elements = document.querySelectorAll(".platformTaskManager_scroll__inner__R2L8r")
+        const components = document.querySelectorAll(".platformTaskManager_scroll__ebGEP")
+        elements.forEach((item, i) => {
+            if (!item.innerHTML) components[i].style.display = "none"
+        })
+    }, [])
 
     const [width, setWidth] = useState(0)
     const ref = useRef([])
