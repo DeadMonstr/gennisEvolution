@@ -87,6 +87,7 @@ const PlatformTaskManager = () => {
     const [date, setDate] = useState(new Date())
     const [studentId, setStudentId] = useState()
     const [studentSelect, setStudentSelect] = useState()
+    const [isCompleted, setIsCompleted] = useState(false)
     /// isConfirm
     const [dellLead, setDellLead] = useState(false)
     const [isConfirm, setIsConfirm] = useState(false)
@@ -94,8 +95,10 @@ const PlatformTaskManager = () => {
     const {
         newStudents,
         newStudentsStatus,
+        completedNewStudents,
         debtorStudent,
         debtorStudentStatus,
+        completedDebtorStudent,
         leads,
         leadsStatus,
         progress,
@@ -105,9 +108,13 @@ const PlatformTaskManager = () => {
 
     const {location, surname, name} = useSelector(state => state.me)
 
-    console.log(newStudents, "newStudents")
-    console.log(debtorStudent, "debtorStudent")
-    console.log(leads, "leads")
+    // console.log(newStudents, "newStudents")
+    // console.log(debtorStudent, "debtorStudent")
+    // console.log(leads, "leads")
+
+    // console.log(debtorStudent, "debtorStudent")
+    // console.log(completedDebtorStudent, "completedDebtorStudent")
+    // console.log(isCompleted, "isCompleted")
 
     useEffect(() => {
         dispatch(fetchingProgress())
@@ -159,6 +166,7 @@ const PlatformTaskManager = () => {
         } else if (activeMenu === "lead") {
             request(`${BackUrl}lead_crud/${studentId}`, "POST", JSON.stringify(res), headers())
                 .then(res => {
+                    console.log(res)
                     dispatch(changeLead(res?.lead))
                     setActiveModal(false)
                 })
@@ -234,7 +242,12 @@ const PlatformTaskManager = () => {
                     <div className={cls.info__progress}>
                         <div className={cls.completeTask}>
                             <div className={cls.completeTask__progress}>
-                                <div className={cls.taskItem}>
+                                <div
+                                    className={classNames(cls.taskItem, {
+                                        [cls.active]: !isCompleted
+                                    })}
+                                    onClick={() => setIsCompleted(false)}
+                                >
                                     <div className={cls.taskItem__info}>
                                         <div className={cls.icon}>
                                             <i className="far fa-calendar-times"/>
@@ -252,7 +265,12 @@ const PlatformTaskManager = () => {
                                         progressStatus={progressStatus}
                                     />
                                 </div>
-                                <div className={cls.taskItem}>
+                                <div
+                                    className={classNames(cls.taskItem, {
+                                        [cls.active]: isCompleted
+                                    })}
+                                    onClick={() => setIsCompleted(true)}
+                                >
                                     <div className={cls.taskItem__info}>
                                         <div className={cls.icon}>
                                             <i className="far fa-check-circle"/>
@@ -290,7 +308,10 @@ const PlatformTaskManager = () => {
                                                 className={classNames(cls.other__item, {
                                                     [cls.active]: activeMenu === item.name
                                                 })}
-                                                onClick={() => setActiveMenu(item.name)}
+                                                onClick={() => {
+                                                    setActiveMenu(item.name)
+                                                    setIsCompleted(false)
+                                                }}
                                             >
                                                 {item.label}
                                             </h2>
@@ -309,6 +330,7 @@ const PlatformTaskManager = () => {
                         activeMenu === "lead"
                             ?
                             <Leads
+                                isCompleted={isCompleted}
                                 arr={leads}
                                 arrStatus={leadsStatus}
                                 renderCards={renderCards}
@@ -317,13 +339,17 @@ const PlatformTaskManager = () => {
                             activeMenu === "newStudents"
                                 ?
                                 <Student
-                                    arr={newStudents}
+                                    // isCompleted={isCompleted}
+                                    arr={isCompleted ? completedNewStudents : newStudents}
+                                    // completedArr={completedNewStudents}
                                     arrStatus={newStudentsStatus}
                                     renderCards={renderCards}
                                 />
                                 :
                                 <Student
-                                    arr={debtorStudent}
+                                    // isCompleted={isCompleted}
+                                    arr={isCompleted ? completedDebtorStudent : debtorStudent}
+                                    // completedArr={completedDebtorStudent}
                                     arrStatus={debtorStudentStatus}
                                     renderCards={renderCards}
                                 />
@@ -393,12 +419,14 @@ const Completed = ({progress, progressStatus}) => {
     }
 }
 
-const Leads = ({arr, arrStatus, renderCards}) => {
+const Leads = ({isCompleted, arr, arrStatus, renderCards}) => {
     if (arrStatus === "loading" || arrStatus === "idle") {
         return <DefaultLoader/>
     } else {
         return (
             colorStatusList.map((item, i) => {
+                if (isCompleted && (item === "red" || item === "yellow")) return null
+                if (!isCompleted && item === "green") return null
                 return (
                     <RenderItem
                         arr={arr}
@@ -516,7 +544,7 @@ const TaskCard = ({activeMenu, onClick, item, index, ref, onDelete, setStudentId
                     <i
                         className={classNames("fas fa-trash", cls.icon)}
                         onClick={() => {
-                            console.log(true, item.id)
+                            // console.log(true, item.id)
                             onDelete(true)
                             setStudentId({id: item.id, status: item.status})
                         }}
@@ -545,7 +573,7 @@ const TaskCard = ({activeMenu, onClick, item, index, ref, onDelete, setStudentId
                 >
                     <li className={cls.infoList__item}>Number: <span>{item?.phone}</span></li>
                     {
-                        activeMenu === "newStudents" ? item?.subject.map(item => {
+                        activeMenu === "newStudents" ? item?.subject?.map(item => {
                             return (
                                 <li className={cls.infoList__item}>Fan: <span>{item}</span></li>
                             )
@@ -587,5 +615,5 @@ const TaskCard = ({activeMenu, onClick, item, index, ref, onDelete, setStudentId
         </motion.div>
     )
 }
-// 732
+
 export default PlatformTaskManager;

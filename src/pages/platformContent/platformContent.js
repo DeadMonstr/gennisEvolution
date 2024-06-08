@@ -70,6 +70,7 @@ const PlatformWebsiteEdit =  React.lazy(() => import('./platformWebsiteEdit/plat
 const PlatformLead =  React.lazy(() => import('./platformLead/PlatformLead'));
 const PlatformCapital =  React.lazy(() => import('pages/platformContent/platformCapitalCategories/PlatformCapitalCategories'));
 const PlatformTaskManager = React.lazy(() => import('./platformTaskManager/platformTaskManager'))
+const PlatformNewRegister = React.lazy(() => import('components/registerNew/register'))
 
 
 
@@ -92,6 +93,7 @@ const PlatformContent = () => {
                 <Routes>
                     <Route path="home" element={<PlatformHome/>}/>
                     <Route path="taskManager" element={<PlatformTaskManager/>}/>
+                    <Route path="newRegister" element={<PlatformNewRegister/>}/>
                     {/*<Route path="registerStudent/*" element={<RegisterUser/>}/>*/}
 
                     <Route path="profile/:userId/*" element={<PlatformUserProfile/>}/>

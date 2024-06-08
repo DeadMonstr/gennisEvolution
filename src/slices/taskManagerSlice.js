@@ -4,7 +4,9 @@ import {BackUrl, headers} from "constants/global";
 
 const initialState = {
     newStudents: [],
+    completedNewStudents: [],
     debtorStudent: [],
+    completedDebtorStudent: [],
     leads: [],
     progress: null,
     // tasks: [],
@@ -98,7 +100,9 @@ const TaskManagerSlice = createSlice({
             })
             .addCase(fetchNewStudentsData.fulfilled, (state, action) => {
                 console.log(action.payload, "newStudents")
+                console.log(action.payload.completed_tasks, "completed_tasks")
                 state.newStudents = action.payload.students
+                state.completedNewStudents = action.payload.completed_tasks
                 state.newStudentsStatus = "success"
             })
             .addCase(fetchNewStudentsData.rejected, (state) => {
@@ -110,6 +114,7 @@ const TaskManagerSlice = createSlice({
             .addCase(fetchDebtorStudentsData.fulfilled, (state, action) => {
                 console.log(action.payload, "debtors")
                 state.debtorStudent = action.payload.students
+                state.completedDebtorStudent = action.payload.completed_tasks
                 state.debtorStudentStatus = "success"
             })
             .addCase(fetchDebtorStudentsData.rejected, (state) => {
