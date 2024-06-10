@@ -41,7 +41,6 @@ const GroupTest = () => {
     const [month, setMonth] = useState()
     const [months, setMonths] = useState([])
 
-    const [levels, setLevels] = useState([])
 
     const [changedTest, setChangedTest] = useState({})
 
@@ -60,7 +59,6 @@ const GroupTest = () => {
 
                 setCurrentMonth(res.current_month)
 
-                setLevels(res.levels)
             })
     }, [])
 
@@ -69,7 +67,6 @@ const GroupTest = () => {
         if (year) {
             request(`${BackUrl}filter_datas_in_group/${groupId}`, "POST", JSON.stringify({year}), headers())
                 .then(res => {
-                    console.log(res, "post")
 
                     setMonths(res.month_list)
                 })
@@ -177,11 +174,13 @@ const GroupTest = () => {
                                 clazz={cls.accordion}
                                 subtitle={"Jami: " + item.percentage+"%"}
                                 btns={[
+                                    <h1>Level: {item.level}</h1>,
                                     (item.students.length > 0 &&
                                         <Button type={"submit"} onClickBtn={() => onClick(item, "result")}>Natijani
                                             O'zgartirish</Button>),
                                     (!item.students.length &&
                                         <Button onClickBtn={() => onClick(item, "test")}>Test O'zgartirish</Button>)
+
 
                                 ]}
                                 // img={img}
@@ -229,7 +228,6 @@ const GroupTest = () => {
                 <ChangeCreateTestModal
                     activeTest={activeTest}
                     setActiveTest={setActiveTest}
-                    levels={levels}
                     setTests={setTests}
                     changedTest={changedTest}
                     setChangedTest={setChangedTest}
@@ -240,14 +238,17 @@ const GroupTest = () => {
     );
 };
 
-const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, levels, setChangedTest, changedTest}) => {
+const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedTest, changedTest}) => {
 
 
     const {register, handleSubmit, setValue, reset} = useForm()
     const [level, setLevel] = useState()
     const {groupId} = useParams()
 
-    console.log(levels)
+
+    const levels = [
+        "A1","A2","B1","B2","C1","C2"
+    ]
 
     useEffect(() => {
         if (Object.keys(changedTest).length) {
@@ -353,6 +354,7 @@ const SetResultModal = React.memo(({active, setActive, data, tests, changedTest,
     const [selectedTest, setSelectedTest] = useState()
     const [isError, setError] = useState(false)
     const [isDisabled, setIsDisabled] = useState(false)
+
 
 
     useEffect(() => {

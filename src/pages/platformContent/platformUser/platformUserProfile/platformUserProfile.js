@@ -160,9 +160,21 @@ const UserContent = ({userId}) => {
                 return (
                     <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director]}>
                         <div className="profile__main-item groups">
-                            <h1>Gruppalar:</h1>
+                            <h1>Guruhlar:</h1>
                             <div className="groups__container">
                                 <UserGroups data={user[item]}/>
+                            </div>
+                        </div>
+                    </RequireAuthChildren>
+                )
+            }
+            if (item === "tests" && user[item].length !== 0) {
+                return (
+                    <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director]}>
+                        <div className="profile__main-item groups">
+                            <h1>Testlar:</h1>
+                            <div className="groups__container">
+                                <UserTest data={user[item]}/>
                             </div>
                         </div>
                     </RequireAuthChildren>
@@ -290,8 +302,6 @@ const UserInfo = React.memo(({data}) => {
     const keysData = Object.keys(data)
     return keysData.map(key => {
 
-
-
         const style = {
             order: data[key].order,
             display: data[key].display ? data[key].display : "flex"
@@ -328,6 +338,20 @@ const UserInfo = React.memo(({data}) => {
         )
     })
 
+})
+
+
+const UserTest = React.memo(({data}) => {
+
+
+    return data.map((item,index) => {
+        return (
+            <div className="groups__item">
+                <h1 className="index">{index+1}.</h1>
+                <h1 className="name">{item?.test_info.name}: {item?.percentage}</h1>
+            </div>
+        )
+    })
 })
 
 const UserDegree = React.memo(({data}) => {
@@ -367,7 +391,6 @@ const UserGroups = React.memo(({data}) => {
         }
         return name
     }
-
 
 
     return data.map((item,index) => {

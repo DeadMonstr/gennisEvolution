@@ -36,6 +36,7 @@ import taskCardBack2 from "assets/background-img/TaskCardBack2.png";
 import taskCardBack4 from "assets/background-img/TaskCardBack4.png";
 import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 import {setMessage} from "slices/messageSlice";
+import {useParams} from "react-router-dom";
 
 const options = [
     {
@@ -65,20 +66,18 @@ const colorStatusList = ["red", "yellow", "green"]
 
 const PlatformTaskManager = () => {
     const [activeMenu, setActiveMenu] = useState(menuList[0]?.name)
+    const {locationId} = useParams()
 
     useEffect(() => {
         if (activeMenu === "newStudents") {
-            dispatch(fetchNewStudentsData(location))
+            dispatch(fetchNewStudentsData(locationId))
         } else if (activeMenu === "lead") {
-            dispatch(fetchLeadsData(location))
+            dispatch(fetchLeadsData(locationId))
         } else {
-            dispatch(fetchDebtorStudentsData(location))
+            dispatch(fetchDebtorStudentsData(locationId))
         }
 
-        // dispatch(fetchNewStudentsData(location))
-        // dispatch(fetchDebtorStudentsData(location))
-        // dispatch(fetchLeadsData(location))
-    }, [activeMenu])
+    }, [activeMenu,locationId])
 
     const {request} = useHttp()
     const dispatch = useDispatch()
@@ -106,7 +105,7 @@ const PlatformTaskManager = () => {
     } = useSelector(state => state.taskManager)
 
 
-    const {location, surname, name} = useSelector(state => state.me)
+    const {surname, name} = useSelector(state => state.me)
 
     // console.log(newStudents, "newStudents")
     // console.log(debtorStudent, "debtorStudent")
@@ -118,7 +117,7 @@ const PlatformTaskManager = () => {
 
     useEffect(() => {
         dispatch(fetchingProgress())
-        request(`${BackUrl}daily_statistics/${location}`, "POST", JSON.stringify(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`), headers())
+        request(`${BackUrl}daily_statistics/${locationId}`, "POST", JSON.stringify(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`), headers())
             .then(res => {
                 dispatch(fetchedProgress(res.info))
                 if (!res.info) {
@@ -130,7 +129,7 @@ const PlatformTaskManager = () => {
                 }
             })
             .catch(err => console.log(err))
-    }, [date, leads, debtorStudent, newStudents])
+    }, [date, leads, debtorStudent, newStudents,locationId])
 
     const onSubmit = (data) => {
         const res = {
@@ -138,7 +137,7 @@ const PlatformTaskManager = () => {
             ...data
         }
         if (activeMenu === "newStudents") {
-            request(`${BackUrl}new_students_calling`, "POST", JSON.stringify(res), headers())
+            request(`${BackUrl}new_students_calling/${locationId}`, "POST", JSON.stringify(res), headers())
                 .then(res => {
                     if (res?.student.name) {
                         dispatch(changeNewStudents(res?.student))
@@ -153,7 +152,7 @@ const PlatformTaskManager = () => {
                 select: studentSelect,
                 ...res
             }
-            request(`${BackUrl}student_in_debts`, "POST", JSON.stringify(result), headers())
+            request(`${BackUrl}student_in_debts/${locationId}`, "POST", JSON.stringify(result), headers())
                 .then(res => {
                     if (res?.student.name) {
                         dispatch(changeDebtorStudents(res?.student))
@@ -164,7 +163,7 @@ const PlatformTaskManager = () => {
                 })
                 .catch(err => console.log(err))
         } else if (activeMenu === "lead") {
-            request(`${BackUrl}lead_crud/${studentId}`, "POST", JSON.stringify(res), headers())
+            request(`${BackUrl}lead_crud/${studentId}`, "POST", JSON.stringify({...res,location_id: locationId}), headers())
                 .then(res => {
                     console.log(res)
                     dispatch(changeLead(res?.lead))
@@ -185,7 +184,7 @@ const PlatformTaskManager = () => {
 
     const onDelete = (data) => {
         const res = {
-            location_id: location,
+            location_id: locationId,
             status: studentId?.status,
             ...data
         }
@@ -229,14 +228,8 @@ const PlatformTaskManager = () => {
         <div className={cls.tasks}>
             <div className={cls.tasks__inner}>
                 <div className={cls.header}>
-                    <h1>My Projects</h1>
-                    <div className={cls.header__userInfo}>
-                        <img src={unknownUser} alt=""/>
-                        <div className={cls.inner}>
-                            <h2>{name} {surname}</h2>
-                            <p>Project Manager</p>
-                        </div>
-                    </div>
+                    <h1>My tasks</h1>
+
                 </div>
                 <div className={cls.info}>
                     <div className={cls.info__progress}>
@@ -298,7 +291,6 @@ const PlatformTaskManager = () => {
                             </div>
                         </div>
                         <div className={cls.menuTask}>
-                            <h1>My Tasks</h1>
                             <div className={cls.menuTask__list}>
                                 <div className={cls.other}>
                                     {
@@ -356,6 +348,9 @@ const PlatformTaskManager = () => {
                     }
                 </div>
             </div>
+
+
+
             <Modal
                 activeModal={activeModal}
                 setActiveModal={setActiveModal}
@@ -596,7 +591,7 @@ const TaskCard = ({activeMenu, onClick, item, index, ref, onDelete, setStudentId
                     }
                     {
                         activeMenu === "debtors" ?
-                            <li className={cls.infoList__item}>Tel qilingan: <span>{item?.payment_reason}</span>
+                            <li className={cls.infoList__item}>Tel status: <span>{item?.payment_reason}</span>
                             </li> : null
                     }
                 </ul>

@@ -27,9 +27,6 @@ const PlatformAddGroup = () => {
     
     const {request} = useHttp()
 
-    const [msg,setMsg] = useState(false)
-    const [typeMsg,setTypeMsg] = useState(false)
-    const [activeMessage,setActiveMessage] = useState(false)
 
 
     const dispatch = useDispatch()
@@ -71,9 +68,7 @@ const PlatformAddGroup = () => {
                     users={users}
                     setUsers={setUsers}
                     groupId={groupId}
-                    setMsg={setMsg}
-                    setTypeMsg={setTypeMsg}
-                    setActiveMessage={setActiveMessage}
+
                 />
             </Modal>
         </div>
@@ -222,7 +217,7 @@ const Users = ({users,setUsers}) => {
 }
 
 
-const CheckedStudents = React.memo(({users,setUsers,groupId,setMsg,setTypeMsg,setActiveMessage,setActiveModal}) => {
+const CheckedStudents = React.memo(({users,setUsers,groupId,setActiveModal}) => {
 
 
 
@@ -308,10 +303,6 @@ const CheckedStudents = React.memo(({users,setUsers,groupId,setMsg,setTypeMsg,se
                     setUsers(users => {
                         return users.filter(item => !item.checked)
                     })
-                } else {
-                    setTypeMsg("error")
-                    setMsg("Serverda hatolik")
-                    setActiveMessage(true)
                 }
             })
     }

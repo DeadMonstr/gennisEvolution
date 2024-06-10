@@ -1,8 +1,6 @@
 import {useMemo} from "react";
 
-
-
-export const BackUrlForDoc = `http://192.168.0.101:5002/`
+export const BackUrlForDoc = `http://192.168.0.105:5002/`
 export const BackUrl = `${BackUrlForDoc}api/`
 export const ClassroomUrl = `http://localhost:3000/`
 export const ClassroomUrlForDoc = "http://192.168.0.105:5001/"
@@ -53,6 +51,8 @@ export const requireMenuItems = (id) => {
             to : "taskManager",
             name: "taskManager",
             classIcon: "fa-tasks",
+            location: true,
+            children: true,
             roles: [ROLES.Admin,ROLES.Director]
         },
         {
@@ -61,12 +61,12 @@ export const requireMenuItems = (id) => {
             classIcon: "fa-edit",
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
         },
-        {
-            to : "newRegister",
-            name: "Yangi Registratsiya",
-            classIcon: "fa-edit",
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
+        // {
+        //     to : "newRegister",
+        //     name: "Yangi Registratsiya",
+        //     classIcon: "fa-edit",
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        // },
         {
             to : "/registerTeacher",
             name: "O'qituvchi Registrarsiyasi",

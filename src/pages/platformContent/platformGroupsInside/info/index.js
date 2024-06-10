@@ -36,7 +36,7 @@ const Info = () => {
 
     const LinkToUser = (e, id) => {
         if (role !== ROLES.Student) {
-            navigate(`../../../profile/${id}`)
+            navigate(`/platform/profile/${id}`)
         }
     }
 
