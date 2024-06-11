@@ -27,10 +27,6 @@ const MoveToGroup = () => {
 
     const {request} = useHttp()
 
-
-
-
-
     const dispatch = useDispatch()
 
     useEffect(() => {

@@ -35,7 +35,7 @@ const AddGroupModal = ({btnName,activeModal,setMsg,setTypeMsg,setActiveMessage,l
     },[dispatch, locationId])
 
     useEffect(() => {
-        request(`${BackUrl}filtered_groups/${locationId}`,"GET",null,headers())
+        request(`${BackUrl}filtered_groups2/${locationId}`,"GET",null,headers())
             .then(res => {
                 setGroups(res.groups)
             })

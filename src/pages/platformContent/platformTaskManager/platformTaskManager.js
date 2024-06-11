@@ -13,6 +13,7 @@ import ConfimReason from "components/platform/platformModals/confirmReason/confi
 import Select from "components/platform/platformUI/select";
 import Confirm from "components/platform/platformModals/confirm/confirm";
 import DefaultLoader from "components/loader/defaultLoader/DefaultLoader";
+import PlatformMessage from "components/platform/platformMessage";
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
 import {
@@ -26,7 +27,7 @@ import {
     fetchingProgress,
     fetchNewStudentsData,
     fetchDebtorStudentsData,
-    fetchLeadsData,
+    fetchLeadsData
 } from "slices/taskManagerSlice";
 
 import cls from "./platformTaskManager.module.sass";
@@ -36,15 +37,16 @@ import taskCardBack2 from "assets/background-img/TaskCardBack2.png";
 import taskCardBack4 from "assets/background-img/TaskCardBack4.png";
 import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 import {setMessage} from "slices/messageSlice";
+import {useParams} from "react-router-dom";
 
 const options = [
     {
-        name: "yes",
-        label: "ha"
+        name: "tel ko'tardi",
+        label: "yes"
     },
     {
-        name: "no",
-        label: "yo'q"
+        name: "tel ko'tarmadi",
+        label: "no"
     }
 ]
 const menuList = [
@@ -65,30 +67,27 @@ const colorStatusList = ["red", "yellow", "green"]
 
 const PlatformTaskManager = () => {
     const [activeMenu, setActiveMenu] = useState(menuList[0]?.name)
+    const {locationId} = useParams()
+    const [isCompleted, setIsCompleted] = useState(false)
 
     useEffect(() => {
         if (activeMenu === "newStudents") {
-            dispatch(fetchNewStudentsData(location))
+            dispatch(fetchNewStudentsData(locationId))
         } else if (activeMenu === "lead") {
-            dispatch(fetchLeadsData(location))
+            dispatch(fetchLeadsData(locationId))
         } else {
-            dispatch(fetchDebtorStudentsData(location))
+            dispatch(fetchDebtorStudentsData(locationId))
         }
 
-        // dispatch(fetchNewStudentsData(location))
-        // dispatch(fetchDebtorStudentsData(location))
-        // dispatch(fetchLeadsData(location))
-    }, [activeMenu])
+    }, [activeMenu, locationId, isCompleted])
 
     const {request} = useHttp()
     const dispatch = useDispatch()
-    const {register, handleSubmit} = useForm()
+    const {register, handleSubmit, setValue} = useForm()
     const [activeModal, setActiveModal] = useState(false)
     const [date, setDate] = useState(new Date())
     const [studentId, setStudentId] = useState()
     const [studentSelect, setStudentSelect] = useState()
-    const [isCompleted, setIsCompleted] = useState(false)
-    /// isConfirm
     const [dellLead, setDellLead] = useState(false)
     const [isConfirm, setIsConfirm] = useState(false)
 
@@ -105,32 +104,33 @@ const PlatformTaskManager = () => {
         progressStatus
     } = useSelector(state => state.taskManager)
 
-
-    const {location, surname, name} = useSelector(state => state.me)
-
-    // console.log(newStudents, "newStudents")
-    // console.log(debtorStudent, "debtorStudent")
-    // console.log(leads, "leads")
-
-    // console.log(debtorStudent, "debtorStudent")
-    // console.log(completedDebtorStudent, "completedDebtorStudent")
-    // console.log(isCompleted, "isCompleted")
-
     useEffect(() => {
         dispatch(fetchingProgress())
-        request(`${BackUrl}daily_statistics/${location}`, "POST", JSON.stringify(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`), headers())
+        request(`${BackUrl}daily_statistics/${locationId}`, "POST", JSON.stringify(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`), headers())
             .then(res => {
                 dispatch(fetchedProgress(res.info))
                 if (!res.info) {
                     dispatch(setMessage({
-                        msg: res?.status,
+                        msg: res.status,
                         type: "success",
                         active: true
                     }))
                 }
             })
             .catch(err => console.log(err))
-    }, [date, leads, debtorStudent, newStudents])
+    }, [date, leads, debtorStudent, newStudents, locationId])
+
+    function showMessage(msg) {
+        setValue("comment", "")
+        setValue("date", "")
+        setStudentSelect(null)
+        setActiveModal(false)
+        dispatch(setMessage({
+            msg: msg,
+            type: "success",
+            active: true
+        }))
+    }
 
     const onSubmit = (data) => {
         const res = {
@@ -138,14 +138,14 @@ const PlatformTaskManager = () => {
             ...data
         }
         if (activeMenu === "newStudents") {
-            request(`${BackUrl}new_students_calling`, "POST", JSON.stringify(res), headers())
+            request(`${BackUrl}new_students_calling/${locationId}`, "POST", JSON.stringify(res), headers())
                 .then(res => {
                     if (res?.student.name) {
                         dispatch(changeNewStudents(res?.student))
                     } else {
                         dispatch(changeNewStudentsDel(res?.student))
                     }
-                    setActiveModal(false)
+                    showMessage(res.student.msg)
                 })
                 .catch(err => console.log(err))
         } else if (activeMenu === "debtors") {
@@ -153,22 +153,25 @@ const PlatformTaskManager = () => {
                 select: studentSelect,
                 ...res
             }
-            request(`${BackUrl}student_in_debts`, "POST", JSON.stringify(result), headers())
+            request(`${BackUrl}student_in_debts/${locationId}`, "POST", JSON.stringify(result), headers())
                 .then(res => {
                     if (res?.student.name) {
                         dispatch(changeDebtorStudents(res?.student))
                     } else {
                         dispatch(changeDebtorStudentsDel(res?.student))
                     }
-                    setActiveModal(false)
+                    showMessage(res.student.msg)
                 })
                 .catch(err => console.log(err))
         } else if (activeMenu === "lead") {
-            request(`${BackUrl}lead_crud/${studentId}`, "POST", JSON.stringify(res), headers())
+            console.log(res)
+            request(`${BackUrl}lead_crud/${studentId}`, "POST", JSON.stringify({
+                ...res,
+                location_id: locationId
+            }), headers())
                 .then(res => {
-                    console.log(res)
                     dispatch(changeLead(res?.lead))
-                    setActiveModal(false)
+                    showMessage(res.msg)
                 })
                 .catch(err => console.log(err))
         }
@@ -185,7 +188,7 @@ const PlatformTaskManager = () => {
 
     const onDelete = (data) => {
         const res = {
-            location_id: location,
+            location_id: locationId,
             status: studentId?.status,
             ...data
         }
@@ -194,18 +197,16 @@ const PlatformTaskManager = () => {
                 setIsConfirm(false)
                 setDellLead(false)
                 dispatch(deleteLead({id: studentId?.id}))
-                // setChangeLead(false)
-                // dispatch(onDeleteLead({id: changeLeadData.id}))
-                // dispatch(setMessage({
-                //     msg: `${changeLeadData.name} o'chirildi `,
-                //     type: "success",
-                //     active: true
-                // }))
+                dispatch(setMessage({
+                    msg: res.msg,
+                    type: "success",
+                    active: true
+                }))
             })
 
-        // if (data.confirm === "no") {
-        //     setDellLead(false)
-        // }
+        if (data.confirm === "no") {
+            setDellLead(false)
+        }
     }
 
     const renderCards = useCallback((item, index, ref, activeStatus) => {
@@ -220,6 +221,7 @@ const PlatformTaskManager = () => {
                     setStudentId={setStudentId}
                     onClick={onClick}
                     onDelete={setDellLead}
+                    isCompleted={isCompleted}
                 />
             )
         }
@@ -229,14 +231,8 @@ const PlatformTaskManager = () => {
         <div className={cls.tasks}>
             <div className={cls.tasks__inner}>
                 <div className={cls.header}>
-                    <h1>My Projects</h1>
-                    <div className={cls.header__userInfo}>
-                        <img src={unknownUser} alt=""/>
-                        <div className={cls.inner}>
-                            <h2>{name} {surname}</h2>
-                            <p>Project Manager</p>
-                        </div>
-                    </div>
+                    <h1>My tasks</h1>
+
                 </div>
                 <div className={cls.info}>
                     <div className={cls.info__progress}>
@@ -298,7 +294,6 @@ const PlatformTaskManager = () => {
                             </div>
                         </div>
                         <div className={cls.menuTask}>
-                            <h1>My Tasks</h1>
                             <div className={cls.menuTask__list}>
                                 <div className={cls.other}>
                                     {
@@ -310,7 +305,7 @@ const PlatformTaskManager = () => {
                                                 })}
                                                 onClick={() => {
                                                     setActiveMenu(item.name)
-                                                    setIsCompleted(false)
+                                                    // setIsCompleted(false)
                                                 }}
                                             >
                                                 {item.label}
@@ -339,23 +334,21 @@ const PlatformTaskManager = () => {
                             activeMenu === "newStudents"
                                 ?
                                 <Student
-                                    // isCompleted={isCompleted}
                                     arr={isCompleted ? completedNewStudents : newStudents}
-                                    // completedArr={completedNewStudents}
                                     arrStatus={newStudentsStatus}
                                     renderCards={renderCards}
                                 />
                                 :
                                 <Student
-                                    // isCompleted={isCompleted}
                                     arr={isCompleted ? completedDebtorStudent : debtorStudent}
-                                    // completedArr={completedDebtorStudent}
                                     arrStatus={debtorStudentStatus}
                                     renderCards={renderCards}
                                 />
                     }
                 </div>
             </div>
+
+
             <Modal
                 activeModal={activeModal}
                 setActiveModal={setActiveModal}
@@ -365,6 +358,12 @@ const PlatformTaskManager = () => {
                         className={cls.wrapper}
                         onSubmit={handleSubmit(onSubmit)}
                     >
+                        {
+                            activeMenu === "debtors" ? <Select
+                                options={options}
+                                onChangeOption={onChange}
+                            /> : null
+                        }
                         <InputForm
                             title={"Kament"}
                             placeholder={"Kament"}
@@ -372,19 +371,15 @@ const PlatformTaskManager = () => {
                             register={register}
                             required
                         />
-                        <InputForm
-                            title={"Sana"}
-                            type={"date"}
-                            placeholder={"Keyinga qoldirish"}
-                            name={"date"}
-                            register={register}
-                            required
-                        />
                         {
-                            activeMenu === "debtors" ? <Select
-                                options={options}
-                                onChangeOption={onChange}
-                            /> : null
+                            studentSelect === "tel ko'tarmadi" ? null : <InputForm
+                                title={"Sana"}
+                                type={"date"}
+                                placeholder={"Keyinga qoldirish"}
+                                name={"date"}
+                                register={register}
+                                required
+                            />
                         }
                         <Button type={"submit"}>Add</Button>
                     </form>
@@ -405,6 +400,7 @@ const PlatformTaskManager = () => {
                         <ConfimReason getConfirm={onDelete} reason={true}/>
                     </Modal> : null
             }
+            <PlatformMessage/>
         </div>
     );
 };
@@ -500,7 +496,7 @@ const RenderItem = ({arr, renderCards, status, index}) => {
     )
 }
 
-const TaskCard = ({activeMenu, onClick, item, index, ref, onDelete, setStudentId}) => {
+const TaskCard = ({activeMenu, onClick, item, index, isCompleted, onDelete, setStudentId}) => {
 
     useEffect(() => {
         switch (activeMenu) {
@@ -537,7 +533,6 @@ const TaskCard = ({activeMenu, onClick, item, index, ref, onDelete, setStudentId
             key={index}
             className={cls.item}
             style={{backgroundColor: style.generalBack}}
-            // ref={el => ref.current[index] = el}
         >
             {
                 activeMenu === "lead" ?
@@ -596,7 +591,7 @@ const TaskCard = ({activeMenu, onClick, item, index, ref, onDelete, setStudentId
                     }
                     {
                         activeMenu === "debtors" ?
-                            <li className={cls.infoList__item}>Tel qilingan: <span>{item?.payment_reason}</span>
+                            <li className={cls.infoList__item}>Tel status: <span>{item?.payment_reason}</span>
                             </li> : null
                     }
                 </ul>
@@ -607,7 +602,7 @@ const TaskCard = ({activeMenu, onClick, item, index, ref, onDelete, setStudentId
             >
                 <div
                     className={cls.circle}
-                    onClick={() => item.status === "green" ? null : onClick(item?.id)}
+                    onClick={() => (item.status === "green" || isCompleted) ? null : onClick(item?.id)}
                 >
                     <img src={unknownUser} alt=""/>
                 </div>

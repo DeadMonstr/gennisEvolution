@@ -9,7 +9,6 @@ const initialState = {
     completedDebtorStudent: [],
     leads: [],
     progress: null,
-    // tasks: [],
     newStudentsStatus: "idle",
     debtorStudentStatus: "idle",
     leadsStatus: "idle",
@@ -35,13 +34,6 @@ export const fetchLeadsData = createAsyncThunk(
     async (id) => {
         const {request} = useHttp();
         return await request(`${BackUrl}get_leads_location/news/${id}`, "GET", null, headers())
-    }
-)
-export const fetchProgressData = createAsyncThunk(
-    'taskManager/fetchProgressData',
-    async (id) => {
-        const {request} = useHttp();
-        return await request(`${BackUrl}daily_statistics/${id}`, "GET", null, headers())
     }
 )
 
@@ -99,8 +91,6 @@ const TaskManagerSlice = createSlice({
                 state.newStudentsStatus = "loading"
             })
             .addCase(fetchNewStudentsData.fulfilled, (state, action) => {
-                console.log(action.payload, "newStudents")
-                console.log(action.payload.completed_tasks, "completed_tasks")
                 state.newStudents = action.payload.students
                 state.completedNewStudents = action.payload.completed_tasks
                 state.newStudentsStatus = "success"
@@ -112,7 +102,6 @@ const TaskManagerSlice = createSlice({
                 state.debtorStudentStatus = "loading"
             })
             .addCase(fetchDebtorStudentsData.fulfilled, (state, action) => {
-                console.log(action.payload, "debtors")
                 state.debtorStudent = action.payload.students
                 state.completedDebtorStudent = action.payload.completed_tasks
                 state.debtorStudentStatus = "success"
@@ -124,23 +113,11 @@ const TaskManagerSlice = createSlice({
                 state.leadsStatus = "loading"
             })
             .addCase(fetchLeadsData.fulfilled, (state, action) => {
-                console.log(action.payload, "leads")
                 state.leads = action.payload.leads
                 state.leadsStatus = "success"
             })
             .addCase(fetchLeadsData.rejected, (state) => {
                 state.leadsStatus = "error"
-            })
-            .addCase(fetchProgressData.pending, (state) => {
-                state.progressStatus = "loading"
-            })
-            .addCase(fetchProgressData.fulfilled, (state, action) => {
-                console.log(action.payload)
-                state.progress = action.payload.info
-                state.progressStatus = "success"
-            })
-            .addCase(fetchProgressData.rejected, (state) => {
-                state.progressStatus = "error"
             })
     }
 })

@@ -92,7 +92,7 @@ const PlatformContent = () => {
             <Suspense fallback={<DefaultLoader/>} >
                 <Routes>
                     <Route path="home" element={<PlatformHome/>}/>
-                    <Route path="taskManager" element={<PlatformTaskManager/>}/>
+                    <Route path="taskManager/:locationId" element={<PlatformTaskManager/>}/>
                     <Route path="newRegister" element={<PlatformNewRegister/>}/>
                     {/*<Route path="registerStudent/*" element={<RegisterUser/>}/>*/}
 

@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 
 import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
@@ -47,7 +47,7 @@ const PlatformNewStudents = () => {
         dispatch(fetchFilters(newData))
         dispatch(setSelectedLocation({id: locationId}))
 
-    }, [dispatch, locationId])
+    }, [locationId])
 
 
     const navigate = useNavigate()
@@ -79,7 +79,8 @@ const PlatformNewStudents = () => {
                 subjects: true,
                 returnDeleted: true,
                 delete: false,
-                deletedDate: true
+                deletedDate: true,
+                reason: true
             }
         }
         return {
@@ -128,7 +129,6 @@ const PlatformNewStudents = () => {
                         type: "success",
                         active: true
                     }))
-
                 } else {
                     dispatch(setMessage({
                         msg: "Serverda hatolik",
@@ -143,7 +143,7 @@ const PlatformNewStudents = () => {
 
     }
 
-    const returnDeletedStudent = (data) => {
+    const returnDeletedStudent = useCallback((data) => {
         if (data === "yes") {
             request(`${BackUrl}get_back_student/${deleteStId}`, "GET", null, headers())
                 .then(res => {
@@ -169,7 +169,7 @@ const PlatformNewStudents = () => {
         } else {
             setActiveModal(false)
         }
-    }
+    },[deleteStId])
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const getDeleted = (isActive) => {
@@ -230,28 +230,15 @@ const PlatformNewStudents = () => {
                     <>
                         <Modal activeModal={activeModal} setActiveModal={() => setActiveModal(false)}>
                             <Confirm setActive={setActiveModal} text={"Oq'uvchini uchirishni hohlaysizmi?"}
-                                     getConfirm={setIsConfirm}/>
+                                     getConfirm={deleteNewStudent} reason={true}/>
                         </Modal>
-                        {
-                            isConfirm === "yes" ?
-                                <Modal
-                                    activeModal={activeModal}
-                                    setActiveModal={() => {
-                                        setActiveModal(false)
-                                        setIsConfirm(false)
-                                    }}
-                                >
-                                    <ConfimReason getConfirm={deleteNewStudent} student={true}/>
-                                </Modal> : null
-                        }
-
                     </>
-                    : activeModalName === "returnDeleted" && isCheckedPassword ?
-                        <Modal activeModal={activeModal} setActiveModal={() => setActiveModal(false)}>
-                            <Confirm setActive={setActiveModal} text={"Uchirilgan o'quvchini qaytarishni hohlaysizmi"}
-                                     getConfirm={returnDeletedStudent}/>
-                        </Modal>
-                        : null
+                : activeModalName === "returnDeleted" && isCheckedPassword ?
+                    <Modal activeModal={activeModal} setActiveModal={() => setActiveModal(false)}>
+                        <Confirm setActive={setActiveModal} text={"Uchirilgan o'quvchini qaytarishni hohlaysizmi"}
+                                 getConfirm={returnDeletedStudent}/>
+                    </Modal>
+                    : null
 
             }
         </>

@@ -53,6 +53,8 @@ export const requireMenuItems = (id) => {
             to : "taskManager",
             name: "taskManager",
             classIcon: "fa-tasks",
+            location: true,
+            children: true,
             roles: [ROLES.Admin,ROLES.Director]
         },
         {

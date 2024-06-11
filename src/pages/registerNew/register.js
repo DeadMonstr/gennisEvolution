@@ -3,11 +3,11 @@ import {useForm} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 
 import InputForm from "components/platform/platformUI/inputForm";
+import Button from "components/platform/platformUI/button";
 import Select from "components/platform/platformUI/select";
 import {fetchData} from "slices/registerSlice";
 
 import cls from "./style.module.sass";
-import Button from "components/platform/platformUI/button";
 
 const registerList = [
     {
@@ -42,11 +42,14 @@ const Register = () => {
     const {register, handleSubmit} = useForm()
     const {data} = useSelector(state => state.register)
     const [selectedSubjects, setSelectedSubjects] = useState([])
+    const [selectedLocation, setSelectedLocation] = useState([])
+    const [selectedJob, setSelectedJob] = useState(null)
     const [studyTime, setStudyTime] = useState(null)
     const [studyLang, setStudyLang] = useState(null)
     const [subjects, setSubjects] = useState([])
     const [locations, setLocations] = useState([])
     const [languages, setLanguages] = useState([])
+    const [jobs, setJobs] = useState([])
 
     useEffect(() => {
         dispatch(fetchData())
@@ -57,6 +60,7 @@ const Register = () => {
             setSubjects(data.subject)
             setLocations(data.location)
             setLanguages(data.language)
+            setJobs(data.jobs)
         }
     },[data])
 
@@ -65,14 +69,19 @@ const Register = () => {
             ...data,
             studyTime,
             studyLang,
-            selectedSubjects
+            selectedJob,
+            selectedSubjects: selectedSubjects.map(item => item.id)
         }
         console.log(res, "res")
+        setStudyTime(null)
+        setStudyLang(null)
+        setSelectedJob([])
+        setSelectedLocation([])
+        setSelectedSubjects([])
     }
 
-    const onChangeLoc = (value) => {
-        console.log(value, "loc")
-    }
+    // console.log(selectedLocation, "loc")
+    // console.log(selectedJob, "job")
 
     const onChangeSub = (id) => {
         const filteredSubjects = subjects.filter(item => item.id === +id)
@@ -90,8 +99,14 @@ const Register = () => {
     return (
         <div className={cls.main}>
             <div className={cls.main__container}>
+                <Select
+                    title={"Ish faoliyat"}
+                    options={jobs}
+                    onChangeOption={setSelectedJob}
+                />
                 <h1>Registratsiya</h1>
                 <form
+                    className={cls.form}
                     onSubmit={handleSubmit(onSubmit)}
                 >
                     <InputForm
@@ -129,6 +144,7 @@ const Register = () => {
                         register={register}
                         name={"phone"}
                         title={"Telefon raqami"}
+                        type={"number"}
                         required
                     />
                     <InputForm
@@ -152,7 +168,7 @@ const Register = () => {
                     <Select
                         title={"O'quv markazi joylashuvi"}
                         options={locations}
-                        onChangeOption={onChangeLoc}
+                        onChangeOption={setSelectedLocation}
                     />
                     <Select
                         title={"Fan"}
@@ -164,8 +180,8 @@ const Register = () => {
                             ?
                             <div className={cls.place}>
                                 {
-                                    selectedSubjects.map(item => {
-                                        return <p className={cls.place__inner}>{item.name}</p>
+                                    selectedSubjects.map((item, i) => {
+                                        return <p key={i} className={cls.place__inner}>{item.name}</p>
                                     })
                                 }
                             </div>
@@ -182,7 +198,7 @@ const Register = () => {
                         options={subjects}
                         onChangeOption={setStudyTime}
                     />
-                    <Button>Yakunlash</Button>
+                    <Button type={'submit'}>Yakunlash</Button>
                 </form>
             </div>
         </div>
