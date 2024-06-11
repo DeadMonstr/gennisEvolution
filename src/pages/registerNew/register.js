@@ -7,6 +7,7 @@ import Select from "components/platform/platformUI/select";
 import {fetchData} from "slices/registerSlice";
 
 import cls from "./style.module.sass";
+import Button from "components/platform/platformUI/button";
 
 const registerList = [
     {
@@ -39,10 +40,13 @@ const Register = () => {
 
     const dispatch = useDispatch()
     const {register, handleSubmit} = useForm()
-    const {locations} = useSelector(state => state.locations)
     const {data} = useSelector(state => state.register)
     const [selectedSubjects, setSelectedSubjects] = useState([])
+    const [studyTime, setStudyTime] = useState(null)
+    const [studyLang, setStudyLang] = useState(null)
     const [subjects, setSubjects] = useState([])
+    const [locations, setLocations] = useState([])
+    const [languages, setLanguages] = useState([])
 
     useEffect(() => {
         dispatch(fetchData())
@@ -51,35 +55,37 @@ const Register = () => {
     useEffect(()=>{
         if (data) {
             setSubjects(data.subject)
-            // setLocations(data.location)
-            // setLanguages(data.language)
+            setLocations(data.location)
+            setLanguages(data.language)
         }
     },[data])
 
-    console.log(locations)
-
     const onSubmit = (data) => {
-        console.log(data, "data")
+        const res = {
+            ...data,
+            studyTime,
+            studyLang,
+            selectedSubjects
+        }
+        console.log(res, "res")
     }
 
     const onChangeLoc = (value) => {
         console.log(value, "loc")
     }
 
-    // const onChangeSub = (id) => {
-    //     console.log(value, "sub")
-    //     subjects
-    //     const filteredSubjects = subjects.filter(item => item.name === value)
-    //     setSubjects(subjects => {
-    //         return subjects.map(item => {
-    //             if (item.name === subjectName) {
-    //                 return {...item,disabled: true}
-    //             }
-    //             return item
-    //         })
-    //     })
-    //     setSelectedSubjects(arr => [...arr, value])
-    // }
+    const onChangeSub = (id) => {
+        const filteredSubjects = subjects.filter(item => item.id === +id)
+        setSubjects(subjects => {
+            return subjects.map(item => {
+                if (item.id === +id) {
+                    return {...item,disabled: true}
+                }
+                return item
+            })
+        })
+        setSelectedSubjects(arr => [...arr, ...filteredSubjects])
+    }
 
     return (
         <div className={cls.main}>
@@ -116,6 +122,7 @@ const Register = () => {
                         register={register}
                         name={"birth_day"}
                         title={"Tug'ilgan sana"}
+                        type={"date"}
                         required
                     />
                     <InputForm
@@ -147,25 +154,35 @@ const Register = () => {
                         options={locations}
                         onChangeOption={onChangeLoc}
                     />
-                    {/*<Select*/}
-                    {/*    title={"Fan"}*/}
-                    {/*    options={subjects}*/}
-                    {/*    onChangeOption={onChangeSub}*/}
-                    {/*/>*/}
-
+                    <Select
+                        title={"Fan"}
+                        options={subjects}
+                        onChangeOption={onChangeSub}
+                    />
                     {
                         selectedSubjects.length > 0
                             ?
                             <div className={cls.place}>
                                 {
                                     selectedSubjects.map(item => {
-                                        return <p className={cls.place__inner}>{item}</p>
+                                        return <p className={cls.place__inner}>{item.name}</p>
                                     })
                                 }
                             </div>
                             :
                             null
                     }
+                    <Select
+                        title={"Ta'lim tili"}
+                        options={languages}
+                        onChangeOption={setStudyLang}
+                    />
+                    <Select
+                        title={"Ta'lim vaqti"}
+                        options={subjects}
+                        onChangeOption={setStudyTime}
+                    />
+                    <Button>Yakunlash</Button>
                 </form>
             </div>
         </div>

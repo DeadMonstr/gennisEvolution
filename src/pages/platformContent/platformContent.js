@@ -70,7 +70,7 @@ const PlatformWebsiteEdit =  React.lazy(() => import('./platformWebsiteEdit/plat
 const PlatformLead =  React.lazy(() => import('./platformLead/PlatformLead'));
 const PlatformCapital =  React.lazy(() => import('pages/platformContent/platformCapitalCategories/PlatformCapitalCategories'));
 const PlatformTaskManager = React.lazy(() => import('./platformTaskManager/platformTaskManager'))
-const PlatformNewRegister = React.lazy(() => import('components/registerNew/register'))
+const PlatformNewRegister = React.lazy(() => import('pages/registerNew/register'))
 
 
 
