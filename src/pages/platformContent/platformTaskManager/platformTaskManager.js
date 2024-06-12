@@ -99,6 +99,7 @@ const PlatformTaskManager = () => {
         debtorStudentStatus,
         completedDebtorStudent,
         leads,
+        completedLeads,
         leadsStatus,
         progress,
         progressStatus
@@ -164,7 +165,6 @@ const PlatformTaskManager = () => {
                 })
                 .catch(err => console.log(err))
         } else if (activeMenu === "lead") {
-            console.log(res)
             request(`${BackUrl}lead_crud/${studentId}`, "POST", JSON.stringify({
                 ...res,
                 location_id: locationId
@@ -326,7 +326,7 @@ const PlatformTaskManager = () => {
                             ?
                             <Leads
                                 isCompleted={isCompleted}
-                                arr={leads}
+                                arr={isCompleted ? completedLeads : leads}
                                 arrStatus={leadsStatus}
                                 renderCards={renderCards}
                             />

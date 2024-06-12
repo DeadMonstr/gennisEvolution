@@ -8,6 +8,7 @@ const initialState = {
     debtorStudent: [],
     completedDebtorStudent: [],
     leads: [],
+    completedLeads: [],
     progress: null,
     newStudentsStatus: "idle",
     debtorStudentStatus: "idle",
@@ -114,6 +115,7 @@ const TaskManagerSlice = createSlice({
             })
             .addCase(fetchLeadsData.fulfilled, (state, action) => {
                 state.leads = action.payload.leads
+                state.completedLeads = action.payload.completed_tasks
                 state.leadsStatus = "success"
             })
             .addCase(fetchLeadsData.rejected, (state) => {

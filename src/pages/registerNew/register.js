@@ -2,6 +2,7 @@ import React, {useState, useEffect, useMemo} from 'react';
 import {useForm} from "react-hook-form";
 import classNames from "classnames";
 import {useDispatch, useSelector} from "react-redux";
+import {useNavigate} from "react-router-dom";
 
 import InputForm from "components/platform/platformUI/inputForm";
 import Button from "components/platform/platformUI/button";
@@ -75,6 +76,7 @@ const Register = () => {
 
     const {request} = useHttp()
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const {register, handleSubmit} = useForm()
     const {data} = useSelector(state => state.register)
     const {location} = useSelector(state => state.me)
@@ -108,14 +110,13 @@ const Register = () => {
         }
     }, [data])
 
-    console.log(locations[location-1], "math")
     const registerSelectList = useMemo(() =>  [
         {
             name: "loc",
             label: "O'quv markazi joylashuvi",
             opts: locations,
             onFunc: (value) => setSelectedLocation(value),
-            defValue: locations[location-1]
+            defValue: location
         }, {
             name: "subs",
             label: "Fan",
@@ -139,10 +140,6 @@ const Register = () => {
         }
     ], [locations, jobs, shifts, languages, subjects])
 
-    console.log(location)
-    console.log(locations)
-    console.log(locations[location - 1])
-
     const onSubmit = (data) => {
         const res = {
             ...data,
@@ -163,6 +160,7 @@ const Register = () => {
                     type: "success",
                     active: true
                 }))
+                navigate("../home")
             })
             .catch(err => console.log(err))
         setStudyTime(null)
