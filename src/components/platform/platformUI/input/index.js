@@ -48,7 +48,6 @@ const Input = (props) => {
     const typePassword = showPassword ? "text" : "password"
 
 
-    console.log(input)
     return (
         <label className={classNames("input-label")} htmlFor={name}>
             <span className="name-field">{title}</span>

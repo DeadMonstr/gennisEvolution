@@ -21,6 +21,9 @@ const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaul
         }
     },[value])
 
+    console.log(defaultValue, "select")
+    console.log(selectOption, "selectOption")
+
     useEffect(()=> {
         if (defaultValue) {
             setSelectOption(defaultValue)

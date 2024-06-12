@@ -1,17 +1,18 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {useForm} from "react-hook-form";
 import classNames from "classnames";
 import {useDispatch, useSelector} from "react-redux";
 
 import InputForm from "components/platform/platformUI/inputForm";
 import Button from "components/platform/platformUI/button";
+import Input from "components/platform/platformUI/input";
 import Select from "components/platform/platformUI/select";
 import {fetchData} from "slices/registerSlice";
-
-import cls from "./style.module.sass";
+import {setMessage} from "slices/messageSlice";
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
-import {setMessage} from "slices/messageSlice";
+
+import cls from "./style.module.sass";
 
 const registerInputList = [
     {
@@ -59,14 +60,14 @@ const shifts = [
 
 const types = [
     {
+        id: "student",
+        name: "Student"
+    }, {
         id: "teacher",
         name: "O'qituvchi"
     }, {
         id: "employer",
         name: "Ishchi"
-    }, {
-        id: "student",
-        name: "Student"
     }
 ]
 
@@ -76,6 +77,7 @@ const Register = () => {
     const dispatch = useDispatch()
     const {register, handleSubmit} = useForm()
     const {data} = useSelector(state => state.register)
+    const {location} = useSelector(state => state.me)
     const [selectedSubjects, setSelectedSubjects] = useState([])
     const [selectedLocation, setSelectedLocation] = useState([])
     const [selectedJob, setSelectedJob] = useState(null)
@@ -85,16 +87,13 @@ const Register = () => {
     const [locations, setLocations] = useState([])
     const [languages, setLanguages] = useState([])
     const [jobs, setJobs] = useState([])
-    const [type, setType] = useState("")
+    const [type, setType] = useState("student")
     /// check pass
     const [isCheckLen, setIsCheckLen] = useState(false)
     const [isCheckPass, setIsCheckPass] = useState(false)
     /// save pass
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
-    /// change pass type
-    const [isPass, setIsPass] = useState(true)
-    const [isPassCon, setIsPassCon] = useState(true)
 
     useEffect(() => {
         dispatch(fetchData())
@@ -109,12 +108,14 @@ const Register = () => {
         }
     }, [data])
 
-    const registerSelectList = [
+    console.log(locations[location-1], "math")
+    const registerSelectList = useMemo(() =>  [
         {
             name: "loc",
             label: "O'quv markazi joylashuvi",
             opts: locations,
-            onFunc: (value) => setSelectedLocation(value)
+            onFunc: (value) => setSelectedLocation(value),
+            defValue: locations[location-1]
         }, {
             name: "subs",
             label: "Fan",
@@ -134,13 +135,19 @@ const Register = () => {
             name: "job",
             label: "Ish faoliyati",
             opts: jobs,
-            onFunc: (value) => setJobs(value)
+            onFunc: (value) => setSelectedJob(value)
         }
-    ]
+    ], [locations, jobs, shifts, languages, subjects])
+
+    console.log(location)
+    console.log(locations)
+    console.log(locations[location - 1])
 
     const onSubmit = (data) => {
         const res = {
             ...data,
+            password,
+            password_confirm: confirmPassword,
             shift: studyTime,
             language: +studyLang,
             job: +selectedJob,
@@ -151,7 +158,6 @@ const Register = () => {
         const route = type === "employer" ? "register_staff" : type === "student" ? "register" : "register_teacher"
         request(`${BackUrl}${route}`, "POST", JSON.stringify(res), headers())
             .then(res => {
-                console.log(res)
                 dispatch(setMessage({
                     msg: res.msg,
                     type: "success",
@@ -189,7 +195,6 @@ const Register = () => {
             })
         })
         setSelectedSubjects(selectedSubjects.filter(item => item.id !== +id))
-        console.log(selectedSubjects.filter(item => item.id !== +id))
     }
 
     const onCheckLength = (value) => {
@@ -210,6 +215,7 @@ const Register = () => {
                     title={"Ish faoliyat"}
                     options={types}
                     onChangeOption={setType}
+                    defaultValue={types[0]}
                 />
                 <h1>Registratsiya</h1>
                 <form
@@ -218,63 +224,33 @@ const Register = () => {
                 >
                     {
                         registerInputList.map(item => {
-                            if (item.type === "password") {
-                                const check = (
-                                    (isPass && item.name === "password")
-                                    ||
-                                    (isPassCon && item.name === "password_confirm")
-                                )
+                            if (item.name === "password") {
                                 return (
                                     <div className={cls.form__inner}>
-                                        <InputForm
-                                            onChange={
-                                                item.name === "password"
-                                                    ?
-                                                    onCheckLength
-                                                    :
-                                                    onCheckPasswords
-                                            }
-                                            register={register}
-                                            name={item.name}
+                                        <Input
+                                            defaultValue={12345678}
                                             title={item.label}
-                                            type={
-                                                check ? item.type : "text"
-                                            }
-                                            required
+                                            type={"password"}
+                                            onChange={onCheckLength}
                                         />
                                         {
-                                            check
-                                                ?
-                                                <i
-                                                    className={classNames("fas fa-eye-slash", cls.icon)}
-                                                    onClick={() => {
-                                                        item.name === "password" ? setIsPass(false) : setIsPassCon(false)
-                                                    }}
-                                                />
-                                                :
-                                                <i
-                                                    className={classNames("fas fa-eye", cls.icon)}
-                                                    onClick={() => {
-                                                        item.name === "password" ? setIsPass(true) : setIsPassCon(true)
-                                                    }}
-                                                />
+                                            isCheckLen ? <p className={cls.error}>Parolingiz 8 ta dan kam bo'lmasligi
+                                                kerak</p> : null
                                         }
+                                    </div>
+                                )
+                            }
+                            if (item.name === "password_confirm") {
+                                return (
+                                    <div className={cls.form__inner}>
+                                        <Input
+                                            defaultValue={12345678}
+                                            title={item.label}
+                                            type={"password"}
+                                            onChange={onCheckPasswords}
+                                        />
                                         {
-                                            (
-                                                (isCheckLen && item.name === "password")
-                                                ||
-                                                (isCheckPass && item.name === "password_confirm")
-                                            )
-                                                ?
-                                                <p className={cls.error}>
-                                                    {
-                                                        item.name === "password"
-                                                            ?
-                                                            "Parolingiz 8 ta dan kam bo'lmasligi kerak"
-                                                            :
-                                                            "Parol har xil"
-                                                    }
-                                                </p> : null
+                                            isCheckPass ? <p className={cls.error}>Parol har xil</p> : null
                                         }
                                     </div>
                                 )
@@ -298,18 +274,29 @@ const Register = () => {
                     />
                     {
                         registerSelectList.map(item => {
-                            const render = <Select
-                                title={item.label}
-                                options={item.opts}
-                                onChangeOption={item.onFunc}
-                            />
+                            if (item.name === "loc") {
+                                console.log(item, "loc")
+                                console.log(item.defValue, "locDef")
+                                return (
+                                    <Select
+                                        title={item.label}
+                                        options={item.opts}
+                                        onChangeOption={item.onFunc}
+                                        defaultValue={item.defValue}
+                                    />
+                                )
+                            }
                             if (type !== "student" && item.name === "shift") return null
                             if (type !== "employer" && item.name === "job") return null
                             if (type === "employer" && item.name === "subs") return null
                             if (item.name === "subs") {
                                 return (
                                     <>
-                                        {render}
+                                        <Select
+                                            title={item.label}
+                                            options={item.opts}
+                                            onChangeOption={item.onFunc}
+                                        />
                                         {
                                             selectedSubjects.length > 0
                                                 ?
@@ -336,7 +323,11 @@ const Register = () => {
                                 )
                             }
                             return (
-                                render
+                                <Select
+                                    title={item.label}
+                                    options={item.opts}
+                                    onChangeOption={item.onFunc}
+                                />
                             )
                         })
                     }
