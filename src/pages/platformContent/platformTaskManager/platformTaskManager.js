@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import classNames from "classnames";
 import {useForm} from "react-hook-form";
 import Calendar from "react-calendar";
@@ -38,6 +38,7 @@ import taskCardBack4 from "assets/background-img/TaskCardBack4.png";
 import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 import {setMessage} from "slices/messageSlice";
 import {useParams} from "react-router-dom";
+import Input from "components/platform/platformUI/input";
 
 const options = [
     {
@@ -209,6 +210,16 @@ const PlatformTaskManager = () => {
         }
     }
 
+    // const searchedUsers = useMemo(() => {
+    //     const filteredHeroes = multiPropsFilter.slice()
+    //     setCurrentPage(1)
+    //     return filteredHeroes.filter(item =>
+    //         item.name.toLowerCase().includes(search.toLowerCase()) ||
+    //         item.surname.toLowerCase().includes(search.toLowerCase()) ||
+    //         item.username.toLowerCase().includes(search.toLowerCase())
+    //     )
+    // },[multiPropsFilter,search])
+
     const renderCards = useCallback((item, index, ref, activeStatus) => {
         if (item?.status === activeStatus) {
             return (
@@ -232,7 +243,10 @@ const PlatformTaskManager = () => {
             <div className={cls.tasks__inner}>
                 <div className={cls.header}>
                     <h1>My tasks</h1>
-
+                    <Input
+                        placeholder={"Qidiruv"}
+                        // onChange={}
+                    />
                 </div>
                 <div className={cls.info}>
                     <div className={cls.info__progress}>

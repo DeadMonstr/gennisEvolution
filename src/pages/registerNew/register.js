@@ -40,6 +40,10 @@ const registerInputList = [
         name: "phone",
         label: "Telefon raqami",
         type: "number"
+    },{
+        name: "phoneParent",
+        label: "Ota-ona telefon raqami",
+        type: "number"
     }, {
         name: "password",
         label: "Parol",
@@ -53,10 +57,12 @@ const registerInputList = [
 
 const shifts = [
     {
+        name: "Hamma vaqt"
+    }, {
         name: "1-smen"
     }, {
         name: "2-smen"
-    }
+    },
 ]
 
 const types = [
@@ -80,15 +86,15 @@ const Register = () => {
     const {register, handleSubmit} = useForm()
     const {data} = useSelector(state => state.register)
     const {location} = useSelector(state => state.me)
-    const [selectedSubjects, setSelectedSubjects] = useState([])
-    const [selectedLocation, setSelectedLocation] = useState([])
-    const [selectedJob, setSelectedJob] = useState(null)
-    const [studyTime, setStudyTime] = useState(null)
-    const [studyLang, setStudyLang] = useState(null)
     const [subjects, setSubjects] = useState([])
     const [locations, setLocations] = useState([])
     const [languages, setLanguages] = useState([])
     const [jobs, setJobs] = useState([])
+    const [selectedSubjects, setSelectedSubjects] = useState([])
+    const [selectedLocation, setSelectedLocation] = useState(location)
+    const [selectedJob, setSelectedJob] = useState(null)
+    const [studyTime, setStudyTime] = useState(null)
+    const [studyLang, setStudyLang] = useState(null)
     const [type, setType] = useState("student")
     /// check pass
     const [isCheckLen, setIsCheckLen] = useState(false)
@@ -149,12 +155,13 @@ const Register = () => {
             language: +studyLang,
             job: +selectedJob,
             location: +selectedLocation,
-            selectedSubjects: selectedSubjects.map(item => item.id)
+            selectedSubjects: selectedSubjects
         }
         console.log(res, "res")
         const route = type === "employer" ? "register_staff" : type === "student" ? "register" : "register_teacher"
         request(`${BackUrl}${route}`, "POST", JSON.stringify(res), headers())
             .then(res => {
+                console.log(res)
                 dispatch(setMessage({
                     msg: res.msg,
                     type: "success",
@@ -222,11 +229,12 @@ const Register = () => {
                 >
                     {
                         registerInputList.map(item => {
+                            if (type !== "student" && item.name === "phoneParent") return null
                             if (item.name === "password") {
                                 return (
                                     <div className={cls.form__inner}>
                                         <Input
-                                            defaultValue={12345678}
+                                            value={12345678}
                                             title={item.label}
                                             type={"password"}
                                             onChange={onCheckLength}
@@ -242,7 +250,7 @@ const Register = () => {
                                 return (
                                     <div className={cls.form__inner}>
                                         <Input
-                                            defaultValue={12345678}
+                                            value={12345678}
                                             title={item.label}
                                             type={"password"}
                                             onChange={onCheckPasswords}
@@ -265,7 +273,7 @@ const Register = () => {
                         })
                     }
                     <textarea
-                        {...register("info")}
+                        {...register("comment")}
                         placeholder={"Qo'shimcha ma'lumot (shart emas)"}
                         cols="30"
                         rows="10"
@@ -329,7 +337,7 @@ const Register = () => {
                             )
                         })
                     }
-                    <Button type={'submit'}>Yakunlash</Button>
+                    <Button disabled={isCheckPass || isCheckLen} type={'submit'}>Yakunlash</Button>
                 </form>
             </div>
         </div>
