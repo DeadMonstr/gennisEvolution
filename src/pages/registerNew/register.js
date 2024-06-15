@@ -116,6 +116,7 @@ const Register = () => {
         }
     }, [data])
 
+
     const registerSelectList = useMemo(() =>  [
         {
             name: "loc",
@@ -138,11 +139,13 @@ const Register = () => {
             label: "Ta'lim vaqti",
             opts: shifts,
             onFunc: (value) => setStudyTime(value)
-        }, {
+        },
+        {
             name: "job",
             label: "Ish faoliyati",
             opts: jobs,
-            onFunc: (value) => setSelectedJob(value)
+            onFunc: (value) => setSelectedJob(value),
+            keyValue: "name"
         }
     ], [locations, jobs, shifts, languages, subjects])
 
@@ -153,15 +156,13 @@ const Register = () => {
             password_confirm: confirmPassword,
             shift: studyTime,
             language: +studyLang,
-            job: +selectedJob,
+            job: selectedJob,
             location: +selectedLocation,
             selectedSubjects: selectedSubjects
         }
-        console.log(res, "res")
         const route = type === "employer" ? "register_staff" : type === "student" ? "register" : "register_teacher"
         request(`${BackUrl}${route}`, "POST", JSON.stringify(res), headers())
             .then(res => {
-                console.log(res)
                 dispatch(setMessage({
                     msg: res.msg,
                     type: "success",
@@ -208,11 +209,15 @@ const Register = () => {
         setPassword(value)
     }
 
-    const onCheckPasswords = (value) => {
-        setIsCheckPass(value !== password)
-        setConfirmPassword(value)
-    }
 
+
+    useEffect(() => {
+        setIsCheckPass(confirmPassword !== password)
+
+    }, [confirmPassword,password])
+
+
+    console.log(selectedJob)
     return (
         <div className={cls.main}>
             <div className={cls.main__container}>
@@ -234,7 +239,7 @@ const Register = () => {
                                 return (
                                     <div className={cls.form__inner}>
                                         <Input
-                                            value={12345678}
+                                            value={"12345678"}
                                             title={item.label}
                                             type={"password"}
                                             onChange={onCheckLength}
@@ -250,10 +255,10 @@ const Register = () => {
                                 return (
                                     <div className={cls.form__inner}>
                                         <Input
-                                            value={12345678}
+                                            value={"12345678"}
                                             title={item.label}
                                             type={"password"}
-                                            onChange={onCheckPasswords}
+                                            onChange={setConfirmPassword}
                                         />
                                         {
                                             isCheckPass ? <p className={cls.error}>Parol har xil</p> : null
@@ -281,8 +286,6 @@ const Register = () => {
                     {
                         registerSelectList.map(item => {
                             if (item.name === "loc") {
-                                console.log(item, "loc")
-                                console.log(item.defValue, "locDef")
                                 return (
                                     <Select
                                         title={item.label}
@@ -330,6 +333,7 @@ const Register = () => {
                             }
                             return (
                                 <Select
+                                    keyValue={item.keyValue}
                                     title={item.label}
                                     options={item.opts}
                                     onChangeOption={item.onFunc}

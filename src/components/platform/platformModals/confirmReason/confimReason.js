@@ -67,7 +67,6 @@ const ConfirmReason = ({getConfirm,text,student,reason}) => {
         <div className={cls.confirm}>
             <div className={cls.confirm__container}>
                 <h1 dangerouslySetInnerHTML={{__html: text}}></h1>
-
                 {
                     student ?
                         <form className={cls.types} onSubmit={onSubmit}>
@@ -91,7 +90,7 @@ const ConfirmReason = ({getConfirm,text,student,reason}) => {
                                         /> : null
                                 }
                                 {
-                                    typeReason === "boshqa" && typeLocation === "deletedStudents" ?
+                                    typeReason === "Boshqa" && typeLocation === "deletedStudents" ?
                                         <Input
                                             name={"otherReason"}
                                             title={"Boshqa sabab"}

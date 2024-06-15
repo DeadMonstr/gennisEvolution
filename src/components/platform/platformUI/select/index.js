@@ -3,17 +3,15 @@ import React, {useCallback, useEffect, useState} from 'react';
 
 import "./select.sass"
 
-const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaultValue,number,group,all,extra,keyValue,autoSelect,value,required}) => {
+const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaultValue,number,group,all,extra,keyValue,autoSelect,value,required,allFromOptions}) => {
 
     const [optionsData,setOptionsData] = useState(null)
     const [selectOption,setSelectOption] = useState("")
     const [isChanged,setIsChanged] = useState(false)
 
-
     useEffect(()=> {
         setOptionsData(options)
     },[options])
-
 
     useEffect(()=> {
         if (value) {
@@ -45,6 +43,8 @@ const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaul
         if (autoSelect)
         for (let i = 0; i < options?.length;i++) {
             if (options[i].disabled && !defaultValue) {
+                console.log(keyValue)
+
                 const value = options[i][keyValue] || options[i].value || options[i].id || options[i].name || options[i]
                 setSelectOption(value)
             }
@@ -53,14 +53,14 @@ const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaul
 
 
     const renderOptionsOfSelect = useCallback(() => {
-        console.log(optionsData)
         return optionsData?.map((item,index) => {
+            console.log(keyValue)
 
-            const value =  item[keyValue] || item.value || item.id || item.name || item
+            const value = item[keyValue] || item.value || item.id || item.name || item
             const key =  item.name || item
 
             if (!item.length)
-            if (item.name?.includes('Hamma')) {
+            if (item.name?.includes('Hamma') && allFromOptions) {
                 return <option
                     disabled={item.disabled}
                     {...extra}
