@@ -57,10 +57,13 @@ const registerInputList = [
 
 const shifts = [
     {
+        id: 1,
         name: "Hamma vaqt"
     }, {
+        id: 2,
         name: "1-smen"
     }, {
+        id: 3,
         name: "2-smen"
     },
 ]
@@ -157,13 +160,11 @@ const Register = () => {
             location: +selectedLocation,
             selectedSubjects: selectedSubjects
         }
-        console.log(res, "res")
         const route = type === "employer" ? "register_staff" : type === "student" ? "register" : "register_teacher"
         request(`${BackUrl}${route}`, "POST", JSON.stringify(res), headers())
             .then(res => {
-                console.log(res)
                 dispatch(setMessage({
-                    msg: res.msg,
+                    msg: res.message,
                     type: "success",
                     active: true
                 }))
@@ -281,8 +282,6 @@ const Register = () => {
                     {
                         registerSelectList.map(item => {
                             if (item.name === "loc") {
-                                console.log(item, "loc")
-                                console.log(item.defValue, "locDef")
                                 return (
                                     <Select
                                         title={item.label}
