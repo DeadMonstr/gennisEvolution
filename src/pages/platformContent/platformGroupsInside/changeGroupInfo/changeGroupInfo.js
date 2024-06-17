@@ -107,7 +107,7 @@ const ChangeGroupInfo = () => {
     }
 
     return (
-        isCheckedPassword ?
+        isCheckedPassword && Object.keys(data).length ?
         <div className="changeGroupInfo">
             <form
                 action=""
@@ -117,7 +117,7 @@ const ChangeGroupInfo = () => {
                 <label htmlFor="name">
                     <span className="name-field">Gruppa nomi</span>
                     <input
-                        defaultValue={data.information.groupName.value}
+                        defaultValue={data.information?.groupName?.value}
                         id="name"
                         className="input-fields"
                         // value={userData?.username}

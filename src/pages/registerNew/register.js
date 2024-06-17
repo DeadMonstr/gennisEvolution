@@ -86,7 +86,15 @@ const Register = () => {
     const {request} = useHttp()
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const {register, handleSubmit} = useForm()
+    const {
+        register,
+        formState: {errors},
+        handleSubmit,
+        clearErrors,
+        setError
+    } = useForm({
+        mode: "onBlur"
+    })
     const {data} = useSelector(state => state.register)
     const {location} = useSelector(state => state.me)
     const [subjects, setSubjects] = useState([])
@@ -106,18 +114,8 @@ const Register = () => {
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
 
-    useEffect(() => {
-        dispatch(fetchData())
-    }, [])
-
-    useEffect(() => {
-        if (data) {
-            setSubjects(data.subject)
-            setLocations(data.location)
-            setLanguages(data.language)
-            setJobs(data.jobs)
-        }
-    }, [data])
+    const [activeError,setActiveError] = useState(false)
+    const [errorMessage,setErrorMessage] = useState("")
 
     const registerSelectList = useMemo(() =>  [
         {
@@ -141,13 +139,29 @@ const Register = () => {
             label: "Ta'lim vaqti",
             opts: shifts,
             onFunc: (value) => setStudyTime(value)
-        }, {
+        },
+        {
             name: "job",
             label: "Ish faoliyati",
             opts: jobs,
-            onFunc: (value) => setSelectedJob(value)
+            onFunc: (value) => setSelectedJob(value),
+            keyValue: "name"
         }
     ], [locations, jobs, shifts, languages, subjects])
+
+    useEffect(() => {
+        dispatch(fetchData())
+    }, [])
+
+
+    useEffect(() => {
+        if (data) {
+            setSubjects(data.subject)
+            setLocations(data.location)
+            setLanguages(data.language)
+            setJobs(data.jobs)
+        }
+    }, [data])
 
     const onSubmit = (data) => {
         const res = {
@@ -156,7 +170,7 @@ const Register = () => {
             password_confirm: confirmPassword,
             shift: studyTime,
             language: +studyLang,
-            job: +selectedJob,
+            job: selectedJob,
             location: +selectedLocation,
             selectedSubjects: selectedSubjects
         }
@@ -209,9 +223,33 @@ const Register = () => {
         setPassword(value)
     }
 
-    const onCheckPasswords = (value) => {
-        setIsCheckPass(value !== password)
-        setConfirmPassword(value)
+    useEffect(() => {
+        setIsCheckPass(confirmPassword !== password)
+
+    }, [confirmPassword,password])
+
+    const checkUsername = (username) => {
+        request(`${BackUrl}check_username`,"POST", JSON.stringify(username))
+            .then(res => {
+                // if (res.found) {
+                //     setActiveError(true)
+                //     setErrorMessage("Username band")
+                // } else {
+                //     setActiveError(false)
+                //     setErrorMessage("")
+                // }
+                if (res.found) {
+                    setError('username', {
+                        type: "manual",
+                        message: "username band"
+
+                    },  { shouldFocus: true })
+                    setActiveError(true)
+                    setErrorMessage("Username band")
+                } else {
+                    setActiveError(false)
+                }
+            })
     }
 
     return (
@@ -231,14 +269,38 @@ const Register = () => {
                     {
                         registerInputList.map(item => {
                             if (type !== "student" && item.name === "phoneParent") return null
+                            if (item.name === "username") {
+                                return (
+                                    <>
+                                        <InputForm
+                                            register={register}
+                                            name={item.name}
+                                            title={item.label}
+                                            type={item.type}
+                                            onBlur={checkUsername}
+                                            required
+                                        />
+                                        {
+                                            // activeError ? <span className={cls.form__error}>
+                                            //     Username band
+                                            // </span> : null
+                                            errors?.username &&
+                                            <span className={cls.form__error}>
+                                                {errors?.username?.message}
+                                            </span>
+                                        }
+                                    </>
+                                )
+                            }
                             if (item.name === "password") {
                                 return (
                                     <div className={cls.form__inner}>
                                         <Input
-                                            value={12345678}
+                                            value={"12345678"}
                                             title={item.label}
                                             type={"password"}
                                             onChange={onCheckLength}
+                                            required
                                         />
                                         {
                                             isCheckLen ? <p className={cls.error}>Parolingiz 8 ta dan kam bo'lmasligi
@@ -251,10 +313,11 @@ const Register = () => {
                                 return (
                                     <div className={cls.form__inner}>
                                         <Input
-                                            value={12345678}
+                                            value={"12345678"}
                                             title={item.label}
                                             type={"password"}
-                                            onChange={onCheckPasswords}
+                                            onChange={setConfirmPassword}
+                                            required
                                         />
                                         {
                                             isCheckPass ? <p className={cls.error}>Parol har xil</p> : null
@@ -281,16 +344,6 @@ const Register = () => {
                     />
                     {
                         registerSelectList.map(item => {
-                            if (item.name === "loc") {
-                                return (
-                                    <Select
-                                        title={item.label}
-                                        options={item.opts}
-                                        onChangeOption={item.onFunc}
-                                        defaultValue={item.defValue}
-                                    />
-                                )
-                            }
                             if (type !== "student" && item.name === "shift") return null
                             if (type !== "employer" && item.name === "job") return null
                             if (type === "employer" && item.name === "subs") return null
@@ -327,8 +380,19 @@ const Register = () => {
                                     </>
                                 )
                             }
+                            if (item.name === "loc") {
+                                return (
+                                    <Select
+                                        title={item.label}
+                                        options={item.opts}
+                                        onChangeOption={item.onFunc}
+                                        defaultValue={item.defValue}
+                                    />
+                                )
+                            }
                             return (
                                 <Select
+                                    keyValue={item.keyValue}
                                     title={item.label}
                                     options={item.opts}
                                     onChangeOption={item.onFunc}
@@ -336,7 +400,7 @@ const Register = () => {
                             )
                         })
                     }
-                    <Button disabled={isCheckPass || isCheckLen} type={'submit'}>Yakunlash</Button>
+                    <Button disabled={isCheckPass || isCheckLen || activeError} type={'submit'}>Yakunlash</Button>
                 </form>
             </div>
         </div>
