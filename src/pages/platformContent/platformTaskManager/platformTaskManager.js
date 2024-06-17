@@ -93,6 +93,7 @@ const PlatformTaskManager = () => {
     const [dellLead, setDellLead] = useState(false)
     const [isConfirm, setIsConfirm] = useState(false)
     const [search, setSearch] = useState("")
+    const [filtered, setFiltered] = useState([])
 
     const {
         newStudents,
@@ -212,15 +213,38 @@ const PlatformTaskManager = () => {
         }
     }
 
-    // const searchedUsers = useMemo(() => {
-    //     const filteredHeroes = multiPropsFilter.slice()
-    //     setCurrentPage(1)
-    //     return filteredHeroes.filter(item =>
-    //         item.name.toLowerCase().includes(search.toLowerCase()) ||
-    //         item.surname.toLowerCase().includes(search.toLowerCase()) ||
-    //         item.username.toLowerCase().includes(search.toLowerCase())
-    //     )
-    // },[multiPropsFilter,search])
+    const searchedUsers = useCallback(() => {
+        let filteredArr;
+        switch (activeMenu) {
+            case "newStudents":
+                if (isCompleted)
+                    filteredArr = completedNewStudents
+                else
+                    filteredArr = newStudents
+                break;
+            case "lead":
+                if (isCompleted)
+                    filteredArr = completedLeads
+                else
+                    filteredArr = leads
+                break;
+            default:
+                if (isCompleted)
+                    filteredArr = completedDebtorStudent
+                else
+                    filteredArr = debtorStudent
+                break;
+        }
+        return filteredArr.filter(item =>
+            item?.name?.toLowerCase().includes(search.toLowerCase()) ||
+            item?.surname?.toLowerCase().includes(search.toLowerCase()) ||
+            item?.username?.toLowerCase().includes(search.toLowerCase())
+        )
+    }, [activeMenu, search])
+
+    useEffect(() => {
+        setFiltered(searchedUsers())
+    }, [[activeMenu, search]])
 
     const renderCards = useCallback((item, index, ref, activeStatus) => {
         if (item?.status === activeStatus) {
@@ -246,11 +270,11 @@ const PlatformTaskManager = () => {
                 <div className={cls.header}>
                     <h1>My tasks</h1>
                     {/*<div className={cls.header__search}>*/}
-                        <PlatformSearch search={search} setSearch={setSearch}/>
-                        {/*<Input*/}
-                        {/*    placeholder={"Qidiruv"}*/}
-                        {/*    // onChange={}*/}
-                        {/*/>*/}
+                    <PlatformSearch search={search} setSearch={setSearch}/>
+                    {/*<Input*/}
+                    {/*    placeholder={"Qidiruv"}*/}
+                    {/*    // onChange={}*/}
+                    {/*/>*/}
                     {/*</div>*/}
                 </div>
                 <div className={cls.info}>
@@ -345,7 +369,7 @@ const PlatformTaskManager = () => {
                             ?
                             <Leads
                                 isCompleted={isCompleted}
-                                arr={isCompleted ? completedLeads : leads}
+                                arr={search ? filtered : isCompleted ? completedLeads : leads}
                                 arrStatus={leadsStatus}
                                 renderCards={renderCards}
                             />
@@ -353,13 +377,13 @@ const PlatformTaskManager = () => {
                             activeMenu === "newStudents"
                                 ?
                                 <Student
-                                    arr={isCompleted ? completedNewStudents : newStudents}
+                                    arr={search ? filtered : isCompleted ? completedNewStudents : newStudents}
                                     arrStatus={newStudentsStatus}
                                     renderCards={renderCards}
                                 />
                                 :
                                 <Student
-                                    arr={isCompleted ? completedDebtorStudent : debtorStudent}
+                                    arr={search ? filtered : isCompleted ? completedDebtorStudent : debtorStudent}
                                     arrStatus={debtorStudentStatus}
                                     renderCards={renderCards}
                                 />

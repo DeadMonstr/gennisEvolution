@@ -4,7 +4,7 @@ import React from 'react';
 import "./input.sass"
 
 
-const InputForm = ({title, name, type, required, register, defaultValue, placeholder, value, error, onChange}) => {
+const InputForm = ({title, name, type, required, register, defaultValue, placeholder, value, error, onChange, onBlur}) => {
 
 
     return (
@@ -12,7 +12,8 @@ const InputForm = ({title, name, type, required, register, defaultValue, placeho
             <span className="name-field">{title}</span>
             <input
                 {...register(`${name}`, {
-                    onChange: onChange ? (e) => onChange(e.target.value) : null
+                    onChange: onChange ? (e) => onChange(e.target.value) : null,
+                    onBlur: onBlur ? (e) => onBlur(e.target.value) : null
                 })}
                 value={value}
                 placeholder={placeholder}

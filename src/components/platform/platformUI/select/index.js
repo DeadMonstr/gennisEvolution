@@ -43,8 +43,6 @@ const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaul
         if (autoSelect)
         for (let i = 0; i < options?.length;i++) {
             if (options[i].disabled && !defaultValue) {
-                console.log(keyValue)
-
                 const value = options[i][keyValue] || options[i].value || options[i].id || options[i].name || options[i]
                 setSelectOption(value)
             }
@@ -54,7 +52,6 @@ const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaul
 
     const renderOptionsOfSelect = useCallback(() => {
         return optionsData?.map((item,index) => {
-            console.log(keyValue)
 
             const value = item[keyValue] || item.value || item.id || item.name || item
             const key =  item.name || item
