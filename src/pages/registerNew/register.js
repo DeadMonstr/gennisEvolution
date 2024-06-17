@@ -57,10 +57,13 @@ const registerInputList = [
 
 const shifts = [
     {
+        id: 1,
         name: "Hamma vaqt"
     }, {
+        id: 2,
         name: "1-smen"
     }, {
+        id: 3,
         name: "2-smen"
     },
 ]
@@ -164,7 +167,7 @@ const Register = () => {
         request(`${BackUrl}${route}`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 dispatch(setMessage({
-                    msg: res.msg,
+                    msg: res.message,
                     type: "success",
                     active: true
                 }))

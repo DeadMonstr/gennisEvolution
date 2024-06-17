@@ -39,6 +39,7 @@ import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSma
 import {setMessage} from "slices/messageSlice";
 import {useParams} from "react-router-dom";
 import Input from "components/platform/platformUI/input";
+import PlatformSearch from "components/platform/platformUI/search";
 
 const options = [
     {
@@ -91,6 +92,7 @@ const PlatformTaskManager = () => {
     const [studentSelect, setStudentSelect] = useState()
     const [dellLead, setDellLead] = useState(false)
     const [isConfirm, setIsConfirm] = useState(false)
+    const [search, setSearch] = useState("")
 
     const {
         newStudents,
@@ -243,10 +245,13 @@ const PlatformTaskManager = () => {
             <div className={cls.tasks__inner}>
                 <div className={cls.header}>
                     <h1>My tasks</h1>
-                    <Input
-                        placeholder={"Qidiruv"}
-                        // onChange={}
-                    />
+                    {/*<div className={cls.header__search}>*/}
+                        <PlatformSearch search={search} setSearch={setSearch}/>
+                        {/*<Input*/}
+                        {/*    placeholder={"Qidiruv"}*/}
+                        {/*    // onChange={}*/}
+                        {/*/>*/}
+                    {/*</div>*/}
                 </div>
                 <div className={cls.info}>
                     <div className={cls.info__progress}>
