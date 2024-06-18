@@ -119,6 +119,7 @@ const Register = () => {
     const [errorMessage,setErrorMessage] = useState("")
 
     const [loading, setLoading] = useState(false)
+    const [selectedDefValue, setSelectedDefValue]=useState(0)
 
     const registerSelectList = useMemo(() =>  [
         {
@@ -131,7 +132,8 @@ const Register = () => {
             name: "subs",
             label: "Fan",
             opts: subjects,
-            onFunc: (value) => onChangeSub(value)
+            onFunc: (value) => onChangeSub(value),
+            defValue: selectedDefValue
         }, {
             name: "lang",
             label: "Ta'lim tili",
@@ -214,6 +216,7 @@ const Register = () => {
     }
 
     const onDeleteSub = (id) => {
+        setSelectedDefValue(0)
         setSubjects(subjects => {
             return subjects.map(item => {
                 if (item.id === +id) {
@@ -390,7 +393,7 @@ const Register = () => {
                                     </>
                                 )
                             }
-                            if (item.name === "loc"||item.name === "lang"||item.name === "shift") {
+                            if (item.name === "loc"||item.name === "lang"||item.name === "shift"||item.name==="subs") {
                                 return (
                                     <Select
                                         title={item.label}
@@ -412,7 +415,7 @@ const Register = () => {
                     }
                     {
                         loading? <DefaultLoaderSmall/>:
-                        <Button disabled={isCheckPass || isCheckLen || activeError} type={'submit'}>Yakunlash</Button>
+                        <Button disabled={isCheckPass || isCheckLen || activeError|| selectedSubjects.length===0} type={'submit'}>Yakunlash</Button>
                     }
                 </form>
             </div>
