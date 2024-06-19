@@ -269,13 +269,7 @@ const PlatformTaskManager = () => {
             <div className={cls.tasks__inner}>
                 <div className={cls.header}>
                     <h1>My tasks</h1>
-                    {/*<div className={cls.header__search}>*/}
                     <PlatformSearch search={search} setSearch={setSearch}/>
-                    {/*<Input*/}
-                    {/*    placeholder={"Qidiruv"}*/}
-                    {/*    // onChange={}*/}
-                    {/*/>*/}
-                    {/*</div>*/}
                 </div>
                 <div className={cls.info}>
                     <div className={cls.info__progress}>
@@ -390,7 +384,6 @@ const PlatformTaskManager = () => {
                     }
                 </div>
             </div>
-
 
             <Modal
                 activeModal={activeModal}
