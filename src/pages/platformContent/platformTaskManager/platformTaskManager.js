@@ -94,6 +94,9 @@ const PlatformTaskManager = () => {
     const [isConfirm, setIsConfirm] = useState(false)
     const [search, setSearch] = useState("")
     const [filtered, setFiltered] = useState([])
+    const [select, setSelect] = useState({})
+
+    console.log(select, "select")
 
     const {
         newStudents,
@@ -108,6 +111,8 @@ const PlatformTaskManager = () => {
         progress,
         progressStatus
     } = useSelector(state => state.taskManager)
+
+    console.log(debtorStudent, "debtor")
 
     useEffect(() => {
         dispatch(fetchingProgress())
@@ -244,7 +249,7 @@ const PlatformTaskManager = () => {
 
     useEffect(() => {
         setFiltered(searchedUsers())
-    }, [[activeMenu, search]])
+    }, [activeMenu, search])
 
     const renderCards = useCallback((item, index, ref, activeStatus) => {
         if (item?.status === activeStatus) {
@@ -259,6 +264,7 @@ const PlatformTaskManager = () => {
                     onClick={onClick}
                     onDelete={setDellLead}
                     isCompleted={isCompleted}
+                    setSelect={setSelect}
                 />
             )
         }
@@ -358,6 +364,7 @@ const PlatformTaskManager = () => {
                                 </div>
                             </div>
                         </div>
+
                     </div>
                     <div className={cls.info__date}>
                         <Calendar onChange={setDate} value={date}/>
@@ -539,7 +546,7 @@ const RenderItem = ({arr, renderCards, status, index}) => {
     )
 }
 
-const TaskCard = ({activeMenu, onClick, item, index, isCompleted, onDelete, setStudentId}) => {
+const TaskCard = ({activeMenu, onClick, item, index, isCompleted, onDelete, setStudentId, setSelect}) => {
 
     useEffect(() => {
         switch (activeMenu) {
@@ -617,12 +624,12 @@ const TaskCard = ({activeMenu, onClick, item, index, isCompleted, onDelete, setS
                             )
                         }) : null
                     }
-                    {
-                        activeMenu === "" ? <>
-                            <li className={cls.infoList__item}>Ingliz tili: <span>390000</span></li>
-                            <li className={cls.infoList__item}>IT: <span>390000</span></li>
-                        </> : null
-                    }
+                    {/*{*/}
+                    {/*    activeMenu === "debtors" ? <>*/}
+                    {/*        <li className={cls.infoList__item}>Ingliz tili: <span>390000</span></li>*/}
+                    {/*        <li className={cls.infoList__item}>IT: <span>390000</span></li>*/}
+                    {/*    </> : null*/}
+                    {/*}*/}
                     {
                         activeMenu === "lead" ? null : <li className={cls.infoList__item}>
                             Koment: <span>{item?.history[item?.history.length - 1]?.comment}</span>
@@ -645,7 +652,10 @@ const TaskCard = ({activeMenu, onClick, item, index, isCompleted, onDelete, setS
             >
                 <div
                     className={cls.circle}
-                    onClick={() => (item.status === "green" || isCompleted) ? null : onClick(item?.id)}
+                    onClick={() => (item.status === "green" || isCompleted) ? null :
+                        onClick(item?.id) &
+                        setSelect(item)
+                    }
                 >
                     <img src={unknownUser} alt=""/>
                 </div>
