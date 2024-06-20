@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {createContext, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import classNames from "classnames";
 import {useForm} from "react-hook-form";
 import Calendar from "react-calendar";
@@ -41,6 +41,8 @@ import {useParams} from "react-router-dom";
 import Input from "components/platform/platformUI/input";
 import PlatformSearch from "components/platform/platformUI/search";
 
+const FuncContext = createContext(null)
+
 const options = [
     {
         name: "tel ko'tardi",
@@ -68,6 +70,21 @@ const menuList = [
 const colorStatusList = ["red", "yellow", "green"]
 
 const PlatformTaskManager = () => {
+
+
+    const {
+        newStudents,
+        newStudentsStatus,
+        completedNewStudents,
+        debtorStudent,
+        debtorStudentStatus,
+        completedDebtorStudent,
+        leads,
+        completedLeads,
+        leadsStatus,
+        progress,
+        progressStatus
+    } = useSelector(state => state.taskManager)
     const [activeMenu, setActiveMenu] = useState(menuList[0]?.name)
     const {locationId} = useParams()
     const [isCompleted, setIsCompleted] = useState(false)
@@ -78,7 +95,9 @@ const PlatformTaskManager = () => {
         } else if (activeMenu === "lead") {
             dispatch(fetchLeadsData(locationId))
         } else {
-            dispatch(fetchDebtorStudentsData(locationId))
+            if (debtorStudent.length === 0) {
+                dispatch(fetchDebtorStudentsData({number: 1, len: 0, id: +locationId}))
+            }
         }
 
     }, [activeMenu, locationId, isCompleted])
@@ -94,25 +113,6 @@ const PlatformTaskManager = () => {
     const [isConfirm, setIsConfirm] = useState(false)
     const [search, setSearch] = useState("")
     const [filtered, setFiltered] = useState([])
-    const [select, setSelect] = useState({})
-
-    console.log(select, "select")
-
-    const {
-        newStudents,
-        newStudentsStatus,
-        completedNewStudents,
-        debtorStudent,
-        debtorStudentStatus,
-        completedDebtorStudent,
-        leads,
-        completedLeads,
-        leadsStatus,
-        progress,
-        progressStatus
-    } = useSelector(state => state.taskManager)
-
-    console.log(debtorStudent, "debtor")
 
     useEffect(() => {
         dispatch(fetchingProgress())
@@ -251,24 +251,15 @@ const PlatformTaskManager = () => {
         setFiltered(searchedUsers())
     }, [activeMenu, search])
 
-    const renderCards = useCallback((item, index, ref, activeStatus) => {
-        if (item?.status === activeStatus) {
-            return (
-                <TaskCard
-                    key={index}
-                    item={item}
-                    index={index}
-                    ref={ref}
-                    activeMenu={activeMenu}
-                    setStudentId={setStudentId}
-                    onClick={onClick}
-                    onDelete={setDellLead}
-                    isCompleted={isCompleted}
-                    setSelect={setSelect}
-                />
-            )
-        }
-    }, [newStudents, debtorStudent, leads, activeMenu])
+    const contextObj = useMemo(() => ({
+        activeMenu: activeMenu,
+        getStudentId: setStudentId,
+        click: onClick,
+        onDelete: setDellLead,
+        isCompleted: isCompleted,
+        dispatch: dispatch,
+        location: locationId
+    }), [activeMenu, isCompleted, locationId])
 
     return (
         <div className={cls.tasks}>
@@ -364,32 +355,31 @@ const PlatformTaskManager = () => {
                         <Calendar onChange={setDate} value={date}/>
                     </div>
                 </div>
-                <div className={cls.items}>
-                    {
-                        activeMenu === "lead"
-                            ?
-                            <Leads
-                                isCompleted={isCompleted}
-                                arr={search ? filtered : isCompleted ? completedLeads : leads}
-                                arrStatus={leadsStatus}
-                                renderCards={renderCards}
-                            />
-                            :
-                            activeMenu === "newStudents"
+                <FuncContext.Provider value={contextObj}>
+                    <div className={cls.items}>
+                        {
+                            activeMenu === "lead"
                                 ?
-                                <Student
-                                    arr={search ? filtered : isCompleted ? completedNewStudents : newStudents}
-                                    arrStatus={newStudentsStatus}
-                                    renderCards={renderCards}
+                                <Leads
+                                    isCompleted={isCompleted}
+                                    arr={search ? filtered : isCompleted ? completedLeads : leads}
+                                    arrStatus={leadsStatus}
                                 />
                                 :
-                                <Student
-                                    arr={search ? filtered : isCompleted ? completedDebtorStudent : debtorStudent}
-                                    arrStatus={debtorStudentStatus}
-                                    renderCards={renderCards}
-                                />
-                    }
-                </div>
+                                activeMenu === "newStudents"
+                                    ?
+                                    <Student
+                                        arr={search ? filtered : isCompleted ? completedNewStudents : newStudents}
+                                        arrStatus={newStudentsStatus}
+                                    />
+                                    :
+                                    <Student
+                                        arr={search ? filtered : isCompleted ? completedDebtorStudent : debtorStudent}
+                                        arrStatus={debtorStudentStatus}
+                                    />
+                        }
+                    </div>
+                </FuncContext.Provider>
             </div>
 
             <Modal
@@ -462,15 +452,16 @@ const Leads = ({isCompleted, arr, arrStatus, renderCards}) => {
     if (arrStatus === "loading" || arrStatus === "idle") {
         return <DefaultLoader/>
     } else {
+        const filteredRed = arr.filter(item => item.status === "red")
+        const filteredYellow = arr.filter(item => item.status === "yellow")
+        const filteredGreen = arr.filter(item => item.status === "green")
         return (
             colorStatusList.map((item, i) => {
                 if (isCompleted && (item === "red" || item === "yellow")) return null
                 if (!isCompleted && item === "green") return null
                 return (
                     <RenderItem
-                        arr={arr}
-                        renderCards={renderCards}
-                        status={item}
+                        arr={item === "red" ? filteredRed : item === "yellow" ? filteredYellow : filteredGreen}
                         index={i}
                     />
                 )
@@ -479,38 +470,68 @@ const Leads = ({isCompleted, arr, arrStatus, renderCards}) => {
     }
 }
 
-const Student = ({arr, arrStatus, renderCards}) => {
-    if (arrStatus === "loading" || arrStatus === "idle") {
+const Student = ({arr, arrStatus}) => {
+
+    const {location, dispatch, activeMenu} = useContext(FuncContext)
+    const [number, setNumber] = useState(2)
+
+    const onGetStudents = (num) => {
+        dispatch(fetchDebtorStudentsData({number: num, len: arr.length, id: location}))
+        if (num <= 5) {
+            setNumber(++num)
+        }
+    }
+
+    const filteredRed = arr.filter(item => item.status === "red")
+    const filteredYellow = arr.filter(item => item.status === "yellow")
+
+    if ((arrStatus === "loading" || arrStatus === "idle") && ((arr.length === 0 && activeMenu==="debtors") || activeMenu==="newStudents")) {
         return <DefaultLoader/>
-    } else {
-        return (
-            colorStatusList.map((item, i) => {
-                if (item === "green") return null
-                return (
-                    <RenderItem
-                        arr={arr}
-                        renderCards={renderCards}
-                        status={item}
-                        index={i}
-                    />
-                )
-            })
-        )
     }
+    return (
+        colorStatusList.map((item, i) => {
+            if (item === "green") return null
+            return (
+                <div id="main" style={{
+                    display: "flex"
+                }}>
+                    <RenderItem
+                        arr={item === "red" ? filteredRed : filteredYellow}
+                        index={i}
+                        onGetStudents={onGetStudents}
+                        number={number}
+                        length={arr.length}
+                    />
+                    {
+                        ((arrStatus === "loading" || arrStatus === "idle") && activeMenu==="debtors") ?
+                            <DefaultLoader/> : null
+                    }
+                </div>
+
+            )
+        })
+    )
 }
 
-const RenderItem = ({arr, renderCards, status, index}) => {
+const RenderItem = ({arr, index, number, onGetStudents, length}) => {
     useEffect(() => {
-        const elements = document.querySelectorAll(".platformTaskManager_scroll__inner__R2L8r")
-        const components = document.querySelectorAll(".platformTaskManager_scroll__ebGEP")
+        const elem = document.querySelectorAll("#main")
+        const elements = document.querySelectorAll("#scroll__inner")
+        const components = document.querySelectorAll("#scroll")
         elements.forEach((item, i) => {
-            if (!item.innerHTML) components[i].style.display = "none"
+            if (!item.innerHTML) {
+                components[i].style.display = "none"
+                if (elem[i]) elem[i].style.display = "none"
+            } else {
+                components[i].style.display = "flex"
+                if (elem[i]) elem[i].style.display = "flex"
+            }
         })
-    }, [])
+    }, [arr])
 
     const [width, setWidth] = useState(0)
-    const ref = useRef([])
     const wrapper = useRef()
+    const {activeMenu} = useContext(FuncContext)
 
     useEffect(() => {
         setWidth(wrapper.current?.scrollWidth - wrapper.current?.offsetWidth)
@@ -520,26 +541,42 @@ const RenderItem = ({arr, renderCards, status, index}) => {
         <motion.div
             key={index}
             className={cls.scroll}
+            id="scroll"
             ref={wrapper}
         >
             <motion.div
                 className={cls.scroll__inner}
+                id="scroll__inner"
                 drag={"x"}
                 dragConstraints={{left: -width, right: 0}}
             >
                 {
-                    arr.map(((item, i) => {
+                    arr.map((item, i) => {
                         return (
-                            renderCards(item, i, ref, status)
+                            <TaskCard
+                                item={item}
+                                index={i}
+                            />
                         )
-                    }))
+                    })
+                }
+                {
+                    length === 100 ? null : (arr.length !== 0 && activeMenu !== "newStudents") ? <div
+                        className={cls.scroll__plus}
+                        onClick={() => onGetStudents(number)}
+                    >
+                        <i className={classNames("fas fa-plus", cls.icon)}/>
+                    </div> : null
                 }
             </motion.div>
         </motion.div>
     )
 }
 
-const TaskCard = ({activeMenu, onClick, item, index, isCompleted, onDelete, setStudentId, setSelect}) => {
+const TaskCard = ({item, index}) => {
+
+    const {activeMenu, click, onDelete, getSelect, getStudentId, isCompleted} = useContext(FuncContext)
+    const [style, setStyle] = useState({})
 
     useEffect(() => {
         switch (activeMenu) {
@@ -569,8 +606,6 @@ const TaskCard = ({activeMenu, onClick, item, index, isCompleted, onDelete, setS
         }
     }, [activeMenu])
 
-    const [style, setStyle] = useState({})
-
     return (
         <motion.div
             key={index}
@@ -584,7 +619,7 @@ const TaskCard = ({activeMenu, onClick, item, index, isCompleted, onDelete, setS
                         onClick={() => {
                             // console.log(true, item.id)
                             onDelete(true)
-                            setStudentId({id: item.id, status: item.status})
+                            getStudentId({id: item.id, status: item.status})
                         }}
                     /> : null
             }
@@ -646,8 +681,8 @@ const TaskCard = ({activeMenu, onClick, item, index, isCompleted, onDelete, setS
                 <div
                     className={cls.circle}
                     onClick={() => (item.status === "green" || isCompleted) ? null :
-                        onClick(item?.id) &
-                        setSelect(item)
+                        click(item?.id) &
+                        getSelect(item)
                     }
                 >
                     <img src={unknownUser} alt=""/>
