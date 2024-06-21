@@ -448,7 +448,7 @@ const Completed = ({progress, progressStatus}) => {
     }
 }
 
-const Leads = ({isCompleted, arr, arrStatus, renderCards}) => {
+const Leads = ({isCompleted, arr, arrStatus}) => {
     if (arrStatus === "loading" || arrStatus === "idle") {
         return <DefaultLoader/>
     } else {
