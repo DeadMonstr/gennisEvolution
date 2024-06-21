@@ -31,16 +31,17 @@ import {
 } from "slices/taskManagerSlice";
 
 import cls from "./platformTaskManager.module.sass";
-import unknownUser from "assets/icons/icon 4.png";
-import taskCardBack from "assets/icons/icon 4.png";
-import taskCardBack2 from "assets/icons/icon 4.png";
-import taskCardBack4 from "assets/icons/icon 4.png";
+import unknownUser from "assets/user-interface/user_image.png";
+import taskCardBack from "assets/background-img/TaskCardBack.png";
+import taskCardBack2 from "assets/background-img/TaskCardBack2.png";
+import taskCardBack4 from "assets/background-img/TaskCardBack4.png";
 import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 import {setMessage} from "slices/messageSlice";
 import {useParams} from "react-router-dom";
 import Input from "components/platform/platformUI/input";
 import PlatformSearch from "components/platform/platformUI/search";
 
+const FuncContext = createContext(null)
 const options = [
     {
         name: "tel ko'tardi",
@@ -68,6 +69,21 @@ const menuList = [
 const colorStatusList = ["red", "yellow", "green"]
 
 const PlatformTaskManager = () => {
+
+
+    const {
+        newStudents,
+        newStudentsStatus,
+        completedNewStudents,
+        debtorStudent,
+        debtorStudentStatus,
+        completedDebtorStudent,
+        leads,
+        completedLeads,
+        leadsStatus,
+        progress,
+        progressStatus
+    } = useSelector(state => state.taskManager)
     const [activeMenu, setActiveMenu] = useState(menuList[0]?.name)
     const {locationId} = useParams()
     const [isCompleted, setIsCompleted] = useState(false)
@@ -78,7 +94,9 @@ const PlatformTaskManager = () => {
         } else if (activeMenu === "lead") {
             dispatch(fetchLeadsData(locationId))
         } else {
-            dispatch(fetchDebtorStudentsData(locationId))
+            if (debtorStudent.length === 0) {
+                dispatch(fetchDebtorStudentsData({number: 1, len: 0, id: +locationId}))
+            }
         }
 
     }, [activeMenu, locationId, isCompleted])
@@ -94,22 +112,6 @@ const PlatformTaskManager = () => {
     const [isConfirm, setIsConfirm] = useState(false)
     const [search, setSearch] = useState("")
     const [filtered, setFiltered] = useState([])
-
-    const [getUser, setGetUser] = useState({})
-
-    const {
-        newStudents,
-        newStudentsStatus,
-        completedNewStudents,
-        debtorStudent,
-        debtorStudentStatus,
-        completedDebtorStudent,
-        leads,
-        completedLeads,
-        leadsStatus,
-        progress,
-        progressStatus
-    } = useSelector(state => state.taskManager)
 
     useEffect(() => {
         dispatch(fetchingProgress())
@@ -248,161 +250,135 @@ const PlatformTaskManager = () => {
         setFiltered(searchedUsers())
     }, [activeMenu, search])
 
-    const renderCards = useCallback((item, index, ref, activeStatus) => {
-        if (item?.status === activeStatus) {
-            return (<TaskCard
-                key={index}
-                item={item}
-                index={index}
-                ref={ref}
-                activeMenu={activeMenu}
-                setStudentId={setStudentId}
-                onClick={onClick}
-                onDelete={setDellLead}
-                isCompleted={isCompleted}
-                setGetUser={setGetUser}
-            />)
-        }
-    }, [newStudents, debtorStudent, leads, activeMenu])
+    const contextObj = useMemo(() => ({
+        activeMenu: activeMenu,
+        getStudentId: setStudentId,
+        click: onClick,
+        onDelete: setDellLead,
+        isCompleted: isCompleted,
+        dispatch: dispatch,
+        location: locationId
+    }), [activeMenu, isCompleted, locationId])
 
     return (
         <div className={cls.tasks}>
             <div className={cls.tasks__inner}>
                 <div className={cls.header}>
-                    <PlatformSearch search={search} setSearch={setSearch}/>
-                    {/*<h1>My tasks</h1>*/}
-                    {/*<div className={cls.header__search}>*/}
-                    <SwitchButton isCompleted={isCompleted} setIsCompleted={setIsCompleted}/>
-                    {/*<PlatformSearch search={search} setSearch={setSearch}/>*/}
-                    {/*<Input*/}
-                    {/*    placeholder={"Qidiruv"}*/}
-                    {/*    // onChange={}*/}
-                    {/*/>*/}
-                    {/*</div>*/}
-                </div>
-                <div className={cls.contentTask}>
                     <h1>My tasks</h1>
-                    <div className={cls.menuTask}>
-                        <div className={cls.menuTask__list}>
-                            <div className={cls.other}>
-                                {
-                                    menuList.map((item, i) =>
-                                        <h2
-                                            key={i}
-                                            className={classNames(cls.other__item, {
-                                                [cls.active]: activeMenu === item.name
-                                            })}
-                                            onClick={() => {
-                                                setActiveMenu(item.name)
-                                                // setIsCompleted(false)
-                                            }}
-                                        >
-                                            {item.label}
-                                        </h2>
-                                    )
-                                }
-                            </div>
-                        </div>
-                    </div>
+                    <PlatformSearch search={search} setSearch={setSearch}/>
                 </div>
-
-                <div className={cls.tasks__handler}>
-                    <div className={cls.tasks__main}>
-                        <div className={cls.items}>
-                            {
-                                activeMenu === "lead"
-                                    ?
-                                    <Leads
-                                        isCompleted={isCompleted}
-                                        arr={search ? filtered : isCompleted ? completedLeads : leads}
-                                        arrStatus={leadsStatus}
-                                        renderCards={renderCards}
+                <div className={cls.info}>
+                    <div className={cls.info__progress}>
+                        <div className={cls.completeTask}>
+                            <div className={cls.completeTask__progress}>
+                                <div
+                                    className={classNames(cls.taskItem, {
+                                        [cls.active]: !isCompleted
+                                    })}
+                                    onClick={() => setIsCompleted(false)}
+                                >
+                                    <div className={cls.taskItem__info}>
+                                        <div className={cls.icon}>
+                                            <i className="far fa-calendar-times"/>
+                                        </div>
+                                        <h2>Tasks <br/> In Progress</h2>
+                                    </div>
+                                    <Completed
+                                        progress={`${
+                                            progress
+                                                ?
+                                                progress?.in_progress_tasks - progress?.completed_tasks
+                                                :
+                                                0
+                                        }`}
+                                        progressStatus={progressStatus}
                                     />
-                                    :
-                                    activeMenu === "newStudents"
-                                        ?
-                                        <Student
-                                            arr={search ? filtered : isCompleted ? completedNewStudents : newStudents}
-                                            arrStatus={newStudentsStatus}
-                                            renderCards={renderCards}
-                                        />
-                                        :
-                                        <Student
-                                            arr={search ? filtered : isCompleted ? completedDebtorStudent : debtorStudent}
-                                            arrStatus={debtorStudentStatus}
-                                            renderCards={renderCards}
-                                        />
-                            }
-                        </div>
-                    </div>
-                    <div className={cls.tasks__banner}>
-                        <div className={cls.info}>
-                            <div className={cls.info__date}>
-                                <Calendar onChange={setDate} value={date}/>
+                                </div>
+                                <div
+                                    className={classNames(cls.taskItem, {
+                                        [cls.active]: isCompleted
+                                    })}
+                                    onClick={() => setIsCompleted(true)}
+                                >
+                                    <div className={cls.taskItem__info}>
+                                        <div className={cls.icon}>
+                                            <i className="far fa-check-circle"/>
+                                        </div>
+                                        <h2>Project <br/> Completed</h2>
+                                    </div>
+                                    <Completed
+                                        progress={`${
+                                            progress ? progress?.completed_tasks : 0
+                                        }`}
+                                        progressStatus={progressStatus}
+                                    />
+                                </div>
+                            </div>
+                            <div className={cls.completeTask__precent}>
+                                <div className={cls.circleProgress}>
+                                    <Completed
+                                        progress={`${
+                                            progress ? progress?.completed_tasks_percentage : 0
+                                        }%`}
+                                        progressStatus={progressStatus}
+                                    />
+                                </div>
+                                <h2>All Rating</h2>
                             </div>
                         </div>
-                        <div className={cls.info__progress}>
-                            <div className={cls.completeTask}>
-                                {/*<div className={cls.completeTask__progress}>*/}
-                                {/*    <div*/}
-                                {/*        className={classNames(cls.taskItem, {*/}
-                                {/*            [cls.active]: !isCompleted*/}
-                                {/*        })}*/}
-                                {/*        onClick={() => setIsCompleted(false)}*/}
-                                {/*    >*/}
-                                {/*        <div className={cls.taskItem__info}>*/}
-                                {/*            <div className={cls.icon}>*/}
-                                {/*                <i className="far fa-calendar-times"/>*/}
-                                {/*            </div>*/}
-                                {/*            <h2>Tasks <br/> In Progress</h2>*/}
-                                {/*        </div>*/}
-                                {/*        <Completed*/}
-                                {/*            progress={`${*/}
-                                {/*                progress*/}
-                                {/*                    ?*/}
-                                {/*                    progress?.in_progress_tasks - progress?.completed_tasks*/}
-                                {/*                    :*/}
-                                {/*                    0*/}
-                                {/*            }`}*/}
-                                {/*            progressStatus={progressStatus}*/}
-                                {/*        />*/}
-                                {/*    </div>*/}
-                                {/*    <div*/}
-                                {/*        className={classNames(cls.taskItem, {*/}
-                                {/*            [cls.active]: isCompleted*/}
-                                {/*        })}*/}
-                                {/*        onClick={() => setIsCompleted(true)}*/}
-                                {/*    >*/}
-                                {/*        <div className={cls.taskItem__info}>*/}
-                                {/*            <div className={cls.icon}>*/}
-                                {/*                <i className="far fa-check-circle"/>*/}
-                                {/*            </div>*/}
-                                {/*            <h2>Project <br/> Completed</h2>*/}
-                                {/*        </div>*/}
-                                {/*        <Completed*/}
-                                {/*            progress={`${*/}
-                                {/*                progress ? progress?.completed_tasks : 0*/}
-                                {/*            }`}*/}
-                                {/*            progressStatus={progressStatus}*/}
-                                {/*        />*/}
-                                {/*    </div>*/}
-                                {/*</div>*/}
-                                <div className={cls.completeTask__precent}>
-                                    <div className={cls.circleProgress}>
-                                        <Completed
-                                            progress={`${
-                                                progress ? progress?.completed_tasks_percentage : 0
-                                            }%`}
-                                            progressStatus={progressStatus}
-                                        />
-                                    </div>
-                                    <h2>All Rating</h2>
+                        <div className={cls.menuTask}>
+                            <div className={cls.menuTask__list}>
+                                <div className={cls.other}>
+                                    {
+                                        menuList.map((item, i) =>
+                                            <h2
+                                                key={i}
+                                                className={classNames(cls.other__item, {
+                                                    [cls.active]: activeMenu === item.name
+                                                })}
+                                                onClick={() => {
+                                                    setActiveMenu(item.name)
+                                                    // setIsCompleted(false)
+                                                }}
+                                            >
+                                                {item.label}
+                                            </h2>
+                                        )
+                                    }
                                 </div>
                             </div>
                         </div>
+
+                    </div>
+                    <div className={cls.info__date}>
+                        <Calendar onChange={setDate} value={date}/>
                     </div>
                 </div>
-
+                <FuncContext.Provider value={contextObj}>
+                    <div className={cls.items}>
+                        {
+                            activeMenu === "lead"
+                                ?
+                                <Leads
+                                    isCompleted={isCompleted}
+                                    arr={search ? filtered : isCompleted ? completedLeads : leads}
+                                    arrStatus={leadsStatus}
+                                />
+                                :
+                                activeMenu === "newStudents"
+                                    ?
+                                    <Student
+                                        arr={search ? filtered : isCompleted ? completedNewStudents : newStudents}
+                                        arrStatus={newStudentsStatus}
+                                    />
+                                    :
+                                    <Student
+                                        arr={search ? filtered : isCompleted ? completedDebtorStudent : debtorStudent}
+                                        arrStatus={debtorStudentStatus}
+                                    />
+                        }
+                    </div>
+                </FuncContext.Provider>
             </div>
 
 
@@ -476,15 +452,16 @@ const Leads = ({isCompleted, arr, arrStatus, renderCards}) => {
     if (arrStatus === "loading" || arrStatus === "idle") {
         return <DefaultLoader/>
     } else {
+        const filteredRed = arr.filter(item => item.status === "red")
+        const filteredYellow = arr.filter(item => item.status === "yellow")
+        const filteredGreen = arr.filter(item => item.status === "green")
         return (
             colorStatusList.map((item, i) => {
                 if (isCompleted && (item === "red" || item === "yellow")) return null
                 if (!isCompleted && item === "green") return null
                 return (
                     <RenderItem
-                        arr={arr}
-                        renderCards={renderCards}
-                        status={item}
+                        arr={item === "red" ? filteredRed : item === "yellow" ? filteredYellow : filteredGreen}
                         index={i}
                     />
                 )
@@ -493,144 +470,226 @@ const Leads = ({isCompleted, arr, arrStatus, renderCards}) => {
     }
 }
 
-const Student = ({arr, arrStatus, renderCards}) => {
-    if (arrStatus === "loading" || arrStatus === "idle") {
-        return <DefaultLoader/>
-    } else {
-        return (colorStatusList.map((item, i) => {
-            if (item === "green") return null
-            return (<RenderItem
-                arr={arr}
-                renderCards={renderCards}
-                status={item}
-                index={i}
-            />)
-        }))
+const Student = ({arr, arrStatus}) => {
+
+    const {location, dispatch, activeMenu} = useContext(FuncContext)
+    const [number, setNumber] = useState(2)
+
+    const onGetStudents = (num) => {
+        dispatch(fetchDebtorStudentsData({number: num, len: arr.length, id: location}))
+        if (num <= 5) {
+            setNumber(++num)
+        }
     }
+
+    const filteredRed = arr.filter(item => item.status === "red")
+    const filteredYellow = arr.filter(item => item.status === "yellow")
+
+    if ((arrStatus === "loading" || arrStatus === "idle") && ((arr.length === 0 && activeMenu==="debtors") || activeMenu==="newStudents")) {
+        return <DefaultLoader/>
+    }
+    return (
+        colorStatusList.map((item, i) => {
+            if (item === "green") return null
+            return (
+                <div id="main" style={{
+                    display: "flex"
+                }}>
+                    <RenderItem
+                        arr={item === "red" ? filteredRed : filteredYellow}
+                        index={i}
+                        onGetStudents={onGetStudents}
+                        number={number}
+                        length={arr.length}
+                    />
+                    {
+                        ((arrStatus === "loading" || arrStatus === "idle") && activeMenu==="debtors") ?
+                            <DefaultLoader/> : null
+                    }
+                </div>
+
+            )
+        })
+    )
 }
 
-const RenderItem = ({arr, renderCards, status, index}) => {
+const RenderItem = ({arr, index, number, onGetStudents, length}) => {
     useEffect(() => {
-        const elements = document.querySelectorAll(".platformTaskManager_scroll__inner__R2L8r")
-        const components = document.querySelectorAll(".platformTaskManager_scroll__ebGEP")
+        const elem = document.querySelectorAll("#main")
+        const elements = document.querySelectorAll("#scroll__inner")
+        const components = document.querySelectorAll("#scroll")
         elements.forEach((item, i) => {
-            if (!item.innerHTML) components[i].style.display = "none"
+            if (!item.innerHTML) {
+                components[i].style.display = "none"
+                if (elem[i]) elem[i].style.display = "none"
+            } else {
+                components[i].style.display = "flex"
+                if (elem[i]) elem[i].style.display = "flex"
+            }
         })
-    }, [])
+    }, [arr])
 
     const [width, setWidth] = useState(0)
-    const ref = useRef([])
     const wrapper = useRef()
+    const {activeMenu} = useContext(FuncContext)
 
     useEffect(() => {
         setWidth(wrapper.current?.scrollWidth - wrapper.current?.offsetWidth)
     }, [arr.length])
 
-    return (<motion.div
-        key={index}
-        className={cls.scroll}
-        ref={wrapper}
-    >
+    return (
         <motion.div
-            className={cls.scroll__inner}
-            drag={"x"}
-            dragConstraints={{left: -width, right: 0}}
+            key={index}
+            className={cls.scroll}
+            id="scroll"
+            ref={wrapper}
         >
-            {arr.map(((item, i) => {
-                return (renderCards(item, i, ref, status))
-            }))}
+            <motion.div
+                className={cls.scroll__inner}
+                id="scroll__inner"
+                drag={"x"}
+                dragConstraints={{left: -width, right: 0}}
+            >
+                {
+                    arr.map((item, i) => {
+                        return (
+                            <TaskCard
+                                item={item}
+                                index={i}
+                            />
+                        )
+                    })
+                }
+                {
+                    length === 100 ? null : (arr.length !== 0 && activeMenu !== "newStudents") ? <div
+                        className={cls.scroll__plus}
+                        onClick={() => onGetStudents(number)}
+                    >
+                        <i className={classNames("fas fa-plus", cls.icon)}/>
+                    </div> : null
+                }
+            </motion.div>
         </motion.div>
-    </motion.div>)
+    )
 }
 
-const TaskCard = ({activeMenu, onClick, item, index, isCompleted, onDelete, setStudentId}) => {
+const TaskCard = ({item, index}) => {
+
+    const {activeMenu, click, onDelete, getSelect, getStudentId, isCompleted} = useContext(FuncContext)
+    const [style, setStyle] = useState({})
 
     useEffect(() => {
         switch (activeMenu) {
             case "lead":
                 setStyle({
-                    generalBack: item?.status === "red" ? "#FFE4E6" : item?.status === "yellow" ? "#FEF9C3" : "#DCFCE7",
-                    backImage: item?.status === "red" ? `url(${taskCardBack})` : item?.status === "yellow" ? `url(${taskCardBack2})` : `url(${taskCardBack4})`,
-                    imageColor: item?.status === "red" ? "#E11D48" : item?.status === "yellow" ? "#FDE047" : "#BEF264"
+                    generalBack: item?.status === "red" ?
+                        "#FFE4E6" : item?.status === "yellow" ?
+                            "#FEF9C3" : "#DCFCE7",
+                    backImage: item?.status === "red" ?
+                        `url(${taskCardBack})` : item?.status === "yellow" ?
+                            `url(${taskCardBack2})` : `url(${taskCardBack4})`,
+                    imageColor: item?.status === "red" ?
+                        "#E11D48" : item?.status === "yellow" ?
+                            "#FDE047" : "#BEF264"
                 })
                 break;
             default:
                 setStyle({
-                    generalBack: item?.status === "red" ? "#FFE4E6" : "#FEF9C3",
-                    strBack: item?.status === "red" ? "deeppink" : "#d7d700",
-                    backImage: item?.status === "red" ? `url(${taskCardBack})` : `url(${taskCardBack2})`
+                    generalBack: item?.status === "red" ?
+                        "#FFE4E6" : "#FEF9C3",
+                    strBack: item?.status === "red" ?
+                        "deeppink" : "#d7d700",
+                    backImage: item?.status === "red" ?
+                        `url(${taskCardBack})` : `url(${taskCardBack2})`
                 })
                 break;
         }
     }, [activeMenu])
 
-    const [style, setStyle] = useState({})
-
-    return (<motion.div
-        key={index}
-        className={cls.item}
-        style={{backgroundColor: style.generalBack}}
-    >
-        {activeMenu === "lead" ? <i
-            className={classNames("fas fa-trash", cls.icon)}
-            onClick={() => {
-                // console.log(true, item.id)
-                onDelete(true)
-                setStudentId({id: item.id, status: item.status})
-            }}
-        /> : null}
-        <div
-            className={classNames(cls.item__info, {
-                [cls.active]: activeMenu === "lead"
-            })}
+    return (
+        <motion.div
+            key={index}
+            className={cls.item}
+            style={{backgroundColor: style.generalBack}}
         >
-            {activeMenu === "lead" ? null : <h2
-                className={cls.debt}
-                style={{backgroundColor: style.strBack}}
-            >
-                {activeMenu === "debtors" ? item?.balance : item?.registered_date}
-            </h2>}
-            <h2 className={cls.username}>{item?.name} {item?.surname}</h2>
-            <ul
-                className={classNames(cls.infoList, {
+            {
+                activeMenu === "lead" ?
+                    <i
+                        className={classNames("fas fa-trash", cls.icon)}
+                        onClick={() => {
+                            // console.log(true, item.id)
+                            onDelete(true)
+                            getStudentId({id: item.id, status: item.status})
+                        }}
+                    /> : null
+            }
+            <div
+                className={classNames(cls.item__info, {
                     [cls.active]: activeMenu === "lead"
                 })}
             >
-                <li className={cls.infoList__item}>Number: <span>{item?.phone}</span></li>
                 {
-                    activeMenu === "newStudents" ? item?.subject?.map(item => {
-                        return (
-                            <li className={cls.infoList__item}>{item}: <span>{item.balance && item ? item.balance :
-                                <span>balance yuq</span>}</span></li>
-                        )
-                    }) : null
+                    activeMenu === "lead" ? null : <h2
+                        className={cls.debt}
+                        style={{backgroundColor: style.strBack}}
+                    >
+                        {
+                            activeMenu === "debtors" ? item?.balance : item?.registered_date
+                        }
+                    </h2>
                 }
-
-                {activeMenu === "lead" ? null : <li className={cls.infoList__item}>
-                    Koment: <span>{item?.history  ? item?.history[item?.history.length - 1]?.comment : null}</span>
-                </li>}
-                {activeMenu === "newStudents" ?
-                    <li className={cls.infoList__item}>Smen: <span>{item?.shift}</span></li> : null}
-                {activeMenu === "debtors" ?
-                    <li className={cls.infoList__item}>Tel
-                        qilingan: <span>{item?.history  ? item?.history[item?.history.length - 1]?.added_date:null}</span>
-                    </li> : null}
-            </ul>
-        </div>
-        <div
-            className={cls.item__image}
-            style={{backgroundImage: style.backImage}}
-        >
-            <div
-                className={cls.circle}
-                onClick={() =>
-                    (item.status === "green" || isCompleted) ? null : onClick(item?.id) & setGetUser(item)
-                }
-            >
-                <img src={unknownUser} alt=""/>
+                <h2 className={cls.username}>{item?.name} {item?.surname}</h2>
+                <ul
+                    className={classNames(cls.infoList, {
+                        [cls.active]: activeMenu === "lead"
+                    })}
+                >
+                    <li className={cls.infoList__item}>Number: <span>{item?.phone}</span></li>
+                    {
+                        activeMenu === "newStudents" ? item?.subject?.map(item => {
+                            return (
+                                <li className={cls.infoList__item}>Fan: <span>{item}</span></li>
+                            )
+                        }) : null
+                    }
+                    {/*{*/}
+                    {/*    activeMenu === "debtors" ? <>*/}
+                    {/*        <li className={cls.infoList__item}>Ingliz tili: <span>390000</span></li>*/}
+                    {/*        <li className={cls.infoList__item}>IT: <span>390000</span></li>*/}
+                    {/*    </> : null*/}
+                    {/*}*/}
+                    {
+                        activeMenu === "lead" ? null : <li className={cls.infoList__item}>
+                            Koment: <span>{item?.history[item?.history.length - 1]?.comment}</span>
+                        </li>
+                    }
+                    {
+                        activeMenu === "newStudents" ?
+                            <li className={cls.infoList__item}>Smen: <span>{item?.shift}</span></li> : null
+                    }
+                    {
+                        activeMenu === "debtors" ?
+                            <li className={cls.infoList__item}>Tel status: <span>{item?.payment_reason}</span>
+                            </li> : null
+                    }
+                </ul>
             </div>
-        </div>
-    </motion.div>)
+            <div
+                className={cls.item__image}
+                style={{backgroundImage: style.backImage}}
+            >
+                <div
+                    className={cls.circle}
+                    onClick={() => (item.status === "green" || isCompleted) ? null :
+                        click(item?.id) &
+                        getSelect(item)
+                    }
+                >
+                    <img src={unknownUser} alt=""/>
+                </div>
+            </div>
+        </motion.div>
+    )
 }
 
 const SwitchButton = ({isCompleted, setIsCompleted}) => {

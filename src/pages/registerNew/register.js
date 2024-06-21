@@ -14,6 +14,7 @@ import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
 
 import cls from "./style.module.sass";
+import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 
 const registerInputList = [
     {
@@ -57,13 +58,10 @@ const registerInputList = [
 
 const shifts = [
     {
-        id: 1,
         name: "Hamma vaqt"
     }, {
-        id: 2,
         name: "1-smen"
     }, {
-        id: 3,
         name: "2-smen"
     },
 ]
@@ -104,8 +102,8 @@ const Register = () => {
     const [selectedSubjects, setSelectedSubjects] = useState([])
     const [selectedLocation, setSelectedLocation] = useState(location)
     const [selectedJob, setSelectedJob] = useState(null)
-    const [studyTime, setStudyTime] = useState(null)
-    const [studyLang, setStudyLang] = useState(null)
+    const [studyTime, setStudyTime] = useState(1)
+    const [studyLang, setStudyLang] = useState(1)
     const [type, setType] = useState("student")
     /// check pass
     const [isCheckLen, setIsCheckLen] = useState(false)
@@ -116,6 +114,9 @@ const Register = () => {
 
     const [activeError,setActiveError] = useState(false)
     const [errorMessage,setErrorMessage] = useState("")
+
+    const [loading, setLoading] = useState(false)
+    const [selectedDefValue, setSelectedDefValue]=useState(0)
 
     const registerSelectList = useMemo(() =>  [
         {
@@ -128,17 +129,20 @@ const Register = () => {
             name: "subs",
             label: "Fan",
             opts: subjects,
-            onFunc: (value) => onChangeSub(value)
+            onFunc: (value) => onChangeSub(value),
+            defValue: selectedDefValue
         }, {
             name: "lang",
             label: "Ta'lim tili",
             opts: languages,
-            onFunc: (value) => setStudyLang(value)
+            onFunc: (value) => setStudyLang(value),
+            defValue: 1
         }, {
             name: "shift",
             label: "Ta'lim vaqti",
             opts: shifts,
-            onFunc: (value) => setStudyTime(value)
+            onFunc: (value) => setStudyTime(value),
+            defValue: 1
         },
         {
             name: "job",
@@ -164,6 +168,7 @@ const Register = () => {
     }, [data])
 
     const onSubmit = (data) => {
+        setLoading(true)
         const res = {
             ...data,
             password,
@@ -177,8 +182,10 @@ const Register = () => {
         const route = type === "employer" ? "register_staff" : type === "student" ? "register" : "register_teacher"
         request(`${BackUrl}${route}`, "POST", JSON.stringify(res), headers())
             .then(res => {
+                setLoading(false)
+                console.log(res)
                 dispatch(setMessage({
-                    msg: res.message,
+                    msg: res.msg,
                     type: "success",
                     active: true
                 }))
@@ -206,6 +213,7 @@ const Register = () => {
     }
 
     const onDeleteSub = (id) => {
+        setSelectedDefValue(0)
         setSubjects(subjects => {
             return subjects.map(item => {
                 if (item.id === +id) {
@@ -223,14 +231,18 @@ const Register = () => {
         setPassword(value)
     }
 
+
+
     useEffect(() => {
         setIsCheckPass(confirmPassword !== password)
 
     }, [confirmPassword,password])
 
     const checkUsername = (username) => {
+        setLoading(true)
         request(`${BackUrl}check_username`,"POST", JSON.stringify(username))
             .then(res => {
+                setLoading(false)
                 // if (res.found) {
                 //     setActiveError(true)
                 //     setErrorMessage("Username band")
@@ -380,7 +392,7 @@ const Register = () => {
                                     </>
                                 )
                             }
-                            if (item.name === "loc") {
+                            if (item.name === "loc"||item.name === "lang"||item.name === "shift"||item.name==="subs") {
                                 return (
                                     <Select
                                         title={item.label}
@@ -400,7 +412,10 @@ const Register = () => {
                             )
                         })
                     }
-                    <Button disabled={isCheckPass || isCheckLen || activeError} type={'submit'}>Yakunlash</Button>
+                    {
+                        loading? <DefaultLoaderSmall/>:
+                        <Button disabled={isCheckPass || isCheckLen || activeError|| selectedSubjects.length===0} type={'submit'}>Yakunlash</Button>
+                    }
                 </form>
             </div>
         </div>

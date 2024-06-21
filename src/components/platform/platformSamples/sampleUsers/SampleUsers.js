@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {Outlet, useHistory, useLocation, Routes, Route,Navigate} from "react-router-dom";
+import {Outlet, useHistory, useLocation, Routes, Route,Navigate, useNavigate} from "react-router-dom";
 
 import PlatformSearch from "components/platform/platformUI/search";
 import FuncBtns from "components/platform/platformUI/funcBtns";
@@ -30,6 +30,7 @@ const SampleUsers = (props) => {
         pageName,
         locationId,
         isDeletedData,
+        isFiltered,
         isTeachers,
         page = 1,
         checkedUsers,
@@ -50,6 +51,10 @@ const SampleUsers = (props) => {
     const [heightOtherFilters,setHeightOtherFilters] = useState(0)
     const [search,setSearch] = useState("")
     const [deletedData,setDeletedData] = useState(false)
+
+    const navigate =useNavigate()
+    const [filteredData,setFilteredData] = useState(false)
+
     // const [usersList,setUsersList] = useState()
     const [currentScroll,setCurrentScroll] = useState()
 
@@ -131,7 +136,14 @@ const SampleUsers = (props) => {
     const dispatch = useDispatch()
     const getDeleted = () => {
         setDeletedData(!deletedData)
+        setFilteredData(false)
         funcsSlice?.getDeleted(!deletedData)
+    }
+    const getFiltered = () => {
+        setFilteredData(!filteredData)
+        setDeletedData(false)
+        navigate('filtered')
+        // funcsSlice?.getDeleted(!filteredData)
     }
     // const changeDirection = () => {
     //     setTimeout(() => {
@@ -230,6 +242,13 @@ const SampleUsers = (props) => {
                                     : null
                             }
                             {
+                                isFiltered ?
+                                    <Button active={filteredData} onClickBtn={getFiltered}>
+                                        Filterlangan
+                                    </Button>
+                                    : null
+                            }
+                            {
                                 isTeachers ?
                                     <>
                                         <Link to={`../../allTeachers`}>
@@ -279,12 +298,14 @@ const SampleUsers = (props) => {
                     </section>
                 </List>} />
 
+                <Route path="other"/>
+
                 <Route path="profile/:userId/*" element={<PlatformUserProfile/>}  />
 
-                <Route path="*"  element={
+                <Route path="/"  element={
                         // This links to /:userId/messages, no matter
                         // how many segments were matched by the *
-                        <Navigate to="list" replace />
+                        <Navigate to="list" />
                     }
                 />
             </Routes>
