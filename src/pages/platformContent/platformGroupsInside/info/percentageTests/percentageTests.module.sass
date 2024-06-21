@@ -1,0 +1,70 @@
+@import "styles/abstracts/variables"
+@import "styles/abstracts/mixins"
+
+.item
+  width: fit-content
+  height: fit-content
+  padding: 2rem
+  box-shadow: 0 1px 2px rgba(0,0,0,0.12),0 2px 4px rgba(0,0,0,0.12) ,0 4px 8px rgba(0,0,0,0.12) ,0 8px 16px rgba(0,0,0,0.12) ,0 16px 32px rgba(0,0,0,0.12)
+  border-radius: 15px
+.information
+  padding: 3rem
+  &__header
+    width: 100%
+    display: flex
+    justify-content: space-between
+    margin-bottom: 2rem
+    &>div
+      display: flex
+      align-items: center
+      justify-content: flex-end
+    i
+      font-size: 2.6rem
+      color: $color-grey-dark
+
+  &__container
+    width: 33rem
+    height: fit-content
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+  &__item
+    display: flex
+    align-items: center
+    justify-content: space-between
+    width: 100%
+    height: 3rem
+    margin: 1rem 0
+    border-bottom: 1px solid $color-grey-dark
+    span
+      font-size: 1.8rem
+      color: $color-grey-dark
+
+@media (max-width: 768px)
+  .information
+    &__header
+      h1
+        font-size: 2.7rem
+      i
+        font-size: 3rem
+    &__container
+      width: 40rem
+    &__item
+      height: 5rem
+      span
+        font-size: 2.2rem
+
+@media (max-width: 475px)
+  .information
+    &__header
+      h1
+        font-size: 3rem
+      i
+        font-size: 3.5rem
+    &__container
+      width: 45rem
+    &__item
+      height: 6rem
+      span
+        font-size: 2.7rem
