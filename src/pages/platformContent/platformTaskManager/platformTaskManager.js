@@ -163,7 +163,7 @@ const PlatformTaskManager = () => {
                 select: studentSelect,
                 ...res
             }
-            request(`${BackUrl}student_in_debts/${locationId}`, "POST", JSON.stringify(result), headers())
+            request(`${BackUrl}student_in_debts/0/0/${locationId}`, "POST", JSON.stringify(result), headers())
                 .then(res => {
                     if (res?.student.name) {
                         dispatch(changeDebtorStudents(res?.student))
@@ -561,7 +561,7 @@ const RenderItem = ({arr, index, number, onGetStudents, length}) => {
                     })
                 }
                 {
-                    length === 100 ? null : (arr.length !== 0 && activeMenu !== "newStudents") ? <div
+                    length === 100 ? null : (arr.length !== 0 && activeMenu === "debtors") ? <div
                         className={cls.scroll__plus}
                         onClick={() => onGetStudents(number)}
                     >
@@ -575,7 +575,7 @@ const RenderItem = ({arr, index, number, onGetStudents, length}) => {
 
 const TaskCard = ({item, index}) => {
 
-    const {activeMenu, click, onDelete, getSelect, getStudentId, isCompleted} = useContext(FuncContext)
+    const {activeMenu, click, onDelete, getStudentId, isCompleted} = useContext(FuncContext)
     const [style, setStyle] = useState({})
 
     useEffect(() => {
@@ -617,7 +617,6 @@ const TaskCard = ({item, index}) => {
                     <i
                         className={classNames("fas fa-trash", cls.icon)}
                         onClick={() => {
-                            // console.log(true, item.id)
                             onDelete(true)
                             getStudentId({id: item.id, status: item.status})
                         }}
@@ -681,8 +680,7 @@ const TaskCard = ({item, index}) => {
                 <div
                     className={cls.circle}
                     onClick={() => (item.status === "green" || isCompleted) ? null :
-                        click(item?.id) &
-                        getSelect(item)
+                        click(item?.id)
                     }
                 >
                     <img src={unknownUser} alt=""/>
