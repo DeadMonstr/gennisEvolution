@@ -306,7 +306,7 @@ const PlatformTaskManager = () => {
                     </div>
                     <div className={cls.userbox__footer_btn}>
                         <Button type={"submit"}>
-                            Button
+                            Button 1
                         </Button>
                     </div>
                 </form>
