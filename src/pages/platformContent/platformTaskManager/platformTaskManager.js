@@ -291,7 +291,7 @@ const PlatformTaskManager = () => {
                     <div className={cls.userbox__infos}>
                         <p className={cls.userbox__subjects}>
                             balance :
-                            <span>{getUser.balance ? getUser.balance : <>balance yuq</>} </span>
+                            <span>{getUser.balance ? getUser.balance : <>balance yo'q 1</>} </span>
                         </p>
                         <p className={cls.userbox__number}>
                             Number :
