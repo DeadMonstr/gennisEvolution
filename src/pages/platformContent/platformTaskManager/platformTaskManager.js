@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {createContext, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import classNames from "classnames";
 import {get, useForm} from "react-hook-form";
 import Calendar from "react-calendar";
@@ -35,6 +35,10 @@ import unknownUser from "assets/user-interface/user_image.png";
 import taskCardBack from "assets/background-img/TaskCardBack.png";
 import taskCardBack2 from "assets/background-img/TaskCardBack2.png";
 import taskCardBack4 from "assets/background-img/TaskCardBack4.png";
+import switchXButton from "assets/icons/bx_task-x.svg";
+import switchCompletedBtn from "assets/icons/progress.svg";
+
+
 import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 import {setMessage} from "slices/messageSlice";
 import {useParams} from "react-router-dom";
@@ -112,6 +116,8 @@ const PlatformTaskManager = () => {
     const [isConfirm, setIsConfirm] = useState(false)
     const [search, setSearch] = useState("")
     const [filtered, setFiltered] = useState([])
+    const [getUser, setGetUser] = useState({})
+
 
     useEffect(() => {
         dispatch(fetchingProgress())
@@ -257,166 +263,205 @@ const PlatformTaskManager = () => {
         onDelete: setDellLead,
         isCompleted: isCompleted,
         dispatch: dispatch,
-        location: locationId
+        location: locationId,
+        getSelect: setGetUser
     }), [activeMenu, isCompleted, locationId])
 
     return (
         <div className={cls.tasks}>
             <div className={cls.tasks__inner}>
                 <div className={cls.header}>
-                    <h1>My tasks</h1>
                     <PlatformSearch search={search} setSearch={setSearch}/>
+                    {/*<h1>My tasks</h1>*/}
+                    {/*<div className={cls.header__search}>*/}
+                    <SwitchButton isCompleted={isCompleted} setIsCompleted={setIsCompleted}/>
+                    {/*<PlatformSearch search={search} setSearch={setSearch}/>*/}
+                    {/*<Input*/}
+                    {/*    placeholder={"Qidiruv"}*/}
+                    {/*    // onChange={}*/}
+                    {/*/>*/}
+                    {/*</div>*/}
                 </div>
-                <div className={cls.info}>
-                    <div className={cls.info__progress}>
-                        <div className={cls.completeTask}>
-                            <div className={cls.completeTask__progress}>
-                                <div
-                                    className={classNames(cls.taskItem, {
-                                        [cls.active]: !isCompleted
-                                    })}
-                                    onClick={() => setIsCompleted(false)}
-                                >
-                                    <div className={cls.taskItem__info}>
-                                        <div className={cls.icon}>
-                                            <i className="far fa-calendar-times"/>
-                                        </div>
-                                        <h2>Tasks <br/> In Progress</h2>
-                                    </div>
-                                    <Completed
-                                        progress={`${
-                                            progress
-                                                ?
-                                                progress?.in_progress_tasks - progress?.completed_tasks
-                                                :
-                                                0
-                                        }`}
-                                        progressStatus={progressStatus}
-                                    />
-                                </div>
-                                <div
-                                    className={classNames(cls.taskItem, {
-                                        [cls.active]: isCompleted
-                                    })}
-                                    onClick={() => setIsCompleted(true)}
-                                >
-                                    <div className={cls.taskItem__info}>
-                                        <div className={cls.icon}>
-                                            <i className="far fa-check-circle"/>
-                                        </div>
-                                        <h2>Project <br/> Completed</h2>
-                                    </div>
-                                    <Completed
-                                        progress={`${
-                                            progress ? progress?.completed_tasks : 0
-                                        }`}
-                                        progressStatus={progressStatus}
-                                    />
-                                </div>
-                            </div>
-                            <div className={cls.completeTask__precent}>
-                                <div className={cls.circleProgress}>
-                                    <Completed
-                                        progress={`${
-                                            progress ? progress?.completed_tasks_percentage : 0
-                                        }%`}
-                                        progressStatus={progressStatus}
-                                    />
-                                </div>
-                                <h2>All Rating</h2>
+                <div className={cls.contentTask}>
+                    <h1>My tasks</h1>
+                    <div className={cls.menuTask}>
+                        <div className={cls.menuTask__list}>
+                            <div className={cls.other}>
+                                {
+                                    menuList.map((item, i) =>
+                                        <h2
+                                            key={i}
+                                            className={classNames(cls.other__item, {
+                                                [cls.active]: activeMenu === item.name
+                                            })}
+                                            onClick={() => {
+                                                setActiveMenu(item.name)
+                                                // setIsCompleted(false)
+                                            }}
+                                        >
+                                            {item.label}
+                                        </h2>
+                                    )
+                                }
                             </div>
                         </div>
-                        <div className={cls.menuTask}>
-                            <div className={cls.menuTask__list}>
-                                <div className={cls.other}>
-                                    {
-                                        menuList.map((item, i) =>
-                                            <h2
-                                                key={i}
-                                                className={classNames(cls.other__item, {
-                                                    [cls.active]: activeMenu === item.name
-                                                })}
-                                                onClick={() => {
-                                                    setActiveMenu(item.name)
-                                                    // setIsCompleted(false)
-                                                }}
-                                            >
-                                                {item.label}
-                                            </h2>
-                                        )
-                                    }
-                                </div>
-                            </div>
-                        </div>
+                    </div>
+                </div>
 
-                    </div>
-                    <div className={cls.info__date}>
-                        <Calendar onChange={setDate} value={date}/>
-                    </div>
-                </div>
-                <FuncContext.Provider value={contextObj}>
-                    <div className={cls.items}>
-                        {
-                            activeMenu === "lead"
-                                ?
-                                <Leads
-                                    isCompleted={isCompleted}
-                                    arr={search ? filtered : isCompleted ? completedLeads : leads}
-                                    arrStatus={leadsStatus}
-                                />
-                                :
-                                activeMenu === "newStudents"
+                <div className={cls.tasks__handler}>
+                    <FuncContext.Provider value={contextObj}>
+                        <div className={cls.items}>
+                            {
+                                activeMenu === "lead"
                                     ?
-                                    <Student
-                                        arr={search ? filtered : isCompleted ? completedNewStudents : newStudents}
-                                        arrStatus={newStudentsStatus}
+                                    <Leads
+                                        isCompleted={isCompleted}
+                                        arr={search ? filtered : isCompleted ? completedLeads : leads}
+                                        arrStatus={leadsStatus}
                                     />
                                     :
-                                    <Student
-                                        arr={search ? filtered : isCompleted ? completedDebtorStudent : debtorStudent}
-                                        arrStatus={debtorStudentStatus}
-                                    />
-                        }
+                                    activeMenu === "newStudents"
+                                        ?
+                                        <Student
+                                            arr={search ? filtered : isCompleted ? completedNewStudents : newStudents}
+                                            arrStatus={newStudentsStatus}
+                                        />
+                                        :
+                                        <Student
+                                            arr={search ? filtered : isCompleted ? completedDebtorStudent : debtorStudent}
+                                            arrStatus={debtorStudentStatus}
+                                        />
+                            }
+                        </div>
+                    </FuncContext.Provider>
+                    <div className={cls.tasks__banner}>
+                        <div className={cls.info}>
+                            <div className={cls.info__date}>
+                                <Calendar onChange={setDate} value={date}/>
+                            </div>
+                        </div>
+                        <div className={cls.info__progress}>
+                            <div className={cls.completeTask}>
+                                {/*<div className={cls.completeTask__progress}>*/}
+                                {/*    <div*/}
+                                {/*        className={classNames(cls.taskItem, {*/}
+                                {/*            [cls.active]: !isCompleted*/}
+                                {/*        })}*/}
+                                {/*        onClick={() => setIsCompleted(false)}*/}
+                                {/*    >*/}
+                                {/*        <div className={cls.taskItem__info}>*/}
+                                {/*            <div className={cls.icon}>*/}
+                                {/*                <i className="far fa-calendar-times"/>*/}
+                                {/*            </div>*/}
+                                {/*            <h2>Tasks <br/> In Progress</h2>*/}
+                                {/*        </div>*/}
+                                {/*        <Completed*/}
+                                {/*            progress={`${*/}
+                                {/*                progress*/}
+                                {/*                    ?*/}
+                                {/*                    progress?.in_progress_tasks - progress?.completed_tasks*/}
+                                {/*                    :*/}
+                                {/*                    0*/}
+                                {/*            }`}*/}
+                                {/*            progressStatus={progressStatus}*/}
+                                {/*        />*/}
+                                {/*    </div>*/}
+                                {/*    <div*/}
+                                {/*        className={classNames(cls.taskItem, {*/}
+                                {/*            [cls.active]: isCompleted*/}
+                                {/*        })}*/}
+                                {/*        onClick={() => setIsCompleted(true)}*/}
+                                {/*    >*/}
+                                {/*        <div className={cls.taskItem__info}>*/}
+                                {/*            <div className={cls.icon}>*/}
+                                {/*                <i className="far fa-check-circle"/>*/}
+                                {/*            </div>*/}
+                                {/*            <h2>Project <br/> Completed</h2>*/}
+                                {/*        </div>*/}
+                                {/*        <Completed*/}
+                                {/*            progress={`${*/}
+                                {/*                progress ? progress?.completed_tasks : 0*/}
+                                {/*            }`}*/}
+                                {/*            progressStatus={progressStatus}*/}
+                                {/*        />*/}
+                                {/*    </div>*/}
+                                {/*</div>*/}
+                                <div className={cls.completeTask__precent}>
+                                    <div className={cls.circleProgress}>
+                                        <Completed
+                                            progress={`${
+                                                progress ? progress?.completed_tasks_percentage : 0
+                                            }%`}
+                                            progressStatus={progressStatus}
+                                        />
+                                    </div>
+                                    <h2>All Rating</h2>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </FuncContext.Provider>
+                </div>
+
             </div>
 
 
-            <Modal
-                activeModal={activeModal}
-                setActiveModal={setActiveModal}
-            >
-                <div className={cls.tasks__modal}>
-                    <form
-                        className={cls.wrapper}
-                        onSubmit={handleSubmit(onSubmit)}
-                    >
-                        {
-                            activeMenu === "debtors" ? <Select
-                                options={options}
-                                onChangeOption={onChange}
-                            /> : null
-                        }
-                        <InputForm
-                            title={"Kament"}
-                            placeholder={"Kament"}
-                            name={"comment"}
-                            register={register}
-                            required
-                        />
-                        {
-                            studentSelect === "tel ko'tarmadi" ? null : <InputForm
-                                title={"Sana"}
-                                type={"date"}
-                                placeholder={"Keyinga qoldirish"}
-                                name={"date"}
-                                register={register}
-                                required
-                            />
-                        }
-                        <Button type={"submit"}>Add</Button>
+            <Modal activeModal={activeModal} setActiveModal={setActiveModal}>
+                <div className={cls.userbox}>
+                    <div className={cls.userbox__img}>
+                        <img src={getUser.img} alt=""/>
+                    </div>
+                    <h2 className={cls.userbox__name}>
+                        <span>{getUser.name} {getUser.surname}</span> <br/>
+                    </h2>
+                    <div className={cls.userbox__info}>
+                        <div className={cls.userbox__infos}>
+                            <p className={cls.userbox__subjects}>
+                                balance :
+                                <span>{getUser.balance ? getUser.balance : <>balance yuq</>} </span>
+                            </p>
+                            <p className={cls.userbox__number}>
+                                Number :
+                                <span>{getUser.phone} </span>
+                            </p>
+                        </div>
+                    </div>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <div className={cls.userbox__inputs}>
+                            <InputForm placeholder="koment" type="text" register={register} required/>
+                            <InputForm placeholder="keyingiga qoldirish" type="date" register={register} required/>
+                        </div>
+                        <div className={cls.userbox__footer_btn}>
+                            <Button type={"submit"}>
+                                Button
+                            </Button>
+                        </div>
                     </form>
+
                 </div>
+                {getUser.history?.length > 1 ? <div className={cls.wrapperList}>
+                    {
+                        getUser.history && getUser.history?.map((item) => {
+                            return (
+                                <div className={cls.wrapperList__box}>
+                                    <div className={cls.wrapperList__items}>
+                                        <div className={cls.wrapperList__number}>
+                                            telefon qilingan :
+                                            <span>
+                                            {activeMenu === "newStudents" ? item.day : item.added_date}
+                                        </span>
+                                        </div>
+                                        <div className={cls.wrapperList__comment}>
+                                            Comment :  <span>{item.comment}</span>
+                                        </div>
+                                        <div className={cls.wrapperList__smen}>
+                                            {item.shift}
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })
+                    }
+                </div> :null }
             </Modal>
             <Modal activeModal={dellLead} setActiveModal={() => setDellLead(false)}>
                 <Confirm setActive={setDellLead} getConfirm={setIsConfirm} text={"O'chirishni hohlaysizmi"}/>
