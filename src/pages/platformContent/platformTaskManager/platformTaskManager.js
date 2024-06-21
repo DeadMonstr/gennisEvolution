@@ -41,18 +41,30 @@ import {useParams} from "react-router-dom";
 import Input from "components/platform/platformUI/input";
 import PlatformSearch from "components/platform/platformUI/search";
 
-const options = [{
-    name: "tel ko'tardi", label: "yes"
-}, {
-    name: "tel ko'tarmadi", label: "no"
-}]
-const menuList = [{
-    name: "debtors", label: "Qarzdorlar"
-}, {
-    name: "newStudents", label: "Yangi o’quvchilar"
-}, {
-    name: "lead", label: "Lead"
-}]
+const options = [
+    {
+        name: "tel ko'tardi",
+        label: "yes"
+    },
+    {
+        name: "tel ko'tarmadi",
+        label: "no"
+    }
+]
+const menuList = [
+    {
+        name: "debtors",
+        label: "Qarzdorlar"
+    },
+    {
+        name: "newStudents",
+        label: "Yangi o’quvchilar"
+    },
+    {
+        name: "lead",
+        label: "Lead"
+    }
+]
 const colorStatusList = ["red", "yellow", "green"]
 
 const PlatformTaskManager = () => {
@@ -106,7 +118,9 @@ const PlatformTaskManager = () => {
                 dispatch(fetchedProgress(res.info))
                 if (!res.info) {
                     dispatch(setMessage({
-                        msg: res.status, type: "success", active: true
+                        msg: res.status,
+                        type: "success",
+                        active: true
                     }))
                 }
             })
@@ -119,13 +133,16 @@ const PlatformTaskManager = () => {
         setStudentSelect(null)
         setActiveModal(false)
         dispatch(setMessage({
-            msg: msg, type: "success", active: true
+            msg: msg,
+            type: "success",
+            active: true
         }))
     }
 
     const onSubmit = (data) => {
         const res = {
-            id: studentId, ...data
+            id: studentId,
+            ...data
         }
         if (activeMenu === "newStudents") {
             request(`${BackUrl}new_students_calling/${locationId}`, "POST", JSON.stringify(res), headers())
@@ -140,7 +157,8 @@ const PlatformTaskManager = () => {
                 .catch(err => console.log(err))
         } else if (activeMenu === "debtors") {
             const result = {
-                select: studentSelect, ...res
+                select: studentSelect,
+                ...res
             }
             request(`${BackUrl}student_in_debts/${locationId}`, "POST", JSON.stringify(result), headers())
                 .then(res => {
@@ -154,7 +172,8 @@ const PlatformTaskManager = () => {
                 .catch(err => console.log(err))
         } else if (activeMenu === "lead") {
             request(`${BackUrl}lead_crud/${studentId}`, "POST", JSON.stringify({
-                ...res, location_id: locationId
+                ...res,
+                location_id: locationId
             }), headers())
                 .then(res => {
                     dispatch(changeLead(res?.lead))
@@ -175,7 +194,9 @@ const PlatformTaskManager = () => {
 
     const onDelete = (data) => {
         const res = {
-            location_id: locationId, status: studentId?.status, ...data
+            location_id: locationId,
+            status: studentId?.status,
+            ...data
         }
         request(`${BackUrl}lead_crud/${studentId?.id}`, "DELETE", JSON.stringify(res), headers())
             .then((res) => {
@@ -183,7 +204,9 @@ const PlatformTaskManager = () => {
                 setDellLead(false)
                 dispatch(deleteLead({id: studentId?.id}))
                 dispatch(setMessage({
-                    msg: res.msg, type: "success", active: true
+                    msg: res.msg,
+                    type: "success",
+                    active: true
                 }))
             })
 
@@ -196,19 +219,29 @@ const PlatformTaskManager = () => {
         let filteredArr;
         switch (activeMenu) {
             case "newStudents":
-                if (isCompleted) filteredArr = completedNewStudents
-                else filteredArr = newStudents
+                if (isCompleted)
+                    filteredArr = completedNewStudents
+                else
+                    filteredArr = newStudents
                 break;
             case "lead":
-                if (isCompleted) filteredArr = completedLeads
-                else filteredArr = leads
+                if (isCompleted)
+                    filteredArr = completedLeads
+                else
+                    filteredArr = leads
                 break;
             default:
-                if (isCompleted) filteredArr = completedDebtorStudent
-                else filteredArr = debtorStudent
+                if (isCompleted)
+                    filteredArr = completedDebtorStudent
+                else
+                    filteredArr = debtorStudent
                 break;
         }
-        return filteredArr.filter(item => item?.name?.toLowerCase().includes(search.toLowerCase()) || item?.surname?.toLowerCase().includes(search.toLowerCase()) || item?.username?.toLowerCase().includes(search.toLowerCase()))
+        return filteredArr.filter(item =>
+            item?.name?.toLowerCase().includes(search.toLowerCase()) ||
+            item?.surname?.toLowerCase().includes(search.toLowerCase()) ||
+            item?.username?.toLowerCase().includes(search.toLowerCase())
+        )
     }, [activeMenu, search])
 
     useEffect(() => {
@@ -231,134 +264,211 @@ const PlatformTaskManager = () => {
             />)
         }
     }, [newStudents, debtorStudent, leads, activeMenu])
-    console.log(getUser, "get user")
-    return (<div className={cls.tasks}>
-        <div className={cls.tasks__inner}>
-            <div className={cls.header}>
-                <h1>My tasks</h1>
-                <PlatformSearch search={search} setSearch={setSearch}/>
-            </div>
-            <div className={cls.info}>
-                <div className={cls.info__progress}>
 
+    return (
+        <div className={cls.tasks}>
+            <div className={cls.tasks__inner}>
+                <div className={cls.header}>
+                    <PlatformSearch search={search} setSearch={setSearch}/>
+                    {/*<h1>My tasks</h1>*/}
+                    {/*<div className={cls.header__search}>*/}
+                    <SwitchButton isCompleted={isCompleted} setIsCompleted={setIsCompleted}/>
+                    {/*<PlatformSearch search={search} setSearch={setSearch}/>*/}
+                    {/*<Input*/}
+                    {/*    placeholder={"Qidiruv"}*/}
+                    {/*    // onChange={}*/}
+                    {/*/>*/}
+                    {/*</div>*/}
+                </div>
+                <div className={cls.contentTask}>
+                    <h1>My tasks</h1>
                     <div className={cls.menuTask}>
                         <div className={cls.menuTask__list}>
                             <div className={cls.other}>
-                                {menuList.map((item, i) => <h2
-                                    key={i}
-                                    className={classNames(cls.other__item, {
-                                        [cls.active]: activeMenu === item.name
-                                    })}
-                                    onClick={() => {
-                                        setActiveMenu(item.name)
-                                        // setIsCompleted(false)
-                                    }}
-                                >
-                                    {item.label}
-                                </h2>)}
+                                {
+                                    menuList.map((item, i) =>
+                                        <h2
+                                            key={i}
+                                            className={classNames(cls.other__item, {
+                                                [cls.active]: activeMenu === item.name
+                                            })}
+                                            onClick={() => {
+                                                setActiveMenu(item.name)
+                                                // setIsCompleted(false)
+                                            }}
+                                        >
+                                            {item.label}
+                                        </h2>
+                                    )
+                                }
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className={cls.items}>
-                {activeMenu === "lead" ? <Leads
-                    isCompleted={isCompleted}
-                    arr={search ? filtered : isCompleted ? completedLeads : leads}
-                    arrStatus={leadsStatus}
-                    renderCards={renderCards}
-                /> : activeMenu === "newStudents" ? <Student
-                    arr={search ? filtered : isCompleted ? completedNewStudents : newStudents}
-                    arrStatus={newStudentsStatus}
-                    renderCards={renderCards}
-                /> : <Student
-                    arr={search ? filtered : isCompleted ? completedDebtorStudent : debtorStudent}
-                    arrStatus={debtorStudentStatus}
-                    renderCards={renderCards}
-                />}
-            </div>
-        </div>
 
-        <Modal activeModal={activeModal} setActiveModal={setActiveModal}>
-            <div className={cls.userbox}>
-                <div className={cls.userbox__img}>
-                    <img src={getUser.img} alt=""/>
-                </div>
-                <h2 className={cls.userbox__name}>
-                    <span>{getUser.name} {getUser.surname}</span> <br/>
-                </h2>
-                <div className={cls.userbox__info}>
-                    <div className={cls.userbox__infos}>
-                        <p className={cls.userbox__subjects}>
-                            balance :
-                            <span>{getUser.balance ? getUser.balance : <>balance yuq</>} </span>
-                        </p>
-                        <p className={cls.userbox__number}>
-                            Number :
-                            <span>{getUser.phone} </span>
-                        </p>
+                <div className={cls.tasks__handler}>
+                    <div className={cls.tasks__main}>
+                        <div className={cls.items}>
+                            {
+                                activeMenu === "lead"
+                                    ?
+                                    <Leads
+                                        isCompleted={isCompleted}
+                                        arr={search ? filtered : isCompleted ? completedLeads : leads}
+                                        arrStatus={leadsStatus}
+                                        renderCards={renderCards}
+                                    />
+                                    :
+                                    activeMenu === "newStudents"
+                                        ?
+                                        <Student
+                                            arr={search ? filtered : isCompleted ? completedNewStudents : newStudents}
+                                            arrStatus={newStudentsStatus}
+                                            renderCards={renderCards}
+                                        />
+                                        :
+                                        <Student
+                                            arr={search ? filtered : isCompleted ? completedDebtorStudent : debtorStudent}
+                                            arrStatus={debtorStudentStatus}
+                                            renderCards={renderCards}
+                                        />
+                            }
+                        </div>
                     </div>
-                </div>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className={cls.userbox__inputs}>
-                        <InputForm placeholder="koment" type="text" register={register} required/>
-                        <InputForm placeholder="keyingiga qoldirish" type="date" register={register} required/>
-                    </div>
-                    <div className={cls.userbox__footer_btn}>
-                        <Button type={"submit"}>
-                            Button
-                        </Button>
-                    </div>
-                </form>
-
-            </div>
-            {getUser.history?.length > 1 ? <div className={cls.wrapperList}>
-                {
-                    getUser.history && getUser.history?.map((item) => {
-                        return (
-                            <div className={cls.wrapperList__box}>
-                                <div className={cls.wrapperList__items}>
-                                    <div className={cls.wrapperList__number}>
-                                        telefon qilingan :
-                                        <span>
-                                            {activeMenu === "newStudents" ? item.day : item.added_date}
-                                        </span>
+                    <div className={cls.tasks__banner}>
+                        <div className={cls.info}>
+                            <div className={cls.info__date}>
+                                <Calendar onChange={setDate} value={date}/>
+                            </div>
+                        </div>
+                        <div className={cls.info__progress}>
+                            <div className={cls.completeTask}>
+                                {/*<div className={cls.completeTask__progress}>*/}
+                                {/*    <div*/}
+                                {/*        className={classNames(cls.taskItem, {*/}
+                                {/*            [cls.active]: !isCompleted*/}
+                                {/*        })}*/}
+                                {/*        onClick={() => setIsCompleted(false)}*/}
+                                {/*    >*/}
+                                {/*        <div className={cls.taskItem__info}>*/}
+                                {/*            <div className={cls.icon}>*/}
+                                {/*                <i className="far fa-calendar-times"/>*/}
+                                {/*            </div>*/}
+                                {/*            <h2>Tasks <br/> In Progress</h2>*/}
+                                {/*        </div>*/}
+                                {/*        <Completed*/}
+                                {/*            progress={`${*/}
+                                {/*                progress*/}
+                                {/*                    ?*/}
+                                {/*                    progress?.in_progress_tasks - progress?.completed_tasks*/}
+                                {/*                    :*/}
+                                {/*                    0*/}
+                                {/*            }`}*/}
+                                {/*            progressStatus={progressStatus}*/}
+                                {/*        />*/}
+                                {/*    </div>*/}
+                                {/*    <div*/}
+                                {/*        className={classNames(cls.taskItem, {*/}
+                                {/*            [cls.active]: isCompleted*/}
+                                {/*        })}*/}
+                                {/*        onClick={() => setIsCompleted(true)}*/}
+                                {/*    >*/}
+                                {/*        <div className={cls.taskItem__info}>*/}
+                                {/*            <div className={cls.icon}>*/}
+                                {/*                <i className="far fa-check-circle"/>*/}
+                                {/*            </div>*/}
+                                {/*            <h2>Project <br/> Completed</h2>*/}
+                                {/*        </div>*/}
+                                {/*        <Completed*/}
+                                {/*            progress={`${*/}
+                                {/*                progress ? progress?.completed_tasks : 0*/}
+                                {/*            }`}*/}
+                                {/*            progressStatus={progressStatus}*/}
+                                {/*        />*/}
+                                {/*    </div>*/}
+                                {/*</div>*/}
+                                <div className={cls.completeTask__precent}>
+                                    <div className={cls.circleProgress}>
+                                        <Completed
+                                            progress={`${
+                                                progress ? progress?.completed_tasks_percentage : 0
+                                            }%`}
+                                            progressStatus={progressStatus}
+                                        />
                                     </div>
-                                    <div className={cls.wrapperList__comment}>
-                                        Comment :  <span>{item.comment}</span>
-                                    </div>
-                                    <div className={cls.wrapperList__smen}>
-                                        {item.shift}
-                                    </div>
+                                    <h2>All Rating</h2>
                                 </div>
                             </div>
-                        )
-                    })
-                }
-            </div> :null }
-        </Modal>
+                        </div>
+                    </div>
+                </div>
 
-        <Modal activeModal={dellLead} setActiveModal={() => setDellLead(false)}>
-            <Confirm setActive={setDellLead} getConfirm={setIsConfirm} text={"O'chirishni hohlaysizmi"}/>
-        </Modal>
-        {isConfirm === "yes" ? <Modal
-            activeModal={dellLead}
-            setActiveModal={() => {
-                setDellLead(false)
-                setIsConfirm(false)
-            }}
-        >
-            <ConfimReason getConfirm={onDelete} reason={true}/>
-        </Modal> : null}
-        <PlatformMessage/>
-    </div>);
+            </div>
+
+
+            <Modal
+                activeModal={activeModal}
+                setActiveModal={setActiveModal}
+            >
+                <div className={cls.tasks__modal}>
+                    <form
+                        className={cls.wrapper}
+                        onSubmit={handleSubmit(onSubmit)}
+                    >
+                        {
+                            activeMenu === "debtors" ? <Select
+                                options={options}
+                                onChangeOption={onChange}
+                            /> : null
+                        }
+                        <InputForm
+                            title={"Kament"}
+                            placeholder={"Kament"}
+                            name={"comment"}
+                            register={register}
+                            required
+                        />
+                        {
+                            studentSelect === "tel ko'tarmadi" ? null : <InputForm
+                                title={"Sana"}
+                                type={"date"}
+                                placeholder={"Keyinga qoldirish"}
+                                name={"date"}
+                                register={register}
+                                required
+                            />
+                        }
+                        <Button type={"submit"}>Add</Button>
+                    </form>
+                </div>
+            </Modal>
+            <Modal activeModal={dellLead} setActiveModal={() => setDellLead(false)}>
+                <Confirm setActive={setDellLead} getConfirm={setIsConfirm} text={"O'chirishni hohlaysizmi"}/>
+            </Modal>
+            {
+                isConfirm === "yes" ?
+                    <Modal
+                        activeModal={dellLead}
+                        setActiveModal={() => {
+                            setDellLead(false)
+                            setIsConfirm(false)
+                        }}
+                    >
+                        <ConfimReason getConfirm={onDelete} reason={true}/>
+                    </Modal> : null
+            }
+            <PlatformMessage/>
+        </div>
+    );
 };
 
 const Completed = ({progress, progressStatus}) => {
     if (progressStatus === "loading" || progressStatus === "idle") {
         return <DefaultLoaderSmall/>
     } else {
-        return (<h1>{progress}</h1>)
+        return (
+            <h1>{progress}</h1>
+        )
     }
 }
 
@@ -366,16 +476,20 @@ const Leads = ({isCompleted, arr, arrStatus, renderCards}) => {
     if (arrStatus === "loading" || arrStatus === "idle") {
         return <DefaultLoader/>
     } else {
-        return (colorStatusList.map((item, i) => {
-            if (isCompleted && (item === "red" || item === "yellow")) return null
-            if (!isCompleted && item === "green") return null
-            return (<RenderItem
-                arr={arr}
-                renderCards={renderCards}
-                status={item}
-                index={i}
-            />)
-        }))
+        return (
+            colorStatusList.map((item, i) => {
+                if (isCompleted && (item === "red" || item === "yellow")) return null
+                if (!isCompleted && item === "green") return null
+                return (
+                    <RenderItem
+                        arr={arr}
+                        renderCards={renderCards}
+                        status={item}
+                        index={i}
+                    />
+                )
+            })
+        )
     }
 }
 
@@ -429,7 +543,7 @@ const RenderItem = ({arr, renderCards, status, index}) => {
     </motion.div>)
 }
 
-const TaskCard = ({activeMenu, onClick, item, index, isCompleted, onDelete, setStudentId, setGetUser}) => {
+const TaskCard = ({activeMenu, onClick, item, index, isCompleted, onDelete, setStudentId}) => {
 
     useEffect(() => {
         switch (activeMenu) {
@@ -518,5 +632,38 @@ const TaskCard = ({activeMenu, onClick, item, index, isCompleted, onDelete, setS
         </div>
     </motion.div>)
 }
+
+const SwitchButton = ({isCompleted, setIsCompleted}) => {
+
+
+    return (
+        <div className={cls.switchBox}>
+            <div className={`${cls.switch} ${isCompleted ? `${cls.completed}` : `${cls.inProgress} `}`}
+                 onClick={()=> setIsCompleted(!isCompleted)}>
+                <div className={cls.iconButton}>
+                    {isCompleted ?
+                        <div className={cls.icon__handlerSucces}>
+                            <img className={cls.buttonIcon} src={switchCompletedBtn}/>
+                        </div>
+
+                        :
+                        <div className={cls.icon__handler}>
+                            <img src={switchXButton} className={cls.buttonIcon}/>
+                        </div>
+                    }
+                </div>
+                <span className={cls.textContent}>
+                     {isCompleted ? (
+                     <h1 className={cls.textContentSucces}>Completed</h1>
+                       ) : (
+                         <h1 className={cls.textContent}>In Progress</h1>
+                       )}
+                  </span>
+
+            </div>
+        </div>
+    );
+};
+
 
 export default PlatformTaskManager;

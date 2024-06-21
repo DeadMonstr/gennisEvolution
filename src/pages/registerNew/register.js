@@ -57,7 +57,6 @@ const registerInputList = [
 
 const shifts = [
     {
-<<<<<<< HEAD
         id: 1,
         name: "Hamma vaqt"
     }, {
@@ -65,12 +64,6 @@ const shifts = [
         name: "1-smen"
     }, {
         id: 3,
-=======
-        name: "Hamma vaqt"
-    }, {
-        name: "1-smen"
-    }, {
->>>>>>> origin/sardor
         name: "2-smen"
     },
 ]
@@ -93,7 +86,6 @@ const Register = () => {
     const {request} = useHttp()
     const dispatch = useDispatch()
     const navigate = useNavigate()
-<<<<<<< HEAD
     const {
         register,
         formState: {errors},
@@ -103,9 +95,6 @@ const Register = () => {
     } = useForm({
         mode: "onBlur"
     })
-=======
-    const {register, handleSubmit} = useForm()
->>>>>>> origin/sardor
     const {data} = useSelector(state => state.register)
     const {location} = useSelector(state => state.me)
     const [subjects, setSubjects] = useState([])
@@ -125,24 +114,8 @@ const Register = () => {
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
 
-<<<<<<< HEAD
     const [activeError,setActiveError] = useState(false)
     const [errorMessage,setErrorMessage] = useState("")
-=======
-    useEffect(() => {
-        dispatch(fetchData())
-    }, [])
-
-    useEffect(() => {
-        if (data) {
-            setSubjects(data.subject)
-            setLocations(data.location)
-            setLanguages(data.language)
-            setJobs(data.jobs)
-        }
-    }, [data])
-
->>>>>>> origin/sardor
 
     const registerSelectList = useMemo(() =>  [
         {
@@ -176,7 +149,6 @@ const Register = () => {
         }
     ], [locations, jobs, shifts, languages, subjects])
 
-<<<<<<< HEAD
     useEffect(() => {
         dispatch(fetchData())
     }, [])
@@ -191,8 +163,6 @@ const Register = () => {
         }
     }, [data])
 
-=======
->>>>>>> origin/sardor
     const onSubmit = (data) => {
         const res = {
             ...data,
@@ -208,11 +178,7 @@ const Register = () => {
         request(`${BackUrl}${route}`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 dispatch(setMessage({
-<<<<<<< HEAD
                     msg: res.message,
-=======
-                    msg: res.msg,
->>>>>>> origin/sardor
                     type: "success",
                     active: true
                 }))
@@ -257,17 +223,11 @@ const Register = () => {
         setPassword(value)
     }
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> origin/sardor
     useEffect(() => {
         setIsCheckPass(confirmPassword !== password)
 
     }, [confirmPassword,password])
 
-<<<<<<< HEAD
     const checkUsername = (username) => {
         request(`${BackUrl}check_username`,"POST", JSON.stringify(username))
             .then(res => {
@@ -292,10 +252,6 @@ const Register = () => {
             })
     }
 
-=======
-
-    console.log(selectedJob)
->>>>>>> origin/sardor
     return (
         <div className={cls.main}>
             <div className={cls.main__container}>
@@ -313,7 +269,6 @@ const Register = () => {
                     {
                         registerInputList.map(item => {
                             if (type !== "student" && item.name === "phoneParent") return null
-<<<<<<< HEAD
                             if (item.name === "username") {
                                 return (
                                     <>
@@ -337,8 +292,6 @@ const Register = () => {
                                     </>
                                 )
                             }
-=======
->>>>>>> origin/sardor
                             if (item.name === "password") {
                                 return (
                                     <div className={cls.form__inner}>
@@ -347,10 +300,7 @@ const Register = () => {
                                             title={item.label}
                                             type={"password"}
                                             onChange={onCheckLength}
-<<<<<<< HEAD
                                             required
-=======
->>>>>>> origin/sardor
                                         />
                                         {
                                             isCheckLen ? <p className={cls.error}>Parolingiz 8 ta dan kam bo'lmasligi
@@ -367,10 +317,7 @@ const Register = () => {
                                             title={item.label}
                                             type={"password"}
                                             onChange={setConfirmPassword}
-<<<<<<< HEAD
                                             required
-=======
->>>>>>> origin/sardor
                                         />
                                         {
                                             isCheckPass ? <p className={cls.error}>Parol har xil</p> : null
@@ -397,19 +344,6 @@ const Register = () => {
                     />
                     {
                         registerSelectList.map(item => {
-<<<<<<< HEAD
-=======
-                            if (item.name === "loc") {
-                                return (
-                                    <Select
-                                        title={item.label}
-                                        options={item.opts}
-                                        onChangeOption={item.onFunc}
-                                        defaultValue={item.defValue}
-                                    />
-                                )
-                            }
->>>>>>> origin/sardor
                             if (type !== "student" && item.name === "shift") return null
                             if (type !== "employer" && item.name === "job") return null
                             if (type === "employer" && item.name === "subs") return null
@@ -446,7 +380,6 @@ const Register = () => {
                                     </>
                                 )
                             }
-<<<<<<< HEAD
                             if (item.name === "loc") {
                                 return (
                                     <Select
@@ -457,8 +390,6 @@ const Register = () => {
                                     />
                                 )
                             }
-=======
->>>>>>> origin/sardor
                             return (
                                 <Select
                                     keyValue={item.keyValue}
@@ -469,11 +400,7 @@ const Register = () => {
                             )
                         })
                     }
-<<<<<<< HEAD
                     <Button disabled={isCheckPass || isCheckLen || activeError} type={'submit'}>Yakunlash</Button>
-=======
-                    <Button disabled={isCheckPass || isCheckLen} type={'submit'}>Yakunlash</Button>
->>>>>>> origin/sardor
                 </form>
             </div>
         </div>

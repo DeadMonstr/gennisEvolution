@@ -22,6 +22,8 @@
     width: 100%
     box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4)
     border-radius: 3rem
+    display: flex
+    flex-direction: column
 
     .header
       padding: 2rem 0
@@ -53,14 +55,17 @@
       display: flex
 
       &__progress
-        width: 70%
+        width: 90%
         display: flex
+        align-items: center
         flex-direction: column
         padding: 3rem 0
         gap: 10rem
+        border-radius: 20px
+        background: #E0F2FE
 
         .completeTask
-          width: 100%
+          width: 35%
           display: flex
           justify-content: space-between
 
@@ -141,7 +146,7 @@
                 &.active
                   color: rgba(26, 26, 26, 0.6)
       &__date
-        width: 30%
+        width: 100%
         display: flex
         justify-content: center
         align-items: center
@@ -321,4 +326,136 @@
     justify-content: space-between
 
 
+.switchBox
+  display: flex
+  align-items: center
+  height: 50px
+  border-radius: 50px
+  justify-content: space-between
+
+
+.switch
+  display: flex
+  align-items: center
+  justify-content: start
+  gap: 30px
+  width: 220px
+  height: 50px
+  border-radius: 50px
+  cursor: pointer
+  padding: 10px
+  transition: background-color 0.3s ease
+  color: white
+
+
+.inProgress
+  background-color: #ff8c42
+
+
+
+
+.completed
+  background-color: #34c9eb
+
+.icon__handler
+  width: 40px
+  height: 40px
+  background: white
+  border-radius: 50%
+  display: flex
+  margin-left: 1.7px
+  margin-top: -8px
+  align-items: center
+  justify-content: center
+  transition: 0.3s ease-in-out
+  user-select: none
+
+.icon__handlerSucces
+  width: 40px
+  height: 40px
+  background: white
+  border-radius: 50%
+  display: flex
+  margin-left: 16.3rem
+  margin-top: -8px
+  align-items: center
+  justify-content: center
+  transition: 0.3s ease-in-out
+  user-select: none
+
+
+.iconButton
+  width: 23px
+  height: 23px
+  margin-right: 10px
+
+.buttonIcon
+  width: 20px
+  height: 20px
+  object-fit: cover
+
+.textContent
+  font-size: 21px
+  user-select: none
+  transition: 0.3s ease-in-out
+
+.textContentSucces
+  font-size: 21px
+  margin-left: -45px
+  transition: 0.3s ease-in-out
+
+
+.tasks__handler
+  width: 100%
+  height: auto
+  display: flex
+  justify-content: space-between
+
+.tasks__main
+  width: 70%
+  height: 100%
+  display: flex
+  flex-direction: column
+.menuTask
+  width: 100%
+  display: flex
+  flex-direction: column
+  gap: 5rem
+  font-size: 1.6rem
+
+  &__list
+    display: flex
+    justify-content: space-between
+    border-bottom: 2px solid rgba(26, 26, 26, 0.3)
+    color: rgba(26, 26, 26, 0.3)
+    font-size: 1.4rem
+    padding: .7rem 0
+
+    .other
+      display: flex
+      gap: 3rem
+
+      &__item
+        cursor: pointer
+        z-index: 2
+
+        &.active
+          color: rgba(26, 26, 26, 0.6)
+
+.contentTask
+  width: 100%
+  height: auto
+  display: flex
+  flex-direction: column
+  gap: 40px
+  padding: 10px
+
+.tasks__banner
+  width: 30%
+  height: auto
+  gap: 15px
+  display: flex
+  flex-direction: column
+  align-items: center
+  border-left: 4px solid #CBD5E1
 

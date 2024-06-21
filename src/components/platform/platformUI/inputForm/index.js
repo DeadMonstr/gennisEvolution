@@ -5,6 +5,8 @@ import "./input.sass"
 
 
 const InputForm = ({title, name, type, required, register, defaultValue, placeholder, value, error, onChange, onBlur}) => {
+
+
     return (
         <label className="input-label" htmlFor={name}>
             <span className="name-field">{title}</span>
