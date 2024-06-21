@@ -58,13 +58,10 @@ const registerInputList = [
 
 const shifts = [
     {
-        id: 1,
         name: "Hamma vaqt"
     }, {
-        id: 2,
         name: "1-smen"
     }, {
-        id: 3,
         name: "2-smen"
     },
 ]
@@ -233,6 +230,8 @@ const Register = () => {
         setIsCheckPass(confirmPassword.length !== 0 ? value !== confirmPassword : false)
         setPassword(value)
     }
+
+
 
     useEffect(() => {
         setIsCheckPass(confirmPassword !== password)

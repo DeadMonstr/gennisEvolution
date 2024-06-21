@@ -104,7 +104,7 @@ const TaskManagerSlice = createSlice({
             })
             .addCase(fetchDebtorStudentsData.fulfilled, (state, action) => {
                 state.debtorStudent = [...state.debtorStudent, ...action.payload.students]
-                state.completedDebtorStudent = action.payload.completed_tasks
+                state.completedDebtorStudent = [...state.completedDebtorStudent , ...action.payload.completed_tasks]
                 state.debtorStudentStatus = "success"
             })
             .addCase(fetchDebtorStudentsData.rejected, (state) => {
