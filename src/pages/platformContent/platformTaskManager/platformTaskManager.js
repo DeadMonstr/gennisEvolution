@@ -291,7 +291,7 @@ const PlatformTaskManager = () => {
                     <div className={cls.userbox__infos}>
                         <p className={cls.userbox__subjects}>
                             balance :
-                            <span>{getUser.balance ? getUser.balance : <>balance yo'q 1</>} </span>
+                            <span>{getUser.balance ? getUser.balance : <>balance yuq</>} </span>
                         </p>
                         <p className={cls.userbox__number}>
                             Number :
@@ -306,7 +306,7 @@ const PlatformTaskManager = () => {
                     </div>
                     <div className={cls.userbox__footer_btn}>
                         <Button type={"submit"}>
-                            Button 1
+                            Button
                         </Button>
                     </div>
                 </form>
