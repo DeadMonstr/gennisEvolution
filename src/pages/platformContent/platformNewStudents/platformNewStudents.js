@@ -217,6 +217,7 @@ const PlatformNewStudents = () => {
                 pageName={"newStudents"}
                 locationId={locationId}
                 isDeletedData={true}
+                isFiltered={true}
                 page={page}
                 checkedUsers={checkedUsers}
             />
