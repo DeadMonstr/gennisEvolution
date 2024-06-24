@@ -4,7 +4,7 @@ import {get, useForm} from "react-hook-form";
 import Calendar from "react-calendar";
 import {useDispatch, useSelector} from "react-redux";
 import 'react-calendar/dist/Calendar.css';
-import {motion} from "framer-motion";
+import {motion, useDragControls, useMotionValue, useMotionValueEvent} from "framer-motion";
 
 import Modal from "components/platform/platformUI/modal";
 import InputForm from "components/platform/platformUI/inputForm";
@@ -27,7 +27,8 @@ import {
     fetchingProgress,
     fetchNewStudentsData,
     fetchDebtorStudentsData,
-    fetchLeadsData
+    fetchLeadsData,
+    fetchCompletedDebtorsData
 } from "slices/taskManagerSlice";
 
 import cls from "./platformTaskManager.module.sass";
@@ -100,6 +101,8 @@ const PlatformTaskManager = () => {
         } else {
             if (debtorStudent.length === 0) {
                 dispatch(fetchDebtorStudentsData({number: 1, len: 0, id: +locationId}))
+            } else if (isCompleted) {
+                dispatch(fetchCompletedDebtorsData(locationId))
             }
         }
 
@@ -264,8 +267,9 @@ const PlatformTaskManager = () => {
         isCompleted: isCompleted,
         dispatch: dispatch,
         location: locationId,
-        getSelect: setGetUser
-    }), [activeMenu, isCompleted, locationId])
+        getSelect: setGetUser,
+        completedLength: completedDebtorStudent.length
+    }), [activeMenu, isCompleted, locationId, completedDebtorStudent])
 
     return (
         <div className={cls.tasks}>
@@ -408,7 +412,7 @@ const PlatformTaskManager = () => {
             <Modal activeModal={activeModal} setActiveModal={setActiveModal}>
                 <div className={cls.userbox}>
                     <div className={cls.userbox__img}>
-                        <img src={getUser.img} alt=""/>
+                        <img src={getUser.img ? getUser.img : unknownUser} alt=""/>
                     </div>
                     <h2 className={cls.userbox__name}>
                         <span>{getUser.name} {getUser.surname}</span> <br/>
@@ -425,18 +429,19 @@ const PlatformTaskManager = () => {
                             </p>
                         </div>
                     </div>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <div className={cls.userbox__inputs}>
-                            <InputForm placeholder="koment" type="text" register={register} required/>
-                            <InputForm placeholder="keyingiga qoldirish" type="date" register={register} required/>
-                        </div>
-                        <div className={cls.userbox__footer_btn}>
-                            <Button type={"submit"}>
-                                Button
-                            </Button>
-                        </div>
-                    </form>
-
+                    {
+                        isCompleted ? null : <form onSubmit={handleSubmit(onSubmit)}>
+                            <div className={cls.userbox__inputs}>
+                                <InputForm placeholder="koment" type="text" register={register} required/>
+                                <InputForm placeholder="keyingiga qoldirish" type="date" register={register} required/>
+                            </div>
+                            <div className={cls.userbox__footer_btn}>
+                                <Button type={"submit"}>
+                                    Button
+                                </Button>
+                            </div>
+                        </form>
+                    }
                 </div>
                 {getUser.history?.length > 1 ? <div className={cls.wrapperList}>
                     {
@@ -451,7 +456,7 @@ const PlatformTaskManager = () => {
                                         </span>
                                         </div>
                                         <div className={cls.wrapperList__comment}>
-                                            Comment :  <span>{item.comment}</span>
+                                            Comment : <span>{item.comment}</span>
                                         </div>
                                         <div className={cls.wrapperList__smen}>
                                             {item.shift}
@@ -461,7 +466,7 @@ const PlatformTaskManager = () => {
                             )
                         })
                     }
-                </div> :null }
+                </div> : null}
             </Modal>
             <Modal activeModal={dellLead} setActiveModal={() => setDellLead(false)}>
                 <Confirm setActive={setDellLead} getConfirm={setIsConfirm} text={"O'chirishni hohlaysizmi"}/>
@@ -517,11 +522,13 @@ const Leads = ({isCompleted, arr, arrStatus}) => {
 
 const Student = ({arr, arrStatus}) => {
 
-    const {location, dispatch, activeMenu} = useContext(FuncContext)
+    const {location, dispatch, activeMenu, completedLength, isCompleted} = useContext(FuncContext)
     const [number, setNumber] = useState(2)
 
     const onGetStudents = (num) => {
-        dispatch(fetchDebtorStudentsData({number: num, len: arr.length, id: location}))
+        const length = arr.length + completedLength
+        console.log(length)
+        dispatch(fetchDebtorStudentsData({number: num, len: length, id: location}))
         if (num <= 5) {
             setNumber(++num)
         }
@@ -530,7 +537,7 @@ const Student = ({arr, arrStatus}) => {
     const filteredRed = arr.filter(item => item.status === "red")
     const filteredYellow = arr.filter(item => item.status === "yellow")
 
-    if ((arrStatus === "loading" || arrStatus === "idle") && ((arr.length === 0 && activeMenu==="debtors") || activeMenu==="newStudents")) {
+    if ((arrStatus === "loading" || arrStatus === "idle") && ((arr.length === 0 && activeMenu === "debtors") || activeMenu === "newStudents")) {
         return <DefaultLoader/>
     }
     return (
@@ -545,10 +552,11 @@ const Student = ({arr, arrStatus}) => {
                         index={i}
                         onGetStudents={onGetStudents}
                         number={number}
-                        length={arr.length}
+                        length={arr.length + completedLength}
+                        status={arrStatus}
                     />
                     {
-                        ((arrStatus === "loading" || arrStatus === "idle") && activeMenu==="debtors") ?
+                        ((arrStatus === "loading" || arrStatus === "idle") && activeMenu === "debtors") && !isCompleted ?
                             <DefaultLoader/> : null
                     }
                 </div>
@@ -558,7 +566,7 @@ const Student = ({arr, arrStatus}) => {
     )
 }
 
-const RenderItem = ({arr, index, number, onGetStudents, length}) => {
+const RenderItem =React.memo( ({arr, index, number, onGetStudents, length, status}) => {
     useEffect(() => {
         const elem = document.querySelectorAll("#main")
         const elements = document.querySelectorAll("#scroll__inner")
@@ -574,13 +582,16 @@ const RenderItem = ({arr, index, number, onGetStudents, length}) => {
         })
     }, [arr])
 
+    const x = useMotionValue(0)
     const [width, setWidth] = useState(0)
     const wrapper = useRef()
     const {activeMenu, isCompleted} = useContext(FuncContext)
 
     useEffect(() => {
         setWidth(wrapper.current?.scrollWidth - wrapper.current?.offsetWidth)
-    }, [arr.length])
+        x.set(0)
+    }, [arr.length, isCompleted, activeMenu])
+    const controls = useDragControls()
 
     return (
         <motion.div
@@ -593,7 +604,14 @@ const RenderItem = ({arr, index, number, onGetStudents, length}) => {
                 className={cls.scroll__inner}
                 id="scroll__inner"
                 drag={"x"}
+                style={{
+                    x
+                }}
+                // drag
+                dragElastic={0}
+                dragMomentum={false}
                 dragConstraints={{left: -width, right: 0}}
+                dragControls={controls}
             >
                 {
                     arr.map((item, i) => {
@@ -606,21 +624,22 @@ const RenderItem = ({arr, index, number, onGetStudents, length}) => {
                     })
                 }
                 {
-                    length === 100 ? null : (arr.length !== 0 && activeMenu === "debtors" && !isCompleted) ? <div
-                        className={cls.scroll__plus}
-                        onClick={() => onGetStudents(number)}
-                    >
-                        <i className={classNames("fas fa-plus", cls.icon)}/>
-                    </div> : null
+                    status !== "loading" ? length === 100 ? null : (arr.length !== 0 && activeMenu === "debtors" && !isCompleted) ?
+                        <div
+                            className={cls.scroll__plus}
+                            onClick={() => onGetStudents(number)}
+                        >
+                            <i className={classNames("fas fa-plus", cls.icon)}/>
+                        </div> : null : null
                 }
             </motion.div>
         </motion.div>
     )
-}
+})
 
 const TaskCard = ({item, index}) => {
 
-    const {activeMenu, click, onDelete, getStudentId, isCompleted} = useContext(FuncContext)
+    const {activeMenu, click, onDelete, getStudentId, isCompleted, getSelect} = useContext(FuncContext)
     const [style, setStyle] = useState({})
 
     useEffect(() => {
@@ -724,8 +743,13 @@ const TaskCard = ({item, index}) => {
             >
                 <div
                     className={cls.circle}
-                    onClick={() => (item.status === "green" || isCompleted) ? null :
+                    onClick={
+                    () =>
+                        // (item.status === "green" || isCompleted) ? null :
+                    {
                         click(item?.id)
+                        getSelect(item)
+                    }
                     }
                 >
                     <img src={unknownUser} alt=""/>
@@ -741,25 +765,25 @@ const SwitchButton = ({isCompleted, setIsCompleted}) => {
     return (
         <div className={cls.switchBox}>
             <div className={`${cls.switch} ${isCompleted ? `${cls.completed}` : `${cls.inProgress} `}`}
-                 onClick={()=> setIsCompleted(!isCompleted)}>
+                 onClick={() => setIsCompleted(!isCompleted)}>
                 <div className={cls.iconButton}>
                     {isCompleted ?
                         <div className={cls.icon__handlerSucces}>
-                            <img className={cls.buttonIcon} src={switchCompletedBtn}/>
+                            <img className={cls.buttonIcon} src={switchCompletedBtn} alt=""/>
                         </div>
 
                         :
                         <div className={cls.icon__handler}>
-                            <img src={switchXButton} className={cls.buttonIcon}/>
+                            <img src={switchXButton} className={cls.buttonIcon} alt=""/>
                         </div>
                     }
                 </div>
                 <span className={cls.textContent}>
                      {isCompleted ? (
-                     <h1 className={cls.textContentSucces}>Completed</h1>
-                       ) : (
+                         <h1 className={cls.textContentSucces}>Completed</h1>
+                     ) : (
                          <h1 className={cls.textContent}>In Progress</h1>
-                       )}
+                     )}
                   </span>
 
             </div>

@@ -38,6 +38,14 @@ export const fetchLeadsData = createAsyncThunk(
     }
 )
 
+export const fetchCompletedDebtorsData = createAsyncThunk(
+    'taskManager/fetchCompletedDebtorsData',
+    async (id) => {
+        const {request} = useHttp();
+        return await request(`${BackUrl}get_completed_tasks/${id}`, "GET", null, headers())
+    }
+)
+
 const TaskManagerSlice = createSlice({
     name: 'taskManager',
     initialState,
@@ -103,8 +111,9 @@ const TaskManagerSlice = createSlice({
                 state.debtorStudentStatus = "loading"
             })
             .addCase(fetchDebtorStudentsData.fulfilled, (state, action) => {
+                // console.log(action.payload)
                 state.debtorStudent = [...state.debtorStudent, ...action.payload.students]
-                state.completedDebtorStudent = [...state.completedDebtorStudent , ...action.payload.completed_tasks]
+                // state.completedDebtorStudent = [...state.completedDebtorStudent , ...action.payload.completed_tasks]
                 state.debtorStudentStatus = "success"
             })
             .addCase(fetchDebtorStudentsData.rejected, (state) => {
@@ -120,6 +129,16 @@ const TaskManagerSlice = createSlice({
             })
             .addCase(fetchLeadsData.rejected, (state) => {
                 state.leadsStatus = "error"
+            })
+            .addCase(fetchCompletedDebtorsData.pending, (state) => {
+                state.debtorStudentStatus = "loading"
+            })
+            .addCase(fetchCompletedDebtorsData.fulfilled, (state, action) => {
+                state.completedDebtorStudent = action.payload.completed_tasks
+                state.debtorStudentStatus = "success"
+            })
+            .addCase(fetchCompletedDebtorsData.rejected, (state) => {
+                state.debtorStudentStatus = "error"
             })
     }
 })
