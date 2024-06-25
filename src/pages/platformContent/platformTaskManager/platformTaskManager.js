@@ -226,6 +226,8 @@ const PlatformTaskManager = () => {
         }
     }
 
+    console.log(progress)
+
     const searchedUsers = useCallback(() => {
         let filteredArr;
         switch (activeMenu) {
@@ -287,7 +289,24 @@ const PlatformTaskManager = () => {
                     {/*</div>*/}
                 </div>
                 <div className={cls.contentTask}>
-                    <h1>My tasks</h1>
+                    <div className={cls.contentTask__inner}>
+                        <h1>My tasks</h1>
+                        {
+                            isCompleted
+                                ?
+                                <Completed
+                                    style={"#34c9eb"}
+                                    progress={progress.completed_tasks}
+                                    progressStatus={progressStatus}
+                                />
+                                :
+                                <Completed
+                                    style={"#ff8c42"}
+                                    progress={progress.in_progress_tasks}
+                                    progressStatus={progressStatus}
+                                />
+                        }
+                    </div>
                     <div className={cls.menuTask}>
                         <div className={cls.menuTask__list}>
                             <div className={cls.other}>
@@ -346,50 +365,6 @@ const PlatformTaskManager = () => {
                         </div>
                         <div className={cls.info__progress}>
                             <div className={cls.completeTask}>
-                                {/*<div className={cls.completeTask__progress}>*/}
-                                {/*    <div*/}
-                                {/*        className={classNames(cls.taskItem, {*/}
-                                {/*            [cls.active]: !isCompleted*/}
-                                {/*        })}*/}
-                                {/*        onClick={() => setIsCompleted(false)}*/}
-                                {/*    >*/}
-                                {/*        <div className={cls.taskItem__info}>*/}
-                                {/*            <div className={cls.icon}>*/}
-                                {/*                <i className="far fa-calendar-times"/>*/}
-                                {/*            </div>*/}
-                                {/*            <h2>Tasks <br/> In Progress</h2>*/}
-                                {/*        </div>*/}
-                                {/*        <Completed*/}
-                                {/*            progress={`${*/}
-                                {/*                progress*/}
-                                {/*                    ?*/}
-                                {/*                    progress?.in_progress_tasks - progress?.completed_tasks*/}
-                                {/*                    :*/}
-                                {/*                    0*/}
-                                {/*            }`}*/}
-                                {/*            progressStatus={progressStatus}*/}
-                                {/*        />*/}
-                                {/*    </div>*/}
-                                {/*    <div*/}
-                                {/*        className={classNames(cls.taskItem, {*/}
-                                {/*            [cls.active]: isCompleted*/}
-                                {/*        })}*/}
-                                {/*        onClick={() => setIsCompleted(true)}*/}
-                                {/*    >*/}
-                                {/*        <div className={cls.taskItem__info}>*/}
-                                {/*            <div className={cls.icon}>*/}
-                                {/*                <i className="far fa-check-circle"/>*/}
-                                {/*            </div>*/}
-                                {/*            <h2>Project <br/> Completed</h2>*/}
-                                {/*        </div>*/}
-                                {/*        <Completed*/}
-                                {/*            progress={`${*/}
-                                {/*                progress ? progress?.completed_tasks : 0*/}
-                                {/*            }`}*/}
-                                {/*            progressStatus={progressStatus}*/}
-                                {/*        />*/}
-                                {/*    </div>*/}
-                                {/*</div>*/}
                                 <div className={cls.completeTask__precent}>
                                     <div className={cls.circleProgress}>
                                         <Completed
@@ -488,12 +463,12 @@ const PlatformTaskManager = () => {
     );
 };
 
-const Completed = ({progress, progressStatus}) => {
+const Completed = ({progress, progressStatus, style = "black"}) => {
     if (progressStatus === "loading" || progressStatus === "idle") {
         return <DefaultLoaderSmall/>
     } else {
         return (
-            <h1>{progress}</h1>
+            <h1 style={{color: style, fontSize: "2.6rem"}}>{progress}</h1>
         )
     }
 }
@@ -566,7 +541,7 @@ const Student = ({arr, arrStatus}) => {
     )
 }
 
-const RenderItem =React.memo( ({arr, index, number, onGetStudents, length, status}) => {
+const RenderItem = React.memo(({arr, index, number, onGetStudents, length, status}) => {
     useEffect(() => {
         const elem = document.querySelectorAll("#main")
         const elements = document.querySelectorAll("#scroll__inner")
@@ -744,12 +719,12 @@ const TaskCard = ({item, index}) => {
                 <div
                     className={cls.circle}
                     onClick={
-                    () =>
-                        // (item.status === "green" || isCompleted) ? null :
-                    {
-                        click(item?.id)
-                        getSelect(item)
-                    }
+                        () =>
+                            // (item.status === "green" || isCompleted) ? null :
+                        {
+                            click(item?.id)
+                            getSelect(item)
+                        }
                     }
                 >
                     <img src={unknownUser} alt=""/>
