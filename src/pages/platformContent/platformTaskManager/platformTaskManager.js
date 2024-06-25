@@ -291,21 +291,11 @@ const PlatformTaskManager = () => {
                 <div className={cls.contentTask}>
                     <div className={cls.contentTask__inner}>
                         <h1>My tasks</h1>
-                        {
-                            isCompleted
-                                ?
-                                <Completed
-                                    style={"#34c9eb"}
-                                    progress={progress.completed_tasks}
-                                    progressStatus={progressStatus}
-                                />
-                                :
-                                <Completed
-                                    style={"#ff8c42"}
-                                    progress={progress.in_progress_tasks}
-                                    progressStatus={progressStatus}
-                                />
-                        }
+                        <Completed
+                            style={isCompleted ? "#34c9eb" : "#ff8c42"}
+                            progress={isCompleted ? progress?.completed_tasks : progress?.in_progress_tasks}
+                            progressStatus={progressStatus}
+                        />
                     </div>
                     <div className={cls.menuTask}>
                         <div className={cls.menuTask__list}>
