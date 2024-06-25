@@ -374,6 +374,44 @@ const PlatformTaskManager = () => {
             </div>
 
 
+            {/*<Modal*/}
+            {/*    activeModal={activeModal}*/}
+            {/*    setActiveModal={setActiveModal}*/}
+            {/*>*/}
+            {/*    <div className={cls.tasks__modal}>*/}
+            {/*        <form*/}
+            {/*            className={cls.wrapper}*/}
+            {/*            onSubmit={handleSubmit(onSubmit)}*/}
+            {/*        >*/}
+            {/*            {*/}
+            {/*                activeMenu === "debtors" ? <Select*/}
+            {/*                    options={options}*/}
+            {/*                    onChangeOption={onChange}*/}
+            {/*                /> : null*/}
+            {/*            }*/}
+            {/*            <InputForm*/}
+            {/*                title={"Kament"}*/}
+            {/*                placeholder={"Kament"}*/}
+            {/*                name={"comment"}*/}
+            {/*                register={register}*/}
+            {/*                required*/}
+            {/*            />*/}
+            {/*            {*/}
+            {/*                studentSelect === "tel ko'tarmadi" ? null : <InputForm*/}
+            {/*                    title={"Sana"}*/}
+            {/*                    type={"date"}*/}
+            {/*                    placeholder={"Keyinga qoldirish"}*/}
+            {/*                    name={"date"}*/}
+            {/*                    register={register}*/}
+            {/*                    required*/}
+            {/*                />*/}
+            {/*            }*/}
+            {/*            <Button type={"submit"}>Add</Button>*/}
+            {/*        </form>*/}
+            {/*    </div>*/}
+            {/*</Modal>*/}
+
+
             <Modal activeModal={activeModal} setActiveModal={setActiveModal}>
                 <div className={cls.userbox}>
                     <div className={cls.userbox__img}>
@@ -397,8 +435,18 @@ const PlatformTaskManager = () => {
                     {
                         isCompleted ? null : <form onSubmit={handleSubmit(onSubmit)}>
                             <div className={cls.userbox__inputs}>
-                                <InputForm placeholder="koment" type="text" register={register} required/>
-                                <InputForm placeholder="keyingiga qoldirish" type="date" register={register} required/>
+                                {
+                                    activeMenu === "debtors" ? <Select
+                                        options={options}
+                                        onChangeOption={onChange}
+                                    /> : null
+                                }
+                                {
+                                    studentSelect === "tel ko'tarmadi" ? null : <>
+                                        <InputForm placeholder="koment" type="text" register={register} required/>
+                                        <InputForm placeholder="keyingiga qoldirish" type="date" register={register} required/>
+                                    </>
+                                }
                             </div>
                             <div className={cls.userbox__footer_btn}>
                                 <Button type={"submit"}>

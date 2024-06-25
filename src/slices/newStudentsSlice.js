@@ -82,10 +82,20 @@ const initialState = {
     checkedUsers: [],
     filteredStudents: [],
     page: 1,
+    filteredNewStudents: [],
+    filteredNewStudentsStatus: "idle",
     fetchNewStudentsStatus: "idle",
     fetchCreateGroupToolsStatus: "idle",
     fetchFilteredStudentsStatus: "idle",
 }
+
+export const  fetchNewFilteredStudents = createAsyncThunk(
+    'newStudentsSlice/fetchNewFilteredStudents',
+    async (id) => {
+        const {request} = useHttp();
+        return await request(`${BackUrl}get_filtered_students_list/${id}`,"GET",null,headers())
+    }
+)
 
 
 export const  fetchNewStudents = createAsyncThunk(
@@ -197,6 +207,7 @@ const newStudentsSlice = createSlice({
         builder
             .addCase(fetchNewStudents.pending,state => {state.fetchNewStudentsStatus = 'loading'} )
             .addCase(fetchNewStudents.fulfilled,(state, action) => {
+                console.log(action.payload)
                 state.fetchNewStudentsStatus = 'success';
                 state.newStudents = action.payload.newStudents.map(item => {
                     return {...item,checked: false}
@@ -226,6 +237,13 @@ const newStudentsSlice = createSlice({
                 state.filteredStudents = action.payload.data.students
             })
             .addCase(fetchFilteredStudents.rejected,state => {state.fetchFilteredStudentsStatus = 'error'})
+            .addCase(fetchNewFilteredStudents.pending,state => {state.filteredNewStudentsStatus = 'loading'} )
+            .addCase(fetchNewFilteredStudents.fulfilled,(state, action) => {
+                console.log(action.payload)
+                state.filteredNewStudents = action.payload
+                state.filteredNewStudentsStatus = 'success';
+            })
+            .addCase(fetchNewFilteredStudents.rejected,state => {state.filteredNewStudentsStatus = 'error'})
     }
 })
 

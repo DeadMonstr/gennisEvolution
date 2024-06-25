@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 
 import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {deleteStudent, fetchNewStudents, fetchNewStudentsDeleted, setPage} from "slices/newStudentsSlice";
+import {deleteStudent, fetchNewStudents, fetchNewStudentsDeleted, setPage, fetchNewFilteredStudents} from "slices/newStudentsSlice";
 import {fetchFilters} from "slices/filtersSlice";
 import {setChecked, setActiveBtn} from "slices/newStudentsSlice";
 import {BackUrl, headers, ROLES} from "constants/global";
@@ -22,7 +22,7 @@ const PlatformNewStudents = () => {
 
     let {locationId} = useParams()
 
-    const {newStudents, btns, fetchNewStudentsStatus, page, checkedUsers} = useSelector(state => state.newStudents)
+    const {newStudents, btns, fetchNewStudentsStatus, page, checkedUsers, filteredNewStudents} = useSelector(state => state.newStudents)
     const {filters} = useSelector(state => state.filters)
     const {location, role} = useSelector(state => state.me)
     const {isCheckedPassword} = useSelector(state => state.me)
@@ -43,6 +43,7 @@ const PlatformNewStudents = () => {
             name: "newStudents",
             location: locationId
         }
+        dispatch(fetchNewFilteredStudents(locationId))
 
         dispatch(fetchFilters(newData))
         dispatch(setSelectedLocation({id: locationId}))
@@ -208,6 +209,7 @@ const PlatformNewStudents = () => {
     return (
         <>
             <SampleUsers
+                filteredNewStudents={filteredNewStudents}
                 fetchUsersStatus={fetchNewStudentsStatus}
                 funcsSlice={funcsSlice}
                 activeRowsInTable={activeItems}
