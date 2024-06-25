@@ -1,5 +1,5 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {Outlet, useHistory, useLocation, Routes, Route,Navigate, useNavigate} from "react-router-dom";
+import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
+import {Outlet, useHistory, useLocation, Routes, Route, Navigate, useNavigate, useParams} from "react-router-dom";
 
 import PlatformSearch from "components/platform/platformUI/search";
 import FuncBtns from "components/platform/platformUI/funcBtns";
@@ -14,7 +14,35 @@ import {Link} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import PlatformUserProfile from "pages/platformContent/platformUser/platformUserProfile/platformUserProfile";
 import Select from "components/platform/platformUI/select";
+import {motion} from "framer-motion";
 
+const activeFilteredItems = {
+    name: true,
+    surname: true,
+    age: true,
+    reg_date: true,
+    checked: false,
+    comment: true,
+    subjects: false,
+    returnDeleted: false,
+    delete: true,
+    deletedDate: false,
+    reason: false
+}
+
+const notActiveFilteredItems = {
+    name: true,
+    surname: true,
+    age: true,
+    reg_date: false,
+    checked: false,
+    comment: false,
+    subjects: false,
+    returnDeleted: false,
+    delete: false,
+    deletedDate: false,
+    reason: false
+}
 
 
 const SampleUsers = (props) => {
@@ -36,45 +64,65 @@ const SampleUsers = (props) => {
         checkedUsers,
         options,
         isChangePage,
-        selectedOption
+        selectedOption,
+        filteredNewStudents
     } = props
 
-    let PageSize = useMemo(()=> 50,[])
-    
+    let PageSize = useMemo(() => 50, [])
+
     const filterRef = useRef()
     const sectionRef = useRef({
         scrollTop: 0
     })
-    const [dataBtns,setDataBtns] = useState([])
+    const [dataBtns, setDataBtns] = useState([])
     const [currentPage, setCurrentPage] = useState(page);
-    const [activeOthers,setActiveOthers] = useState(false)
-    const [heightOtherFilters,setHeightOtherFilters] = useState(0)
-    const [search,setSearch] = useState("")
-    const [deletedData,setDeletedData] = useState(false)
+    const [activeOthers, setActiveOthers] = useState(false)
+    const [heightOtherFilters, setHeightOtherFilters] = useState(0)
+    const [search, setSearch] = useState("")
+    const [deletedData, setDeletedData] = useState(false)
 
-    const navigate =useNavigate()
-    const [filteredData,setFilteredData] = useState(false)
+    const navigate = useNavigate()
+    const [filteredData, setFilteredData] = useState(false)
 
     // const [usersList,setUsersList] = useState()
-    const [currentScroll,setCurrentScroll] = useState()
+    const [currentScroll, setCurrentScroll] = useState()
 
 
+    const [msg, setMsg] = useState("")
+    const [typeMsg, setTypeMsg] = useState("")
+    const [activeMessage, setActiveMessage] = useState(false)
 
-    const [msg,setMsg] = useState("")
-    const [typeMsg,setTypeMsg] = useState("")
-    const [activeMessage,setActiveMessage] = useState(false)
+    const [linkUser, setLinkUser] = useState(false)
 
-    const [linkUser,setLinkUser] = useState(false)
+    // filterlangan newStudents
+    const [active, setActive] = useState(null)
 
-    useEffect(()=>{
+    const [width, setWidth] = useState(0)
+    const wrapper = useRef()
+    const path = useParams()
+
+    useEffect(() => {
+        if (path["*"] === "filtered") {
+            setFilteredData(true)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (active !== 0) {
+            setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 350)
+        } else {
+            setWidth(wrapper.current?.scrollWidth - wrapper.current?.offsetWidth)
+        }
+    }, [filteredNewStudents.length, active])
+
+    useEffect(() => {
         setDataBtns(btns)
-    },[btns])
+    }, [btns])
 
 
     const scrollEvent = (e) => {
         setCurrentScroll(e.target.scrollTop)
     }
-
 
 
     const multiPropsFilter = useMemo(() => {
@@ -104,8 +152,7 @@ const SampleUsers = (props) => {
                 return filters[key]?.activeFilters?.includes(user[key]);
             });
         });
-    },[filters,users]) ;
-
+    }, [filters, users]);
 
 
     const searchedUsers = useMemo(() => {
@@ -116,10 +163,7 @@ const SampleUsers = (props) => {
             item.surname.toLowerCase().includes(search.toLowerCase()) ||
             item.username.toLowerCase().includes(search.toLowerCase())
         )
-    },[multiPropsFilter,search])
-
-
-
+    }, [multiPropsFilter, search])
 
 
     const currentTableData = useMemo(() => {
@@ -132,17 +176,24 @@ const SampleUsers = (props) => {
     const clazzBtnFilter = activeOthers ? "funcButtons__btn funcButtons__btn-active" : "funcButtons__btn "
 
 
-
     const dispatch = useDispatch()
     const getDeleted = () => {
         setDeletedData(!deletedData)
         setFilteredData(false)
         funcsSlice?.getDeleted(!deletedData)
+        if (!deletedData) {
+            navigate('list')
+        }
     }
     const getFiltered = () => {
         setFilteredData(!filteredData)
         setDeletedData(false)
-        navigate('filtered')
+        funcsSlice?.getDeleted(false)
+        if (filteredData) {
+            navigate('list')
+        } else {
+            navigate('filtered')
+        }
         // funcsSlice?.getDeleted(!filteredData)
     }
     // const changeDirection = () => {
@@ -169,7 +220,7 @@ const SampleUsers = (props) => {
     //     )
     // }
 
-    const [currentLocation,setCurrentLocation] = useState(false)
+    const [currentLocation, setCurrentLocation] = useState(false)
 
     const location = useLocation()
 
@@ -177,7 +228,7 @@ const SampleUsers = (props) => {
         if (location) {
             setCurrentLocation(location)
         }
-    },[location])
+    }, [location])
 
     useEffect(() => {
         if (location !== currentLocation) {
@@ -185,16 +236,16 @@ const SampleUsers = (props) => {
                 if (sectionRef.current?.scrollTop) {
                     sectionRef.current.scrollTop = currentScroll
                 }
-            },500)
+            }, 500)
         }
-    },[location])
+    }, [location])
 
 
     return (
         <>
             <Routes>
-                <Route path="list" element={<List sectionRef={sectionRef} currentScroll={currentScroll} >
-                    <section className="section" onScroll={scrollEvent} ref={sectionRef} >
+                <Route path="list" element={<List sectionRef={sectionRef} currentScroll={currentScroll}>
+                    <section className="section" onScroll={scrollEvent} ref={sectionRef}>
                         <header className="section__header">
                             <div key={1}>
                                 <PlatformSearch search={search} setSearch={setSearch}/>
@@ -231,7 +282,8 @@ const SampleUsers = (props) => {
                                 </Button>
                             </div>
 
-                            <Filters key={3} filterRef={filterRef} filters={filters} heightOtherFilters={heightOtherFilters} activeOthers={activeOthers}/>
+                            <Filters key={3} filterRef={filterRef} filters={filters}
+                                     heightOtherFilters={heightOtherFilters} activeOthers={activeOthers}/>
                         </header>
                         <div className="links">
                             {
@@ -296,17 +348,139 @@ const SampleUsers = (props) => {
                         </footer>
                         <Message typeMessage={typeMsg} activeMsg={activeMessage}>{msg}</Message>
                     </section>
-                </List>} />
+                </List>}/>
 
-                <Route path="other"/>
+                <Route path="filtered" element={<Filtered>
+                    <section className="section" onScroll={scrollEvent} ref={sectionRef}>
+                        <header className="section__header">
+                            <div key={1}>
+                                <PlatformSearch search={search} setSearch={setSearch}/>
+                                <FuncBtns
+                                    locationId={locationId}
+                                    funcsSlice={funcsSlice}
+                                    clazzBtnFilter={clazzBtnFilter}
+                                    dataBtns={dataBtns}
+                                />
 
-                <Route path="profile/:userId/*" element={<PlatformUserProfile/>}  />
+                                {
+                                    isChangePage ?
+                                        <div>
+                                            <Select
+                                                all={true}
+                                                title={"Sahifalar"}
+                                                defaultValue={selectedOption}
+                                                options={options}
+                                                onChangeOption={funcsSlice?.changeOption}
+                                            />
+                                        </div> : null
+                                }
 
-                <Route path="/"  element={
-                        // This links to /:userId/messages, no matter
-                        // how many segments were matched by the *
-                        <Navigate to="list" />
-                    }
+                            </div>
+                            <div key={2}>
+                                <Button
+                                    onClickBtn={() => {
+                                        setActiveOthers(!activeOthers)
+                                        setHeightOtherFilters(filterRef.current.scrollHeight)
+                                    }}
+                                    active={activeOthers}
+                                >
+                                    Filterlar
+                                </Button>
+                            </div>
+
+                            <Filters key={3} filterRef={filterRef} filters={filters}
+                                     heightOtherFilters={heightOtherFilters} activeOthers={activeOthers}/>
+                        </header>
+                        <div className="links">
+                            {
+                                isDeletedData ?
+                                    <Button active={deletedData} onClickBtn={getDeleted}>
+                                        O'chirilgan
+                                    </Button>
+                                    : null
+                            }
+                            {
+                                isFiltered ?
+                                    <Button active={filteredData} onClickBtn={getFiltered}>
+                                        Filterlangan
+                                    </Button>
+                                    : null
+                            }
+                            {
+                                isTeachers ?
+                                    <>
+                                        <Link to={`../../allTeachers`}>
+                                            <Button>Hamma o'qituvchilar</Button>
+                                        </Link>
+                                        <Link to={`../../teachersRating/${locationId}`}>
+                                            <Button>O'qituvchilar reytingi</Button>
+                                        </Link>
+                                    </>
+                                    : null
+                            }
+                        </div>
+                        <main className="section__main filtered">
+                            <motion.div
+                                className="scroll"
+                                id="scroll"
+                                ref={wrapper}
+                            >
+                                <motion.div
+                                    className="scroll__inner"
+                                    id="scroll__inner"
+                                    drag={"x"}
+                                    dragConstraints={{left: -width, right: 0}}
+                                >
+                                    {
+                                        filteredNewStudents.map(item => {
+                                            const activeClass = item.id === active ? "activeColum" : ""
+                                            const scrollActive = item.students.length > 7 ? "activeScroll" : ""
+                                            // const scrollActive = "activeScroll"
+                                            return (
+                                                <div className={`items ${activeClass} ${scrollActive}`}>
+                                                    <h1
+                                                        className="items__title"
+                                                        onClick={() => setActive(prev => prev === item.id ? 0 : item.id)}
+                                                    >
+                                                        {item.name}
+                                                    </h1>
+                                                    <UsersTable
+                                                        fetchUsersStatus={fetchUsersStatus}
+                                                        funcsSlice={funcsSlice}
+                                                        activeRowsInTable={active === item.id ? activeFilteredItems : notActiveFilteredItems}
+                                                        users={item.students}
+                                                        pageName={pageName}
+                                                        checkedUsers={checkedUsers}
+                                                        setLinkUser={setLinkUser}
+                                                        cache={true}
+                                                    />
+                                                    <Pagination
+                                                        className="pagination-bar"
+                                                        currentPage={currentPage}
+                                                        totalCount={searchedUsers.length}
+                                                        pageSize={PageSize}
+                                                        onPageChange={page => {
+                                                            setCurrentPage(page)
+                                                            dispatch(funcsSlice?.setPage({page}))
+                                                        }}
+                                                    />
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </motion.div>
+                            </motion.div>
+                        </main>
+                    </section>
+                </Filtered>}/>
+
+                <Route path="profile/:userId/*" element={<PlatformUserProfile/>}/>
+
+                <Route path="/" element={
+                    // This links to /:userId/messages, no matter
+                    // how many segments were matched by the *
+                    <Navigate to="list"/>
+                }
                 />
             </Routes>
             {/*<List>*/}
@@ -397,7 +571,9 @@ const List = React.memo(({children}) => {
     return children
 })
 
-
+const Filtered = React.memo(({children}) => {
+    return children
+})
 
 
 export default SampleUsers;
