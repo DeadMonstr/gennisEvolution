@@ -262,7 +262,7 @@ const PlatformTaskManager = () => {
 
     const onGetStudents = (num) => {
         const length = debtorStudent.length + completedDebtorStudent.length
-        console.log(length)
+
         dispatch(fetchDebtorStudentsData({number: num, len: length, id: locationId}))
         // if (num <= 5) {
         setNumber(++num)
@@ -310,18 +310,33 @@ const PlatformTaskManager = () => {
                             <div className={cls.other}>
                                 {
                                     menuList.map((item, i) =>
-                                        <h2
-                                            key={i}
-                                            className={classNames(cls.other__item, {
-                                                [cls.active]: activeMenu === item.name
-                                            })}
-                                            onClick={() => {
-                                                setActiveMenu(item.name)
-                                                // setIsCompleted(false)
-                                            }}
-                                        >
-                                            {item.label}
-                                        </h2>
+                                        <div className={cls.other__items}>
+                                            <p>
+                                                {
+                                                    item.name === "debtors"
+                                                        ?
+                                                        debtorStudent.length
+                                                        :
+                                                        item.name === "newStudents"
+                                                            ?
+                                                            newStudents.length
+                                                            :
+                                                            leads.length
+                                                }
+                                            </p>
+                                            <h2
+                                                key={i}
+                                                className={classNames(cls.other__item, {
+                                                    [cls.active]: activeMenu === item.name
+                                                })}
+                                                onClick={() => {
+                                                    setActiveMenu(item.name)
+                                                    // setIsCompleted(false)
+                                                }}
+                                            >
+                                                {item.label}
+                                            </h2>
+                                        </div>
                                     )
                                 }
                             </div>
@@ -359,7 +374,7 @@ const PlatformTaskManager = () => {
                             {
                                 debtorStudentStatus !== "loading"
                                     ?
-                                    (debtorStudent.length + completedDebtorStudent.length) === 100
+                                    (debtorStudent.length + completedDebtorStudent.length) >= 100
                                         ?
                                         null
                                         :

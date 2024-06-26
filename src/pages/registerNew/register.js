@@ -410,7 +410,7 @@ const Register = () => {
                     }
                     {
                         loading? <DefaultLoaderSmall/>:
-                        <Button disabled={isCheckPass || isCheckLen || activeError|| selectedSubjects.length===0} type={'submit'}>Yakunlash</Button>
+                        <Button disabled={isCheckPass || isCheckLen || activeError|| type === "student" ? selectedSubjects.length===0 : false} type={'submit'}>Yakunlash</Button>
                     }
                 </form>
             </div>

@@ -98,6 +98,7 @@ const SampleUsers = (props) => {
     const [active, setActive] = useState(0)
 
     const [width, setWidth] = useState(0)
+    const ref = useRef([])
     const wrapper = useRef()
     const path = useParams()
 
@@ -108,9 +109,12 @@ const SampleUsers = (props) => {
     }, [])
 
     useEffect(() => {
-        setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 60)
-        if (active !== 0) {
-            setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 350)
+        console.log(filteredNewStudents?.length, "filtered")
+        if (filteredNewStudents?.length !== 0) {
+            setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 60)
+            if (active !== 0) {
+                setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 350)
+            }
         }
     }, [filteredNewStudents?.length, active, path["*"]])
 
@@ -431,12 +435,15 @@ const SampleUsers = (props) => {
                                     dragConstraints={{left: -width, right: 0}}
                                 >
                                     {
-                                        filteredNewStudents?.map(item => {
+                                        filteredNewStudents?.map((item, i) => {
                                             const activeClass = item.id === active ? "activeColum" : ""
                                             const scrollActive = item.students.length > 7 ? "activeScroll" : ""
                                             // const scrollActive = "activeScroll"
                                             return (
-                                                <div className={`items ${activeClass} ${scrollActive}`}>
+                                                <motion.div
+                                                    className={`items ${activeClass} ${scrollActive}`}
+                                                    ref={el => ref.current[i] = el}
+                                                >
                                                     <div className={"items__main"}>
                                                         <h1
                                                             className="items__title"
@@ -465,7 +472,7 @@ const SampleUsers = (props) => {
                                                             dispatch(funcsSlice?.setPage({page}))
                                                         }}
                                                     />
-                                                </div>
+                                                </motion.div>
                                             )
                                         })
                                     }
