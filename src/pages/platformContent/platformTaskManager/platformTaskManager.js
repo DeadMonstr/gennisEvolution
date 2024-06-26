@@ -668,15 +668,6 @@ const RenderItem = React.memo(({arr, index, number, onGetStudents, length, statu
                         )
                     })
                 }
-                {/*{*/}
-                {/*    status !== "loading" ? length === 100 ? null : (arr.length !== 0 && activeMenu === "debtors" && !isCompleted) ?*/}
-                {/*        <div*/}
-                {/*            className={cls.scroll__plus}*/}
-                {/*            onClick={() => onGetStudents(number)}*/}
-                {/*        >*/}
-                {/*            <i className={classNames("fas fa-plus", cls.icon)}/>*/}
-                {/*        </div> : null : null*/}
-                {/*}*/}
             </motion.div>
         </motion.div>
     )
