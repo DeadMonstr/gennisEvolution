@@ -652,7 +652,6 @@ const RenderItem = React.memo(({arr, index, number, onGetStudents, length, statu
                 style={{
                     x
                 }}
-                // drag
                 dragElastic={0}
                 dragMomentum={false}
                 dragConstraints={{left: -width, right: 0}}
