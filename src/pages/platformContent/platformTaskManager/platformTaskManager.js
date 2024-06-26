@@ -120,6 +120,7 @@ const PlatformTaskManager = () => {
     const [search, setSearch] = useState("")
     const [filtered, setFiltered] = useState([])
     const [getUser, setGetUser] = useState({})
+    const [number, setNumber] = useState(2)
 
 
     useEffect(() => {
@@ -226,8 +227,6 @@ const PlatformTaskManager = () => {
         }
     }
 
-    console.log(progress)
-
     const searchedUsers = useCallback(() => {
         let filteredArr;
         switch (activeMenu) {
@@ -260,6 +259,15 @@ const PlatformTaskManager = () => {
     useEffect(() => {
         setFiltered(searchedUsers())
     }, [activeMenu, search])
+
+    const onGetStudents = (num) => {
+        const length = debtorStudent.length + completedDebtorStudent.length
+        console.log(length)
+        dispatch(fetchDebtorStudentsData({number: num, len: length, id: locationId}))
+        // if (num <= 5) {
+        setNumber(++num)
+        // }
+    }
 
     const contextObj = useMemo(() => ({
         activeMenu: activeMenu,
@@ -324,26 +332,49 @@ const PlatformTaskManager = () => {
                 <div className={cls.tasks__handler}>
                     <FuncContext.Provider value={contextObj}>
                         <div className={cls.items}>
-                            {
-                                activeMenu === "lead"
-                                    ?
-                                    <Leads
-                                        isCompleted={isCompleted}
-                                        arr={search ? filtered : isCompleted ? completedLeads : leads}
-                                        arrStatus={leadsStatus}
-                                    />
-                                    :
-                                    activeMenu === "newStudents"
+                            <div className={cls.items__inner}>
+                                {
+                                    activeMenu === "lead"
                                         ?
-                                        <Student
-                                            arr={search ? filtered : isCompleted ? completedNewStudents : newStudents}
-                                            arrStatus={newStudentsStatus}
+                                        <Leads
+                                            isCompleted={isCompleted}
+                                            arr={search ? filtered : isCompleted ? completedLeads : leads}
+                                            arrStatus={leadsStatus}
                                         />
                                         :
-                                        <Student
-                                            arr={search ? filtered : isCompleted ? completedDebtorStudent : debtorStudent}
-                                            arrStatus={debtorStudentStatus}
-                                        />
+                                        activeMenu === "newStudents"
+                                            ?
+                                            <Student
+                                                arr={search ? filtered : isCompleted ? completedNewStudents : newStudents}
+                                                arrStatus={newStudentsStatus}
+                                            />
+                                            :
+                                            <Student
+                                                setNumber={setNumber}
+                                                arr={search ? filtered : isCompleted ? completedDebtorStudent : debtorStudent}
+                                                arrStatus={debtorStudentStatus}
+                                            />
+                                }
+                            </div>
+                            {
+                                debtorStudentStatus !== "loading"
+                                    ?
+                                    (debtorStudent.length + completedDebtorStudent.length) === 100
+                                        ?
+                                        null
+                                        :
+                                        (debtorStudent.length !== 0 && activeMenu === "debtors" && !isCompleted)
+                                            ?
+                                            <div
+                                                className={cls.scroll__plus}
+                                                onClick={() => onGetStudents(number)}
+                                            >
+                                                <i className={classNames("fas fa-plus", cls.icon)}/>
+                                            </div>
+                                            :
+                                            null
+                                    :
+                                    null
                             }
                         </div>
                     </FuncContext.Provider>
@@ -537,16 +568,16 @@ const Leads = ({isCompleted, arr, arrStatus}) => {
 const Student = ({arr, arrStatus}) => {
 
     const {location, dispatch, activeMenu, completedLength, isCompleted} = useContext(FuncContext)
-    const [number, setNumber] = useState(2)
+    // const [number, setNumber] = useState(2)
 
-    const onGetStudents = (num) => {
-        const length = arr.length + completedLength
-        console.log(length)
-        dispatch(fetchDebtorStudentsData({number: num, len: length, id: location}))
-        // if (num <= 5) {
-        setNumber(++num)
-        // }
-    }
+    // const onGetStudents = (num) => {
+    //     const length = arr.length + completedLength
+    //     console.log(length)
+    //     dispatch(fetchDebtorStudentsData({number: num, len: length, id: location}))
+    //     // if (num <= 5) {
+    //     setNumber(++num)
+    //     // }
+    // }
 
     const filteredRed = arr.filter(item => item.status === "red")
     const filteredYellow = arr.filter(item => item.status === "yellow")
@@ -564,10 +595,10 @@ const Student = ({arr, arrStatus}) => {
                     <RenderItem
                         arr={item === "red" ? filteredRed : filteredYellow}
                         index={i}
-                        onGetStudents={onGetStudents}
-                        number={number}
-                        length={arr.length + completedLength}
-                        status={arrStatus}
+                        // onGetStudents={onGetStudents}
+                        // number={number}
+                        // length={arr.length + completedLength}
+                        // status={arrStatus}
                     />
                     {
                         ((arrStatus === "loading" || arrStatus === "idle") && activeMenu === "debtors") && !isCompleted ?
@@ -637,15 +668,15 @@ const RenderItem = React.memo(({arr, index, number, onGetStudents, length, statu
                         )
                     })
                 }
-                {
-                    status !== "loading" ? length === 100 ? null : (arr.length !== 0 && activeMenu === "debtors" && !isCompleted) ?
-                        <div
-                            className={cls.scroll__plus}
-                            onClick={() => onGetStudents(number)}
-                        >
-                            <i className={classNames("fas fa-plus", cls.icon)}/>
-                        </div> : null : null
-                }
+                {/*{*/}
+                {/*    status !== "loading" ? length === 100 ? null : (arr.length !== 0 && activeMenu === "debtors" && !isCompleted) ?*/}
+                {/*        <div*/}
+                {/*            className={cls.scroll__plus}*/}
+                {/*            onClick={() => onGetStudents(number)}*/}
+                {/*        >*/}
+                {/*            <i className={classNames("fas fa-plus", cls.icon)}/>*/}
+                {/*        </div> : null : null*/}
+                {/*}*/}
             </motion.div>
         </motion.div>
     )
