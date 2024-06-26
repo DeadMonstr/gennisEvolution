@@ -112,7 +112,7 @@ const SampleUsers = (props) => {
         if (active !== 0) {
             setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 350)
         }
-    }, [filteredNewStudents.length, active, path["*"]])
+    }, [filteredNewStudents?.length, active, path["*"]])
 
     useEffect(() => {
         setDataBtns(btns)
@@ -431,7 +431,7 @@ const SampleUsers = (props) => {
                                     dragConstraints={{left: -width, right: 0}}
                                 >
                                     {
-                                        filteredNewStudents.map(item => {
+                                        filteredNewStudents?.map(item => {
                                             const activeClass = item.id === active ? "activeColum" : ""
                                             const scrollActive = item.students.length > 7 ? "activeScroll" : ""
                                             // const scrollActive = "activeScroll"
