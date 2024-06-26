@@ -207,7 +207,6 @@ const newStudentsSlice = createSlice({
         builder
             .addCase(fetchNewStudents.pending,state => {state.fetchNewStudentsStatus = 'loading'} )
             .addCase(fetchNewStudents.fulfilled,(state, action) => {
-                console.log(action.payload)
                 state.fetchNewStudentsStatus = 'success';
                 state.newStudents = action.payload.newStudents.map(item => {
                     return {...item,checked: false}
@@ -239,7 +238,6 @@ const newStudentsSlice = createSlice({
             .addCase(fetchFilteredStudents.rejected,state => {state.fetchFilteredStudentsStatus = 'error'})
             .addCase(fetchNewFilteredStudents.pending,state => {state.filteredNewStudentsStatus = 'loading'} )
             .addCase(fetchNewFilteredStudents.fulfilled,(state, action) => {
-                console.log(action.payload)
                 state.filteredNewStudents = action.payload
                 state.filteredNewStudentsStatus = 'success';
             })
