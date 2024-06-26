@@ -10,6 +10,8 @@ const initialState = {
     leads: [],
     completedLeads: [],
     progress: null,
+    search: [],
+    searchStatus: "idle",
     newStudentsStatus: "idle",
     debtorStudentStatus: "idle",
     leadsStatus: "idle",
@@ -92,6 +94,13 @@ const TaskManagerSlice = createSlice({
         },
         fetchedProgressError: (state) => {
             state.progressStatus = "error"
+        },
+        fetchingSearch: (state) => {
+            state.searchStatus = "loading"
+        },
+        fetchedSearch: (state, action) => {
+            state.search = action.payload
+            state.searchStatus = "success"
         }
     },
     extraReducers: builder => {
@@ -157,5 +166,7 @@ export const {
     changeNewStudentsDel,
     fetchingProgress,
     fetchedProgress,
-    fetchedProgressError
+    fetchedProgressError,
+    fetchingSearch,
+    fetchedSearch
 } = actions

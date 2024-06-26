@@ -28,7 +28,7 @@ import {
     fetchNewStudentsData,
     fetchDebtorStudentsData,
     fetchLeadsData,
-    fetchCompletedDebtorsData
+    fetchCompletedDebtorsData, fetchedSearch, fetchingSearch
 } from "slices/taskManagerSlice";
 
 import cls from "./platformTaskManager.module.sass";
@@ -87,7 +87,9 @@ const PlatformTaskManager = () => {
         completedLeads,
         leadsStatus,
         progress,
-        progressStatus
+        progressStatus,
+        search,
+        searchStatus
     } = useSelector(state => state.taskManager)
     const [activeMenu, setActiveMenu] = useState(menuList[0]?.name)
     const {locationId} = useParams()
@@ -117,7 +119,7 @@ const PlatformTaskManager = () => {
     const [studentSelect, setStudentSelect] = useState()
     const [dellLead, setDellLead] = useState(false)
     const [isConfirm, setIsConfirm] = useState(false)
-    const [search, setSearch] = useState("")
+    const [searchValue, setSearchValue] = useState("")
     const [filtered, setFiltered] = useState([])
     const [getUser, setGetUser] = useState({})
     const [number, setNumber] = useState(2)
@@ -164,7 +166,7 @@ const PlatformTaskManager = () => {
                     } else {
                         dispatch(changeNewStudentsDel(res?.student))
                     }
-                    showMessage(res.student.msg)
+                    showMessage(res.msg)
                 })
                 .catch(err => console.log(err))
         } else if (activeMenu === "debtors") {
@@ -249,15 +251,35 @@ const PlatformTaskManager = () => {
                     filteredArr = debtorStudent
                 break;
         }
-        return filteredArr.filter(item =>
-            item?.name?.toLowerCase().includes(search.toLowerCase()) ||
-            item?.surname?.toLowerCase().includes(search.toLowerCase()) ||
-            item?.username?.toLowerCase().includes(search.toLowerCase())
-        )
+        // return filteredArr.filter(item =>
+        //     item?.name?.toLowerCase().includes(search.toLowerCase()) ||
+        //     item?.surname?.toLowerCase().includes(search.toLowerCase()) ||
+        //     item?.username?.toLowerCase().includes(search.toLowerCase())
+        // )
     }, [activeMenu, search])
 
+
+    const onSearch = (value) => {
+        setSearchValue(value)
+        if (value !== "") {
+            dispatch(fetchingSearch())
+
+            request(`${BackUrl}search_student_in_task/${locationId}`, "POST", JSON.stringify({
+                text: value,
+                type: activeMenu,
+                status: isCompleted
+            }), headers())
+                .then(res => {
+                    dispatch(fetchedSearch(res.students))
+                })
+                .catch(err => console.log(err))
+        }
+
+
+    }
+
     useEffect(() => {
-        setFiltered(searchedUsers())
+        // setFiltered(searchedUsers())
     }, [activeMenu, search])
 
     const onGetStudents = (num) => {
@@ -285,10 +307,14 @@ const PlatformTaskManager = () => {
         <div className={cls.tasks}>
             <div className={cls.tasks__inner}>
                 <div className={cls.header}>
-                    <PlatformSearch search={search} setSearch={setSearch}/>
+                    <PlatformSearch search={searchValue} setSearch={onSearch}/>
                     {/*<h1>My tasks</h1>*/}
                     {/*<div className={cls.header__search}>*/}
-                    <SwitchButton isCompleted={isCompleted} setIsCompleted={setIsCompleted}/>
+                    <SwitchButton
+                        isCompleted={isCompleted}
+                        setIsCompleted={setIsCompleted}
+                        setSearchValue={setSearchValue}
+                    />
                     {/*<PlatformSearch search={search} setSearch={setSearch}/>*/}
                     {/*<Input*/}
                     {/*    placeholder={"Qidiruv"}*/}
@@ -310,8 +336,22 @@ const PlatformTaskManager = () => {
                             <div className={cls.other}>
                                 {
                                     menuList.map((item, i) =>
-                                        <div className={cls.other__items}>
-                                            <p>
+                                        <div
+                                            className={cls.otherItems}
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                alignItems: "center",
+                                                gap: "1rem"
+                                            }}
+                                        >
+                                            <p
+                                                style={{
+                                                    fontSize: "1.8rem"
+                                                }}
+                                                className={classNames(cls.other__item, {
+                                                [cls.active]: activeMenu === item.name
+                                            })}>
                                                 {
                                                     item.name === "debtors"
                                                         ?
@@ -332,6 +372,7 @@ const PlatformTaskManager = () => {
                                                 onClick={() => {
                                                     setActiveMenu(item.name)
                                                     // setIsCompleted(false)
+                                                    setSearchValue("")
                                                 }}
                                             >
                                                 {item.label}
@@ -353,21 +394,21 @@ const PlatformTaskManager = () => {
                                         ?
                                         <Leads
                                             isCompleted={isCompleted}
-                                            arr={search ? filtered : isCompleted ? completedLeads : leads}
+                                            arr={searchValue ? search : isCompleted ? completedLeads : leads}
                                             arrStatus={leadsStatus}
                                         />
                                         :
                                         activeMenu === "newStudents"
                                             ?
                                             <Student
-                                                arr={search ? filtered : isCompleted ? completedNewStudents : newStudents}
+                                                arr={searchValue ? search : isCompleted ? completedNewStudents : newStudents}
                                                 arrStatus={newStudentsStatus}
                                             />
                                             :
                                             <Student
                                                 setNumber={setNumber}
-                                                arr={search ? filtered : isCompleted ? completedDebtorStudent : debtorStudent}
-                                                arrStatus={debtorStudentStatus}
+                                                arr={searchValue ? search : isCompleted ? completedDebtorStudent : debtorStudent}
+                                                arrStatus={searchValue ? searchStatus : debtorStudentStatus}
                                             />
                                 }
                             </div>
@@ -489,8 +530,8 @@ const PlatformTaskManager = () => {
                                 }
                                 {
                                     studentSelect === "tel ko'tarmadi" ? null : <>
-                                        <InputForm placeholder="koment" type="text" register={register} required/>
-                                        <InputForm placeholder="keyingiga qoldirish" type="date" register={register}
+                                        <InputForm placeholder="koment" type="text" register={register} name={"comment"} required/>
+                                        <InputForm placeholder="keyingiga qoldirish" type="date" register={register} name={"date"}
                                                    required/>
                                     </>
                                 }
@@ -809,13 +850,16 @@ const TaskCard = ({item, index}) => {
     )
 }
 
-const SwitchButton = ({isCompleted, setIsCompleted}) => {
+const SwitchButton = ({isCompleted, setIsCompleted, setSearchValue}) => {
 
 
     return (
         <div className={cls.switchBox}>
             <div className={`${cls.switch} ${isCompleted ? `${cls.completed}` : `${cls.inProgress} `}`}
-                 onClick={() => setIsCompleted(!isCompleted)}>
+                 onClick={() => {
+                     setIsCompleted(!isCompleted)
+                     setSearchValue("")
+                 }}>
                 <div className={cls.iconButton}>
                     {isCompleted ?
                         <div className={cls.icon__handlerSucces}>
