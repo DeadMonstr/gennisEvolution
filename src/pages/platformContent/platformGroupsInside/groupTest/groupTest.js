@@ -159,9 +159,6 @@ const GroupTest = () => {
 
 
             <div className={cls.subheader}>
-                {currentMonth === month &&
-                    <Button onClickBtn={() => setActive(true)} type={"submit"}>Natija Qo'shish</Button>}
-
                 <Button onClickBtn={() => setActiveTest(true)}>Test Qo'shish</Button>
             </div>
 
@@ -172,20 +169,18 @@ const GroupTest = () => {
                         return (
                             <Accordion
                                 clazz={cls.accordion}
-                                subtitle={"Jami: " + item.percentage+"%"}
+                                subtitle={"Jami: " + item.percentage + "%"}
                                 btns={[
                                     <h1>Level: {item.level}</h1>,
-                                    (item.students.length > 0 &&
-                                        <Button type={"submit"} onClickBtn={() => onClick(item, "result")}>Natijani
-                                            O'zgartirish</Button>),
+                                    (currentMonth === month &&
+                                        <Button type={"submit"} onClickBtn={() => onClick(item, "result")}>
+                                            {item.students.length > 0 ? "Natijani O'zgartirish" : "Natijani Qo'shish"}
+                                        </Button>
+                                    ),
                                     (!item.students.length &&
                                         <Button onClickBtn={() => onClick(item, "test")}>Test O'zgartirish</Button>)
-
-
                                 ]}
-                                // img={img}
                                 title={item.name}
-                                // subtitle={"Fatxullayev"}
                             >
                                 <Table>
                                     <thead>
@@ -247,7 +242,7 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
 
 
     const levels = [
-        "A1","A2","B1","B2","C1","C2"
+        "A1", "A2", "B1", "B2", "C1", "C2"
     ]
 
     useEffect(() => {
@@ -356,13 +351,12 @@ const SetResultModal = React.memo(({active, setActive, data, tests, changedTest,
     const [isDisabled, setIsDisabled] = useState(false)
 
 
-
     useEffect(() => {
         if (Object.keys(changedTest).length) {
             setSelectedTest(changedTest.id)
             setStudents(students => students.map(item => {
                 const true_answers = changedTest.students.filter(st => st.student_id === item.id)[0]?.true_answers
-                return {...item, true_answers}
+                return {...item, true_answers: true_answers || 0,can_edit: true}
             }))
         }
     }, [changedTest])
@@ -373,7 +367,7 @@ const SetResultModal = React.memo(({active, setActive, data, tests, changedTest,
             const max = tests.filter(item => item.id === +selectedTest)[0].number
 
             setError(students.some(item => item?.true_answers > max))
-            setIsDisabled(students.some(item => item?.true_answers > max || !item.true_answers))
+            setIsDisabled(students.some(item => item?.true_answers > max))
 
         } else {
             setIsDisabled(true)
@@ -390,6 +384,8 @@ const SetResultModal = React.memo(({active, setActive, data, tests, changedTest,
     const {request} = useHttp()
     const dispatch = useDispatch()
 
+
+    console.log(students)
     const onAddResultStudents = () => {
 
         request(`${BackUrl}submit_test_group/${groupId}`, "POST", JSON.stringify({
@@ -415,7 +411,6 @@ const SetResultModal = React.memo(({active, setActive, data, tests, changedTest,
     }
 
     const onSetStudentsResult = (id, name, value) => {
-
         setStudents(students => students.map(item => {
             if (item.id === id) {
                 return {...item, [name]: +value}
@@ -432,7 +427,16 @@ const SetResultModal = React.memo(({active, setActive, data, tests, changedTest,
         }))
     }
 
+    const onChangeCanEditResult = (id,value) => {
+        setStudents(students => students.map(item => {
+            if (item.id === id) {
+                return {...item, true_answers: 0, can_edit: value}
+            }
+            return item
+        }))
+    }
 
+    console.log(students)
     return (
         <Modal activeModal={active} setActiveModal={() => {
             setActive()
@@ -453,14 +457,23 @@ const SetResultModal = React.memo(({active, setActive, data, tests, changedTest,
                                 <div className={cls.info}>
                                     <h1>{item.name}</h1>
                                     <h1>{item.surname}</h1>
+                                    <h1>
+                                        <input
+                                            onChange={e => onChangeCanEditResult(item.id,e.target.checked)}
+                                            type="checkbox"
+                                            checked={item.can_edit}
+                                        />
+                                    </h1>
                                 </div>
                                 <div>
                                     <Input
-                                        onChange={(e) => onSetStudentsResult(item.id, "true_answers", e)}
-                                        value={item.true_answers}
+
+                                        onChange={(e) => onSetStudentsResult(item.id, "true_answers", e || 0)}
+                                        value={item.true_answers || 0}
                                         title={"Tog'ri javoblar"}
                                         type={"number"}
-                                        others={{max: tests.filter(test => test.id === +selectedTest)[0]?.number}}
+                                        disabled={!item.can_edit}
+                                        others={{min: 0,max: tests.filter(test => test.id === +selectedTest)[0]?.number,}}
                                     />
                                 </div>
                             </div>
@@ -470,7 +483,6 @@ const SetResultModal = React.memo(({active, setActive, data, tests, changedTest,
 
                 <div className={cls.btns}>
                     <Button disabled={isDisabled} onClickBtn={onAddResultStudents} type={"submit"}>Tasdiqlash</Button>
-
                 </div>
             </div>
         </Modal>

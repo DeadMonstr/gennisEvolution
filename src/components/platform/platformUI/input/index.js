@@ -18,54 +18,58 @@ const Input = (props) => {
         value,
         others,
         clazz,
-        placeholder
+        placeholder,
+        disabled
     } = props
 
 
-    const [input,setInput] = useState(null)
-    const [showPassword,setShowPassword] = useState(false)
+    const [input, setInput] = useState(null)
+    const [showPassword, setShowPassword] = useState(false)
 
     useEffect(() => {
         if (input && input !== defaultValue && type !== "submit") {
             onChange(input)
         }
-    },[input])
+    }, [input])
+
 
     useEffect(() => {
         setInput(value)
-    },[value])
+    }, [value])
 
     useEffect(() => {
         if (defaultValue) {
             setInput(defaultValue)
         }
-    },[defaultValue])
+    }, [defaultValue])
 
 
-
-
-    const classShowPassword = showPassword ?  "fas fa-eye" : "fas fa-eye-slash"
+    const classShowPassword = showPassword ? "fas fa-eye" : "fas fa-eye-slash"
     const typePassword = showPassword ? "text" : "password"
 
 
     return (
         <label className={classNames("input-label")} htmlFor={name}>
-            <span className="name-field">{title}</span>
+            <span
+                className={classNames("name-field", {"disabled": disabled})}
+            >
+                {title}
+            </span>
             <input
                 {...others}
+                disabled={disabled}
                 placeholder={placeholder}
                 required={required}
                 type={type === "password" ? typePassword : type}
                 id={name}
-                className={classNames("input-fields",clazz)}
-                value={input ? input : ""}
+                className={classNames("input-fields", clazz)}
+                value={type === "number" ? input : input || ""}
                 onChange={e => setInput(e.target.value)}
             />
 
-
             {
-                type === "password" ? <i className={classShowPassword} onClick={() => setShowPassword(!showPassword)}/> : null
-
+                type === "password" ?
+                    <i className={classShowPassword} onClick={() => setShowPassword(!showPassword)}/> : null
             }
 
         </label>

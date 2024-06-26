@@ -32,6 +32,8 @@ const TeacherDebtStudents = () => {
             })
     },[])
 
+
+
     const renderFilterStudents = useCallback(() => {
         const filteredStudents = students.filter(item => {
 
@@ -47,6 +49,7 @@ const TeacherDebtStudents = () => {
                     <td>{item.student_name}</td>
                     <td>{item.student_surname}</td>
                     <td>{item.group_name.toString()}</td>
+                    <td>{item.month}</td>
                     <td>{item.total_salary}</td>
                 </tr>
             )
@@ -71,6 +74,7 @@ const TeacherDebtStudents = () => {
                             <th>Ism</th>
                             <th>Familya</th>
                             <th>Guruh</th>
+                            <th>Sana</th>
                             <th>Qarz</th>
                         </tr>
                     </thead>

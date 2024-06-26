@@ -4,6 +4,9 @@ import cls from "./button.module.sass"
 import classNames from "classnames";
 
 const Button = ({children = "",active,onClickBtn,name,extraMsg,extraClass,formId,disabled,type = "simple",reset}) => {
+
+
+    console.log(disabled)
     const onClick = () => {
         if (onClickBtn) {
             if (name) {

@@ -116,7 +116,6 @@ const Register = () => {
     const [errorMessage,setErrorMessage] = useState("")
 
     const [loading, setLoading] = useState(false)
-    const [selectedDefValue, setSelectedDefValue]=useState(0)
 
     const registerSelectList = useMemo(() =>  [
         {
@@ -129,8 +128,7 @@ const Register = () => {
             name: "subs",
             label: "Fan",
             opts: subjects,
-            onFunc: (value) => onChangeSub(value),
-            defValue: selectedDefValue
+            onFunc: (value) => onChangeSub(value)
         }, {
             name: "lang",
             label: "Ta'lim tili",
@@ -183,7 +181,6 @@ const Register = () => {
         request(`${BackUrl}${route}`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 setLoading(false)
-                console.log(res)
                 dispatch(setMessage({
                     msg: res.msg,
                     type: "success",
@@ -213,7 +210,6 @@ const Register = () => {
     }
 
     const onDeleteSub = (id) => {
-        setSelectedDefValue(0)
         setSubjects(subjects => {
             return subjects.map(item => {
                 if (item.id === +id) {
@@ -392,7 +388,7 @@ const Register = () => {
                                     </>
                                 )
                             }
-                            if (item.name === "loc"||item.name === "lang"||item.name === "shift"||item.name==="subs") {
+                            if (item.name === "loc"||item.name === "lang"||item.name === "shift") {
                                 return (
                                     <Select
                                         title={item.label}

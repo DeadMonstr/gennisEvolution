@@ -67,7 +67,7 @@ const ChangeGroupInfo = () => {
             setCourseType(data?.information?.groupCourseType?.value)
             setStatus(groupStatus)
             setTeacher(teacherId)
-            setSelectedLevel(level)
+            setSelectedLevel(level.id)
         }
     },[data, groupStatus, teacherId])
 
@@ -92,6 +92,8 @@ const ChangeGroupInfo = () => {
             color,
             level_id:selectedLevel
         }
+
+
 
 
         request(`${BackUrl}change_group_info/${groupId}`, "POST", JSON.stringify(newData),headers())

@@ -17,6 +17,9 @@
     color: $color-grey-dark
     font-size: 1.5rem
     padding: 0 10px
+    transition: all 0.6s ease
+    &.disabled
+      color:  $color-grey-light
   .input-fields
     padding: 0 3.5rem 0 2.5rem
     width: 100%
@@ -42,6 +45,9 @@
     &-error
       border: 1px solid #ff7171
       box-shadow: 0 0 8px 2px $color-main-light
+    &:disabled
+      border: 2px solid $color-grey-light
+      color:  $color-grey-light
     &[type=submit]
       background-color: $color-main-dark
       color: white
