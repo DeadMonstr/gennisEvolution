@@ -108,7 +108,7 @@ const SampleUsers = (props) => {
     }, [])
 
     useEffect(() => {
-        setWidth(wrapper.current?.scrollWidth - wrapper.current?.offsetWidth)
+        setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 60)
         if (active !== 0) {
             setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 350)
         }
@@ -437,12 +437,14 @@ const SampleUsers = (props) => {
                                             // const scrollActive = "activeScroll"
                                             return (
                                                 <div className={`items ${activeClass} ${scrollActive}`}>
-                                                    <h1
-                                                        className="items__title"
-                                                        onClick={() => setActive(prev => prev === item.id ? 0 : item.id)}
-                                                    >
-                                                        {item.name}
-                                                    </h1>
+                                                    <div className={"items__main"}>
+                                                        <h1
+                                                            className="items__title"
+                                                            onClick={() => setActive(prev => prev === item.id ? 0 : item.id)}
+                                                        >
+                                                            {item.name}
+                                                        </h1>
+                                                    </div>
                                                     <UsersTable
                                                         fetchUsersStatus={fetchUsersStatus}
                                                         funcsSlice={funcsSlice}
