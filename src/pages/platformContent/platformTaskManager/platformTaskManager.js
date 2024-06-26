@@ -444,7 +444,8 @@ const PlatformTaskManager = () => {
                                 {
                                     studentSelect === "tel ko'tarmadi" ? null : <>
                                         <InputForm placeholder="koment" type="text" register={register} required/>
-                                        <InputForm placeholder="keyingiga qoldirish" type="date" register={register} required/>
+                                        <InputForm placeholder="keyingiga qoldirish" type="date" register={register}
+                                                   required/>
                                     </>
                                 }
                             </div>
@@ -542,9 +543,9 @@ const Student = ({arr, arrStatus}) => {
         const length = arr.length + completedLength
         console.log(length)
         dispatch(fetchDebtorStudentsData({number: num, len: length, id: location}))
-        if (num <= 5) {
-            setNumber(++num)
-        }
+        // if (num <= 5) {
+        setNumber(++num)
+        // }
     }
 
     const filteredRed = arr.filter(item => item.status === "red")
