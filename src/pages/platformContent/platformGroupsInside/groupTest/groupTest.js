@@ -385,7 +385,6 @@ const SetResultModal = React.memo(({active, setActive, data, tests, changedTest,
     const dispatch = useDispatch()
 
 
-    console.log(students)
     const onAddResultStudents = () => {
 
         request(`${BackUrl}submit_test_group/${groupId}`, "POST", JSON.stringify({

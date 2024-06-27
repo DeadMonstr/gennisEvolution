@@ -37,7 +37,7 @@ const initialState = {
             id: 2,
             type: "btn",
             typeModal: true,
-            typeOfChild : "text",
+            typeOfChild: "text",
             confirm: false,
             title: "add Group",
             name: "addGroup",
@@ -89,36 +89,36 @@ const initialState = {
     fetchFilteredStudentsStatus: "idle",
 }
 
-export const  fetchNewFilteredStudents = createAsyncThunk(
+export const fetchNewFilteredStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewFilteredStudents',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_filtered_students_list/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}get_filtered_students_list/${id}`, "GET", null, headers())
     }
 )
 
 
-export const  fetchNewStudents = createAsyncThunk(
+export const fetchNewStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewStudents',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}newStudents/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}newStudents/${id}`, "GET", null, headers())
     }
 )
 
-export const  fetchNewStudentsDeleted = createAsyncThunk(
+export const fetchNewStudentsDeleted = createAsyncThunk(
     'newStudentsSlice/fetchNewStudentsDeleted',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}new_del_students/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}new_del_students/${id}`, "GET", null, headers())
     }
 )
 
-export const  fetchCreateGroupTools = createAsyncThunk(
+export const fetchCreateGroupTools = createAsyncThunk(
     'newStudentsSlice/fetchCreateGroupTools',
     async () => {
         const {request} = useHttp();
-        return await request(`${BackUrl}create_group_tools`,"GET",null,headers())
+        return await request(`${BackUrl}create_group_tools`, "GET", null, headers())
     }
 )
 // export const  fetchCreateGroupTools = createAsyncThunk(
@@ -128,33 +128,31 @@ export const  fetchCreateGroupTools = createAsyncThunk(
 //         return await request(`${BackUrl}create_group_tools2/${id}`,"GET",null,headers())
 //     }
 // )
-export const  fetchFilteredStudents = createAsyncThunk(
+export const fetchFilteredStudents = createAsyncThunk(
     'newStudentsSlice/fetchFilteredStudents',
     async (data) => {
         const {request} = useHttp();
         const {location} = data
-        return await request(`${BackUrl}get_students/${location}`,"POST",JSON.stringify(data),headers())
+        return await request(`${BackUrl}get_students/${location}`, "POST", JSON.stringify(data), headers())
     }
 )
-
-
 
 
 const newStudentsSlice = createSlice({
     name: "newStudentsSlice",
     initialState,
     reducers: {
-        setChecked: (state,action) => {
+        setChecked: (state, action) => {
             const newChSt = state.checkedUsers.filter(item => item.id === action.payload.id)
             if (newChSt.length > 0) {
                 state.checkedUsers = state.checkedUsers.filter(item => item.id !== action.payload.id)
             } else {
                 const newSt = state.newStudents.filter(item => {
                     if (item.id === action.payload.id) {
-                        return {...item,checked: true}
+                        return {...item, checked: true}
                     }
                 })
-                const st = [{...newSt[0],checked: true }]
+                const st = [{...newSt[0], checked: true}]
 
                 state.checkedUsers = [...st, ...state.checkedUsers]
             }
@@ -167,26 +165,26 @@ const newStudentsSlice = createSlice({
         //         return item
         //     })
         // },
-        setActiveBtn: (state,action) => {
+        setActiveBtn: (state, action) => {
             state.btns = state.btns.map(item => {
                 if (item.name === action.payload.name) {
                     if (item.typeModal) {
-                        return {...item,activeModal : !item.activeModal}
+                        return {...item, activeModal: !item.activeModal}
                     }
                 }
                 return item
             })
         },
-        setActiveAllBtn: (state,action) => {
+        setActiveAllBtn: (state, action) => {
             state.btns = state.btns.map(item => {
                 if (item.typeModal) {
-                    return {...item,activeModal : false}
+                    return {...item, activeModal: false}
                 }
 
                 return item
             })
         },
-        deleteCheckedStudents: (state,action) => {
+        deleteCheckedStudents: (state, action) => {
             // eslint-disable-next-line array-callback-return
             state.checkedUsers = state.checkedUsers.filter(item => {
                 return action.payload.checkedStudents.every(user => user.id !== item.id)
@@ -196,58 +194,85 @@ const newStudentsSlice = createSlice({
                 return action.payload.checkedStudents.every(user => user.id !== item.id)
             })
         },
-        deleteStudent: (state,action) => {
+        deleteStudent: (state, action) => {
             state.newStudents = state.newStudents.filter(item => item.id !== action.payload.id)
         },
-        setPage: (state,action) => {
+        setPage: (state, action) => {
             state.page = action.payload.page
         }
     },
     extraReducers: builder => {
         builder
-            .addCase(fetchNewStudents.pending,state => {state.fetchNewStudentsStatus = 'loading'} )
-            .addCase(fetchNewStudents.fulfilled,(state, action) => {
+            .addCase(fetchNewStudents.pending, state => {
+                state.fetchNewStudentsStatus = 'loading'
+            })
+            .addCase(fetchNewStudents.fulfilled, (state, action) => {
                 state.fetchNewStudentsStatus = 'success';
+                // let newData = []
+                // for (let i = 0; i < 20; i++) {
+                //     const data = action.payload.newStudents.map(item => {
+                //         return {...item, checked: false}
+                //     })
+                //     newData = [...newData,...data]
+                // }
+                // state.newStudents = newData
                 state.newStudents = action.payload.newStudents.map(item => {
                     return {...item,checked: false}
                 })
                 state.checkedUsers = []
             })
-            .addCase(fetchNewStudents.rejected,state => {state.fetchNewStudentsStatus = 'error'} )
+            .addCase(fetchNewStudents.rejected, state => {
+                state.fetchNewStudentsStatus = 'error'
+            })
 
-            .addCase(fetchNewStudentsDeleted.pending,state => {state.fetchNewStudentsStatus = 'loading'} )
-            .addCase(fetchNewStudentsDeleted.fulfilled,(state, action) => {
+            .addCase(fetchNewStudentsDeleted.pending, state => {
+                state.fetchNewStudentsStatus = 'loading'
+            })
+            .addCase(fetchNewStudentsDeleted.fulfilled, (state, action) => {
                 state.fetchNewStudentsStatus = 'success';
                 state.newStudents = action.payload.newStudents
             })
-            .addCase(fetchNewStudentsDeleted.rejected,state => {state.fetchNewStudentsStatus = 'error'} )
+            .addCase(fetchNewStudentsDeleted.rejected, state => {
+                state.fetchNewStudentsStatus = 'error'
+            })
 
 
-            .addCase(fetchCreateGroupTools.pending,state => {state.fetchCreateGroupToolsStatus = 'loading'} )
-            .addCase(fetchCreateGroupTools.fulfilled,(state, action) => {
+            .addCase(fetchCreateGroupTools.pending, state => {
+                state.fetchCreateGroupToolsStatus = 'loading'
+            })
+            .addCase(fetchCreateGroupTools.fulfilled, (state, action) => {
                 state.fetchCreateGroupToolsStatus = 'success';
                 state.createGroupTools = action.payload.createGroupTools
             })
-            .addCase(fetchCreateGroupTools.rejected,state => {state.fetchCreateGroupToolsStatus = 'error'})
+            .addCase(fetchCreateGroupTools.rejected, state => {
+                state.fetchCreateGroupToolsStatus = 'error'
+            })
 
-            .addCase(fetchFilteredStudents.pending,state => {state.fetchFilteredStudentsStatus = 'loading'} )
-            .addCase(fetchFilteredStudents.fulfilled,(state, action) => {
+            .addCase(fetchFilteredStudents.pending, state => {
+                state.fetchFilteredStudentsStatus = 'loading'
+            })
+            .addCase(fetchFilteredStudents.fulfilled, (state, action) => {
                 state.fetchFilteredStudentsStatus = 'success';
                 state.filteredStudents = action.payload.data.students
             })
-            .addCase(fetchFilteredStudents.rejected,state => {state.fetchFilteredStudentsStatus = 'error'})
-            .addCase(fetchNewFilteredStudents.pending,state => {state.filteredNewStudentsStatus = 'loading'} )
-            .addCase(fetchNewFilteredStudents.fulfilled,(state, action) => {
+            .addCase(fetchFilteredStudents.rejected, state => {
+                state.fetchFilteredStudentsStatus = 'error'
+            })
+            .addCase(fetchNewFilteredStudents.pending, state => {
+                state.filteredNewStudentsStatus = 'loading'
+            })
+            .addCase(fetchNewFilteredStudents.fulfilled, (state, action) => {
                 state.filteredNewStudents = action.payload
                 state.filteredNewStudentsStatus = 'success';
             })
-            .addCase(fetchNewFilteredStudents.rejected,state => {state.filteredNewStudentsStatus = 'error'})
+            .addCase(fetchNewFilteredStudents.rejected, state => {
+                state.filteredNewStudentsStatus = 'error'
+            })
     }
 })
 
 
-
-const {actions,reducer} = newStudentsSlice;
+const {actions, reducer} = newStudentsSlice;
 
 export default reducer
 

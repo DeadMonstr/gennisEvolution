@@ -113,36 +113,35 @@ const PlatformNewStudents = () => {
 
     const {request} = useHttp()
 
-    const deleteNewStudent = (data) => {
+    const deleteNewStudent = useCallback((data) => {
+        if (data !== "no") {
+            const newData = {
+                ...data,
+                typeLocation: "registerStudents",
+                student_id: deleteStId
+            }
+            request(`${BackUrl}delete_student`, "POST", JSON.stringify(newData), headers())
+                .then(res => {
+                    if (res.success) {
+                        dispatch(setMessage({
+                            msg: res.msg,
+                            type: "success",
+                            active: true
+                        }))
+                    } else {
+                        dispatch(setMessage({
+                            msg: "Serverda hatolik",
+                            type: "error",
+                            active: true
+                        }))
 
-        const newData = {
-            ...data,
-            typeLocation: "registerStudents",
-            student_id: deleteStId
+                    }
+                })
+            dispatch(deleteStudent({id: deleteStId}))
         }
 
-
-        request(`${BackUrl}delete_student`, "POST", JSON.stringify(newData), headers())
-            .then(res => {
-                if (res.success) {
-                    dispatch(setMessage({
-                        msg: res.msg,
-                        type: "success",
-                        active: true
-                    }))
-                } else {
-                    dispatch(setMessage({
-                        msg: "Serverda hatolik",
-                        type: "error",
-                        active: true
-                    }))
-
-                }
-            })
-        dispatch(deleteStudent({id: deleteStId}))
         setActiveModal(false)
-
-    }
+    },[deleteStId])
 
     const returnDeletedStudent = useCallback((data) => {
         if (data === "yes") {
@@ -204,7 +203,6 @@ const PlatformNewStudents = () => {
             setPage
         }
     }, [getDeleted, onDelete])
-
 
     return (
         <>

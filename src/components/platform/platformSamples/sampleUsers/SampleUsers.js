@@ -109,11 +109,15 @@ const SampleUsers = (props) => {
     }, [])
 
     useEffect(() => {
-        console.log(filteredNewStudents?.length, "filtered")
         if (filteredNewStudents?.length !== 0) {
-            setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 60)
-            if (active !== 0) {
-                setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 350)
+            if (!width) {
+                setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 60)
+            } else {
+                if (active !== 0) {
+                    setWidth(current => current + 350 )
+                } else {
+                    setWidth(current => current - 350)
+                }
             }
         }
     }, [filteredNewStudents?.length, active, path["*"]])
@@ -242,6 +246,7 @@ const SampleUsers = (props) => {
             }, 500)
         }
     }, [location])
+
 
 
     return (
@@ -452,26 +457,28 @@ const SampleUsers = (props) => {
                                                             {item.name}
                                                         </h1>
                                                     </div>
-                                                    <UsersTable
-                                                        fetchUsersStatus={fetchUsersStatus}
-                                                        funcsSlice={funcsSlice}
-                                                        activeRowsInTable={active === item.id ? activeFilteredItems : notActiveFilteredItems}
-                                                        users={item.students}
-                                                        pageName={pageName}
-                                                        checkedUsers={checkedUsers}
-                                                        setLinkUser={setLinkUser}
-                                                        cache={true}
-                                                    />
-                                                    <Pagination
-                                                        className="pagination-bar"
-                                                        currentPage={currentPage}
-                                                        totalCount={searchedUsers.length}
-                                                        pageSize={PageSize}
-                                                        onPageChange={page => {
-                                                            setCurrentPage(page)
-                                                            dispatch(funcsSlice?.setPage({page}))
-                                                        }}
-                                                    />
+                                                    <div className={"items__wrapper"}>
+                                                        <UsersTable
+                                                            fetchUsersStatus={fetchUsersStatus}
+                                                            funcsSlice={funcsSlice}
+                                                            activeRowsInTable={active === item.id ? activeFilteredItems : notActiveFilteredItems}
+                                                            users={item.students}
+                                                            pageName={pageName}
+                                                            checkedUsers={checkedUsers}
+                                                            setLinkUser={setLinkUser}
+                                                            cache={true}
+                                                        />
+                                                        <Pagination
+                                                            className="pagination-bar"
+                                                            currentPage={currentPage}
+                                                            totalCount={searchedUsers.length}
+                                                            pageSize={PageSize}
+                                                            onPageChange={page => {
+                                                                setCurrentPage(page)
+                                                                dispatch(funcsSlice?.setPage({page}))
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </motion.div>
                                             )
                                         })
