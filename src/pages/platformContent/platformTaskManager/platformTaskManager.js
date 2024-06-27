@@ -173,7 +173,7 @@ const PlatformTaskManager = () => {
                 select: studentSelect,
                 ...res
             }
-            request(`${BackUrl}student_in_debts/0/0/${locationId}`, "POST", JSON.stringify(result), headers())
+            request(`${BackUrl}student_in_debts/${locationId}`, "POST", JSON.stringify(result), headers())
                 .then(res => {
                     if (res?.student.name) {
                         dispatch(changeDebtorStudents(res?.student))
