@@ -173,6 +173,7 @@ const PlatformTaskManager = () => {
                 select: studentSelect,
                 ...res
             }
+            console.log(result)
             request(`${BackUrl}student_in_debts/${locationId}`, "POST", JSON.stringify(result), headers())
                 .then(res => {
                     if (res?.student.name) {
@@ -326,7 +327,7 @@ const PlatformTaskManager = () => {
                         <h1>My tasks</h1>
                         <Completed
                             style={isCompleted ? "#34c9eb" : "#ff8c42"}
-                            progress={isCompleted ? progress?.completed_tasks : progress?.in_progress_tasks}
+                            progress={isCompleted ? progress?.completed_tasks : progress?.in_progress_tasks-progress?.completed_tasks}
                             progressStatus={progressStatus}
                         />
                     </div>
