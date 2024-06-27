@@ -27,9 +27,9 @@ export const fetchNewStudentsData = createAsyncThunk(
 )
 export const fetchDebtorStudentsData = createAsyncThunk(
     'taskManager/fetchDebtorStudentsData',
-    async (res) => {
+    async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}student_in_debts/${res.number}/${res.len}/${res.id}`, "GET", null, headers())
+        return await request(`${BackUrl}student_in_debts/${id}`, "GET", null, headers())
     }
 )
 export const fetchLeadsData = createAsyncThunk(
@@ -121,7 +121,7 @@ const TaskManagerSlice = createSlice({
             })
             .addCase(fetchDebtorStudentsData.fulfilled, (state, action) => {
                 // console.log(action.payload)
-                state.debtorStudent = [...state.debtorStudent, ...action.payload.students]
+                state.debtorStudent = action.payload.students
                 // state.completedDebtorStudent = [...state.completedDebtorStudent , ...action.payload.completed_tasks]
                 state.debtorStudentStatus = "success"
             })

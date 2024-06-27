@@ -101,9 +101,8 @@ const PlatformTaskManager = () => {
         } else if (activeMenu === "lead") {
             dispatch(fetchLeadsData(locationId))
         } else {
-            if (debtorStudent.length === 0) {
-                dispatch(fetchDebtorStudentsData({number: 1, len: 0, id: +locationId}))
-            } else if (isCompleted) {
+            dispatch(fetchDebtorStudentsData(locationId))
+            if (isCompleted) {
                 dispatch(fetchCompletedDebtorsData(locationId))
             }
         }
@@ -350,8 +349,8 @@ const PlatformTaskManager = () => {
                                                     fontSize: "1.8rem"
                                                 }}
                                                 className={classNames(cls.other__item, {
-                                                [cls.active]: activeMenu === item.name
-                                            })}>
+                                                    [cls.active]: activeMenu === item.name
+                                                })}>
                                                 {
                                                     item.name === "debtors"
                                                         ?
@@ -388,7 +387,7 @@ const PlatformTaskManager = () => {
                 <div className={cls.tasks__handler}>
                     <FuncContext.Provider value={contextObj}>
                         <div className={cls.items}>
-                            <div className={cls.items__inner}>
+                            {/*<div className={cls.items__inner}>*/}
                                 {
                                     activeMenu === "lead"
                                         ?
@@ -411,27 +410,27 @@ const PlatformTaskManager = () => {
                                                 arrStatus={searchValue ? searchStatus : debtorStudentStatus}
                                             />
                                 }
-                            </div>
-                            {
-                                debtorStudentStatus !== "loading"
-                                    ?
-                                    (debtorStudent.length + completedDebtorStudent.length) >= 100
-                                        ?
-                                        null
-                                        :
-                                        (debtorStudent.length !== 0 && activeMenu === "debtors" && !isCompleted)
-                                            ?
-                                            <div
-                                                className={cls.scroll__plus}
-                                                onClick={() => onGetStudents(number)}
-                                            >
-                                                <i className={classNames("fas fa-plus", cls.icon)}/>
-                                            </div>
-                                            :
-                                            null
-                                    :
-                                    null
-                            }
+                            {/*</div>*/}
+                            {/*{*/}
+                            {/*    debtorStudentStatus !== "loading"*/}
+                            {/*        ?*/}
+                            {/*        (debtorStudent.length + completedDebtorStudent.length) >= 100*/}
+                            {/*            ?*/}
+                            {/*            null*/}
+                            {/*            :*/}
+                            {/*            (debtorStudent.length !== 0 && activeMenu === "debtors" && !isCompleted)*/}
+                            {/*                ?*/}
+                            {/*                <div*/}
+                            {/*                    className={cls.scroll__plus}*/}
+                            {/*                    onClick={() => onGetStudents(number)}*/}
+                            {/*                >*/}
+                            {/*                    <i className={classNames("fas fa-plus", cls.icon)}/>*/}
+                            {/*                </div>*/}
+                            {/*                :*/}
+                            {/*                null*/}
+                            {/*        :*/}
+                            {/*        null*/}
+                            {/*}*/}
                         </div>
                     </FuncContext.Provider>
                     <div className={cls.tasks__banner}>
@@ -530,8 +529,10 @@ const PlatformTaskManager = () => {
                                 }
                                 {
                                     studentSelect === "tel ko'tarmadi" ? null : <>
-                                        <InputForm placeholder="koment" type="text" register={register} name={"comment"} required/>
-                                        <InputForm placeholder="keyingiga qoldirish" type="date" register={register} name={"date"}
+                                        <InputForm placeholder="koment" type="text" register={register} name={"comment"}
+                                                   required/>
+                                        <InputForm placeholder="keyingiga qoldirish" type="date" register={register}
+                                                   name={"date"}
                                                    required/>
                                     </>
                                 }
@@ -638,16 +639,16 @@ const Student = ({arr, arrStatus}) => {
     const filteredRed = arr.filter(item => item.status === "red")
     const filteredYellow = arr.filter(item => item.status === "yellow")
 
-    if ((arrStatus === "loading" || arrStatus === "idle") && ((arr.length === 0 && activeMenu === "debtors") || activeMenu === "newStudents")) {
+    if (arrStatus === "loading" || arrStatus === "idle") {
         return <DefaultLoader/>
     }
     return (
         colorStatusList.map((item, i) => {
             if (item === "green") return null
             return (
-                <div id="main" style={{
-                    display: "flex"
-                }}>
+                // <div id="main" style={{
+                //     display: "flex"
+                // }}>
                     <RenderItem
                         arr={item === "red" ? filteredRed : filteredYellow}
                         index={i}
@@ -656,11 +657,11 @@ const Student = ({arr, arrStatus}) => {
                         // length={arr.length + completedLength}
                         // status={arrStatus}
                     />
-                    {
-                        ((arrStatus === "loading" || arrStatus === "idle") && activeMenu === "debtors") && !isCompleted ?
-                            <DefaultLoader/> : null
-                    }
-                </div>
+                    // {/*{*/}
+                    // {/*    ((arrStatus === "loading" || arrStatus === "idle") && activeMenu === "debtors") && !isCompleted ?*/}
+                    // {/*        <DefaultLoader/> : null*/}
+                    // {/*}*/}
+                // </div>
 
             )
         })
