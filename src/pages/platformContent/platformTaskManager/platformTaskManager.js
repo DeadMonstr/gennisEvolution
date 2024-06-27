@@ -354,13 +354,13 @@ const PlatformTaskManager = () => {
                                                 {
                                                     item.name === "debtors"
                                                         ?
-                                                        debtorStudent.length
+                                                        isCompleted ? completedDebtorStudent.length : debtorStudent.length
                                                         :
                                                         item.name === "newStudents"
                                                             ?
-                                                            newStudents.length
+                                                            isCompleted ? completedNewStudents.length : newStudents.length
                                                             :
-                                                            leads.length
+                                                            isCompleted ? completedLeads.length : leads.length
                                                 }
                                             </p>
                                             <h2
@@ -388,28 +388,28 @@ const PlatformTaskManager = () => {
                     <FuncContext.Provider value={contextObj}>
                         <div className={cls.items}>
                             {/*<div className={cls.items__inner}>*/}
-                                {
-                                    activeMenu === "lead"
+                            {
+                                activeMenu === "lead"
+                                    ?
+                                    <Leads
+                                        isCompleted={isCompleted}
+                                        arr={searchValue ? search : isCompleted ? completedLeads : leads}
+                                        arrStatus={leadsStatus}
+                                    />
+                                    :
+                                    activeMenu === "newStudents"
                                         ?
-                                        <Leads
-                                            isCompleted={isCompleted}
-                                            arr={searchValue ? search : isCompleted ? completedLeads : leads}
-                                            arrStatus={leadsStatus}
+                                        <Student
+                                            arr={searchValue ? search : isCompleted ? completedNewStudents : newStudents}
+                                            arrStatus={newStudentsStatus}
                                         />
                                         :
-                                        activeMenu === "newStudents"
-                                            ?
-                                            <Student
-                                                arr={searchValue ? search : isCompleted ? completedNewStudents : newStudents}
-                                                arrStatus={newStudentsStatus}
-                                            />
-                                            :
-                                            <Student
-                                                setNumber={setNumber}
-                                                arr={searchValue ? search : isCompleted ? completedDebtorStudent : debtorStudent}
-                                                arrStatus={searchValue ? searchStatus : debtorStudentStatus}
-                                            />
-                                }
+                                        <Student
+                                            setNumber={setNumber}
+                                            arr={searchValue ? search : isCompleted ? completedDebtorStudent : debtorStudent}
+                                            arrStatus={searchValue ? searchStatus : debtorStudentStatus}
+                                        />
+                            }
                             {/*</div>*/}
                             {/*{*/}
                             {/*    debtorStudentStatus !== "loading"*/}
@@ -649,18 +649,18 @@ const Student = ({arr, arrStatus}) => {
                 // <div id="main" style={{
                 //     display: "flex"
                 // }}>
-                    <RenderItem
-                        arr={item === "red" ? filteredRed : filteredYellow}
-                        index={i}
-                        // onGetStudents={onGetStudents}
-                        // number={number}
-                        // length={arr.length + completedLength}
-                        // status={arrStatus}
-                    />
-                    // {/*{*/}
-                    // {/*    ((arrStatus === "loading" || arrStatus === "idle") && activeMenu === "debtors") && !isCompleted ?*/}
-                    // {/*        <DefaultLoader/> : null*/}
-                    // {/*}*/}
+                <RenderItem
+                    arr={item === "red" ? filteredRed : filteredYellow}
+                    index={i}
+                    // onGetStudents={onGetStudents}
+                    // number={number}
+                    // length={arr.length + completedLength}
+                    // status={arrStatus}
+                />
+                // {/*{*/}
+                // {/*    ((arrStatus === "loading" || arrStatus === "idle") && activeMenu === "debtors") && !isCompleted ?*/}
+                // {/*        <DefaultLoader/> : null*/}
+                // {/*}*/}
                 // </div>
 
             )
