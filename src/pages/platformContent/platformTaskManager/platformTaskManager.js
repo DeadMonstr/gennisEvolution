@@ -157,15 +157,18 @@ const PlatformTaskManager = () => {
             id: studentId,
             ...data
         }
+
+
         if (activeMenu === "newStudents") {
             request(`${BackUrl}new_students_calling/${locationId}`, "POST", JSON.stringify(res), headers())
                 .then(res => {
-                    if (res?.student.name) {
-                        dispatch(changeNewStudents(res?.student))
+                    console.log(res, "ressssss")
+                    if (res?.student.id) {
+                        dispatch(changeNewStudentsDel({student: res.student}))
+                        showMessage(res.student.msg)
                     } else {
-                        dispatch(changeNewStudentsDel(res?.student))
+                        showMessage(res.msg)
                     }
-                    showMessage(res.msg)
                 })
                 .catch(err => console.log(err))
         } else if (activeMenu === "debtors") {
@@ -175,12 +178,11 @@ const PlatformTaskManager = () => {
             }
             request(`${BackUrl}student_in_debts/${locationId}`, "POST", JSON.stringify(result), headers())
                 .then(res => {
-                    if (res?.student.name) {
-                        dispatch(changeDebtorStudents(res?.student))
-                    } else {
-                        dispatch(changeDebtorStudentsDel(res?.student))
+
+                    if (res?.student?.info) {
+                        dispatch(changeDebtorStudentsDel({student:res.student}))
                     }
-                    showMessage(res.student.msg)
+                    showMessage(res.msg)
                 })
                 .catch(err => console.log(err))
         } else if (activeMenu === "lead") {
@@ -189,7 +191,9 @@ const PlatformTaskManager = () => {
                 location_id: locationId
             }), headers())
                 .then(res => {
-                    dispatch(changeLead(res?.lead))
+                    if (res.lead) {
+                        dispatch(changeLead(res?.lead))
+                    }
                     showMessage(res.msg)
                 })
                 .catch(err => console.log(err))
@@ -250,11 +254,7 @@ const PlatformTaskManager = () => {
                     filteredArr = debtorStudent
                 break;
         }
-        // return filteredArr.filter(item =>
-        //     item?.name?.toLowerCase().includes(search.toLowerCase()) ||
-        //     item?.surname?.toLowerCase().includes(search.toLowerCase()) ||
-        //     item?.username?.toLowerCase().includes(search.toLowerCase())
-        // )
+
     }, [activeMenu, search])
 
 
@@ -278,17 +278,10 @@ const PlatformTaskManager = () => {
     }
 
     useEffect(() => {
-        // setFiltered(searchedUsers())
     }, [activeMenu, search])
 
-    const onGetStudents = (num) => {
-        const length = debtorStudent.length + completedDebtorStudent.length
 
-        dispatch(fetchDebtorStudentsData({number: num, len: length, id: locationId}))
-        // if (num <= 5) {
-        setNumber(++num)
-        // }
-    }
+
 
     const contextObj = useMemo(() => ({
         activeMenu: activeMenu,
@@ -301,6 +294,8 @@ const PlatformTaskManager = () => {
         getSelect: setGetUser,
         completedLength: completedDebtorStudent.length
     }), [activeMenu, isCompleted, locationId, completedDebtorStudent])
+
+
 
     return (
         <div className={cls.tasks}>
@@ -326,7 +321,7 @@ const PlatformTaskManager = () => {
                         <h1>My tasks</h1>
                         <Completed
                             style={isCompleted ? "#34c9eb" : "#ff8c42"}
-                            progress={isCompleted ? progress?.completed_tasks : progress?.in_progress_tasks-progress?.completed_tasks}
+                            progress={isCompleted ? progress?.completed_tasks : progress?.in_progress_tasks }
                             progressStatus={progressStatus}
                         />
                     </div>
@@ -350,7 +345,8 @@ const PlatformTaskManager = () => {
                                                 }}
                                                 className={classNames(cls.other__item, {
                                                     [cls.active]: activeMenu === item.name
-                                                })}>
+                                                })}
+                                            >
                                                 {
                                                     item.name === "debtors"
                                                         ?
@@ -460,44 +456,6 @@ const PlatformTaskManager = () => {
             </div>
 
 
-            {/*<Modal*/}
-            {/*    activeModal={activeModal}*/}
-            {/*    setActiveModal={setActiveModal}*/}
-            {/*>*/}
-            {/*    <div className={cls.tasks__modal}>*/}
-            {/*        <form*/}
-            {/*            className={cls.wrapper}*/}
-            {/*            onSubmit={handleSubmit(onSubmit)}*/}
-            {/*        >*/}
-            {/*            {*/}
-            {/*                activeMenu === "debtors" ? <Select*/}
-            {/*                    options={options}*/}
-            {/*                    onChangeOption={onChange}*/}
-            {/*                /> : null*/}
-            {/*            }*/}
-            {/*            <InputForm*/}
-            {/*                title={"Kament"}*/}
-            {/*                placeholder={"Kament"}*/}
-            {/*                name={"comment"}*/}
-            {/*                register={register}*/}
-            {/*                required*/}
-            {/*            />*/}
-            {/*            {*/}
-            {/*                studentSelect === "tel ko'tarmadi" ? null : <InputForm*/}
-            {/*                    title={"Sana"}*/}
-            {/*                    type={"date"}*/}
-            {/*                    placeholder={"Keyinga qoldirish"}*/}
-            {/*                    name={"date"}*/}
-            {/*                    register={register}*/}
-            {/*                    required*/}
-            {/*                />*/}
-            {/*            }*/}
-            {/*            <Button type={"submit"}>Add</Button>*/}
-            {/*        </form>*/}
-            {/*    </div>*/}
-            {/*</Modal>*/}
-
-
             <Modal activeModal={activeModal} setActiveModal={setActiveModal}>
                 <div className={cls.userbox}>
                     <div className={cls.userbox__img}>
@@ -582,7 +540,7 @@ const PlatformTaskManager = () => {
                             setIsConfirm(false)
                         }}
                     >
-                        <ConfimReason getConfirm={onDelete} reason={true}/>
+                        <ConfimReason getConfirm={onDelete} reason={true} />
                     </Modal> : null
             }
             <PlatformMessage/>
@@ -595,7 +553,7 @@ const Completed = ({progress, progressStatus, style = "black"}) => {
         return <DefaultLoaderSmall/>
     } else {
         return (
-            <h1 style={{color: style, fontSize: "2.6rem"}}>{progress}</h1>
+            <h1 style={{color: style, fontSize: "2.6rem"}}>{progress} </h1>
         )
     }
 }

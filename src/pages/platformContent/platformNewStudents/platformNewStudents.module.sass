@@ -30,25 +30,6 @@
       justify-content: space-between
       align-items: center
 
-      &:nth-child(2)
-        margin-top: 1rem
-
-      &:last-child
-        flex-direction: column
-
-    .accounting__money
-      display: flex
-      align-items: center
-      justify-content: center
-
-      span
-        padding: 1rem 2rem
-        border: 1px solid $color-grey-dark
-        color: $color-grey-dark
-        border-radius: 10px
-        font-size: 1.8rem
-
-
   &__main
     margin-top: 3rem
     width: 100%
@@ -61,6 +42,10 @@
       border-radius: 2rem
       transition: .7s
       position: relative
+      overflow-y: auto
+      overflow-x: hidden
+      &::-webkit-scrollbar
+        width: 0
 
       &__main
         top: 0
@@ -81,24 +66,19 @@
       &__wrapper
         padding: 0 2rem 1rem
     .activeColum
-      min-width: 650px
+      min-width: 750px
 
       h1
         font-size: 2.2rem
         color: #00c2ff
 
-    .activeScroll
-      overflow-y: scroll
-      overflow-x: hidden
 
-      &::-webkit-scrollbar
-        width: 0
+
 
   .filtered
     padding: 2rem
     display: flex
     overflow: clip
-
 
     .scroll
       width: 100%
@@ -117,7 +97,6 @@
     align-items: center
     justify-content: flex-start
     height: fit-content
-    padding: 2rem
 
 .overhead
   width: 100%
@@ -133,6 +112,38 @@
     justify-content: center
     background-color: white
     border-radius: 15px
+
+
+.subjectStudents
+  width: 70rem
+
+  background-color: white
+  padding: 1rem
+  border-radius: 5px
+
+  &__header
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: 1rem 2rem
+  &__subheader
+    display: flex
+    align-items: center
+    justify-content: center
+    padding: 1rem 2rem
+    background-color: white
+    gap: 1rem
+    &>div
+      width: 25rem
+      display: flex
+      align-items: center
+      justify-content: flex-end
+      gap: 1rem
+  &__wrapper
+    width: 100%
+    max-height: 50rem
+    overflow: auto
+    padding: 2rem
 
 
 @media (max-width: 475px)

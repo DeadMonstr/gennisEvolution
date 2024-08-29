@@ -16,6 +16,7 @@ import Button from "components/platform/platformUI/button";
 import LocationMoneys from "pages/platformContent/platformAccounting/locationMoneys/locationMoneys";
 import RequireAuthChildren from "components/requireAuthChildren/requireAuthChildren";
 import {useAuth} from "hooks/useAuth";
+import Select from "components/platform/platformUI/select";
 
 const LocationMonths = () => {
 
@@ -185,6 +186,10 @@ const LocationMonths = () => {
 const PaymentModal = ({monthId,salary,setActiveChangeModal,userId}) => {
 
     const {dataToChange} = useSelector(state => state.dataToChange)
+    const [day, setDay] = useState(null)
+    const [month, setMonth] = useState(null)
+
+    console.log(dataToChange)
 
     const {
         register,
@@ -207,6 +212,8 @@ const PaymentModal = ({monthId,salary,setActiveChangeModal,userId}) => {
 
         const newData = {
             ...data,
+            month,
+            day
         }
 
 
@@ -234,6 +241,29 @@ const PaymentModal = ({monthId,salary,setActiveChangeModal,userId}) => {
             )
         })
     },[dataToChange, register])
+
+
+    const renderDate = useCallback(() => {
+        return dataToChange?.data_days?.map((item, index) => {
+            if (item.value === month) {
+                return (
+                    <div className="date__item" key={index}>
+                        <Select
+                            number={true}
+                            name={"day"}
+                            title={"Kun"}
+                            defaultValue={day}
+                            onChangeOption={setDay}
+                            options={item?.days}
+                        />
+                    </div>
+                )
+            }
+        })
+    }, [dataToChange?.data_days, month, day])
+
+
+    const renderedDays = renderDate()
 
     const renderedPaymentTypes = renderPaymentType()
 
@@ -292,6 +322,20 @@ const PaymentModal = ({monthId,salary,setActiveChangeModal,userId}) => {
                         </span>
                     }
                 </label>
+
+                {
+                    dataToChange?.data_days?.length >= 2 ?
+                        <Select
+                            name={"month"}
+                            title={"Oy"}
+                            defaultValue={month}
+                            onChangeOption={setMonth}
+                            options={dataToChange?.data_days}
+                        /> :
+                        null
+                }
+
+                {renderedDays}
 
                 <input disabled={!isDirty || !isValid} className="input-submit" type="submit" value="Tasdiqlash"/>
 

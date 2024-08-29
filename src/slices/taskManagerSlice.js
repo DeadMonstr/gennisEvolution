@@ -57,27 +57,26 @@ const TaskManagerSlice = createSlice({
         },
         changeNewStudents: (state, action) => {
             state.newStudents = [
-                ...state.newStudents.filter(item => item.id !== action.payload.id),
-                action.payload
+                ...state.newStudents.filter(item => item.id !== action.payload.student.id),
+                action.payload.student.info
             ]
         },
         changeNewStudentsDel: (state, action) => {
-            state.newStudents = state.newStudents.filter(item => item.id !== action.payload.id)
+            console.log(action.payload)
+            state.newStudents = state.newStudents.filter(item => item.id !== action.payload.student.id)
         },
         changeDebtorStudents: (state, action) => {
             state.debtorStudent = [
-                ...state.debtorStudent.filter(item => item.id !== action.payload.id),
-                action.payload
+                ...state.debtorStudent.filter(item => item.id !== action.payload.student.id),
+                action.payload.student
             ]
         },
         changeDebtorStudentsDel: (state, action) => {
-            state.debtorStudent = state.debtorStudent.filter(item => item.id !== action.payload.id)
+
+            state.debtorStudent = state.debtorStudent.filter(item => item.id !== action.payload.student.id)
         },
         changeLead: (state, action) => {
-            state.leads = [
-                ...state.leads.filter(item => item.id !== action.payload.id),
-                action.payload
-            ]
+            state.leads = state.leads.filter(item => item.id !== action.payload.id)
         },
         deleteLead: (state, action) => {
             state.leads = state.leads.filter(item => item.id !== action.payload.id)

@@ -237,19 +237,20 @@ const BooksProfile = () => {
             </Modal>
             {
                 activeChangeModalName === "change" && isCheckedPassword ?
-                    <Modal activeModal={activeChangeModal} setActiveModal={() => setActiveChangeModal(false)}>
+                    <Modal id={"change"} activeModal={activeChangeModal} setActiveModal={() => setActiveChangeModal(false)}>
                         <ChangeBook book={book} setTypeMsg={setTypeMsg} setMsg={setMsg}
                                     setActiveMessage={setActiveMessage} closeModal={setActiveChangeModal}/>
                     </Modal> :
                     activeChangeModalName === "delete" && isCheckedPassword ?
                         <>
-                            <Modal activeModal={activeChangeModal} setActiveModal={() => setActiveChangeModal(false)}>
+                            <Modal id={"delete"} activeModal={activeChangeModal} setActiveModal={() => setActiveChangeModal(false)}>
                                 <Confirm setActive={setActiveChangeModal} getConfirm={setIsConfirm}
                                          text={"Kitobni uchirishni hohlaysizmi"}/>
                             </Modal>
                             {
                                 isConfirm === "yes" ?
                                     <Modal
+                                        id={"deleteConfirm"}
                                         activeModal={activeChangeModal}
                                         setActiveModal={() => {
                                             setActiveChangeModal(false)
@@ -262,7 +263,7 @@ const BooksProfile = () => {
 
                         </> :
                         activeChangeModalName === "buy" && isCheckedPassword ?
-                            <Modal activeModal={activeChangeModal} setActiveModal={() => setActiveChangeModal(false)}>
+                            <Modal  id={"buy"} activeModal={activeChangeModal} setActiveModal={() => setActiveChangeModal(false)}>
                                 <Buying disableModal={() => setActiveChangeModal(false)} price={book.price}
                                         id={book.id}/>
                             </Modal> : null
@@ -585,10 +586,6 @@ const Buying = ({price, id, disableModal}) => {
     }
 
 
-    const onSubmit = (e) => {
-        e.preventDefault()
-        setActiveModal(true)
-    }
 
     useEffect(() => {
         if (locations.length > 0) {
@@ -601,7 +598,7 @@ const Buying = ({price, id, disableModal}) => {
 
     return (
         <div className="buy">
-            <form onSubmit={onSubmit}>
+            <div className={"form"}>
                 <h1>Sotib olish</h1>
 
                 {
@@ -642,15 +639,14 @@ const Buying = ({price, id, disableModal}) => {
                 }
 
 
-                <input
-                    className="input-submit"
-                    // disabled={isSubmit}
-                    type="submit"
-                    value={"sotib olish"}
-                />
+
+                <Button type={"submit"} onClickBtn={() => setActiveModal(true)}>
+                    Sotib olish
+                </Button>
 
 
-            </form>
+
+            </div>
 
             {
                 students.length && active !== "me" &&

@@ -195,7 +195,16 @@ const newStudentsSlice = createSlice({
             })
         },
         deleteStudent: (state, action) => {
-            state.newStudents = state.newStudents.filter(item => item.id !== action.payload.id)
+            state.filteredNewStudents = state.filteredNewStudents.map(item => {
+                if (item.id === action.payload.idSubject) {
+                    return {
+                        ...item,
+                        students: item.students.filter(st => st.id !== action.payload.id)
+                    }
+                }
+                return item
+            })
+            // state.filteredStudents = state.filteredStudents.
         },
         setPage: (state, action) => {
             state.page = action.payload.page
@@ -230,7 +239,8 @@ const newStudentsSlice = createSlice({
             })
             .addCase(fetchNewStudentsDeleted.fulfilled, (state, action) => {
                 state.fetchNewStudentsStatus = 'success';
-                state.newStudents = action.payload.newStudents
+                console.log(action.payload)
+                state.filteredNewStudents = action.payload
             })
             .addCase(fetchNewStudentsDeleted.rejected, state => {
                 state.fetchNewStudentsStatus = 'error'
