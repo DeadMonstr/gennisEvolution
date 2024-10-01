@@ -24,7 +24,7 @@ const AccountingTable = React.memo(({
                                         fetchUsersStatus,
                                         extraInfo,
                                         cache
-                                    }) => {
+                                     }) => {
 
     const {isCheckedPassword} = useSelector(state => state.me)
 
@@ -112,15 +112,12 @@ const AccountingTable = React.memo(({
     }
 
     const getConfirmDelete = (data) => {
-
-
         const newData = {
             id: changingData.id,
             userId: changingData.userId,
             type: changingData.type,
             ...data
         }
-
         funcSlice?.onDelete(newData)
         setActiveChangeModal(false)
 
@@ -184,7 +181,6 @@ const AccountingTable = React.memo(({
                             activeRowsInTable.typePayment ?
                                 <td
                                     onClick={() => {
-
                                         changeModal("changeTypePayment")
                                         setChangingData({
                                             id: item.id,

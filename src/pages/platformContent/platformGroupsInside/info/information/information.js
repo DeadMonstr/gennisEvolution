@@ -8,7 +8,8 @@ import {ROLES} from "constants/global";
 import cls from "./style.module.sass";
 
 const Information = ({data, statistics}) => {
-    const dataKeys = Object.keys(data)
+    const dataKeys = Object?.keys(data)
+
     return (
         <div className={classNames(cls.item, cls.information)}>
             <div className={cls.information__header}>

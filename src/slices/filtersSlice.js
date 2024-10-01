@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
+import filters from "../components/platform/platformUI/filters";
 
 const initialState = {
     filters: {
@@ -137,6 +138,8 @@ const newStudentsSlice = createSlice({
             .addCase(fetchFilters.fulfilled,(state, action) => {
                 state.fetchFiltersStatus = 'success';
                 state.filters = action.payload.filters
+                console.log(action.payload , "log3213")
+
 
             })
             .addCase(fetchFilters.rejected,state => {state.fetchFiltersStatus = 'error'} )

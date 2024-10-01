@@ -21,6 +21,7 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
 
     const renderFilters = useCallback(() => {
         const filtersKeys = Object.keys(filters)
+
         return filtersKeys?.map((key ,index) => {
             if (filters[key].type === "select") {
                 return (
@@ -37,6 +38,7 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
                 )
             }
             else if (filters[key].type === "btn") {
+
                 return (
                     <div data-key={index} key={index} className="otherFilters__item">
                         <h2>{filters[key].title}:</h2>
