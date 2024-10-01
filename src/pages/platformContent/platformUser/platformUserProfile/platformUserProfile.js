@@ -258,6 +258,7 @@ const UserContent = ({userId}) => {
                                     </div>
                                 </div>
                             </RequireAuthChildren>
+
                         </div>
                     </header>
 
@@ -267,6 +268,7 @@ const UserContent = ({userId}) => {
 
                     <main className="profile__main">
                         {renderedItems}
+
                     </main>
                 </div>
             </div>
@@ -299,9 +301,12 @@ const UserContent = ({userId}) => {
 
 
 const UserInfo = React.memo(({data}) => {
+
+
     const keysData = Object.keys(data)
     return keysData.map(key => {
 
+        console.log( keysData , data)
         const style = {
             order: data[key].order,
             display: data[key].display ? data[key].display : "flex"
@@ -311,6 +316,7 @@ const UserInfo = React.memo(({data}) => {
             return (
                 <div style={style} className="information__item array">
                     <span>{data[key].name}:</span>
+
                     <div>
                         {
                             data[key].value.map( item => {
@@ -332,8 +338,8 @@ const UserInfo = React.memo(({data}) => {
                             data[key].value ? <i className="fas fa-check green"></i> : <i className="fas fa-times red"></i>
                             : data[key].value
                     }
-
                 </span>
+
             </div>
         )
     })

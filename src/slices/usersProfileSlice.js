@@ -14,7 +14,8 @@ const initialState = {
             age: true,
             phone: true,
             birth: true,
-            subject: true
+            subject: true,
+            studentsLength: true
         },
 
         info: {

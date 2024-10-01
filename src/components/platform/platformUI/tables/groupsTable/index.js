@@ -8,14 +8,14 @@ import "../tables.sass"
 import {useNavigate} from "react-router-dom";
 
 
-const GroupsTable = React.memo(({groups,activeRowsInTable}) =>  {
+const GroupsTable = React.memo(({groups, activeRowsInTable}) => {
 
     const {fetchGroupsStatus} = useSelector(state => state.groups)
-    const [groupsList,setGroupsList] = useState(groups)
+    const [groupsList, setGroupsList] = useState(groups)
 
-    useEffect(()=> {
+    useEffect(() => {
         setGroupsList(groups)
-    },[groups])
+    }, [groups])
 
     const navigate = useNavigate()
     const LinkToGroup = (id) => {
@@ -26,7 +26,7 @@ const GroupsTable = React.memo(({groups,activeRowsInTable}) =>  {
         if (name.length > 10) {
             return (
                 <>
-                    {name.substring(0,10)}...
+                    {name.substring(0, 10)}...
                     <div className="popup">
                         {name}
                     </div>
@@ -37,15 +37,15 @@ const GroupsTable = React.memo(({groups,activeRowsInTable}) =>  {
     }
 
 
-
     const renderElements = useCallback(() => {
-        return groupsList?.map((item,index) => {
+        return groupsList?.map((item, index) => {
+            console.log(item , "item")
             return (
                 <tr key={index} onClick={() => LinkToGroup(item.id)}>
                     <td>{index + 1}</td>
                     {activeRowsInTable.name ? <td className="groupName">{stringCheck(item.name)}</td> : null}
                     {activeRowsInTable.teacherName ? <td>{stringCheck(item.teacherName)}</td> : null}
-                    {activeRowsInTable.teacherSurname ? <td>{stringCheck(item.teacherSurname)}</td>: null}
+                    {activeRowsInTable.teacherSurname ? <td>{stringCheck(item.teacherSurname)}</td> : null}
                     {
                         activeRowsInTable.subject ?
                             <td>
@@ -56,7 +56,8 @@ const GroupsTable = React.memo(({groups,activeRowsInTable}) =>  {
                                 </span>
                             </td> : null
                     }
-                    {activeRowsInTable.typeOfCourse ? <td>{stringCheck(item.typeOfCourse)}</td>: null}
+                    {activeRowsInTable.typeOfCourse ? <td>{stringCheck(item.typeOfCourse)}</td> : null}
+                    {activeRowsInTable.studentsLength ? <td>{stringCheck(item.studentsLength)}</td> : null}
                     {
                         activeRowsInTable.payment ?
                             <td>
@@ -74,9 +75,9 @@ const GroupsTable = React.memo(({groups,activeRowsInTable}) =>  {
                                 <div className="status">
                                     {
                                         item.status === "True" ?
-                                            <span className="true" />
+                                            <span className="true"/>
                                             :
-                                            <span className="false" />
+                                            <span className="false"/>
                                     }
                                 </div>
                             </td> : null
@@ -85,12 +86,7 @@ const GroupsTable = React.memo(({groups,activeRowsInTable}) =>  {
 
             )
         })
-    },[LinkToGroup, activeRowsInTable, groupsList])
-
-
-
-
-
+    }, [LinkToGroup, activeRowsInTable, groupsList])
 
 
     const renderedUsers = renderElements()
@@ -101,31 +97,31 @@ const GroupsTable = React.memo(({groups,activeRowsInTable}) =>  {
         console.log('error')
     }
 
+    console.log(activeRowsInTable , "table")
 
     return (
         <div className="tableBox">
             <table className="groupsTable">
                 <thead>
-                    <tr className="tbody_th" key={1000000}>
-                        <th/>
-                        {activeRowsInTable.name ? <th >Gruppa nomi</th> : null}
-                        {activeRowsInTable.teacherName ?  <th>O'qituvchi Ismi</th> : null}
-                        {activeRowsInTable.teacherSurname ?  <th>O'qituvchi Familyasi</th> : null}
-                        {activeRowsInTable.subject ?  <th>Fan</th> : null}
-                        {activeRowsInTable.typeOfCourse ?  <th>Kurs turi</th> : null}
-                        {activeRowsInTable.payment ?  <th>Gruppa narxi</th> : null}
-                        {activeRowsInTable.status ?  <th>Status</th> : null}
-                    </tr>
+                <tr className="tbody_th" key={1000000}>
+                    <th/>
+                    {activeRowsInTable.name ? <th>Gruppa nomi</th> : null}
+                    {activeRowsInTable.teacherName ? <th>O'qituvchi Ismi</th> : null}
+                    {activeRowsInTable.teacherSurname ? <th>O'qituvchi Familyasi</th> : null}
+                    {activeRowsInTable.subject ? <th>Fan</th> : null}
+                    {activeRowsInTable.typeOfCourse ? <th>Kurs turi</th> : null}
+                    {activeRowsInTable.studentsLength ? <th>Studenlar soni</th> : null}
+                    {activeRowsInTable.payment ? <th>Gruppa narxi</th> : null}
+                    {activeRowsInTable.status ? <th>Status</th> : null}
+                </tr>
                 </thead>
                 <tbody>
-                    {renderedUsers}
+                {renderedUsers}
                 </tbody>
             </table>
         </div>
     );
 })
-
-
 
 
 export default GroupsTable;
