@@ -175,7 +175,6 @@ const PlatformTaskManager = () => {
             }
             request(`${BackUrl}student_in_debts/${locationId}`, "POST", JSON.stringify(result), headers())
                 .then(res => {
-                    console.log(res)
                     if (res?.student.name) {
                         dispatch(changeDebtorStudents(res?.student))
                     } else {
@@ -270,6 +269,12 @@ const PlatformTaskManager = () => {
                 status: isCompleted
             }), headers())
                 .then(res => {
+                    console.log(res)
+                    console.log({
+                        text: value,
+                        type: activeMenu,
+                        status: isCompleted
+                    })
                     dispatch(fetchedSearch(res.students))
                 })
                 .catch(err => console.log(err))
@@ -302,8 +307,6 @@ const PlatformTaskManager = () => {
         getSelect: setGetUser,
         completedLength: completedDebtorStudent.length
     }), [activeMenu, isCompleted, locationId, completedDebtorStudent])
-
-    console.log(getUser)
 
     return (
         <div className={cls.tasks}>
