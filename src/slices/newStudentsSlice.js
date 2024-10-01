@@ -106,6 +106,14 @@ export const fetchNewStudents = createAsyncThunk(
     }
 )
 
+export const fetchNewDeletedStudents = createAsyncThunk(
+    'newStudentsSlice/fetchNewDeletedStudents',
+    async (id) => {
+        const {request} = useHttp();
+        return await request(`${BackUrl}newStudentsDeleted/${id}`, "GET", null, headers())
+    }
+)
+
 export const fetchNewStudentsDeleted = createAsyncThunk(
     'newStudentsSlice/fetchNewStudentsDeleted',
     async (id) => {
@@ -166,6 +174,7 @@ const newStudentsSlice = createSlice({
         //     })
         // },
         setActiveBtn: (state, action) => {
+            console.log(true, "setActiveBtn")
             state.btns = state.btns.map(item => {
                 if (item.name === action.payload.name) {
                     if (item.typeModal) {
@@ -176,6 +185,7 @@ const newStudentsSlice = createSlice({
             })
         },
         setActiveAllBtn: (state, action) => {
+            console.log(true, "setActiveAllBtn")
             state.btns = state.btns.map(item => {
                 if (item.typeModal) {
                     return {...item, activeModal: false}
@@ -231,6 +241,20 @@ const newStudentsSlice = createSlice({
                 state.checkedUsers = []
             })
             .addCase(fetchNewStudents.rejected, state => {
+                state.fetchNewStudentsStatus = 'error'
+            })
+
+            .addCase(fetchNewDeletedStudents.pending, state => {
+                state.fetchNewStudentsStatus = 'loading'
+            })
+            .addCase(fetchNewDeletedStudents.fulfilled, (state, action) => {
+                state.fetchNewStudentsStatus = 'success';
+                console.log(action.payload, "deleted")
+                state.newStudents = action.payload.newStudents.map(item => {
+                    return {...item,checked: false}
+                })
+            })
+            .addCase(fetchNewDeletedStudents.rejected, state => {
                 state.fetchNewStudentsStatus = 'error'
             })
 
