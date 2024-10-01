@@ -114,7 +114,7 @@ const SampleUsers = (props) => {
                 setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 60)
             } else {
                 if (active !== 0) {
-                    setWidth(current => current + 350 )
+                    setWidth(current => current + 350)
                 } else {
                     setWidth(current => current - 350)
                 }
@@ -249,7 +249,6 @@ const SampleUsers = (props) => {
     }, [location])
 
 
-
     return (
         <>
             <Routes>
@@ -279,7 +278,7 @@ const SampleUsers = (props) => {
                                 }
 
                             </div>
-                            <div key={2}>
+                            <div key={2} style={{justifyContent: "normal"}}>
                                 <Button
                                     onClickBtn={() => {
                                         setActiveOthers(!activeOthers)
@@ -290,6 +289,26 @@ const SampleUsers = (props) => {
                                 >
                                     Filterlar
                                 </Button>
+                                {
+                                    funcsSlice?.isFilter ?
+                                        <>
+                                            <Button
+                                                active={funcsSlice?.isDeleteData}
+                                                onClickBtn={() => funcsSlice?.setIsDeleteData(!funcsSlice?.isDeleteData)}
+                                            >
+                                                O'chirilgan
+                                            </Button>
+                                            <Button
+                                                onClickBtn={() => funcsSlice?.setIsFilterData(!funcsSlice?.isFilterData)}
+                                                active={funcsSlice?.isFilterData}
+                                            >
+                                                Filterlangan
+                                            </Button>
+                                        </>
+
+                                        :
+                                        null
+                                }
                             </div>
 
                             <Filters key={3} filterRef={filterRef} filters={filters}
