@@ -319,9 +319,10 @@ const Index = () => {
             }
 
 
-            return <Link to={`../../insideGroup/${item?.teacher[0].group_id}`} className="lesson" style={style}>
-                <h1>{item?.teacher[0].name}</h1>
-                <h1>{item?.teacher[0].surname}</h1>
+            return <Link to={`../../insideGroup/${item?.teacher[0]?.group_id}`} className="lesson" style={style}>
+                <h1>{item?.teacher[0]?.name}</h1>
+                <h1>{item?.teacher[0]?.surname}</h1>
+                <h1>{item?.teacher[0]?.group_name}</h1>
             </Link>
         })
     }

@@ -20,6 +20,7 @@ import Modal from "components/platform/platformUI/modal";
 import InputForm from "components/platform/platformUI/inputForm";
 import cls from "./style.module.sass";
 import img from "assets/Rectangle 864.png"
+import userImg from "assets/user-interface/user_image.png"
 import certificat from "assets/dd20db0879a5d44f9368a 3.png"
 
 const TeacherInfo = () => {
@@ -30,7 +31,8 @@ const TeacherInfo = () => {
                 const result = {
                     ...res?.data,
                     name: res?.full_name,
-                    subject: res?.subjects
+                    subject: res?.subjects,
+                    teacher_img: res.teacher_img
                 }
                 dispatch(fetchedTeacher(result))
                 dispatch(fetchedResults(res?.list))
@@ -139,6 +141,7 @@ const TeacherInfo = () => {
         )
     }, [selectedItem])
 
+
     return (
         <div className={cls.main}>
             <div className={cls.main__container}>
@@ -149,8 +152,8 @@ const TeacherInfo = () => {
                 />
 
                 <div className={classNames(cls.main__container_inner, cls.column)}>
-                    <div className={cls.image}>
-                        <img src={img} alt=""/>
+                    <div className={cls.teacherImage}>
+                        <img src={teacher.teacher_img ? BackUrlForDoc+teacher.teacher_img : userImg} alt=""/>
                     </div>
                     <div className={cls.info}>
                         <h1 className={cls.info_inner}>{teacher?.name}</h1>
@@ -206,29 +209,30 @@ const TeacherInfo = () => {
                 <div className={classNames(cls.main__container_inner, cls.items)}>
                     {
                         results?.map((item, i) => {
+
                             return (
                                 <div className={cls.item}>
                                     <div className={cls.background}>
-                                        <div className={cls.info}>IELTS: 7.0</div>
+                                        <div className={cls.info}>{item.text}</div>
                                     </div>
                                     <div className={cls.image}>
-                                        <img className={cls.image__teacher} src={img} alt=""/>
+                                        <img className={cls.image__teacher} src={item.student_img ? BackUrlForDoc+item.student_img : userImg} alt=""/>
 
                                         <div
                                             className={cls.image__item}
                                             onClick={() => onClick(item.img)}
                                         >
-                                            <img className={cls.image__student} src={item.img} alt=""/>
+                                            <img className={cls.image__student} src={BackUrlForDoc+item.img} alt=""/>
                                         </div>
                                     </div>
                                     <div className={classNames(cls.teacher_name, cls.names)}>
                                         <div className={classNames(cls.name, cls.first)}>
                                             <i className={classNames("fas fa-user", cls.name_inner)}/>
-                                            <h2 className={cls.name_inner}>{item.teacher}</h2>
+                                            <h2 className={cls.name_inner}>{item.teacher_name} {item.teacher_surname}</h2>
                                         </div>
                                         <div className={cls.name}>
                                             <i className={classNames("fas fa-user-tie", cls.name_inner)}/>
-                                            <h2 className={cls.name_inner}>{item.student}</h2>
+                                            <h2 className={cls.name_inner}>{item.student_name} {item.student_surname}</h2>
                                         </div>
                                     </div>
                                 </div>
@@ -236,7 +240,6 @@ const TeacherInfo = () => {
                         })
                     }
                 </div>
-
             </div>
         </div>
     )

@@ -3,7 +3,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 
 import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {deleteStudent, setActiveBtn, setChecked} from "slices/newStudentsSlice";
+import {setActiveBtn, setChecked} from "slices/newStudentsSlice";
 import {fetchFilters} from "slices/filtersSlice";
 import {BackUrl, headers, ROLES} from "constants/global";
 import {useHttp} from "hooks/http.hook";
@@ -153,25 +153,7 @@ const PlatformGroupDeletedStudents = () => {
 
     const {request} = useHttp()
 
-    const getConfirm = (data) => {
-        if (data.confirm === "yes") {
-            const newData = {
-                ...data,
-                typeLocation: "registerStudents",
-                student_id: deleteStId
-            }
 
-            request(`${BackUrl}delete_student`,"POST",JSON.stringify(newData), headers())
-                .then(res => console.log(res))
-
-            dispatch(deleteStudent({id:deleteStId}))
-            setActiveModal(false)
-        }
-        else {
-            setActiveModal(false)
-        }
-
-    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const changeOption = (option) => {

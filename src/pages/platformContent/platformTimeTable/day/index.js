@@ -335,9 +335,14 @@ const Index = () => {
                 color: brightness > 125 ? "black" : "white"
             }
 
-            return <Link to={`../../insideGroup/${item?.teacher[0].group_id}`} className="lesson" style={style}>
-                <h1>{item?.teacher[0].name}</h1>
-                <h1>{item?.teacher[0].surname}</h1>
+
+            console.log(item)
+
+            return <Link to={`../../insideGroup/${item?.teacher[0]?.group_id}`} className="lesson" style={style}>
+                <h1>{item?.teacher[0]?.name}</h1>
+                <h1>{item?.teacher[0]?.surname}</h1>
+                <h1>{item?.teacher[0]?.group_name}</h1>
+
             </Link>
         })
     }

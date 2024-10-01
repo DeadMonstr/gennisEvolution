@@ -32,7 +32,6 @@ const WebSite = () => {
     useEffect(() => {
         request(`${BackUrl}get_home_info`, "GET", null, headers())
             .then(res => {
-                console.log(res)
                 if (res?.success) {
                     dispatch(fetchedAdvantages(res?.advantages))
                     dispatch(fetchedImageItems(res?.design))

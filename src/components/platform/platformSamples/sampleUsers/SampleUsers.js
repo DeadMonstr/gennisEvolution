@@ -468,21 +468,13 @@ const SampleUsers = (props) => {
                                                             setLinkUser={setLinkUser}
                                                             cache={true}
                                                         />
-                                                        <Pagination
-                                                            className="pagination-bar"
-                                                            currentPage={currentPage}
-                                                            totalCount={searchedUsers.length}
-                                                            pageSize={PageSize}
-                                                            onPageChange={page => {
-                                                                setCurrentPage(page)
-                                                                dispatch(funcsSlice?.setPage({page}))
-                                                            }}
-                                                        />
                                                     </div>
                                                 </motion.div>
                                             )
                                         })
                                     }
+
+
                                 </motion.div>
                             </motion.div>
                         </main>
@@ -576,8 +568,6 @@ const SampleUsers = (props) => {
             {/*        <Message typeMessage={typeMsg} activeMsg={activeMessage}>{msg}</Message>*/}
             {/*    </section>*/}
             {/*</List>*/}
-
-
         </>
     );
 };

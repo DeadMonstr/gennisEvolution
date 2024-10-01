@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 
 
 import styles from "./getBookMoney.module.sass"
@@ -26,24 +26,26 @@ const GetBookMoney = () => {
 
     useEffect(() => {
         const locationData = JSON.parse(localStorage.getItem("extraData"))
-        if (Object.values(locationData).length > 0) {
+        if (locationData && Object.values(locationData)?.length > 0) {
             setLoc(locationData.location)
+            getLocPayments(locationData.location)
         }
-
         localStorage.removeItem("extraData")
 
     },[])
 
 
-    console.log(loc)
-
-    useEffect(() => {
-        localStorage.setItem("extraData", JSON.stringify({location: loc}))
+    const getLocPayments = useCallback((loc) => {
         request(`${BackUrl}collected_book_payments/${loc}`,"GET",null,headers())
             .then(res => {
                 setMonths(res.data.debts)
+                localStorage.setItem("extraData", JSON.stringify({location: loc}))
             })
-    },[loc])
+        setLoc(loc)
+    },[])
+
+
+
 
 
     const navigate = useNavigate()
@@ -60,7 +62,7 @@ const GetBookMoney = () => {
 
                 <h1>Pul olish</h1>
 
-                <Select options={locations} defaultValue={loc} onChangeOption={setLoc} />
+                <Select options={locations} defaultValue={loc} onChangeOption={getLocPayments} />
             </div>
             <div className={styles.getMoney__wrapper}>
                 <Table className={styles.table}>

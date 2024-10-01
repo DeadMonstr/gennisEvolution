@@ -60,7 +60,7 @@ const PlatformCreateGroup = () => {
                 <Users locationId={locationId} setGroupData={setGroupData} groupData={groupData}/>
             </div>
 
-            <Modal activeModal={activeModal} setActiveModal={() => setActiveModal(!activeModal)}>
+            <Modal id={"checkedStudents"} activeModal={activeModal} setActiveModal={() => setActiveModal(false)}>
                 <CheckedStudents  setActiveModal={setActiveModal} groupData={groupData} setGroupData={setGroupData}/>
             </Modal>
 
@@ -140,7 +140,6 @@ const Users = ({locationId,setGroupData,groupData}) => {
 
     useEffect(() => {
         if (Object.keys(dataToChange).length > 0) {
-            console.log(dataToChange)
             setDays(dataToChange.days)
         }
     },[dataToChange])
@@ -365,7 +364,6 @@ const Users = ({locationId,setGroupData,groupData}) => {
 
     const onSetDay = (day,id) => {
 
-        console.log(day,id)
         if (day !== "Fan tanla") {
             const filteredDays = days.filter(item => item.id === +day)
             setDays(days => {

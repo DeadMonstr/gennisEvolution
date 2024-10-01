@@ -104,6 +104,18 @@ const ObservedTeacherLessons = () => {
 
     }, [month, year, day, groupData])
 
+    const stringCheck = (name,length = 50) => {
+        if (name?.length > length) {
+            return (
+                <>
+                    {name.substring(0,length)}...
+
+                </>
+            )
+        }
+        return name
+    }
+
 
     const renderInfo = () => {
         return info.map((item, index) => {
@@ -118,7 +130,7 @@ const ObservedTeacherLessons = () => {
                             }
                             return (
                                 <td>
-                                    <i className="fa-solid fa-check"></i>
+                                    <i className="fas fa-check"></i>
                                 </td>
                             )
                         })
@@ -129,7 +141,8 @@ const ObservedTeacherLessons = () => {
                             setComment(item.comment)
                         }}
                     >
-                        {item.comment}
+                        {stringCheck(item.comment)}
+
                     </td>
                 </tr>
             )

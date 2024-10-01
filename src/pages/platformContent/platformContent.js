@@ -88,7 +88,7 @@ const PlatformContent = () => {
 
 
     return (
-        <div className="content" >
+        <div className="content" id={"content"}>
             <Suspense fallback={<DefaultLoader/>} >
                 <Routes>
                     <Route path="home" element={<PlatformHome/>}/>

@@ -1,5 +1,5 @@
 
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 
 
 import "./modal.sass"
@@ -9,21 +9,26 @@ import {useNavigate} from "react-router-dom";
 
 
 
-const Modal = ({activeModal,children,setActiveModal,link,id=""}) => {
+const Modal = ({activeModal,children,setActiveModal,link,id="",zIndex}) => {
 
     const navigate = useNavigate()
 
 
-    const onClickOutside = (e) => {
-        if (e.target.classList.contains(`modal-${id}`) ) {
+
+
+    const onClickOutside = useCallback((e) => {
+
+        console.log(e.target.classList.contains(`modal-${id}`),id)
+        if (e.target.classList.contains(`modal-${id}`)) {
             if (setActiveModal) {
+
                 setActiveModal()
             }
             if (link) {
                 navigate(link)
             }
         }
-    }
+    },[id])
 
     return (
         <div
@@ -31,6 +36,7 @@ const Modal = ({activeModal,children,setActiveModal,link,id=""}) => {
                 active: activeModal
             })}
             onClick={onClickOutside}
+            style={{zIndex}}
         >
             <div className={`modal`}>
                 {children}

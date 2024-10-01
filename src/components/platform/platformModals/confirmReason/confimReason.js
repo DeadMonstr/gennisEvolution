@@ -58,7 +58,6 @@ const ConfirmReason = ({getConfirm,text,student,reason}) => {
             otherReason,
         }
 
-
         getConfirm(data)
     }
 
