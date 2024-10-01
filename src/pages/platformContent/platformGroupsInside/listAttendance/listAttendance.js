@@ -363,7 +363,7 @@ const SubMakeAttendance = React.memo(({data, groupId}) => {
 
     const {request} = useHttp()
 
-    const onCheckedStudents = (e) => {
+    const  onCheckedStudents = (e) => {
         e.preventDefault()
 
         students.map(student => {
@@ -432,7 +432,7 @@ const SubMakeAttendance = React.memo(({data, groupId}) => {
                         Davomat qilinganlar
                     </Button>
                 </div>
-                <div className="subAttendance__content">
+                <div className="subAttendance__c ontent">
                     {renderedStudents}
                 </div>
 

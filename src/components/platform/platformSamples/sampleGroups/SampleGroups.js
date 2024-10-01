@@ -314,6 +314,7 @@ const SampleGroups = (props) => {
                                     onClickBtn={() => {
                                         setActiveOthers(!activeOthers)
                                         setHeightOtherFilters(filterRef.current.scrollHeight)
+
                                     }}
                                     active={activeOthers}
                                 >

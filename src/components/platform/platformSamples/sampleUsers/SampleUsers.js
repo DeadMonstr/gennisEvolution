@@ -134,6 +134,7 @@ const SampleUsers = (props) => {
 
     const multiPropsFilter = useMemo(() => {
         const filterKeys = Object.keys(filters);
+
         return users.filter(user => {
             return filterKeys.every(key => {
                 if (!filters[key]?.activeFilters && filters[key]?.fromTo) {
@@ -282,6 +283,7 @@ const SampleUsers = (props) => {
                                     onClickBtn={() => {
                                         setActiveOthers(!activeOthers)
                                         setHeightOtherFilters(filterRef.current.scrollHeight)
+
                                     }}
                                     active={activeOthers}
                                 >

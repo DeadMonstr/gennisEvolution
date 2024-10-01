@@ -49,14 +49,14 @@ export const requireMenuItems = (id) => {
             classIcon: "fa-home",
             roles: [ROLES.Admin,ROLES.User,ROLES.Director,ROLES.Programmer,ROLES.Teacher,ROLES.Student,ROLES.Editor,ROLES.Smm,ROLES.Accountant]
         },
-        {
-            to : "taskManager",
-            name: "Task Manager",
-            classIcon: "fa-tasks",
-            location: true,
-            children: true,
-            roles: [ROLES.Admin,ROLES.Director]
-        },
+        // {
+        //     to : "taskManager",
+        //     name: "Task Manager",
+        //     classIcon: "fa-tasks",
+        //     location: true,
+        //     children: true,
+        //     roles: [ROLES.Admin,ROLES.Director]
+        // },
         // {
         //     to : "/registerStudent",
         //     name: "Registratsiya",

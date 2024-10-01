@@ -428,8 +428,8 @@ const CapitalCategoryIndex = (props) => {
                 console.error("Error fetching the file:", error);
             });
     };
-
-    console.log(capitals)
+    console.log(capitals , "capital")
+    console.log(category , "img")
     return (
         <>
             <div className={cls.infoCategory}>

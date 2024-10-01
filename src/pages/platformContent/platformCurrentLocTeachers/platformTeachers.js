@@ -41,7 +41,7 @@ const PlatformTeachers = () => {
 
         dispatch(fetchTeachersByLocation(locationId))
         const newData = {
-            name: "newStudents",
+            name: "teachers",
             location: locationId
         }
         dispatch(fetchFilters(newData))
@@ -80,6 +80,7 @@ const PlatformTeachers = () => {
         } else {
             setActiveModal(true)
         }
+
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
