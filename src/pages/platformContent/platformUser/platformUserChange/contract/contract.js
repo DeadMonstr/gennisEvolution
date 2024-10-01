@@ -269,7 +269,7 @@ const Contract = ({userId,accessData}) => {
                         <div className="contract_open-item" onClick={Open}>
                             {
                                 file ?
-                                // eslint-disable-next-line jsx-a11y/iframe-has-title
+
                                     <div>
                                         <p>Filename: {file.name}</p>
                                         <p>Filetype: {file.type}</p>

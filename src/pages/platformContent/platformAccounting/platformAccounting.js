@@ -50,7 +50,6 @@ const PlatformAccounting = () => {
 
 
     const setPage = useCallback((e) => {
-        console.log("render eeee")
         dispatch(onChangeAccountingPage({value: e}))
         // dispatch(clearAccData())
         navigate(`./${e}`)
