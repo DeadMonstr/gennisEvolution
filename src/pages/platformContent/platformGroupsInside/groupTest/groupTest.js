@@ -70,6 +70,9 @@ const GroupTest = () => {
 
                     setMonths(res.month_list)
                 })
+                .catch(err => {
+                    console.log(err)
+                })
         }
 
     }, [year])
@@ -79,6 +82,9 @@ const GroupTest = () => {
             request(`${BackUrl}filter_test_group/${groupId}`, "POST", JSON.stringify({year, month}), headers())
                 .then(res => {
                     setTests(res.tests)
+                })
+                .catch(err => {
+                    console.log(err)
                 })
         }
     }, [year, month])
@@ -275,9 +281,10 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
             formData.append("file", file)
             formData.append("info", JSON.stringify({
                 ...data,
-                level,
+                level: changedTest.level,
                 test_id: changedTest.id
             }))
+
 
 
 
@@ -296,6 +303,9 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
                         active: true,
                         type: "success"
                     }))
+                })
+                .catch(err => {
+                    console.log(err , "err")
                 })
         } else {
 
@@ -318,6 +328,9 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
                         type: "success"
                     }))
                 })
+                .catch(err => {
+                    console.log(err)
+                })
         }
 
 
@@ -338,6 +351,9 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
                     active: true,
                     type: "success"
                 }))
+            })
+            .catch(err => {
+                console.log(err)
             })
     }
     const resetPdf = () => {
