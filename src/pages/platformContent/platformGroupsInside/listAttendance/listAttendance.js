@@ -166,16 +166,16 @@ const ListAttendance = () => {
 };
 
 
-const SubMakeAttendance = React.memo(({data, groupId}) => {
+const SubMakeAttendance = React.memo(({data, groupId }) => {
 
     const [modalName, setModalName] = useState()
-    const [activeModal, setActiveModal] = useState(false)
     const [studentId, setStudentId] = useState()
     const [reason, setReason] = useState("")
     const [students, setStudents] = useState([])
     const [date, setDate] = useState([])
     const [day, setDay] = useState(null)
     const [month, setMonth] = useState(null)
+    const [activeModal, setActiveModal] = useState(false)
 
 
     useEffect(() => {
@@ -354,6 +354,7 @@ const SubMakeAttendance = React.memo(({data, groupId}) => {
             return students.map(item => {
                 if (id === item.id) {
                     return {...item, requestType: requestType, requestMsg: requestMsg}
+                    console.log(item , "log")
                 }
                 return item
             })
@@ -364,17 +365,18 @@ const SubMakeAttendance = React.memo(({data, groupId}) => {
     const {request} = useHttp()
 
     const  onCheckedStudents = (e) => {
-        e.preventDefault()
 
+        e.preventDefault()
+        console.log("dasd")
         students.map(student => {
             if (student.attended) {
                 const data = {
                     student: {...student, date: {day, month}},
                     groupId,
-
                     // teacherId
                 }
 
+                console.log("update1")
                 updateStatusStudent({id: student.id, requestType: "loading"})
                 request(`${BackUrl}make_attendance`, "POST", JSON.stringify(data), headers())
                     .then(res => {

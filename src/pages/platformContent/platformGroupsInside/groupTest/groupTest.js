@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 
 import cls from "./groupTest.module.sass"
 import BackButton from "components/platform/platformUI/backButton/backButton";
@@ -13,7 +13,7 @@ import Modal from "components/platform/platformUI/modal";
 import InputForm from "components/platform/platformUI/inputForm";
 import {useForm} from "react-hook-form";
 import {useHttp} from "hooks/http.hook";
-import {BackUrl, headers} from "constants/global";
+import {BackUrl, BackUrlForDoc, headers, headersImg} from "constants/global";
 import {useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {setMessage} from "slices/messageSlice";
@@ -70,6 +70,9 @@ const GroupTest = () => {
 
                     setMonths(res.month_list)
                 })
+                .catch(err => {
+                    console.log(err)
+                })
         }
 
     }, [year])
@@ -79,6 +82,9 @@ const GroupTest = () => {
             request(`${BackUrl}filter_test_group/${groupId}`, "POST", JSON.stringify({year, month}), headers())
                 .then(res => {
                     setTests(res.tests)
+                })
+                .catch(err => {
+                    console.log(err)
                 })
         }
     }, [year, month])
@@ -171,6 +177,7 @@ const GroupTest = () => {
                                 clazz={cls.accordion}
                                 subtitle={"Jami: " + item.percentage + "%"}
                                 btns={[
+                                    <a href={`${BackUrlForDoc}${item.file}`} download><i style={{color: "grey", fontSize: "3rem"}} className="fas fa-file"></i></a>,
                                     <h1>Level: {item.level}</h1>,
                                     (currentMonth === month &&
                                         <Button type={"submit"} onClickBtn={() => onClick(item, "result")}>
@@ -239,6 +246,11 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
     const {register, handleSubmit, setValue, reset} = useForm()
     const [level, setLevel] = useState()
     const {groupId} = useParams()
+    const [file,setFile] = useState(null)
+    const inputRef = useRef()
+    const [createdPdf,setCreatedPdf] = useState(null)
+
+
 
 
     const levels = [
@@ -246,11 +258,14 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
     ]
 
     useEffect(() => {
+        console.log(changedTest)
         if (Object.keys(changedTest).length) {
             setLevel(changedTest.level_id)
+
             setValue("name", changedTest.name)
             setValue("date", changedTest.date)
             setValue("number", changedTest.number)
+            setCreatedPdf(changedTest.file)
 
         }
     }, [changedTest])
@@ -260,11 +275,21 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
     const {request} = useHttp()
     const onCreateTest = (data) => {
         if (changedTest.id) {
-            request(`${BackUrl}create_test/${groupId}`, "PUT", JSON.stringify({
+
+            const formData = new FormData()
+
+            formData.append("file", file)
+            formData.append("info", JSON.stringify({
                 ...data,
-                level,
+                level: changedTest.level,
                 test_id: changedTest.id
-            }), headers())
+            }))
+
+
+
+
+
+            request(`${BackUrl}create_test/${groupId}`, "PUT", formData, headersImg())
                 .then(res => {
                     setActiveTest(false)
                     setTests(tests => tests.map(item => {
@@ -279,8 +304,21 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
                         type: "success"
                     }))
                 })
+                .catch(err => {
+                    console.log(err , "err")
+                })
         } else {
-            request(`${BackUrl}create_test/${groupId}`, "POST", JSON.stringify({...data, level}), headers())
+
+            const formData = new FormData()
+
+
+            formData.append("file", file)
+            formData.append("info", JSON.stringify({
+                ...data,
+                level,
+            }))
+
+            request(`${BackUrl}create_test/${groupId}`, "POST",formData, headersImg())
                 .then(res => {
                     setActiveTest(false)
                     setTests(tests => [...tests, res.test])
@@ -290,9 +328,15 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
                         type: "success"
                     }))
                 })
+                .catch(err => {
+                    console.log(err)
+                })
         }
 
 
+    }
+    const Open = () => {
+        inputRef.current.click()
     }
 
 
@@ -308,6 +352,12 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
                     type: "success"
                 }))
             })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+    const resetPdf = () => {
+        setCreatedPdf(null)
     }
 
     return (
@@ -318,7 +368,7 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
             setActiveTest(false)
         }}>
             <form id={"form"} className={cls.createTest} onSubmit={handleSubmit(onCreateTest)}>
-                <h1>Test qo'shmoq</h1>
+                <h1>{changedTest.name ? "Test o'zgartirmoq" : "Test qo'shmoq"}</h1>
                 <Select
                     value={level}
                     options={levels}
@@ -328,6 +378,54 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
                 <InputForm required title={"Nomi"} register={register} name={"name"}/>
                 <InputForm required title={"Sana"} type={"date"} register={register} name={"date"}/>
                 <InputForm required title={"Savollar soni"} type={"number"} register={register} name={"number"}/>
+
+                <div className={cls.file}>
+                    {
+                        createdPdf ?
+                            <div className={cls.file__change}>
+                                <a href={`${BackUrlForDoc}${createdPdf}`} target={"_blank"} rel="noreferrer">
+                                    <Button formId={""}>
+                                        Ko'rish
+                                    </Button>
+                                </a>
+                                <Button onClickBtn={resetPdf}>
+                                    O'zgartirish
+                                </Button>
+                            </div>
+                            :
+                            <>
+                                <div className={cls.file__create} onClick={Open}>
+                                    {
+                                        file ?
+
+                                            <div>
+
+                                                <i className="fas fa-file"></i>
+                                                <p>{file.name}</p>
+
+                                                {/*<p>Filename: {file.name}</p>*/}
+                                                {/*<p>Filetype: {file.type}</p>*/}
+                                                {/*<p>Size in bytes: {file.size}</p>*/}
+                                                {/*<p>*/}
+                                                {/*    lastModifiedDate:{' '}*/}
+                                                {/*    {file.lastModifiedDate.toLocaleDateString()}*/}
+                                                {/*</p>*/}
+                                            </div>
+                                            :
+                                            "Test fayl kiriting"
+                                    }
+                                    <input
+                                        // accept={".pdf"}
+                                        ref={inputRef}
+                                        type="file"
+                                        onChange={(e) => setFile(e.target.files[0])}
+                                        name="file"
+                                    />
+                                </div>
+                            </>
+                    }
+                </div>
+
                 <div className={cls.btns}>
                     {Object.keys(changedTest).length > 0 && !changedTest.status &&
                         <Button formId={""} onClickBtn={onDeleteTest} type={"danger"}>O'chirish</Button>}
@@ -435,7 +533,6 @@ const SetResultModal = React.memo(({active, setActive, data, tests, changedTest,
         }))
     }
 
-    console.log(students)
     return (
         <Modal activeModal={active} setActiveModal={() => {
             setActive()
