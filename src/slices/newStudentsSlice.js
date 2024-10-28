@@ -216,6 +216,11 @@ const newStudentsSlice = createSlice({
             })
             // state.filteredStudents = state.filteredStudents.
         },
+        deleteNewStudentSlice: (state, action) => {
+            state.newStudents = [...state.newStudents?.filter(item => item.id !== action.payload.id)]
+            // state.filteredStudents = state.filteredStudents.
+        },
+
         setPage: (state, action) => {
             state.page = action.payload.page
         }
@@ -316,6 +321,7 @@ export const {
     setActiveAllBtn,
     deleteCheckedStudents,
     deleteStudent,
-    setPage
+    setPage,
+    deleteNewStudentSlice
 } = actions
 

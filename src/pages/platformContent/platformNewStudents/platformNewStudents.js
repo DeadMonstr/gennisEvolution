@@ -7,7 +7,7 @@ import {
     fetchNewStudents,
     fetchNewStudentsDeleted,
     setPage,
-    fetchNewFilteredStudents, fetchNewDeletedStudents
+    fetchNewFilteredStudents, fetchNewDeletedStudents, deleteNewStudentSlice
 } from "slices/newStudentsSlice";
 
 import {setChecke} from "slices/newStudentsSlice";
@@ -202,10 +202,10 @@ const PlatformNewStudents = () => {
 
                     }
                 })
-            dispatch(deleteStudent({id: deleteStId, idSubject: activeSubjectData.id}))
+            dispatch(deleteStudent({id: deleteStId, idSubject: activeSubjectData?.id}))
             setActiveSubjectData(state => ({
                 ...state,
-                students: state.students.filter(item => item.id !== deleteStId)
+                students: state?.students.filter(item => item.id !== deleteStId)
             }))
         }
 
@@ -232,8 +232,9 @@ const PlatformNewStudents = () => {
 
                     }
                 })
-            dispatch(deleteStudent({id: deleteStId, idSubject: activeSubjectData.id}))
-
+            activeSubjectData ?
+            dispatch(deleteStudent({id: deleteStId, idSubject: activeSubjectData?.id})) :
+            dispatch(deleteNewStudentSlice({id: deleteStId}))
             setActiveModal(false)
         } else {
             setActiveModal(false)
@@ -282,8 +283,11 @@ const PlatformNewStudents = () => {
 
 
     const handleItemClick = (index) => {
+
+        console.log(filteredNewStudents.filter((item, i) => i === index)[0], "handleItemClick")
         setActiveSubject(prev => !prev)
         setActiveSubjectData(filteredNewStudents.filter((item, i) => i === index)[0])
+
     };
 
 
@@ -479,6 +483,7 @@ const FilteredBox = React.memo(({
         const {
             fetchNewStudentsStatus,
         } = useSelector(state => state.newStudents)
+
 
         //
         // const activeClass = activeIndex === index ? "activeColum" : ""
