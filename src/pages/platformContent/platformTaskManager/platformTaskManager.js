@@ -157,6 +157,7 @@ const PlatformTaskManager = () => {
             id: studentId,
             ...data
         }
+        console.log(data)
 
 
         if (activeMenu === "newStudents") {
@@ -180,7 +181,7 @@ const PlatformTaskManager = () => {
                 .then(res => {
 
                     if (res?.student?.info) {
-                        dispatch(changeDebtorStudentsDel({student:res.student}))
+                        dispatch(changeDebtorStudentsDel({student: res.student}))
                     }
                     showMessage(res.msg)
                 })
@@ -281,8 +282,6 @@ const PlatformTaskManager = () => {
     }, [activeMenu, search])
 
 
-
-
     const contextObj = useMemo(() => ({
         activeMenu: activeMenu,
         getStudentId: setStudentId,
@@ -294,7 +293,6 @@ const PlatformTaskManager = () => {
         getSelect: setGetUser,
         completedLength: completedDebtorStudent.length
     }), [activeMenu, isCompleted, locationId, completedDebtorStudent])
-
 
 
     return (
@@ -321,7 +319,7 @@ const PlatformTaskManager = () => {
                         <h1>My tasks</h1>
                         <Completed
                             style={isCompleted ? "#34c9eb" : "#ff8c42"}
-                            progress={isCompleted ? progress?.completed_tasks : progress?.in_progress_tasks }
+                            progress={isCompleted ? progress?.completed_tasks : progress?.in_progress_tasks}
                             progressStatus={progressStatus}
                         />
                     </div>
@@ -482,6 +480,7 @@ const PlatformTaskManager = () => {
                                 {
                                     activeMenu === "debtors" ? <Select
                                         options={options}
+                                        defaultValue={options[0].name}
                                         onChangeOption={onChange}
                                     /> : null
                                 }
@@ -540,7 +539,7 @@ const PlatformTaskManager = () => {
                             setIsConfirm(false)
                         }}
                     >
-                        <ConfimReason getConfirm={onDelete} reason={true} />
+                        <ConfimReason getConfirm={onDelete} reason={true}/>
                     </Modal> : null
             }
             <PlatformMessage/>
@@ -773,7 +772,7 @@ const TaskCard = ({item, index}) => {
                     {/*}*/}
                     {
                         activeMenu === "lead" ? null : <li className={cls.infoList__item}>
-                            Koment: <span>{item?.history[item?.history.length - 1]?.comment}</span>
+                            Koment: <span>{item?.reason}</span>
                         </li>
                     }
                     {

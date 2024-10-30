@@ -2,10 +2,10 @@ import {useMemo} from "react";
 
 
 //
-export const BackUrlForDoc = `http://192.168.1.20:5002/`
+export const BackUrlForDoc = `http://192.168.1.40:5002/`
 export const BackUrl = `${BackUrlForDoc}api/`
 export const ClassroomUrl = `http://localhost:3000/`
-export const ClassroomUrlForDoc = "http://192.168.68.102:5001/"
+export const ClassroomUrlForDoc = "http://192.168.68.40:5001/"
 
 // export const BackUrl = "/api/"
 // export const ClassroomUrl = `https://classroom.gennis.uz/`
@@ -49,14 +49,14 @@ export const requireMenuItems = (id) => {
             classIcon: "fa-home",
             roles: [ROLES.Admin,ROLES.User,ROLES.Director,ROLES.Programmer,ROLES.Teacher,ROLES.Student,ROLES.Editor,ROLES.Smm,ROLES.Accountant]
         },
-        // {
-        //     to : "taskManager",
-        //     name: "Task Manager",
-        //     classIcon: "fa-tasks",
-        //     location: true,
-        //     children: true,
-        //     roles: [ROLES.Admin,ROLES.Director]
-        // },
+        {
+            to : "taskManager",
+            name: "Task Manager",
+            classIcon: "fa-tasks",
+            location: true,
+            children: true,
+            roles: [ROLES.Admin,ROLES.Director]
+        },
         // {
         //     to : "/registerStudent",
         //     name: "Registratsiya",
