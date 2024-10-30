@@ -7,7 +7,7 @@ import {
     fetchNewStudents,
     fetchNewStudentsDeleted,
     setPage,
-    fetchNewFilteredStudents
+    fetchNewFilteredStudents, fetchNewDeletedStudents, deleteNewStudentSlice
 } from "slices/newStudentsSlice";
 
 import {setChecke} from "slices/newStudentsSlice";
@@ -35,14 +35,16 @@ import Input from "components/platform/platformUI/input";
 import Search from "components/platform/platformUI/search";
 import classNames from "classnames";
 
+const SampleUsers = React.lazy(() => import("components/platform/platformSamples/sampleUsers/SampleUsers"))
 
 
 const PlatformNewStudents = () => {
 
     let {locationId} = useParams()
 
-    const {filteredNewStudents, btns} = useSelector(state => state.newStudents)
+    const {filteredNewStudents, btns, fetchNewStudentsStatus, newStudents} = useSelector(state => state.newStudents)
 
+    const {filters} = useSelector(state => state.filters)
     const {location, role} = useSelector(state => state.me)
     const {isCheckedPassword} = useSelector(state => state.me)
 
@@ -54,6 +56,7 @@ const PlatformNewStudents = () => {
 
 
     const [isDeleteData, setIsDeleteData] = useState(false)
+    const [isFilterData, setIsFilterData] = useState(false)
     const dispatch = useDispatch()
 
     const [activeSubject, setActiveSubject] = useState(false);
@@ -78,12 +81,20 @@ const PlatformNewStudents = () => {
 
     useEffect(() => {
         if (isDeleteData) {
-            dispatch(fetchNewStudentsDeleted(locationId))
+            if (isFilterData) {
+                dispatch(fetchNewStudentsDeleted(locationId))
+            } else {
+                dispatch(fetchNewDeletedStudents(locationId))
+            }
         } else {
-            dispatch(fetchNewFilteredStudents(locationId))
+            if (isFilterData) {
+                dispatch(fetchNewFilteredStudents(locationId))
+            } else {
+                dispatch(fetchNewStudents(locationId))
+            }
         }
         dispatch(setSelectedLocation({id: locationId}))
-    }, [locationId, isDeleteData])
+    }, [locationId, isDeleteData, isFilterData])
 
 
     const navigate = useNavigate()
@@ -191,15 +202,15 @@ const PlatformNewStudents = () => {
 
                     }
                 })
-            dispatch(deleteStudent({id: deleteStId,idSubject: activeSubjectData.id}))
+            dispatch(deleteStudent({id: deleteStId, idSubject: activeSubjectData?.id}))
             setActiveSubjectData(state => ({
                 ...state,
-                students: state.students.filter(item => item.id !== deleteStId)
+                students: state?.students.filter(item => item.id !== deleteStId)
             }))
         }
 
         setActiveModal(false)
-    }, [deleteStId,activeSubjectData?.id])
+    }, [deleteStId, activeSubjectData?.id])
 
     const returnDeletedStudent = useCallback((data) => {
         if (data === "yes") {
@@ -221,18 +232,24 @@ const PlatformNewStudents = () => {
 
                     }
                 })
-            dispatch(deleteStudent({id: deleteStId,idSubject: activeSubjectData.id}))
-
+            activeSubjectData ?
+            dispatch(deleteStudent({id: deleteStId, idSubject: activeSubjectData?.id})) :
+            dispatch(deleteNewStudentSlice({id: deleteStId}))
             setActiveModal(false)
         } else {
             setActiveModal(false)
         }
-    }, [deleteStId,activeSubjectData?.id])
+    }, [deleteStId, activeSubjectData?.id])
 
 
     const funcsSlice = useMemo(() => {
         return {
-            onDelete
+            onDelete,
+            isFilter: true,
+            setIsFilterData,
+            isFilterData,
+            setIsDeleteData,
+            isDeleteData
         }
     }, [onDelete])
 
@@ -266,8 +283,11 @@ const PlatformNewStudents = () => {
 
 
     const handleItemClick = (index) => {
+
+        console.log(filteredNewStudents.filter((item, i) => i === index)[0], "handleItemClick")
         setActiveSubject(prev => !prev)
         setActiveSubjectData(filteredNewStudents.filter((item, i) => i === index)[0])
+
     };
 
 
@@ -300,116 +320,155 @@ const PlatformNewStudents = () => {
 
     return (
         <>
-            <>
-                <Routes>
-                    <Route path="list" element={
-                        <section className={cls.section} onScroll={scrollEvent} ref={sectionRef}>
-                            <header className={cls.section__header}>
-                                <div key={1}>
-                                    <PlatformSearch search={mainSearch} setSearch={setMainSearch}/>
-                                    <FuncBtns
-                                        locationId={locationId}
-                                        funcsSlice={funcsSlice}
-                                        dataBtns={btns}
-                                    />
-                                </div>
-                            </header>
-                            <div className={cls.links}>
+            {
+                isFilterData ? <>
+                    <>
+                        <Routes>
+                            <Route path="list" element={
+                                <section className={cls.section} onScroll={scrollEvent} ref={sectionRef}>
+                                    <header className={cls.section__header}>
+                                        <div key={1}>
+                                            <PlatformSearch search={mainSearch} setSearch={setMainSearch}/>
+                                            <FuncBtns
+                                                locationId={locationId}
+                                                funcsSlice={funcsSlice}
+                                                dataBtns={btns}
+                                            />
+                                        </div>
+                                    </header>
+                                    <div className={cls.links}>
 
-                                <Button active={isDeleteData} onClickBtn={() => setIsDeleteData(!isDeleteData)}>
-                                    O'chirilgan
-                                </Button>
+                                        <Button active={isDeleteData} onClickBtn={() => setIsDeleteData(!isDeleteData)}>
+                                            O'chirilgan
+                                        </Button>
 
-                            </div>
-                            <main className={classNames(cls.section__main, cls.filtered)}>
-                                <motion.div
-                                    className={cls.scroll}
-                                    id="scroll"
-                                    ref={wrapper}
-                                >
-                                    <motion.div
-                                        className={cls.scroll__inner}
-                                        id="scroll__inner"
-                                        drag={"x"}
-                                        dragConstraints={{left: -width, right: 0}}
-                                    >
-                                        {
-                                            searchedFilteredUsers?.map((item, i) => {
-                                                if (!item.students.length) return null
+                                        <Button active={isFilterData} onClickBtn={() => setIsFilterData(!isFilterData)}>
+                                            Filterlangan
+                                        </Button>
 
-                                                return <FilteredBox
-                                                    activeItems={activeItems}
-                                                    index={i}
-                                                    item={item}
-                                                    noActiveItems={noActiveItems}
-                                                    funscSlice={funcsSlice}
-                                                    handleItemClick={handleItemClick}
-                                                />
-                                            })
-                                        }
-                                    </motion.div>
-                                </motion.div>
-                            </main>
+                                    </div>
+                                    <main className={classNames(cls.section__main, cls.filtered)}>
+                                        <motion.div
+                                            className={cls.scroll}
+                                            id="scroll"
+                                            ref={wrapper}
+                                        >
+                                            <motion.div
+                                                className={cls.scroll__inner}
+                                                id="scroll__inner"
+                                                drag={"x"}
+                                                dragConstraints={{left: -width, right: 0}}
+                                            >
+                                                {
+                                                    searchedFilteredUsers?.map((item, i) => {
+                                                        if (!item.students.length) return null
 
-                            <footer className={cls.section__footer}>
+                                                        return <FilteredBox
+                                                            activeItems={activeItems}
+                                                            index={i}
+                                                            item={item}
+                                                            noActiveItems={noActiveItems}
+                                                            funscSlice={funcsSlice}
+                                                            handleItemClick={handleItemClick}
+                                                        />
+                                                    })
+                                                }
+                                            </motion.div>
+                                        </motion.div>
+                                    </main>
 
-                                <Modals
-                                    locationId={locationId}
-                                    btns={btns}
-                                    setMsg={setMsg}
-                                    setTypeMsg={setTypeMsg}
-                                    setActiveMessage={setActiveMessage}
-                                />
-                            </footer>
-                        </section>
+                                    <footer className={cls.section__footer}>
 
-
-                    }/>
-
-                    <Route path="profile/:userId/*" element={<PlatformUserProfile/>}/>
-
-                    <Route path="/" element={
-                        <Navigate to="list"/>
-                    }
-                    />
-                </Routes>
-
-            </>
+                                        <Modals
+                                            locationId={locationId}
+                                            btns={btns}
+                                            setMsg={setMsg}
+                                            setTypeMsg={setTypeMsg}
+                                            setActiveMessage={setActiveMessage}
+                                        />
+                                    </footer>
+                                </section>
 
 
-            <Modal zIndex={1000} activeModal={activeCheckPassword} setActiveModal={() => setActiveCheckPassword(false)}>
-                <CheckPassword/>
-            </Modal>
+                            }/>
+
+                            <Route path="profile/:userId/*" element={<PlatformUserProfile/>}/>
+
+                            <Route path="/" element={
+                                <Navigate to="list"/>
+                            }
+                            />
+                        </Routes>
+
+                    </>
+
+
+                    <Modal zIndex={1000} activeModal={activeCheckPassword}
+                           setActiveModal={() => setActiveCheckPassword(false)}>
+                        <CheckPassword/>
+                    </Modal>
+                    {/*{*/}
+                    {/*    activeModalName === "delete" && isCheckedPassword ?*/}
+                    {/*        <>*/}
+                    {/*            <Modal id={"confirm"} zIndex={1001} activeModal={activeModal}*/}
+                    {/*                   setActiveModal={() => setActiveModal(false)}>*/}
+                    {/*                <Confirm setActive={setActiveModal} text={"Oq'uvchini uchirishni hohlaysizmi?"}*/}
+                    {/*                         getConfirm={deleteNewStudent} reason={true}/>*/}
+                    {/*            </Modal>*/}
+                    {/*        </>*/}
+                    {/*        : activeModalName === "returnDeleted" && isCheckedPassword ?*/}
+                    {/*            <Modal id={"confirm"} zIndex={1001} activeModal={activeModal}*/}
+                    {/*                   setActiveModal={() => setActiveModal(false)}>*/}
+                    {/*                <Confirm setActive={setActiveModal}*/}
+                    {/*                         text={"Uchirilgan o'quvchini qaytarishni hohlaysizmi"}*/}
+                    {/*                         getConfirm={returnDeletedStudent}/>*/}
+                    {/*            </Modal>*/}
+                    {/*            : null*/}
+                    {/*}*/}
+
+
+                    <Modal id={"subjectData"} zIndex={1000} activeModal={activeSubject}
+                           setActiveModal={setActiveSubject}>
+                        {activeSubjectData && <SubjectData
+                            funcsSlice={funcsSlice}
+                            item={activeSubjectData}
+                            activeItems={activeItems}
+                            mainSearch={mainSearch}
+                        />}
+
+
+                    </Modal>
+                </> : <SampleUsers
+                    locationId={locationId}
+                    fetchUsersStatus={fetchNewStudentsStatus}
+                    funcsSlice={funcsSlice}
+                    activeRowsInTable={activeItems}
+                    users={newStudents}
+                    filters={filters}
+                    btns={btns}
+                />
+            }
             {
                 activeModalName === "delete" && isCheckedPassword ?
                     <>
-                        <Modal id={"confirm"} zIndex={1001} activeModal={activeModal} setActiveModal={() => setActiveModal(false)}>
+                        <Modal id={"confirm"} zIndex={1001} activeModal={activeModal}
+                               setActiveModal={() => setActiveModal(false)}>
                             <Confirm setActive={setActiveModal} text={"Oq'uvchini uchirishni hohlaysizmi?"}
                                      getConfirm={deleteNewStudent} reason={true}/>
                         </Modal>
                     </>
                     : activeModalName === "returnDeleted" && isCheckedPassword ?
-                        <Modal id={"confirm"} zIndex={1001} activeModal={activeModal} setActiveModal={() => setActiveModal(false)}>
-                            <Confirm setActive={setActiveModal} text={"Uchirilgan o'quvchini qaytarishni hohlaysizmi"}
+                        <Modal id={"confirm"} zIndex={1001} activeModal={activeModal}
+                               setActiveModal={() => setActiveModal(false)}>
+                            <Confirm setActive={setActiveModal}
+                                     text={"Uchirilgan o'quvchini qaytarishni hohlaysizmi"}
                                      getConfirm={returnDeletedStudent}/>
                         </Modal>
                         : null
             }
-
-
-            <Modal id={"subjectData"} zIndex={1000} activeModal={activeSubject} setActiveModal={setActiveSubject}>
-                {activeSubjectData && <SubjectData
-                    funcsSlice={funcsSlice}
-                    item={activeSubjectData}
-                    activeItems={activeItems}
-                    mainSearch={mainSearch}
-                />}
-
-
-            </Modal>
         </>
-    );
-};
+    )
+}
 
 
 const FilteredBox = React.memo(({
@@ -425,6 +484,7 @@ const FilteredBox = React.memo(({
             fetchNewStudentsStatus,
         } = useSelector(state => state.newStudents)
 
+
         //
         // const activeClass = activeIndex === index ? "activeColum" : ""
         // const scrollActive = item.students.length > 7 ? "activeScroll" : ""
@@ -439,7 +499,7 @@ const FilteredBox = React.memo(({
                         className={cls.items__title}
                         onClick={() => handleItemClick(index)}
                     >
-                        {item.name}
+                        {item.name} / {item.students.length}
                     </h1>
                 </div>
                 <div className={cls.items__wrapper}>
@@ -471,7 +531,6 @@ const SubjectData = ({item, activeItems, funcsSlice, mainSearch}) => {
     let PageSize = useMemo(() => 50, [])
 
 
-
     useEffect(() => {
         setSearch(mainSearch)
     }, [mainSearch])
@@ -479,11 +538,11 @@ const SubjectData = ({item, activeItems, funcsSlice, mainSearch}) => {
     const multiPropsFilter = useMemo(() => {
 
         return item.students.filter(user => {
-            if (!doInp || !otInp || +doInp === 0 ) return user
+            if (!doInp || !otInp || +doInp === 0) return user
 
             return user.age >= +otInp && user.age <= +doInp
         });
-    }, [item.students,doInp,otInp]);
+    }, [item.students, doInp, otInp]);
 
     const searchedUsers = useMemo(() => {
 
@@ -504,7 +563,6 @@ const SubjectData = ({item, activeItems, funcsSlice, mainSearch}) => {
     }, [PageSize, currentPage, searchedUsers]);
 
 
-
     return (
         <div className={cls.subjectStudents}>
 
@@ -518,7 +576,7 @@ const SubjectData = ({item, activeItems, funcsSlice, mainSearch}) => {
 
                 <div>
                     <Input others={{min: 0}} type={"number"} value={otInp} onChange={setOtInp} title={"Ot"}/>
-                    <Input  others={{min: 0}} type={"number"} value={doInp} onChange={setDoInp} title={"Do"}/>
+                    <Input others={{min: 0}} type={"number"} value={doInp} onChange={setDoInp} title={"Do"}/>
                 </div>
             </div>
             <div className={cls.subjectStudents__wrapper}>
@@ -530,7 +588,6 @@ const SubjectData = ({item, activeItems, funcsSlice, mainSearch}) => {
                     pageName={"newStudents"}
                     cache={true}
                 />
-
 
 
             </div>

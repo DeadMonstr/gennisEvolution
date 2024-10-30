@@ -123,19 +123,16 @@ const PlatformAccounting = () => {
 
 
             <Routes>
-                <Route path={"studentsPayments"} element={<StudentsPayments path={"studentsPayments"} locationId={locationId}/>}/>
-                <Route path={"bookPayment"} element={<StudentsBookPayment path={"bookPayment"} locationId={locationId}/>}/>
-                <Route path={"teachersSalary"} element={<TeachersSalary path={"teachersSalary"} locationId={locationId}/>}/>
-                <Route path={"studentsDiscounts"} element={<StudentsDiscount path={"studentsDiscounts"} locationId={locationId}/>}/>
+                <Route path={"studentsPayments"} element={<StudentsPayments path={"studentsPayments"} locationId={locationId} />}/>
+                <Route path={"bookPayment"} element={<StudentsBookPayment path={"bookPayment"} locationId={locationId} />}/>
+                <Route path={"teachersSalary"} element={<TeachersSalary path={"teachersSalary"} locationId={locationId} />}/>
+                <Route path={"studentsDiscounts"} element={<StudentsDiscount path={"studentsDiscounts"} locationId={locationId} />}/>
                 <Route path={"employeesSalary"} element={<EmployeeSalary path={"employeesSalary"} locationId={locationId}/>}/>
-                <Route path={"debtStudents"} element={<DebtStudents path={"debtStudents"} locationId={locationId}/>}/>
-                <Route path={"overhead"} element={<Overhead path={"overhead"} locationId={locationId}/>}/>
-                <Route path={"capital"} element={<Capital path={"capital"} locationId={locationId}/>}/>
+                <Route path={"debtStudents"} element={<DebtStudents path={"debtStudents"} locationId={locationId} />}/>
+                <Route path={"overhead"} element={<Overhead path={"overhead"} locationId={locationId} />}/>
+                <Route path={"capital"} element={<Capital path={"capital"} locationId={locationId} />}/>
 
                 {/*<Route path={"debtStudents"} element={<DebtStudents/>}/>*/}
-
-
-
             </Routes>
         </section>
 

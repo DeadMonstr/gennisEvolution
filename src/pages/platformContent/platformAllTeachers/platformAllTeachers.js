@@ -39,6 +39,7 @@ const PlatformTeachers = () => {
     const {filters} = useSelector(state => state.filters)
     const {isCheckedPassword} = useSelector(state => state.me)
 
+
     const [activeCheckPassword, setActiveCheckPassword] = useState(false)
     const [activeModal, setActiveModal] = useState(false)
     const [activeModalName, setActiveModalName] = useState(false)

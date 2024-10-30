@@ -135,7 +135,7 @@ const attendanceTable = React.memo(({data, studentAtt, funcsSlice, activeRowsInT
                 <tr>
                     <td onClick={() => linkTo(item.student_id)}>{item.student_name}</td>
                     <td onClick={() => linkTo(item.student_id)}>{item.student_surname}</td>
-                    {checkTrueFalse(item.dates)}
+                        {checkTrueFalse(item.dates)}
                 </tr>
             )
 

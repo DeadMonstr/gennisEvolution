@@ -57,6 +57,7 @@ const Overhead = ({locationId, path}) => {
                 locationId,
                 type: "overhead"
             }
+
             dispatch(fetchAccData(data))
             const newData = {
                 name: "accounting_payment",

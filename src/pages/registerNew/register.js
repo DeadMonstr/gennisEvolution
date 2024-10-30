@@ -218,12 +218,12 @@ const Register = () => {
                 return item
             })
         })
-        setSelectedSubjects(selectedSubjects.filter(item => item.id !== +id))
+        setSelectedSubjects(selectedSubjects?.filter(item => item.id !== +id))
     }
 
     const onCheckLength = (value) => {
-        setIsCheckLen(value.length < 8)
-        setIsCheckPass(confirmPassword.length !== 0 ? value !== confirmPassword : false)
+        setIsCheckLen(value?.length < 8)
+        setIsCheckPass(confirmPassword?.length !== 0 ? value !== confirmPassword : false)
         setPassword(value)
     }
 

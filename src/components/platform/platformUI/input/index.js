@@ -29,6 +29,8 @@ const Input = (props) => {
     useEffect(() => {
         if (input && input !== defaultValue && type !== "submit") {
             onChange(input)
+        } else if (input !== defaultValue && type !== "submit") {
+            onChange(input)
         }
     }, [input])
 

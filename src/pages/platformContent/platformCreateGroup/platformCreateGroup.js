@@ -648,20 +648,19 @@ const GroupInfo = React.memo(({groupData,setGroupData,error,setError,setActiveMo
         dispatch(fetchCreateGroupTools(selectedLocation))
     },[dispatch, selectedLocation])
 
-    useEffect(() => {
-        if (groupData) {
-            setSubject(groupData.subject)
-            setNameGroup(groupData.groupName)
-            setSelectedTypeCourse(groupData.typeCourse)
-            setPriceCourse(groupData.groupPrice)
-            setTeacherDolya(groupData.teacherDolya)
-        }
-    },[groupData])
+    // useEffect(() => {
+    //     if (groupData) {
+    //         setSubject(groupData.subject)
+    //         setNameGroup(groupData.groupName)
+    //         setSelectedTypeCourse(groupData.typeCourse)
+    //         setPriceCourse(groupData.groupPrice)
+    //         setTeacherDolya(groupData.teacherDolya)
+    //     }
+    // },[groupData])
 
 
     const {request} = useHttp()
 
-    console.log(groupData)
     const onSubmit =  (e) => {
 
         e.preventDefault()
@@ -677,8 +676,7 @@ const GroupInfo = React.memo(({groupData,setGroupData,error,setError,setActiveMo
             }
         }
 
-
-
+        console.log(data , "data")
 
 
         // dispatch(deleteCheckedStudents({checkedStudents}))
@@ -788,7 +786,7 @@ const GroupInfo = React.memo(({groupData,setGroupData,error,setError,setActiveMo
                     defaultValue={nameGroup}
                     required={true}
                     type={`text`}
-                    name={`name-of-group`}
+                    // name={`name-of-group`}
                     title={`Gruppa nomi`}
                     onChange={setNameGroup}
                 />

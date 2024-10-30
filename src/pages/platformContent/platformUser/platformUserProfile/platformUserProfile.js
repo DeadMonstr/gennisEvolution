@@ -36,6 +36,7 @@ const StudentTimeTable =  React.lazy(() => import('pages/platformContent/platfor
 const PlatformUserProfile = () => {
     const {userId} = useParams()
 
+    console.log(userId , "log")
 
     return (
         <>
@@ -258,6 +259,7 @@ const UserContent = ({userId}) => {
                                     </div>
                                 </div>
                             </RequireAuthChildren>
+
                         </div>
                     </header>
 
@@ -267,6 +269,7 @@ const UserContent = ({userId}) => {
 
                     <main className="profile__main">
                         {renderedItems}
+
                     </main>
                 </div>
             </div>
@@ -299,23 +302,26 @@ const UserContent = ({userId}) => {
 
 
 const UserInfo = React.memo(({data}) => {
+
+
     const keysData = Object.keys(data)
     return keysData.map(key => {
 
         const style = {
-            order: data[key].order,
-            display: data[key].display ? data[key].display : "flex"
+            order: data[key]?.order,
+            display: data[key]?.display ? data[key]?.display : "flex"
         }
 
-        if (Array.isArray(data[key].value)) {
+        if (Array.isArray(data[key]?.value)) {
             return (
                 <div style={style} className="information__item array">
-                    <span>{data[key].name}:</span>
+                    <span>{data[key]?.name}:</span>
+
                     <div>
                         {
-                            data[key].value.map( item => {
+                            data[key]?.value.map( item => {
                                 return (
-                                    <span> {item.name}</span>
+                                    <span> {item?.name}</span>
                                 )
                             })
                         }
@@ -325,15 +331,15 @@ const UserInfo = React.memo(({data}) => {
         }
         return (
             <div style={style} className="information__item">
-                <span>{data[key].name}:</span>
+                <span>{data[key]?.name}:</span>
                 <span>
                     {
                         data[key]?.type === "icon" ?
-                            data[key].value ? <i className="fas fa-check green"></i> : <i className="fas fa-times red"></i>
-                            : data[key].value
+                            data[key]?.value ? <i className="fas fa-check green"></i> : <i className="fas fa-times red"></i>
+                            : data[key]?.value
                     }
-
                 </span>
+
             </div>
         )
     })
@@ -348,7 +354,7 @@ const UserTest = React.memo(({data}) => {
         return (
             <div className="groups__item">
                 <h1 className="index">{index+1}.</h1>
-                <h1 className="name">{item?.test_info.name}: {item?.percentage}</h1>
+                <h1 className="name">{item?.test_info?.name}: {item?.percentage}</h1>
             </div>
         )
     })
@@ -366,9 +372,9 @@ const UserDegree = React.memo(({data}) => {
         return (
             <Link to={"../../"}>
                 <div className="degree__item">
-                    <h1>{item.subject}</h1>
+                    <h1>{item?.subject}</h1>
                     <div className={`circle ${clazzCircle}`}>
-                        <span>{item.degree}</span>
+                        <span>{item?.degree}</span>
                     </div>
                 </div>
             </Link>

@@ -50,7 +50,7 @@ const PlatformGroupsToAdmins = () => {
             typeOfCourse: true,
             subject : true,
             teacherID: false,
-            studentsLength :false,
+            studentsLength :true,
             subjects : true,
             payment : true,
             status: true
