@@ -30,6 +30,8 @@ import leads from "slices/leadsSlice";
 import teacherInfo from "slices/teacherInfoSlice";
 import capitalCategory from "slices/capitalCategorySlice";
 import taskManager from "slices/taskManagerSlice";
+import {slice} from "../pages/webSite/test/register";
+import blockTestSlice from "../slices/blockTestSlice";
 
 const stringMiddlewere = () => (next) => (action) => {
     if (typeof action === 'string') {
@@ -71,7 +73,9 @@ const store = configureStore({
         leads,
         teacherInfo,
         capitalCategory,
-        taskManager
+        taskManager,
+        slice,
+        blockTestSlice
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware().concat(

@@ -53,7 +53,6 @@ const Login = () => {
                     dispatch(setUser(res.data))
                     return {success: true}
                 } else {
-                    // setPostDataStatus("error")
                     setActiveError(true)
                     dispatch(setMessage({
                         msg: "Parol yoki Username hato berilgan",

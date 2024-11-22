@@ -1,16 +1,16 @@
 import {useMemo} from "react";
 
 
-//
-export const BackUrlForDoc = `http://192.168.1.40:5002/`
-export const BackUrl = `${BackUrlForDoc}api/`
-export const ClassroomUrl = `http://localhost:3000/`
-export const ClassroomUrlForDoc = "http://192.168.68.40:5001/"
+// export const BackUrlForDoc = `http://192.168.1.34:5002/`
+// export const BackUrl = `${BackUrlForDoc}api/`
+// export const ClassroomUrl = `http://localhost:3000/`
+// export const ClassroomUrlForDoc = "http://192.168.68.40:5001/"
 
-// export const BackUrl = "/api/"
-// export const ClassroomUrl = `https://classroom.gennis.uz/`
-// export const BackUrlForDoc = "/"
-// export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
+
+export const BackUrl = "/api/"
+export const ClassroomUrl = `https://classroom.gennis.uz/`
+export const BackUrlForDoc = "/"
+export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
 
 export const headers = () => {
     const token = sessionStorage.getItem("token")
@@ -52,6 +52,14 @@ export const requireMenuItems = (id) => {
         {
             to : "taskManager",
             name: "Task Manager",
+            classIcon: "fa-tasks",
+            location: true,
+            children: true,
+            roles: [ROLES.Admin,ROLES.Director]
+        },
+        {
+            to : "blockTest",
+            name: "Block test",
             classIcon: "fa-tasks",
             location: true,
             children: true,

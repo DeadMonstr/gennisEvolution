@@ -26,6 +26,8 @@ const AccountingTable = React.memo(({
                                         cache
                                      }) => {
 
+
+
     const {isCheckedPassword} = useSelector(state => state.me)
 
     const [usersList, setUsersList] = useState([])
@@ -34,7 +36,6 @@ const AccountingTable = React.memo(({
     const [activeCheckPassword, setActiveCheckPassword] = useState(false)
     const [changingData, setChangingData] = useState({})
     const [isConfirm, setIsConfirm] = useState(false)
-
 
     useEffect(() => {
         setUsersList(users)
@@ -141,7 +142,7 @@ const AccountingTable = React.memo(({
                         <td>{index + 1}</td>
                         {activeRowsInTable.name ? <td>{item.name}</td> : null}
                         {activeRowsInTable.surname ? <td>{item.surname}</td> : null}
-                        {activeRowsInTable.payment ? <td>{item.payment}</td> : null}
+                        {activeRowsInTable.payment ? <td>{item.payment ? item.payment : item.amount  }</td> : null}
                         {activeRowsInTable.salary ? <td>{item.salary}</td> : null}
                         {activeRowsInTable.reason ?
                             <td>
@@ -456,10 +457,12 @@ const AccountingTable = React.memo(({
                         {activeRowsInTable.employeesSalary ? <td>{item.employeesSalary}</td> : null}
                         {activeRowsInTable.overheads ? <td>{item.overheads}</td> : null}
                         {activeRowsInTable.capitalExpenditures ? <td>{item.capitalExpenditures}</td> : null}
+                        {activeRowsInTable.investments ? <td>{item.investment}</td> : null}
+
                         {activeRowsInTable.allBenefits ? <td>{item.allBenefits}</td> : null}
                         {activeRowsInTable.name ? <td>{item.name}</td> : null}
                         {activeRowsInTable.price ? <td>{item.price}</td> : null}
-                        {activeRowsInTable.payment ? <td>{item.payment}</td> : null}
+                        {activeRowsInTable.payment ? <td>{item.payment ? item.payment : item.amount} </td> : null}
                         {activeRowsInTable.date ? <td>{item.date}</td> : null}
 
                         {activeRowsInTable.type ? <td>{item.type}</td> : null}
@@ -498,7 +501,7 @@ const AccountingTable = React.memo(({
                                 </td> : null
                         }
                         {
-                            activeRowsInTable.update ?
+                            activeRowsInTable?.update ?
                                 <td>
                                     <span
                                         onClick={() => {
@@ -600,6 +603,7 @@ const AccountingTable = React.memo(({
                                         typeOfMoney === "studentPayment" ?
                                             <tr className="tbody_th" key={1000000}>
                                                 <th/>
+
                                                 {activeRowsInTable.payment ? <th>To'lov</th> : null}
                                                 {activeRowsInTable.date ? <th>Sana</th> : null}
                                                 {activeRowsInTable.payment_type ? <th>To'lov turi</th> : null}
@@ -616,6 +620,7 @@ const AccountingTable = React.memo(({
                                                 :
                                                 <tr className="tbody_th" key={1000000}>
                                                     <th/>
+
                                                     {activeRowsInTable.month ? <th>Oy</th> : null}
                                                     {activeRowsInTable.income ? <th>Доход</th> : null}
                                                     {activeRowsInTable.old_cash ? <th>Oldingi summa</th> : null}
@@ -633,6 +638,8 @@ const AccountingTable = React.memo(({
                                                         <th>Qo'shimcha xarajatlar</th> : null}
                                                     {activeRowsInTable.capitalExpenditures ?
                                                         <th>Kapital xarajatlar</th> : null}
+                                                    {activeRowsInTable.investments ? <th>Investments</th> : null}
+
                                                     {activeRowsInTable.allBenefits ? <th>Все преимущества</th> : null}
                                                     {activeRowsInTable.name ? <th>Nomi</th> : null}
                                                     {activeRowsInTable.price ? <th>Narxi</th> : null}
@@ -644,6 +651,7 @@ const AccountingTable = React.memo(({
                                                     {activeRowsInTable.update ? <th>Yangilamoq</th> : null}
                                                 </tr>
                 }
+                {/*{typeOfMoney === ""}*/}
                 </thead>
                 <tbody>
                 {renderedUsers}

@@ -27,6 +27,7 @@ import PlatformUserProfile from "pages/platformContent/platformUser/platformUser
 import {getUIScrollByPath, setScrollPosition} from "slices/uiSlice";
 import useThrottle from "hooks/useThrottle";
 import LocationMoneys from "pages/platformContent/platformAccounting/locationMoneys/locationMoneys";
+import Invistitsiya from "./invistitsiya/invistitsiya";
 
 
 const PlatformAccounting = () => {
@@ -108,7 +109,6 @@ const PlatformAccounting = () => {
                     <Link to={`../../historyAccounting/${locationId}`}>
                         <Button>Harajatlar tarixi</Button>
                     </Link>
-
                 </div>
 
                 <div>
@@ -132,6 +132,7 @@ const PlatformAccounting = () => {
                 <Route path={"debtStudents"} element={<DebtStudents path={"debtStudents"} locationId={locationId} />}/>
                 <Route path={"overhead"} element={<Overhead path={"overhead"} locationId={locationId} />}/>
                 <Route path={"capital"} element={<Capital path={"capital"} locationId={locationId} />}/>
+                <Route path={"investments"} element={<Invistitsiya path={"investments"} locationId={locationId} />}/>
 
                 {/*<Route path={"debtStudents"} element={<DebtStudents/>}/>*/}
             </Routes>

@@ -18,6 +18,8 @@ import PlatformCentreInfo from "pages/platformContent/platformCentreInfo/Platfor
 
 
 
+const PlatformInvistitsiya =  React.lazy(() => import('./platformInvistitsiya/platformInvistitsiya'));
+
 const PlatformHome =  React.lazy(() => import('./platformHome/platformHome'));
 const PlatformNewStudents =  React.lazy(() => import('./platformNewStudents/platformNewStudents'));
 const PlatformTeachers =  React.lazy(() => import('./platformCurrentLocTeachers/platformTeachers'));
@@ -71,7 +73,7 @@ const PlatformLead =  React.lazy(() => import('./platformLead/PlatformLead'));
 const PlatformCapital =  React.lazy(() => import('pages/platformContent/platformCapitalCategories/PlatformCapitalCategories'));
 const PlatformTaskManager = React.lazy(() => import('./platformTaskManager/platformTaskManager'))
 const PlatformNewRegister = React.lazy(() => import('pages/registerNew/register'))
-
+const PlatformBlockTest =  React.lazy(() => import('./platformBlockTest/platformBlockTest'));
 
 
 
@@ -93,6 +95,7 @@ const PlatformContent = () => {
                 <Routes>
                     <Route path="home" element={<PlatformHome/>}/>
                     <Route path="taskManager/:locationId" element={<PlatformTaskManager/>}/>
+                    <Route path="blockTest/:locationId" element={<PlatformBlockTest/>}/>
                     <Route path="newRegister" element={<PlatformNewRegister/>}/>
                     {/*<Route path="registerStudent/*" element={<RegisterUser/>}/>*/}
 
@@ -177,6 +180,7 @@ const PlatformContent = () => {
                     <Route path="lead/:locationId" element={<PlatformLead/>}/>
                     <Route path="capitalsCategory/:locationId/*" element={<PlatformCapital/>}/>
                     <Route path="centreInfo/:locationId/*" element={<PlatformCentreInfo/>}/>
+                    {/*<Route path="investments/:locationId/*" element={<PlatformInvistitsiya/>}/>*/}
 
                     <Route
                         path="accounting/:locationId"

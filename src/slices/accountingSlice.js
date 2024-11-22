@@ -44,6 +44,11 @@ const pages = [
         value: "capital",
         name: "Kapital xarajatlari",
         disabled: false
+    },
+    {
+        value: "investments",
+        name: "Invistitsiya",
+        disabled: false
     }
 ]
 
@@ -97,6 +102,14 @@ const initialState = {
             title: "Qo'shish",
             active: false,
             page: "capital"
+        },
+        {
+            id: 5,
+            type: "btn",
+            name: "investments",
+            title: "Qo'shish",
+            active: false,
+            page: "investments"
         }
     ],
 
@@ -238,6 +251,9 @@ const accountingSlice = createSlice({
                 collection: []
             }
         },
+        onAddItem : (state , actions) => {
+            state.data.data = [...state.data.data , actions.payload]
+        }
 
 
     },
@@ -316,6 +332,7 @@ export const {
     changePaymentType,
     resetState,
     onChangeAccountingBtns,
-    clearAccData
+    clearAccData,
+    onAddItem
 } = actions
 

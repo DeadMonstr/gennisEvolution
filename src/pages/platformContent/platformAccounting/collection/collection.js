@@ -76,6 +76,13 @@ const Collection = () => {
     }
 
 
+    const activeRowsInTableInvestment = {
+        name: true,
+        typePayment: true,
+        payment: true,
+        // date: true,
+        // amount: true
+    }
 
     const changeDate = (e) => {
         setDate( {
@@ -83,7 +90,6 @@ const Collection = () => {
             [e.target.name]: e.target.value
         })
     }
-
 
     const renderTables = useCallback(() => {
         if (activeRoute === "studentPayment") {
@@ -132,11 +138,28 @@ const Collection = () => {
                 <>
                     <h1>{dataResult}</h1>
                     <AccountingTable
+                        typeOfMoney={""}
                         studentAtt={true}
                         activeRowsInTable={activeRowsInTableOverheads}
                         users={accountingData}
                     />
                 </>
+            )
+        }
+        if (activeRoute === "investments") {
+            console.log(accountingData)
+            return (
+                <>
+
+                    <h1>{dataResult}</h1>
+                    <AccountingTable
+                        // typeOfMoney={"user"}
+                        studentAtt={true}
+                        activeRowsInTable={activeRowsInTableInvestment}
+                        users={accountingData}
+                    />
+                </>
+
             )
         }
     },[activeRoute, accountingData])
@@ -254,6 +277,14 @@ const Collection = () => {
                         })}
                     >
                         Kapital xarajaltar
+                    </div>
+                    <div
+                        onClick={() => setActiveRoute("investments")}
+                        className={classNames("collection__btns-item",{
+                            active: activeRoute === "investments"
+                        })}
+                    >
+                        Invistitsiya
                     </div>
                 </div>
 

@@ -54,7 +54,7 @@ const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaul
         return optionsData?.map((item,index) => {
 
             const value = item[keyValue] || item.value || item.id || item.name || item
-            const key =  item.name || item
+            const key =  item.name || item.value || item
 
             if (!item.length)
             if (item.name?.includes('Hamma') && allFromOptions) {

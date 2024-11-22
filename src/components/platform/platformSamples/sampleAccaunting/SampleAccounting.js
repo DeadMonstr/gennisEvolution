@@ -501,7 +501,7 @@ const SampleAccounting = (props) => {
         <>
             <div className="links">
                 {
-                    links.map((item) => {
+                    links?.map((item) => {
 
                         const Component = item.elem
                         const props = item.props

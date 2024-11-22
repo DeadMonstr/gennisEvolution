@@ -9,7 +9,7 @@ import {useNavigate} from "react-router-dom";
 
 
 
-const Modal = ({activeModal,children,setActiveModal,link,id="",zIndex}) => {
+const Modal = ({activeModal,children,setActiveModal,link,id="",zIndex , extraClass}) => {
 
     const navigate = useNavigate()
 
@@ -38,7 +38,7 @@ const Modal = ({activeModal,children,setActiveModal,link,id="",zIndex}) => {
             onClick={onClickOutside}
             style={{zIndex}}
         >
-            <div className={`modal`}>
+            <div className={`modal`} style={extraClass}>
                 {children}
             </div>
             <div
