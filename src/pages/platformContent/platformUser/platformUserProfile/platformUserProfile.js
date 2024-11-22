@@ -36,8 +36,6 @@ const StudentTimeTable =  React.lazy(() => import('pages/platformContent/platfor
 const PlatformUserProfile = () => {
     const {userId} = useParams()
 
-    console.log(userId , "log")
-
     return (
         <>
             <Routes>
@@ -185,7 +183,6 @@ const UserContent = ({userId}) => {
     },[user])
 
 
-
     const renderLinks = useCallback(() => {
         const keysUser = Object.keys(user)
         return keysUser.map(item => {
@@ -194,9 +191,16 @@ const UserContent = ({userId}) => {
                 return user[item].map(link => {
                     if (link.type === "link") {
                         return (
-                            <Link to={`../${link.link}/${user.id}/${user.role}`} className="option">
-                                <i className={`fas ${link.iconClazz}`} />
-                                <span>{link.title}</span>
+                            <Link
+                                to={`../${link.link}/${user.id}/${user.role}`}
+                                className="option"
+                            >
+                                <i
+                                    className={`fas ${link.iconClazz}`}
+                                />
+                                <span>
+                                    {link.title}
+                                </span>
                             </Link>
                         )
                     }
@@ -244,7 +248,7 @@ const UserContent = ({userId}) => {
                             <span className="profile-rankName">{user.type_role}</span>
                         </div>
                         <div>
-                            <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director,ROLES.Programmer]}>
+                            <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Accountant]}>
                                 <div
                                     onClick={() => setActiveOptions(!activeOptions)}
                                     className="profile__header-btn"
@@ -269,7 +273,6 @@ const UserContent = ({userId}) => {
 
                     <main className="profile__main">
                         {renderedItems}
-
                     </main>
                 </div>
             </div>

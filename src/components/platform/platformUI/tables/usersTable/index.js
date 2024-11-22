@@ -20,7 +20,6 @@ const UsersTable = React.memo(({
     checkedUsers,
     setLinkUser,
     cache
-
 }) =>  {
 
     const [usersList,setUsersList] = useState([])

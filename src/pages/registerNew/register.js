@@ -93,6 +93,7 @@ const Register = () => {
     } = useForm({
         mode: "onBlur"
     })
+
     const {data} = useSelector(state => state.register)
     const {location} = useSelector(state => state.me)
     const [subjects, setSubjects] = useState([])

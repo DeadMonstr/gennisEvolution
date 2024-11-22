@@ -72,6 +72,9 @@ const PlatformCapital =  React.lazy(() => import('pages/platformContent/platform
 const PlatformTaskManager = React.lazy(() => import('./platformTaskManager/platformTaskManager'))
 const PlatformNewRegister = React.lazy(() => import('pages/registerNew/register'))
 
+const PlatformAccountantStaff = React.lazy(() => import("pages/platformContent/platformAccountant/staff/AccountantStaffs"))
+const PlatformAccountantBookKeeping = React.lazy(() => import("pages/platformContent/platformAccountant/bookKeeping/AccountantBookKeeping"))
+
 
 
 
@@ -177,6 +180,9 @@ const PlatformContent = () => {
                     <Route path="lead/:locationId" element={<PlatformLead/>}/>
                     <Route path="capitalsCategory/:locationId/*" element={<PlatformCapital/>}/>
                     <Route path="centreInfo/:locationId/*" element={<PlatformCentreInfo/>}/>
+
+                    <Route path="staffs/*" element={<PlatformAccountantStaff/>}/>
+                    <Route path="bookKeeping/*" element={<PlatformAccountantBookKeeping/>}/>
 
                     <Route
                         path="accounting/:locationId"

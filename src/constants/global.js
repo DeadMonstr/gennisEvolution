@@ -2,11 +2,11 @@ import {useMemo} from "react";
 
 
 
-export const BackUrlForDoc = `http://192.168.1.64:5002/`
+export const BackUrlForDoc = `http://192.168.1.52:5000/`
 export const BackUrl = `${BackUrlForDoc}api/`
 export const ClassroomUrl = `http://localhost:3000/`
-export const ClassroomUrlForDoc = "http://192.168.0.102:5001/"
-//
+export const ClassroomUrlForDoc = "http://192.168.1.52:5001/"
+
 // export const BackUrl = "/api/"
 // export const ClassroomUrl = `https://classroom.gennis.uz/`
 // export const BackUrlForDoc = "/"
@@ -348,6 +348,18 @@ export const requireMenuItems = (id) => {
             location: true,
             children: true,
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Accountant]
+        },
+        {
+            to : "staffs",
+            name : "Staffs",
+            classIcon: "fa-users",
+            roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
+        },
+        {
+            to : "bookKeeping",
+            name : "Dividend",
+            classIcon: "fa-search-dollar",
+            roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
         },
     ]
 }
