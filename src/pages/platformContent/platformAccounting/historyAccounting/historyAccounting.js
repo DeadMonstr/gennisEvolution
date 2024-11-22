@@ -43,9 +43,12 @@ const HistoryAccounting = () => {
         month: true,
         payment: true,
         teacherSalary: true,
+
         employeesSalary: true,
+
+        investments: true,
+
         type: true,
-        update: true
     }
 
     useEffect(() => {

@@ -16,6 +16,7 @@ import RequireAuth from "components/requireAuth/requireAuth";
 
 import QrCodeRegister from "pages/platformContent/qrCode/qrCodeRegister/qrCodeRegister";
 import {ROLES} from "constants/global";
+import {Register} from "../../pages/webSite/test/register/register";
 
 const App = () => {
 
@@ -24,6 +25,7 @@ const App = () => {
             <Route path="/*"  element={<Website/>} />
 
             <Route path="/login" element={<Login/>} />
+            <Route path="/register_test" element={<Register/>}/>
 
             <Route path="/register"  element={<FastRegister/>}/>
             <Route element={<RequireAuth allowedRules={[ROLES.Admin,ROLES.Director]}/>} >
@@ -68,6 +70,7 @@ const App = () => {
                 path="/discountUserChirchik"
                 element={<QrCodeRegister/>}
             />
+
 
 
         </Routes>

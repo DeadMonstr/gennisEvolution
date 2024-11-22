@@ -18,6 +18,7 @@ import {
 } from "slices/webSiteSlice";
 import {useHttp} from "hooks/http.hook";
 import {useDispatch, useSelector} from "react-redux";
+import {Register} from "./test/register/register";
 
 
 export const Context = React.createContext();
@@ -95,6 +96,7 @@ const WebSite = () => {
                             <Context.Provider value={{sectionTop, setSectionTop}}>
                                 <Routes>
                                     <Route index path={"/"} element={<HomePage/>}/>
+                                    {/*<Route index path={"/register_test"} element={<Register/>}/>*/}
                                     <Route path={"books"} element={<BooksPage/>}/>
                                     <Route path={"books/:id"} element={<Book/>}/>
                                     <Route path={"teacherInfo/:id"} element={<TeacherInfo/>}/>

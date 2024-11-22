@@ -31,6 +31,8 @@ import teacherInfo from "slices/teacherInfoSlice";
 import capitalCategory from "slices/capitalCategorySlice";
 import taskManager from "slices/taskManagerSlice";
 import accountantSlice from "slices/accountantSlice";
+import {slice} from "../pages/webSite/test/register";
+import blockTestSlice from "../slices/blockTestSlice";
 
 const stringMiddlewere = () => (next) => (action) => {
     if (typeof action === 'string') {
@@ -72,6 +74,8 @@ const store = configureStore({
         leads,
         teacherInfo,
         capitalCategory,
+        slice,
+        blockTestSlice,
         taskManager,
         accountantSlice
     },

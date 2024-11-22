@@ -18,6 +18,8 @@ import PlatformCentreInfo from "pages/platformContent/platformCentreInfo/Platfor
 
 
 
+const PlatformInvistitsiya =  React.lazy(() => import('./platformInvistitsiya/platformInvistitsiya'));
+
 const PlatformHome =  React.lazy(() => import('./platformHome/platformHome'));
 const PlatformNewStudents =  React.lazy(() => import('./platformNewStudents/platformNewStudents'));
 const PlatformTeachers =  React.lazy(() => import('./platformCurrentLocTeachers/platformTeachers'));
@@ -75,6 +77,7 @@ const PlatformNewRegister = React.lazy(() => import('pages/registerNew/register'
 const PlatformAccountantStaff = React.lazy(() => import("pages/platformContent/platformAccountant/staff/AccountantStaffs"))
 const PlatformAccountantBookKeeping = React.lazy(() => import("pages/platformContent/platformAccountant/bookKeeping/AccountantBookKeeping"))
 
+const PlatformBlockTest =  React.lazy(() => import('./platformBlockTest/platformBlockTest'));
 
 
 
@@ -96,6 +99,7 @@ const PlatformContent = () => {
                 <Routes>
                     <Route path="home" element={<PlatformHome/>}/>
                     <Route path="taskManager/:locationId" element={<PlatformTaskManager/>}/>
+                    <Route path="blockTest/:locationId" element={<PlatformBlockTest/>}/>
                     <Route path="newRegister" element={<PlatformNewRegister/>}/>
                     {/*<Route path="registerStudent/*" element={<RegisterUser/>}/>*/}
 
@@ -180,6 +184,7 @@ const PlatformContent = () => {
                     <Route path="lead/:locationId" element={<PlatformLead/>}/>
                     <Route path="capitalsCategory/:locationId/*" element={<PlatformCapital/>}/>
                     <Route path="centreInfo/:locationId/*" element={<PlatformCentreInfo/>}/>
+                    {/*<Route path="investments/:locationId/*" element={<PlatformInvistitsiya/>}/>*/}
 
                     <Route path="staffs/*" element={<PlatformAccountantStaff/>}/>
                     <Route path="bookKeeping/*" element={<PlatformAccountantBookKeeping/>}/>
