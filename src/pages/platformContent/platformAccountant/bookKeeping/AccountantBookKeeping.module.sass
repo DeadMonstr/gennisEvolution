@@ -1,4 +1,5 @@
-
+@import "styles/abstracts/variables"
+@import "styles/abstracts/mixins"
 
 .bookKeeping
   padding: 3rem
@@ -6,3 +7,73 @@
     display: flex
     align-items: center
     justify-content: flex-end
+  .wrapper
+    display: flex
+    flex-direction: column
+    .delete
+      padding: 5px 15px
+      border-radius: 15px
+      border: 1px solid #fc5757
+      margin: 0 1rem
+      position: relative
+      display: flex
+      align-items: center
+      justify-content: center
+      width: fit-content
+      transition: all .5s
+      i
+        color: #fc5757
+        font-size: 2rem
+        transition: all .5s
+      &:hover
+        box-shadow: 0 0 13px 1px #fc5757
+      &:active
+        transform: scale(0.9)
+    .typePayment
+      border: 1px solid $color-grey-dark
+      border-radius: 15px
+      color: $color-grey-dark
+      text-transform: capitalize
+      padding: 0.5rem 1.5rem
+      transition: all .2s
+      &:hover
+        border: 1px solid $color-main-dark
+        box-shadow: 0 0 13px 1px $color-main-light
+        color: $color-main-dark
+        background-color: white
+      &:active
+        transform: scale(0.9)
+    .item_check , .item_false
+      color: green
+      font-size: 2rem
+    .item_false
+      color: red
+  .plus
+    width: 5rem
+    height: 5rem
+    background-color: $color-main
+    border-radius: 50%
+    display: flex
+    align-self: flex-end
+    align-items: center
+    justify-content: center
+    transition: all .2s
+    margin-top: 10px
+    @include btn-active
+    i
+      font-size: 2.5rem
+.add
+  width: 50rem
+  max-height: 60rem
+  background-color: white
+  border-radius: 15px
+  padding: 2rem
+  form
+    display: flex
+    flex-direction: column
+    gap: 1rem
+    .debtor_type
+      display: flex
+    .payment_type
+      display: flex
+      gap: 2rem
