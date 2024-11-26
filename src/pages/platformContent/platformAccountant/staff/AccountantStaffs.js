@@ -13,7 +13,11 @@ import Select from "components/platform/platformUI/select";
 import {useForm} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchDataToChange} from "slices/dataToChangeSlice";
-import accountantSlice, {fetchAccountantRegisteredStaffs, fetchAccountantRegisterRoles} from "slices/accountantSlice";
+import accountantSlice, {
+    fetchAccountantRegisteredStaffs,
+    fetchAccountantRegisterRoles,
+    onAddStaff
+} from "slices/accountantSlice";
 import Button from "components/platform/platformUI/button";
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
@@ -59,6 +63,8 @@ const AccountantStaffs = () => {
         request(`${BackUrl}register_camp_staff`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 console.log(res)
+                // dispatch(onAddStaff(res))
+                setAdd(false)
             })
 
     }
@@ -111,11 +117,11 @@ const AccountantStaffs = () => {
                                 <tr onClick={(e) => LinkToUser(e,item.id)}>
                                     <td>{index+1}</td>
                                     <td>{item.name}</td>
-                                    <td>Fatxullayev</td>
-                                    <td>Jeki</td>
-                                    <td>949200232</td>
-                                    <td>21</td>
-                                    <td>No'malum</td>
+                                    <td>{item.surname}</td>
+                                    <td>{item.username}</td>
+                                    <td>{item.phone}</td>
+                                    <td>{item.age}</td>
+                                    <td>{item.role}</td>
                                 </tr>
                             )
                         })

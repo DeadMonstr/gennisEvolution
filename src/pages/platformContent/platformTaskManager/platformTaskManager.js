@@ -772,7 +772,7 @@ const TaskCard = ({item, index}) => {
                     {/*}*/}
                     {
                         activeMenu === "lead" ? null : <li className={cls.infoList__item}>
-                            Koment: <span>{item?.reason}</span>
+                            Koment: <span>{item?.history[0]?.comment}  </span>
                         </li>
                     }
                     {

@@ -75,6 +75,12 @@ const accountantSlice = createSlice({
                 return item
             })
         },
+
+
+        onAddStaff: (state , actions) => {
+            state.register.staffs = [...state.staffs , actions.payload]
+        },
+
         onAddDevidend: (state , action) => {
             state.dividends = [...state.dividends , action.payload]
             console.log(action.payload)
@@ -173,7 +179,8 @@ export const {
     onDeleteDividend,
     changePaymentTypeDividend,
     changePaymentTypePayable,
-    onDeletePayable
+    onDeletePayable,
+    onAddStaff
 } = actions
 
 
