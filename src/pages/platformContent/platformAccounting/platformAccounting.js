@@ -7,8 +7,9 @@ import DebtStudents from "./debtStudents/debtStudents";
 import StudentsPayments from "./studentsPayments/studentsPayments";
 import TeachersSalary from "./teachersSalary/teachersSalary";
 import Overhead from "./overhead/overhead";
-import Capital from "pages/platformContent/platformAccounting/capital/capital";
-
+import Capital from "./capital/capital";
+import Invistitsiya from "./invistitsiya/invistitsiya";
+import Dividends from "./dividends/Dividends";
 
 
 
@@ -27,7 +28,7 @@ import PlatformUserProfile from "pages/platformContent/platformUser/platformUser
 import {getUIScrollByPath, setScrollPosition} from "slices/uiSlice";
 import useThrottle from "hooks/useThrottle";
 import LocationMoneys from "pages/platformContent/platformAccounting/locationMoneys/locationMoneys";
-import Invistitsiya from "./invistitsiya/invistitsiya";
+
 
 
 const PlatformAccounting = () => {
@@ -132,6 +133,7 @@ const PlatformAccounting = () => {
                 <Route path={"overhead"} element={<Overhead path={"overhead"} locationId={locationId} />}/>
                 <Route path={"capital"} element={<Capital path={"capital"} locationId={locationId} />}/>
                 <Route path={"investments"} element={<Invistitsiya path={"investments"} locationId={locationId} />}/>
+                <Route path={"dividends"} element={<Dividends path={"dividends"} locationId={locationId} />}/>
 
                 {/*<Route path={"debtStudents"} element={<DebtStudents/>}/>*/}
             </Routes>

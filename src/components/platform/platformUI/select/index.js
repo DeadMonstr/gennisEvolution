@@ -10,6 +10,7 @@ const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaul
     const [isChanged,setIsChanged] = useState(false)
 
     useEffect(()=> {
+        console.log(options,"options")
         setOptionsData(options)
     },[options])
 

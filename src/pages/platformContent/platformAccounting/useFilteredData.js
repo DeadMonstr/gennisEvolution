@@ -6,6 +6,8 @@ const useFilteredData = (data = [], currentPage, PageSize) => {
     const {filters} = useSelector(state => state.filters)
     const {search} = useSelector(state => state.accounting)
 
+
+
     const multiPropsFilter = useMemo(() => {
         const filterKeys = Object.keys(filters);
 
@@ -33,14 +35,21 @@ const useFilteredData = (data = [], currentPage, PageSize) => {
         });
     }, [filters, data]);
 
+
     const searchedUsers = useMemo(() => {
         const filteredHeroes = multiPropsFilter?.slice()
-        return filteredHeroes?.filter(item =>
-            item.name?.toLowerCase().includes(search?.toLowerCase()) ||
-            item.surname?.toLowerCase().includes(search?.toLowerCase()) ||
-            item.username?.toLowerCase().includes(search?.toLowerCase())
-        )
+        return filteredHeroes?.filter(item => {
+            if (item?.name || item.surname || item.username) {
+                return item?.name?.toLowerCase()?.includes(search?.toLowerCase()) ||
+                item?.surname?.toLowerCase()?.includes(search?.toLowerCase()) ||
+                item?.username?.toLowerCase()?.includes(search?.toLowerCase())
+            } else return true
+        })
     }, [multiPropsFilter, search])
+
+
+
+
 
     const memoized = useMemo(() => {
         const firstPageIndex = (currentPage - 1) * PageSize;

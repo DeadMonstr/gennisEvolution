@@ -1,7 +1,7 @@
 import {useMemo} from "react";
 
 
-export const BackUrlForDoc = `http://192.168.1.52:5000/`
+export const BackUrlForDoc = `http://192.168.1.61:5002/`
 export const BackUrl = `${BackUrlForDoc}api/`
 export const ClassroomUrl = `http://localhost:3000/`
 export const ClassroomUrlForDoc = "http://192.168.1.52:5001/"
@@ -26,6 +26,13 @@ export const headersImg = () => {
     return {
         "Authorization" : "Bearer " + token,
     }
+}
+
+export function formatDate(date) {
+    let day = String(date.getDate()).padStart(2, '0');
+    let month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    let year = date.getFullYear();
+    return `${year}-${month}-${day}`;
 }
 
 export const ROLES = {

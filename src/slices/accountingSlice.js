@@ -49,6 +49,11 @@ const pages = [
         value: "investments",
         name: "Invistitsiya",
         disabled: false
+    },
+    {
+        value: "dividends",
+        name: "Dividends",
+        disabled: false
     }
 ]
 

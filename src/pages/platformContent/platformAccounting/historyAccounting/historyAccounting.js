@@ -47,7 +47,7 @@ const HistoryAccounting = () => {
         employeesSalary: true,
 
         investments: true,
-
+        dividends: true,
         type: true,
     }
 
@@ -114,6 +114,8 @@ const HistoryAccounting = () => {
     const funcSlice = {
         updateData
     }
+
+    console.log(history)
 
 
     return (

@@ -3,35 +3,57 @@ import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
 
 const initialState = {
+
+    isTable: false,
+
+    unCompleted: {
+        debtors: [],
+        students: [],
+        leads: []
+    },
+
+    completed: {
+        debtors: [],
+        students: [],
+        leads: []
+    },
+
+
     newStudents: [],
     completedNewStudents: [],
     debtorStudent: [],
     completedDebtorStudent: [],
     leads: [],
     completedLeads: [],
+
+
+
     progress: null,
+    allProgress: null,
+
     search: [],
+
+
     searchStatus: "idle",
     newStudentsStatus: "idle",
     debtorStudentStatus: "idle",
     leadsStatus: "idle",
-    progressStatus: "idle"
+
+    progressStatus: "idle",
+    unCompletedStatus: "idle",
+    completedStatus: "idle",
+
+
 }
 
 export const fetchNewStudentsData = createAsyncThunk(
     'taskManager/fetchNewStudentsData',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}new_students_calling/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}task_new_students_calling/${id}`, "GET", null, headers())
     }
 )
-export const fetchDebtorStudentsData = createAsyncThunk(
-    'taskManager/fetchDebtorStudentsData',
-    async (id) => {
-        const {request} = useHttp();
-        return await request(`${BackUrl}student_in_debts/${id}`, "GET", null, headers())
-    }
-)
+
 export const fetchLeadsData = createAsyncThunk(
     'taskManager/fetchLeadsData',
     async (id) => {
@@ -40,13 +62,37 @@ export const fetchLeadsData = createAsyncThunk(
     }
 )
 
-export const fetchCompletedDebtorsData = createAsyncThunk(
-    'taskManager/fetchCompletedDebtorsData',
-    async (id) => {
+// export const fetchCompletedDebtorsData = createAsyncThunk(
+//     'taskManager/fetchCompletedDebtorsData',
+//     async (id) => {
+//         const {request} = useHttp();
+//         return await request(`${BackUrl}get_completed_tasks/${id}`, "GET", null, headers())
+//     }
+// )
+
+
+export const fetchDebtorsData = createAsyncThunk(
+    'taskManager/fetchDebtorStudentsData',
+    async (data) => {
+
+        const {locationId,date} = data
+
         const {request} = useHttp();
-        return await request(`${BackUrl}get_completed_tasks/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}student_debts_progress/${locationId}/${date}`, "GET", null, headers())
     }
 )
+
+export const fetchCompletedDebtorsData = createAsyncThunk(
+    'taskManager/fetchCompletedDebtorsData',
+    async (data) => {
+
+        const {locationId,date} = data
+
+        const {request} = useHttp();
+        return await request(`${BackUrl}student_debts_completed/${locationId}/${date}`, "GET", null, headers())
+    }
+)
+
 
 const TaskManagerSlice = createSlice({
     name: 'taskManager',
@@ -65,16 +111,24 @@ const TaskManagerSlice = createSlice({
             console.log(action.payload)
             state.newStudents = state.newStudents.filter(item => item.id !== action.payload.student.id)
         },
-        changeDebtorStudents: (state, action) => {
-            state.debtorStudent = [
-                ...state.debtorStudent.filter(item => item.id !== action.payload.student.id),
-                action.payload.student
-            ]
-        },
-        changeDebtorStudentsDel: (state, action) => {
+        // changeDebtorStudents: (state, action) => {
+        //     state.debtorStudent = [
+        //         ...state.debtorStudent.filter(item => item.id !== action.payload.student.id),
+        //         action.payload.student
+        //     ]
+        // },
+        //
+        onDelDebtors: (state, action) => {
 
-            state.debtorStudent = state.debtorStudent.filter(item => item.id !== action.payload.student.id)
+            state.unCompleted.debtors = state.unCompleted.debtors.filter(item => item.id !== action.payload.student.id)
         },
+
+        onChangeProgress: (state, action) => {
+            state.progress = action.payload.progress
+            state.allProgress = action.payload.allProgress
+        },
+
+
         changeLead: (state, action) => {
             state.leads = state.leads.filter(item => item.id !== action.payload.id)
         },
@@ -104,6 +158,44 @@ const TaskManagerSlice = createSlice({
     },
     extraReducers: builder => {
         builder
+            .addCase(fetchDebtorsData.pending, (state) => {
+                state.unCompletedStatus = "loading"
+                state.progressStatus = "loading"
+            })
+            .addCase(fetchDebtorsData.fulfilled, (state, action) => {
+                state.unCompleted.debtors = action.payload.students || []
+                state.allProgress = action.payload.task_daily_statistics
+                state.progress = action.payload.task_statistics
+                state.isTable = action.payload.table
+                state.unCompletedStatus = "success"
+                state.progressStatus = "success"
+            })
+            .addCase(fetchDebtorsData.rejected, (state) => {
+                state.unCompletedStatus = "error"
+                state.progressStatus = "error"
+            })
+
+            .addCase(fetchCompletedDebtorsData.pending, (state) => {
+                state.completedStatus = "loading"
+                state.progressStatus = "loading"
+            })
+            .addCase(fetchCompletedDebtorsData.fulfilled, (state, action) => {
+                state.completed.debtors = action.payload.students || []
+                state.allProgress = action.payload.task_daily_statistics
+                state.progress = action.payload.task_statistics
+                state.isTable = action.payload.table
+                state.completedStatus = "success"
+                state.progressStatus = "success"
+            })
+            .addCase(fetchCompletedDebtorsData.rejected, (state) => {
+                state.completedStatus = "error"
+                state.progressStatus = "error"
+            })
+
+
+
+
+
             .addCase(fetchNewStudentsData.pending, (state) => {
                 state.newStudentsStatus = "loading"
             })
@@ -115,18 +207,12 @@ const TaskManagerSlice = createSlice({
             .addCase(fetchNewStudentsData.rejected, (state) => {
                 state.newStudentsStatus = "error"
             })
-            .addCase(fetchDebtorStudentsData.pending, (state) => {
-                state.debtorStudentStatus = "loading"
-            })
-            .addCase(fetchDebtorStudentsData.fulfilled, (state, action) => {
-                // console.log(action.payload)
-                state.debtorStudent = action.payload.students
-                // state.completedDebtorStudent = [...state.completedDebtorStudent , ...action.payload.completed_tasks]
-                state.debtorStudentStatus = "success"
-            })
-            .addCase(fetchDebtorStudentsData.rejected, (state) => {
-                state.debtorStudentStatus = "error"
-            })
+
+
+
+
+
+
             .addCase(fetchLeadsData.pending, (state) => {
                 state.leadsStatus = "loading"
             })
@@ -138,16 +224,9 @@ const TaskManagerSlice = createSlice({
             .addCase(fetchLeadsData.rejected, (state) => {
                 state.leadsStatus = "error"
             })
-            .addCase(fetchCompletedDebtorsData.pending, (state) => {
-                state.debtorStudentStatus = "loading"
-            })
-            .addCase(fetchCompletedDebtorsData.fulfilled, (state, action) => {
-                state.completedDebtorStudent = action.payload.completed_tasks
-                state.debtorStudentStatus = "success"
-            })
-            .addCase(fetchCompletedDebtorsData.rejected, (state) => {
-                state.debtorStudentStatus = "error"
-            })
+
+
+
     }
 })
 
@@ -156,8 +235,7 @@ export default reducer
 
 export const {
     fetchingItems,
-    changeDebtorStudents,
-    changeDebtorStudentsDel,
+
     changeLead,
     deleteLead,
     fetchedError,
@@ -167,5 +245,8 @@ export const {
     fetchedProgress,
     fetchedProgressError,
     fetchingSearch,
-    fetchedSearch
+    fetchedSearch,
+
+    onChangeProgress,
+    onDelDebtors
 } = actions

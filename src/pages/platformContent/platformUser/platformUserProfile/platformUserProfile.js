@@ -19,7 +19,6 @@ import Input from "components/platform/platformUI/input";
 import {useAuth} from "hooks/useAuth";
 import Select from "components/platform/platformUI/select";
 import {setMessage} from "slices/messageSlice";
-import StaffSalary from "../../platformStaffSalary/staffSalary/staffSalary";
 
 
 const PlatformUserPayment =  React.lazy(() => import('../../platformUser/studentPayment/studentPayment'));
@@ -53,7 +52,7 @@ const PlatformUserProfile = () => {
                 <Route path="timeTable/:userId/*" element={<StudentTimeTable/>}/>
 
 
-                <Route path={"staffSalary/:userId/*"} element={<StaffSalary/>}/>
+
 
                 <Route path="*"  element={
                     <Navigate to="info" replace />

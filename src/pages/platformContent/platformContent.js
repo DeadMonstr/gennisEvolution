@@ -76,6 +76,10 @@ const PlatformNewRegister = React.lazy(() => import('pages/registerNew/register'
 
 const PlatformAccountantStaff = React.lazy(() => import("pages/platformContent/platformAccountant/staff/AccountantStaffs"))
 const PlatformAccountantBookKeeping = React.lazy(() => import("pages/platformContent/platformAccountant/bookKeeping/AccountantBookKeeping"))
+const PlatformAccountantStaffSalary = React.lazy(() => import("pages/platformContent/platformStaffSalary/StaffSalary"))
+const PlatformAccountantStaffSalaryMonth = React.lazy(() => import("pages/platformContent/platformStaffSalary/staffMonth/StaffMonth"))
+const PlatformAccountantCollection = React.lazy(() => import("pages/platformContent/platformAccountant/bookKeeping/collection/CollectionAccount"))
+const PlatformAccountantTypesMoney = React.lazy(() => import("pages/platformContent/platformAccountant/bookKeeping/typesMoney/typesMoney"))
 
 const PlatformBlockTest =  React.lazy(() => import('./platformBlockTest/platformBlockTest'));
 
@@ -188,6 +192,10 @@ const PlatformContent = () => {
 
                     <Route path="staffs/*" element={<PlatformAccountantStaff/>}/>
                     <Route path="bookKeeping/*" element={<PlatformAccountantBookKeeping/>}/>
+                    <Route path="staffSalary/:userId/" element={<PlatformAccountantStaffSalary/>}/>
+                    <Route path="staffSalaryMonth/:monthId" element={<PlatformAccountantStaffSalaryMonth/>}/>
+                    <Route path="collectionAccount" element={<PlatformAccountantCollection/>}/>
+                    <Route path="typesMoney" element={<PlatformAccountantTypesMoney/>}/>
 
                     <Route
                         path="accounting/:locationId"

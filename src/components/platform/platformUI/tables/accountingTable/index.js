@@ -451,6 +451,7 @@ const AccountingTable = React.memo(({
                         {activeRowsInTable.current_cash ? <td>{item.current_cash}</td> : null}
                         {activeRowsInTable.discount ? <td>{item.discount}</td> : null}
                         {activeRowsInTable.charity ? <td>{item.charity}</td> : null}
+                        {activeRowsInTable.amount ? <td>{item.amount}</td> : null}
                         {activeRowsInTable.paymentStudents ? <td>{item.paymentStudents}</td> : null}
                         {activeRowsInTable.debts ? <td>{item.debts}</td> : null}
                         {activeRowsInTable.teacherSalary ? <td>{item.teacherSalary}</td> : null}
@@ -458,6 +459,7 @@ const AccountingTable = React.memo(({
                         {activeRowsInTable.overheads ? <td>{item.overheads}</td> : null}
                         {activeRowsInTable.capitalExpenditures ? <td>{item.capitalExpenditures}</td> : null}
                         {activeRowsInTable.investments ? <td>{item.investment}</td> : null}
+                        {activeRowsInTable.dividends ? <td>{item.dividend}</td> : null}
 
                         {activeRowsInTable.allBenefits ? <td>{item.allBenefits}</td> : null}
                         {activeRowsInTable.name ? <td>{item.name}</td> : null}
@@ -466,6 +468,7 @@ const AccountingTable = React.memo(({
                         {activeRowsInTable.date ? <td>{item.date}</td> : null}
 
                         {activeRowsInTable.type ? <td>{item.type}</td> : null}
+                        {activeRowsInTable.typePayment_new ? <td>{item.payment_type_name}</td> : null}
                         {
                             activeRowsInTable.typePayment ?
                                 <td
@@ -627,6 +630,7 @@ const AccountingTable = React.memo(({
                                                     {activeRowsInTable.current_cash ? <th>Hozirgi summa</th> : null}
                                                     {activeRowsInTable.discount ? <th>Chegirma</th> : null}
                                                     {activeRowsInTable.charity ? <th>Charity</th> : null}
+                                                    {activeRowsInTable.amount ? <th>Amount</th> : null}
                                                     {activeRowsInTable.paymentStudents ?
                                                         <th>Оплата студентов </th> : null}
                                                     {activeRowsInTable.debts ? <th>Долги</th> : null}
@@ -639,13 +643,14 @@ const AccountingTable = React.memo(({
                                                     {activeRowsInTable.capitalExpenditures ?
                                                         <th>Kapital xarajatlar</th> : null}
                                                     {activeRowsInTable.investments ? <th>Investments</th> : null}
+                                                    {activeRowsInTable.dividends ? <th>Dividendlar</th> : null}
 
                                                     {activeRowsInTable.allBenefits ? <th>Все преимущества</th> : null}
                                                     {activeRowsInTable.name ? <th>Nomi</th> : null}
                                                     {activeRowsInTable.price ? <th>Narxi</th> : null}
                                                     {activeRowsInTable.payment ? <th>To'lov</th> : null}
                                                     {activeRowsInTable.date ? <th>Sana</th> : null}
-                                                    {activeRowsInTable.typePayment ? <th>To'lov turi</th> : null}
+                                                    {(activeRowsInTable.typePayment || activeRowsInTable.typePayment_new) ? <th>To'lov turi</th> : null}
                                                     {activeRowsInTable.type ? <th>Turi</th> : null}
                                                     {activeRowsInTable.delete ? <th>O'chirish</th> : null}
                                                     {activeRowsInTable.update ? <th>Yangilamoq</th> : null}

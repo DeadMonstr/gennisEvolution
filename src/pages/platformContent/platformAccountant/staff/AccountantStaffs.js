@@ -22,16 +22,19 @@ import Button from "components/platform/platformUI/button";
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
 import {useNavigate} from "react-router-dom";
+import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 
 
 const AccountantStaffs = () => {
 
 
-    const [add,setAdd] = useState(false)
-    const [job,setJob] = useState(null)
+    const [add, setAdd] = useState(false)
+    const [job, setJob] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const [activeError, setActiveError] = useState(false)
 
 
-    const {register,handleSubmit} = useForm()
+    const {register, handleSubmit, setError, formState: {errors}} = useForm()
 
     const {register: registerData} = useSelector(state => state.accountantSlice)
 
@@ -41,15 +44,14 @@ const AccountantStaffs = () => {
 
     useEffect(() => {
         dispatch(fetchAccountantRegisterRoles())
-    },[])
+    }, [])
 
 
     useEffect(() => {
         dispatch(fetchAccountantRegisteredStaffs())
-    },[])
-    
-    
-    
+    }, [])
+
+
     const onSubmit = (data) => {
 
         const newData = {
@@ -59,30 +61,47 @@ const AccountantStaffs = () => {
         }
 
 
-
         request(`${BackUrl}register_camp_staff`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 console.log(res)
-                // dispatch(onAddStaff(res))
+                dispatch(onAddStaff(res.user))
                 setAdd(false)
             })
 
     }
 
 
-
     const navigate = useNavigate()
 
 
-    const LinkToUser = (e,id) => {
+    const LinkToUser = (e, id) => {
         if (e.target.type !== "checkbox" && !e.target.classList.contains("delete") && !e.target.classList.contains("fa-times")) {
             navigate(`../../profile/${id}`)
         }
     }
 
-    console.log(registerData.roles)
+    const checkUsername = (username) => {
+        setLoading(true)
+        request(`${BackUrl}check_username`, "POST", JSON.stringify(username))
+            .then(res => {
+                setLoading(false)
+
+                if (res.found) {
+                    setError('username', {
+                        type: "manual",
+                        message: "username band"
+
+                    }, {shouldFocus: true})
+                    setActiveError(true)
+                } else {
+                    setActiveError(false)
+
+                }
+            })
+    }
 
 
+    console.log(errors)
     return (
         <div className={cls.staffs}>
 
@@ -100,22 +119,22 @@ const AccountantStaffs = () => {
             <div className={cls.wrapper}>
                 <Table>
                     <thead>
-                        <tr>
-                            <th>№</th>
-                            <th>Ism</th>
-                            <th>Familya</th>
-                            <th>Username</th>
-                            <th>Tel.</th>
-                            <th>Yoshi</th>
-                            <th>Kasb</th>
-                        </tr>
+                    <tr>
+                        <th>№</th>
+                        <th>Ism</th>
+                        <th>Familya</th>
+                        <th>Username</th>
+                        <th>Tel.</th>
+                        <th>Yoshi</th>
+                        <th>Kasb</th>
+                    </tr>
                     </thead>
                     <tbody>
                     {
-                        registerData?.staffs?.map((item,index) => {
+                        registerData?.staffs?.map((item, index) => {
                             return (
-                                <tr onClick={(e) => LinkToUser(e,item.id)}>
-                                    <td>{index+1}</td>
+                                <tr onClick={(e) => LinkToUser(e, item.user_id)}>
+                                    <td>{index + 1}</td>
                                     <td>{item.name}</td>
                                     <td>{item.surname}</td>
                                     <td>{item.username}</td>
@@ -128,27 +147,32 @@ const AccountantStaffs = () => {
                     }
 
 
-
                     </tbody>
 
                 </Table>
             </div>
 
 
-
             <Modal activeModal={add} setActiveModal={() => setAdd(false)}>
                 <div className={cls.add}>
-                    <Form typeSubmit={"hand"} onSubmit={handleSubmit(onSubmit)} >
-                        <InputForm register={register} title={"Username"} name={"username"} />
-                        <InputForm register={register} title={"Name"} name={"name"} />
-                        <InputForm register={register} title={"Surname"} name={"surname"} />
-                        <InputForm register={register} title={"Father name"} name={"father_name"} />
-                        <InputForm register={register} type={"date"} title={"Birth date"} name={"birth_date"} />
-                        <InputForm register={register} title={"Phone number"} name={"phone"} />
-                        <Select options={registerData?.roles} onChangeOption={setJob} value={job} />
+                    <Form typeSubmit={"hand"} onSubmit={handleSubmit(onSubmit)}>
 
+                        <InputForm onBlur={checkUsername} register={register} title={"Username"} name={"username"}/>
+                        {
+                            (errors?.username && activeError) &&
+                            <span className={cls.form__error}>
+                                                {errors?.username?.message}
+                                            </span>
+                        }
+                        <InputForm register={register} title={"Name"} name={"name"}/>
+                        <InputForm register={register} title={"Surname"} name={"surname"}/>
+                        <InputForm register={register} title={"Father name"} name={"father_name"}/>
+                        <InputForm register={register} type={"date"} title={"Birth date"} name={"birth_date"}/>
+                        <InputForm register={register} type={"number"} title={"Phone number"} name={"phone"}/>
+                        <InputForm register={register} type={"number"} title={"Salary"} name={"salary"}/>
+                        <Select options={registerData?.roles} onChangeOption={setJob} value={job}/>
 
-                        <Button type={"submit"}>Submit</Button>
+                        {loading ? <DefaultLoaderSmall/> : <Button type={"submit"}>Submit</Button>}
                     </Form>
                 </div>
             </Modal>

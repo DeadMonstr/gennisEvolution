@@ -15,12 +15,10 @@ import Confirm from "components/platform/platformModals/confirm/confirm";
 import DefaultLoader from "components/loader/defaultLoader/DefaultLoader";
 import PlatformMessage from "components/platform/platformMessage";
 import {useHttp} from "hooks/http.hook";
-import {BackUrl, headers} from "constants/global";
+import {BackUrl, formatDate, headers} from "constants/global";
 import {
     changeNewStudents,
     changeNewStudentsDel,
-    changeDebtorStudents,
-    changeDebtorStudentsDel,
     changeLead,
     deleteLead,
     fetchedProgress,
@@ -28,7 +26,8 @@ import {
     fetchNewStudentsData,
     fetchDebtorStudentsData,
     fetchLeadsData,
-    fetchCompletedDebtorsData, fetchedSearch, fetchingSearch
+    fetchCompletedDebtorsData, fetchedSearch, fetchingSearch, fetchDebtorsData,
+    onDelDebtors, onChangeProgress
 } from "slices/taskManagerSlice";
 
 import cls from "./platformTaskManager.module.sass";
@@ -45,6 +44,8 @@ import {setMessage} from "slices/messageSlice";
 import {useParams} from "react-router-dom";
 import Input from "components/platform/platformUI/input";
 import PlatformSearch from "components/platform/platformUI/search";
+import Table from "components/platform/platformUI/table";
+import {fetchDataToChange} from "slices/dataToChangeSlice";
 
 const FuncContext = createContext(null)
 const options = [
@@ -67,7 +68,7 @@ const menuList = [
         label: "Yangi o’quvchilar"
     },
     {
-        name: "lead",
+        name: "leads",
         label: "Lead"
     }
 ]
@@ -75,8 +76,13 @@ const colorStatusList = ["red", "yellow", "green"]
 
 const PlatformTaskManager = () => {
 
+    const {locationId} = useParams()
 
     const {
+        unCompleted,
+        completed,
+
+
         newStudents,
         newStudentsStatus,
         completedNewStudents,
@@ -88,30 +94,29 @@ const PlatformTaskManager = () => {
         leadsStatus,
         progress,
         progressStatus,
+        allProgress,
         search,
-        searchStatus
+        searchStatus,
+        isTable,
+        unCompletedStatus,
+        completedStatus
     } = useSelector(state => state.taskManager)
-    const [activeMenu, setActiveMenu] = useState(menuList[0]?.name)
-    const {locationId} = useParams()
+
+
+
+
+    const [activeMenu, setActiveMenu] = useState(menuList[0].name)
     const [isCompleted, setIsCompleted] = useState(false)
 
-    useEffect(() => {
-        if (activeMenu === "newStudents") {
-            dispatch(fetchNewStudentsData(locationId))
-        } else if (activeMenu === "lead") {
-            dispatch(fetchLeadsData(locationId))
-        } else {
-            dispatch(fetchDebtorStudentsData(locationId))
-            if (isCompleted) {
-                dispatch(fetchCompletedDebtorsData(locationId))
-            }
-        }
+    const [year, setYear] = useState()
+    const [month, setMonth] = useState()
 
-    }, [activeMenu, locationId, isCompleted])
 
-    const {request} = useHttp()
     const dispatch = useDispatch()
+    const {request} = useHttp()
     const {register, handleSubmit, setValue} = useForm()
+
+
     const [activeModal, setActiveModal] = useState(false)
     const [date, setDate] = useState(new Date())
     const [studentId, setStudentId] = useState()
@@ -119,26 +124,267 @@ const PlatformTaskManager = () => {
     const [dellLead, setDellLead] = useState(false)
     const [isConfirm, setIsConfirm] = useState(false)
     const [searchValue, setSearchValue] = useState("")
-    const [filtered, setFiltered] = useState([])
     const [getUser, setGetUser] = useState({})
-    const [number, setNumber] = useState(2)
+    const [tableData, setTableDate] = useState([])
+
+    const [data, setData] = useState([])
+    const [banListColors,setBanListColors] = useState([])
+
+
+
+
+
+
 
 
     useEffect(() => {
-        dispatch(fetchingProgress())
-        request(`${BackUrl}daily_statistics/${locationId}`, "POST", JSON.stringify(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`), headers())
-            .then(res => {
-                dispatch(fetchedProgress(res.info))
-                if (!res.info) {
-                    dispatch(setMessage({
-                        msg: res.status,
-                        type: "success",
-                        active: true
-                    }))
-                }
-            })
-            .catch(err => console.log(err))
-    }, [date, leads, debtorStudent, newStudents, locationId])
+        const oldCompleted = JSON.parse(localStorage.getItem("isCompleted"))
+        if (oldCompleted) {
+            setIsCompleted(oldCompleted)
+        } else {
+            setIsCompleted(false)
+        }
+    }, [])
+
+
+
+    // Cards color banList
+
+    useEffect(() => {
+
+
+        if (isCompleted) {
+            switch (activeMenu) {
+                case "leads":
+                    setBanListColors(["red","yellow"])
+                    break;
+            }
+        } else {
+            switch (activeMenu) {
+                case "debtors":
+                    setBanListColors(["green"])
+                    break;
+                case "students":
+                    setBanListColors(["green"])
+                    break;
+                case "leads":
+                    setBanListColors(["green"])
+                    break;
+            }
+        }
+
+
+
+    },[isCompleted,activeMenu])
+
+
+
+    // Fetch data from type and date
+
+    useEffect(() => {
+        if (!locationId && !date) return;
+
+        const formatted = formatDate(date)
+
+        if (isCompleted) {
+            switch (activeMenu) {
+                case "debtors":
+                    dispatch(fetchCompletedDebtorsData({locationId, date: formatted}))
+                    break;
+                // case "newStudents":
+                //     dispatch()
+                //     break;
+                // case "leads":
+                //     dispatch()
+                //     break;
+
+
+            }
+        } else {
+            switch (activeMenu) {
+                case "debtors":
+                    dispatch(fetchDebtorsData({locationId, date: formatted}))
+                    break;
+                // case "newStudents":
+                //     dispatch()
+                //     break;
+                // case "leads":
+                //     dispatch()
+                //     break;
+
+
+            }
+        }
+
+
+    }, [activeMenu, locationId, date,isCompleted])
+
+
+    // set current data from fetched data
+
+    useEffect(() => {
+        if (!locationId && !date) return;
+
+
+        if (isCompleted) {
+            switch (activeMenu) {
+                case "debtors":
+                    setData(completed.debtors)
+                    break;
+                // case "newStudents":
+                //     dispatch()
+                //     break;
+                // case "leads":
+                //     dispatch()
+                //     break;
+
+
+            }
+        } else {
+            switch (activeMenu) {
+                case "debtors":
+                    setData(unCompleted.debtors)
+                    break;
+                // case "newStudents":
+                //     dispatch()
+                //     break;
+                // case "leads":
+                //     dispatch()
+                //     break;
+
+
+            }
+        }
+
+
+    }, [
+        unCompleted.debtors,
+        unCompleted.students,
+        unCompleted.leads,
+        completed.debtors,
+        completed.debtors,
+        completed.debtors,
+    ])
+
+
+
+
+    // length fetched data
+
+
+    const calcLengthData = useCallback((type, isCompleted) => {
+        if (isCompleted) {
+            switch (type) {
+                case "debtors":
+                    return completed.debtors.length;
+                case "newStudents":
+                    return completed.students.length;
+                case "leads":
+                    return completed.leads.length;
+            }
+        } else {
+            switch (type) {
+                case "debtors":
+                    return unCompleted.debtors.length;
+                case "newStudents":
+                    return unCompleted.students.length;
+                case "leads":
+                    return unCompleted.leads.length;
+            }
+        }
+    }, [
+        unCompleted.debtors.length,
+        unCompleted.students.length,
+        unCompleted.leads.length,
+        completed.debtors.length,
+        completed.debtors.length,
+        completed.debtors.length,
+    ])
+
+
+
+
+
+    const renderMenuItems = useCallback(() => {
+        return menuList.map((item, i) => {
+            return (
+                <div className={cls.otherItems}>
+                    <p
+                        className={classNames(cls.other__item, {
+                            [cls.active]: activeMenu === item.name
+                        })}
+                    >
+                        {calcLengthData(item.name, isCompleted)}
+                    </p>
+                    <h2
+                        key={i}
+                        className={classNames(cls.other__item, {
+                            [cls.active]: activeMenu === item.name
+                        })}
+                        onClick={() => {
+                            setActiveMenu(item.name)
+                            // setIsCompleted(false)
+                            setSearchValue("")
+                        }}
+                    >
+                        {item.label}
+                    </h2>
+                </div>
+            )
+        })
+    }, [activeMenu, menuList, unCompleted, completed])
+
+
+    // useEffect(() => {
+    //     dispatch(fetchedProgress())
+    //
+    // }, [])
+
+    // useEffect(() => {
+    //     dispatch(fetchingProgress())
+    //     request(`${BackUrl}daily_statistics/${locationId}`, "POST", JSON.stringify({
+    //         date: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+    //     }), headers())
+    //         .then(res => {
+    //             // dispatch(fetchedProgress(res.info))
+    //             if (!res.info) {
+    //                 dispatch(setMessage({
+    //                     msg: res.status,
+    //                     type: "success",
+    //                     active: true
+    //                 }))
+    //             }
+    //         })
+    //         .catch(err => console.log(err))
+    // }, [date, leads, debtorStudent, newStudents, locationId])
+
+
+    // useEffect(() => {
+    //
+    //
+    //     request(`${BackUrl}task_new_students_filter/${locationId}`, "POST", JSON.stringify({date: `${date?.getFullYear()}-${date?.getMonth() + 1}-${date?.getDate()}`}), headers())
+    //         .then(res => {
+    //             console.log(res, "res")
+    //             setTableDate(res)
+    //
+    //             if (!res.info) {
+    //                 dispatch(setMessage({
+    //                     msg: res.status,
+    //                     type: "success",
+    //                     active: true
+    //                 }))
+    //             }
+    //         })
+    //         .catch(err => console.log(err))
+    // }, [date, locationId])
+
+
+    const onChangeIsCompleted = (status) => {
+        localStorage.setItem("isCompleted", status)
+        setData([])
+        setIsCompleted(status)
+    }
+
 
     function showMessage(msg) {
         setValue("comment", "")
@@ -157,13 +403,12 @@ const PlatformTaskManager = () => {
             id: studentId,
             ...data
         }
-        console.log(data)
 
 
         if (activeMenu === "newStudents") {
-            request(`${BackUrl}new_students_calling/${locationId}`, "POST", JSON.stringify(res), headers())
+
+            request(`${BackUrl}task_new_students_calling/${locationId}`, "POST", JSON.stringify(res), headers())
                 .then(res => {
-                    console.log(res, "ressssss")
                     if (res?.student.id) {
                         dispatch(changeNewStudentsDel({student: res.student}))
                         showMessage(res.student.msg)
@@ -172,21 +417,29 @@ const PlatformTaskManager = () => {
                     }
                 })
                 .catch(err => console.log(err))
+
         } else if (activeMenu === "debtors") {
+
             const result = {
                 select: studentSelect,
                 ...res
             }
-            request(`${BackUrl}student_in_debts/${locationId}`, "POST", JSON.stringify(result), headers())
+            request(`${BackUrl}call_to_debts`, "POST", JSON.stringify(result), headers())
                 .then(res => {
 
-                    if (res?.student?.info) {
-                        dispatch(changeDebtorStudentsDel({student: res.student}))
-                    }
-                    showMessage(res.msg)
+
+
+
+                    dispatch(onDelDebtors({student: res.student_id}))
+                    dispatch(onChangeProgress({progress: res.task_statistics, allProgress: res.task_daily_statistics}))
+
+                    showMessage(res.message)
                 })
                 .catch(err => console.log(err))
+
+
         } else if (activeMenu === "lead") {
+
             request(`${BackUrl}lead_crud/${studentId}`, "POST", JSON.stringify({
                 ...res,
                 location_id: locationId
@@ -198,6 +451,8 @@ const PlatformTaskManager = () => {
                     showMessage(res.msg)
                 })
                 .catch(err => console.log(err))
+
+
         }
     }
 
@@ -233,30 +488,30 @@ const PlatformTaskManager = () => {
         }
     }
 
-    const searchedUsers = useCallback(() => {
-        let filteredArr;
-        switch (activeMenu) {
-            case "newStudents":
-                if (isCompleted)
-                    filteredArr = completedNewStudents
-                else
-                    filteredArr = newStudents
-                break;
-            case "lead":
-                if (isCompleted)
-                    filteredArr = completedLeads
-                else
-                    filteredArr = leads
-                break;
-            default:
-                if (isCompleted)
-                    filteredArr = completedDebtorStudent
-                else
-                    filteredArr = debtorStudent
-                break;
-        }
-
-    }, [activeMenu, search])
+    // const searchedUsers = useCallback(() => {
+    //     let filteredArr;
+    //     switch (activeMenu) {
+    //         case "newStudents":
+    //             if (isCompleted)
+    //                 filteredArr = completedNewStudents
+    //             else
+    //                 filteredArr = newStudents
+    //             break;
+    //         case "lead":
+    //             if (isCompleted)
+    //                 filteredArr = completedLeads
+    //             else
+    //                 filteredArr = leads
+    //             break;
+    //         default:
+    //             if (isCompleted)
+    //                 filteredArr = completedDebtorStudent
+    //             else
+    //                 filteredArr = debtorStudent
+    //             break;
+    //     }
+    //
+    // }, [activeMenu, search])
 
 
     const onSearch = (value) => {
@@ -278,9 +533,6 @@ const PlatformTaskManager = () => {
 
     }
 
-    useEffect(() => {
-    }, [activeMenu, search])
-
 
     const contextObj = useMemo(() => ({
         activeMenu: activeMenu,
@@ -295,6 +547,40 @@ const PlatformTaskManager = () => {
     }), [activeMenu, isCompleted, locationId, completedDebtorStudent])
 
 
+    // const resetStat = () => {
+    //     request(`${BackUrl}`, "")
+    // }
+
+
+    const renderData =useCallback(() => {
+
+        if (unCompletedStatus === "loading" || unCompletedStatus === "idle") {
+            return <DefaultLoaderSmall/>
+        }
+
+        switch (isTable) {
+            case true:
+                return (
+                    <TableData
+                        isCompleted={isCompleted}
+                        arr={data}
+                        activeType={activeMenu}
+                    />
+                )
+            case false:
+                return (
+                    <RenderCards
+                        isCompleted={isCompleted}
+                        arr={data}
+                        activeType={activeMenu}
+                        banList={banListColors}
+                        status={false}
+                    />
+                )
+        }
+    },[isTable,data,isCompleted,activeMenu,banListColors,unCompletedStatus,completedStatus])
+
+
     return (
         <div className={cls.tasks}>
             <div className={cls.tasks__inner}>
@@ -302,11 +588,16 @@ const PlatformTaskManager = () => {
                     <PlatformSearch search={searchValue} setSearch={onSearch}/>
                     {/*<h1>My tasks</h1>*/}
                     {/*<div className={cls.header__search}>*/}
-                    <SwitchButton
-                        isCompleted={isCompleted}
-                        setIsCompleted={setIsCompleted}
-                        setSearchValue={setSearchValue}
-                    />
+
+                    <div style={{display: "flex"}}>
+
+                        <SwitchButton
+                            isCompleted={isCompleted}
+                            setIsCompleted={onChangeIsCompleted}
+                            setSearchValue={setSearchValue}
+                        />
+                    </div>
+
                     {/*<PlatformSearch search={search} setSearch={setSearch}/>*/}
                     {/*<Input*/}
                     {/*    placeholder={"Qidiruv"}*/}
@@ -314,96 +605,67 @@ const PlatformTaskManager = () => {
                     {/*/>*/}
                     {/*</div>*/}
                 </div>
+
+
                 <div className={cls.contentTask}>
                     <div className={cls.contentTask__inner}>
                         <h1>My tasks</h1>
                         <Completed
                             style={isCompleted ? "#34c9eb" : "#ff8c42"}
-                            progress={isCompleted ? progress?.completed_tasks : progress?.in_progress_tasks}
+                            progress={isCompleted ? allProgress?.completed_tasks : allProgress?.in_progress_tasks}
                             progressStatus={progressStatus}
                         />
                     </div>
-                    <div className={cls.menuTask}>
-                        <div className={cls.menuTask__list}>
-                            <div className={cls.other}>
-                                {
-                                    menuList.map((item, i) =>
-                                        <div
-                                            className={cls.otherItems}
-                                            style={{
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                alignItems: "center",
-                                                gap: "1rem"
-                                            }}
-                                        >
-                                            <p
-                                                style={{
-                                                    fontSize: "1.8rem"
-                                                }}
-                                                className={classNames(cls.other__item, {
-                                                    [cls.active]: activeMenu === item.name
-                                                })}
-                                            >
-                                                {
-                                                    item.name === "debtors"
-                                                        ?
-                                                        isCompleted ? completedDebtorStudent.length : debtorStudent.length
-                                                        :
-                                                        item.name === "newStudents"
-                                                            ?
-                                                            isCompleted ? completedNewStudents.length : newStudents.length
-                                                            :
-                                                            isCompleted ? completedLeads.length : leads.length
-                                                }
-                                            </p>
-                                            <h2
-                                                key={i}
-                                                className={classNames(cls.other__item, {
-                                                    [cls.active]: activeMenu === item.name
-                                                })}
-                                                onClick={() => {
-                                                    setActiveMenu(item.name)
-                                                    // setIsCompleted(false)
-                                                    setSearchValue("")
-                                                }}
-                                            >
-                                                {item.label}
-                                            </h2>
-                                        </div>
-                                    )
-                                }
+
+                    {
+                        tableData.is_selected === true && !isCompleted ? null : <div className={cls.menuTask}>
+                            <div className={cls.menuTask__list}>
+                                <div className={cls.other}>
+                                    {renderMenuItems()}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    }
 
+
+                </div>
                 <div className={cls.tasks__handler}>
+
+
                     <FuncContext.Provider value={contextObj}>
                         <div className={cls.items}>
                             {/*<div className={cls.items__inner}>*/}
-                            {
-                                activeMenu === "lead"
-                                    ?
-                                    <Leads
-                                        isCompleted={isCompleted}
-                                        arr={searchValue ? search : isCompleted ? completedLeads : leads}
-                                        arrStatus={leadsStatus}
-                                    />
-                                    :
-                                    activeMenu === "newStudents"
-                                        ?
-                                        <Student
-                                            arr={searchValue ? search : isCompleted ? completedNewStudents : newStudents}
-                                            arrStatus={newStudentsStatus}
-                                        />
-                                        :
-                                        <Student
-                                            setNumber={setNumber}
-                                            arr={searchValue ? search : isCompleted ? completedDebtorStudent : debtorStudent}
-                                            arrStatus={searchValue ? searchStatus : debtorStudentStatus}
-                                        />
-                            }
+
+
+
+
+                            {renderData()}
+                            {/*{*/}
+                            {/*    activeMenu === "lead"*/}
+                            {/*        ?*/}
+                            {/*        <Leads*/}
+                            {/*            isCompleted={isCompleted}*/}
+                            {/*            arr={searchValue ? search : isCompleted ? completedLeads : leads}*/}
+                            {/*            arrStatus={leadsStatus}*/}
+                            {/*        />*/}
+                            {/*        :*/}
+                            {/*        activeMenu === "newStudents"*/}
+                            {/*            ?*/}
+                            {/*            tableData.is_selected === true && !isCompleted ?*/}
+                            {/*                <TableData tableData={tableData}/> :*/}
+                            {/*                <Student*/}
+                            {/*                    arr={searchValue ? search : isCompleted ? completedNewStudents : newStudents}*/}
+                            {/*                    arrStatus={newStudentsStatus}*/}
+                            {/*                />*/}
+                            {/*            :*/}
+                            {/*            <Student*/}
+                            {/*                setNumber={setNumber}*/}
+                            {/*                arr={searchValue ? search : isCompleted ? completedDebtorStudent : debtorStudent}*/}
+                            {/*                arrStatus={searchValue ? searchStatus : debtorStudentStatus}*/}
+                            {/*            />*/}
+                            {/*}*/}
+
+
                             {/*</div>*/}
                             {/*{*/}
                             {/*    debtorStudentStatus !== "loading"*/}
@@ -427,29 +689,45 @@ const PlatformTaskManager = () => {
                             {/*}*/}
                         </div>
                     </FuncContext.Provider>
+
+
                     <div className={cls.tasks__banner}>
                         <div className={cls.info}>
                             <div className={cls.info__date}>
-                                <Calendar onChange={setDate} value={date}/>
+                                <Calendar
+                                    defaultValue={date}
+                                    onChange={setDate}
+                                />
                             </div>
                         </div>
                         <div className={cls.info__progress}>
                             <div className={cls.completeTask}>
                                 <div className={cls.completeTask__precent}>
-                                    <div className={cls.circleProgress}>
-                                        <Completed
-                                            progress={`${
-                                                progress ? progress?.completed_tasks_percentage : 0
-                                            }%`}
-                                            progressStatus={progressStatus}
-                                        />
+                                    <div>
+                                        <div className={cls.circleProgress}>
+                                            <Completed
+                                                progress={`${allProgress?.completed_tasks_percentage || 0}%`}
+                                                // progressStatus={progressStatus}
+                                            />
+                                        </div>
+                                        <h2>All Rating</h2>
                                     </div>
-                                    <h2>All Rating</h2>
+                                    <div>
+                                        <div className={cls.circleProgress}>
+                                            <Completed
+                                                progress={`${progress?.completed_tasks_percentage || 0}%`}
+                                                // progressStatus={progressStatus}
+                                            />
+
+                                        </div>
+                                        <h2>{activeMenu}</h2>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
 
             </div>
 
@@ -480,7 +758,7 @@ const PlatformTaskManager = () => {
                                 {
                                     activeMenu === "debtors" ? <Select
                                         options={options}
-                                        defaultValue={options[0].name}
+                                        // defaultValue={options[0].name}
                                         onChangeOption={onChange}
                                     /> : null
                                 }
@@ -509,7 +787,7 @@ const PlatformTaskManager = () => {
                                 <div className={cls.wrapperList__box}>
                                     <div className={cls.wrapperList__items}>
                                         <div className={cls.wrapperList__number}>
-                                            telefon qilingan :
+                                            Telefon qilingan :
                                             <span>
                                             {activeMenu === "newStudents" ? item.day : item.added_date}
                                         </span>
@@ -544,8 +822,57 @@ const PlatformTaskManager = () => {
             }
             <PlatformMessage/>
         </div>
-    );
+    )
+        ;
 };
+
+const TableData = ({arr}) => {
+
+    const stringCheck = (name, length = 10) => {
+        if (name?.length > length) {
+            return (
+                <>
+                    {name.substring(0, length)}...
+                    <div className={cls.popup}>
+                        {name}
+                    </div>
+                </>
+            )
+        }
+        return name
+    }
+    const renderData = () => {
+        return arr?.map((item, i) => (
+            <tr>
+                <td>{i + 1}</td>
+                <td>{stringCheck(item.name)}</td>
+                <td>{stringCheck(item.surname)}</td>
+                <td>{item?.phone}</td>
+                <td>{stringCheck(item?.reason, 20)}</td>
+            </tr>
+        ))
+    }
+    const render = renderData()
+
+
+    return (
+        <Table className={cls.table_results}>
+            <thead>
+            <tr>
+                <th>No</th>
+                <th>Ism</th>
+                <th>Familiya</th>
+                <th>Telefon raqami</th>
+                <th>Sababi</th>
+            </tr>
+            </thead>
+            <tbody>
+            {render}
+            </tbody>
+        </Table>
+    )
+}
+
 
 const Completed = ({progress, progressStatus, style = "black"}) => {
     if (progressStatus === "loading" || progressStatus === "idle") {
@@ -557,75 +884,93 @@ const Completed = ({progress, progressStatus, style = "black"}) => {
     }
 }
 
-const Leads = ({isCompleted, arr, arrStatus}) => {
-    if (arrStatus === "loading" || arrStatus === "idle") {
+
+const RenderCards = ({isCompleted, arr, status, activeType, banList, banListCompleted}) => {
+
+
+
+
+    const filteredItems = useCallback((color) => {
+        return arr.filter(item => item.moneyType === color)
+    }, [arr])
+
+    if (status === "loading" || status === "idle") {
         return <DefaultLoader/>
-    } else {
-        const filteredRed = arr.filter(item => item.status === "red")
-        const filteredYellow = arr.filter(item => item.status === "yellow")
-        const filteredGreen = arr.filter(item => item.status === "green")
-        return (
-            colorStatusList.map((item, i) => {
-                if (isCompleted && (item === "red" || item === "yellow")) return null
-                if (!isCompleted && item === "green") return null
+    }
+
+
+    return colorStatusList.map((item, i) => {
+
+        switch (activeType) {
+            case "debtors" || "students":
+                if (banList.includes(item)) return null
                 return (
                     <RenderItem
-                        arr={item === "red" ? filteredRed : item === "yellow" ? filteredYellow : filteredGreen}
+                        arr={filteredItems(item)}
                         index={i}
                     />
                 )
-            })
-        )
-    }
+            case "leads":
+                if (isCompleted && banListCompleted.includes(item)) return null
+                if (!isCompleted && banList.includes(item)) return null
+
+                return (
+                    <RenderItem
+                        arr={filteredItems(item)}
+                        index={i}
+                    />
+                )
+        }
+    })
 }
 
-const Student = ({arr, arrStatus}) => {
 
-    const {location, dispatch, activeMenu, completedLength, isCompleted} = useContext(FuncContext)
-    // const [number, setNumber] = useState(2)
+// const Leads = ({isCompleted, arr, arrStatus}) => {
+//     if (arrStatus === "loading" || arrStatus === "idle") {
+//         return <DefaultLoader/>
+//     } else {
+//         const filteredRed = arr.filter(item => item.status === "red")
+//         const filteredYellow = arr.filter(item => item.status === "yellow")
+//         const filteredGreen = arr.filter(item => item.status === "green")
+//         return (
+//             colorStatusList.map((item, i) => {
+//                 if (isCompleted && (item === "red" || item === "yellow")) return null
+//                 if (!isCompleted && item === "green") return null
+//                 return (
+//                     <RenderItem
+//                         arr={item === "red" ? filteredRed : item === "yellow" ? filteredYellow : filteredGreen}
+//                         index={i}
+//                     />
+//                 )
+//             })
+//         )
+//     }
+// }
+//
+// const Student = ({arr, arrStatus}) => {
+//     const filteredRed = arr.filter(item => item.status === "red")
+//     const filteredYellow = arr.filter(item => item.status === "yellow")
+//
+//     if (arrStatus === "loading" || arrStatus === "idle") {
+//         return <DefaultLoader/>
+//     }
+//     return (
+//         colorStatusList.map((item, i) => {
+//             if (item === "green") return null
+//             return (
+//                 <RenderItem
+//                     arr={item === "red" ? filteredRed : filteredYellow}
+//                     index={i}
+//
+//                 />
+//
+//
+//             )
+//         })
+//     )
+// }
 
-    // const onGetStudents = (num) => {
-    //     const length = arr.length + completedLength
-    //     console.log(length)
-    //     dispatch(fetchDebtorStudentsData({number: num, len: length, id: location}))
-    //     // if (num <= 5) {
-    //     setNumber(++num)
-    //     // }
-    // }
-
-    const filteredRed = arr.filter(item => item.status === "red")
-    const filteredYellow = arr.filter(item => item.status === "yellow")
-
-    if (arrStatus === "loading" || arrStatus === "idle") {
-        return <DefaultLoader/>
-    }
-    return (
-        colorStatusList.map((item, i) => {
-            if (item === "green") return null
-            return (
-                // <div id="main" style={{
-                //     display: "flex"
-                // }}>
-                <RenderItem
-                    arr={item === "red" ? filteredRed : filteredYellow}
-                    index={i}
-                    // onGetStudents={onGetStudents}
-                    // number={number}
-                    // length={arr.length + completedLength}
-                    // status={arrStatus}
-                />
-                // {/*{*/}
-                // {/*    ((arrStatus === "loading" || arrStatus === "idle") && activeMenu === "debtors") && !isCompleted ?*/}
-                // {/*        <DefaultLoader/> : null*/}
-                // {/*}*/}
-                // </div>
-
-            )
-        })
-    )
-}
-
-const RenderItem = React.memo(({arr, index, number, onGetStudents, length, status}) => {
+const RenderItem = React.memo(({arr, index}) => {
     useEffect(() => {
         const elem = document.querySelectorAll("#main")
         const elements = document.querySelectorAll("#scroll__inner")
@@ -695,24 +1040,24 @@ const TaskCard = ({item, index}) => {
         switch (activeMenu) {
             case "lead":
                 setStyle({
-                    generalBack: item?.status === "red" ?
-                        "#FFE4E6" : item?.status === "yellow" ?
+                    generalBack: item?.moneyType === "red" ?
+                        "#FFE4E6" : item?.moneyType === "yellow" ?
                             "#FEF9C3" : "#DCFCE7",
-                    backImage: item?.status === "red" ?
-                        `url(${taskCardBack})` : item?.status === "yellow" ?
+                    backImage: item?.moneyType === "red" ?
+                        `url(${taskCardBack})` : item?.moneyType === "yellow" ?
                             `url(${taskCardBack2})` : `url(${taskCardBack4})`,
-                    imageColor: item?.status === "red" ?
-                        "#E11D48" : item?.status === "yellow" ?
+                    imageColor: item?.moneyType === "red" ?
+                        "#E11D48" : item?.moneyType === "yellow" ?
                             "#FDE047" : "#BEF264"
                 })
                 break;
             default:
                 setStyle({
-                    generalBack: item?.status === "red" ?
+                    generalBack: item?.moneyType === "red" ?
                         "#FFE4E6" : "#FEF9C3",
-                    strBack: item?.status === "red" ?
+                    strBack: item?.moneyType === "red" ?
                         "deeppink" : "#d7d700",
-                    backImage: item?.status === "red" ?
+                    backImage: item?.moneyType === "red" ?
                         `url(${taskCardBack})` : `url(${taskCardBack2})`
                 })
                 break;
@@ -731,7 +1076,7 @@ const TaskCard = ({item, index}) => {
                         className={classNames("fas fa-trash", cls.icon)}
                         onClick={() => {
                             onDelete(true)
-                            getStudentId({id: item.id, status: item.status})
+                            getStudentId({id: item.id, status: item.moneyType})
                         }}
                     /> : null
             }
@@ -770,18 +1115,18 @@ const TaskCard = ({item, index}) => {
                     {/*        <li className={cls.infoList__item}>IT: <span>390000</span></li>*/}
                     {/*    </> : null*/}
                     {/*}*/}
-                    {
-                        activeMenu === "lead" ? null : <li className={cls.infoList__item}>
-                            Koment: <span>{item?.history[0]?.comment}  </span>
-                        </li>
-                    }
+                    {/*{*/}
+                    {/*    activeMenu === "lead" ? null : <li className={cls.infoList__item}>*/}
+                    {/*        Koment: <span>{item?.history[0]?.comment}  </span>*/}
+                    {/*    </li>*/}
+                    {/*}*/}
                     {
                         activeMenu === "newStudents" ?
                             <li className={cls.infoList__item}>Smen: <span>{item?.shift}</span></li> : null
                     }
                     {
                         activeMenu === "debtors" ?
-                            <li className={cls.infoList__item}>Tel status: <span>{item?.payment_reason}</span>
+                            <li className={cls.infoList__item}>Tel status: <span>{item?.reason}</span>
                             </li> : null
                     }
                 </ul>

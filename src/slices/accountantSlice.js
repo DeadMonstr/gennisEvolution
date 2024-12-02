@@ -11,7 +11,17 @@ const initialState = {
     dividends: [],
     accountPayable: [],
     staffSalary: [],
+    overhead: [],
+    collection: [],
+    typesMoney: [],
 
+
+
+    date: [],
+
+
+    staffSalaryMonths: [],
+    staffSalaryMonth: [],
 
     loading: "idle"
 
@@ -37,26 +47,86 @@ export const fetchAccountantRegisteredStaffs = createAsyncThunk(
 
 export const fetchAccountantBookKeepingDividend = createAsyncThunk(
     'accountantSlice/fetchAccountantBookKeepingDividend',
-    async (id) => {
+    async (data) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_dividend/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}get_dividend/${data.loc}/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
     }
 )
 
 
 export const fetchAccountantBookKeepingAccountPayable = createAsyncThunk(
     'accountantSlice/fetchAccountantBookKeepingAccountPayable',
-    async (id) => {
+    async (data) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_account_payable/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}get_account_payable/${data.loc}/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
     }
 )
 
 export const fetchAccountantBookKeepingStaffSalary = createAsyncThunk(
     'accountantSlice/fetchAccountantBookKeepingStaffSalary',
-    async (id) => {
+    async (data) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_account_payable/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}camp_staff_salaries/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
+    }
+)
+
+
+export const fetchAccountantBookKeepingOverhead = createAsyncThunk(
+    'accountantSlice/fetchAccountantBookKeepingOverhead',
+    async (data) => {
+        const {request} = useHttp();
+        return await request(`${BackUrl}get_account_overhead/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
+    }
+)
+
+
+export const fetchAccountantBookKeepingCollection = createAsyncThunk(
+    'accountantSlice/fetchAccountantBookKeepingCollection',
+    async (data) => {
+        const {location, date, activeFilter} = data
+        const {request} = useHttp();
+        return await request(`${BackUrl}encashment/${location}`, "POST", JSON.stringify({
+                ...date,
+                activeFilter
+            }),
+            headers()
+        )
+    }
+)
+
+export const fetchAccountantBookKeepingTypesMoney = createAsyncThunk(
+    'accountantSlice/fetchAccountantBookKeepingTypesMoney',
+    async () => {
+        const {request} = useHttp();
+        return await request(`${BackUrl}account_report`, "GET", null, headers())
+    }
+)
+
+
+export const fetchAccountantStaffSalaryMonths = createAsyncThunk(
+    'accountantSlice/fetchAccountantStaffSalaryMonths',
+    async (data) => {
+        const {request} = useHttp();
+        const {userId} = data
+        return await request(`${BackUrl}camp_staff/${userId}`, "GET", null, headers())
+    }
+)
+
+export const fetchAccountantStaffSalaryMonthInside = createAsyncThunk(
+    'accountantSlice/fetchAccountantStaffSalaryMonthInside',
+    async (data) => {
+        const {request} = useHttp();
+        const {activeDelete, monthId} = data
+        return await request(`${BackUrl}camp_staff_inside/${monthId}/${activeDelete}/`, "GET", null, headers())
+    }
+)
+
+export const fetchAccountantDate = createAsyncThunk(
+    'accountantSlice/fetchAccountantDate',
+    async () => {
+        const {request} = useHttp();
+
+        return await request(`${BackUrl}account_report_datas/`, "GET", null, headers())
     }
 )
 
@@ -77,25 +147,25 @@ const accountantSlice = createSlice({
         },
 
 
-        onAddStaff: (state , actions) => {
-            state.register.staffs = [...state.staffs , actions.payload]
+        onAddStaff: (state, actions) => {
+            state.register.staffs = [...state.register.staffs, actions.payload]
         },
 
-        onAddDevidend: (state , action) => {
-            state.dividends = [...state.dividends , action.payload]
+        onAddDevidend: (state, action) => {
+            state.dividends = [...state.dividends, action.payload]
             console.log(action.payload)
         },
-        onDeleteDividend: (state , action) => {
+        onDeleteDividend: (state, action) => {
             state.dividends = state.dividends.filter(item => item.id !== action.payload.id)
             console.log(action.payload)
         },
 
 
-        onAddPayable: (state , action) => {
-            state.accountPayable = [...state.accountPayable , action.payload]
+        onAddPayable: (state, action) => {
+            state.accountPayable = [...state.accountPayable, action.payload]
             console.log(action.payload)
         },
-        onDeletePayable: (state , action) => {
+        onDeletePayable: (state, action) => {
             state.accountPayable = state.accountPayable.filter(item => item.id !== action.payload.id)
             console.log(action.payload)
         },
@@ -110,6 +180,27 @@ const accountantSlice = createSlice({
                 return item
             })
         },
+
+
+        onAddOverhead: (state, action) => {
+            state.overhead = [...state.overhead, action.payload]
+            console.log(action.payload)
+        },
+
+        onDeleteOverhead: (state, action) => {
+            state.overhead = state.overhead.filter(item => item.id !== action.payload.id)
+        },
+
+        changePaymentTypeOverhead: (state, action) => {
+            state.overhead = state.overhead.map(item => {
+                if (item.id === action.payload.id) {
+                    return {...action.payload.data}
+                }
+                return item
+            })
+        },
+
+
     },
     extraReducers: builder => {
         builder
@@ -158,11 +249,78 @@ const accountantSlice = createSlice({
                 state.loading = 'loading'
             })
             .addCase(fetchAccountantBookKeepingStaffSalary.fulfilled, (state, action) => {
-                state.staffSalary = action.payload.staffSalary;
+                state.staffSalary = action.payload.salaries;
             })
             .addCase(fetchAccountantBookKeepingStaffSalary.rejected, state => {
                 state.loading = 'error'
             })
+
+
+            .addCase(fetchAccountantStaffSalaryMonths.pending, state => {
+                state.loading = 'loading'
+            })
+            .addCase(fetchAccountantStaffSalaryMonths.fulfilled, (state, action) => {
+                state.staffSalaryMonths = action.payload.data;
+            })
+            .addCase(fetchAccountantStaffSalaryMonths.rejected, state => {
+                state.loading = 'error'
+            })
+
+
+            .addCase(fetchAccountantStaffSalaryMonthInside.pending, state => {
+                state.loading = 'loading'
+            })
+            .addCase(fetchAccountantStaffSalaryMonthInside.fulfilled, (state, action) => {
+                state.staffSalaryMonth = action.payload.data;
+            })
+            .addCase(fetchAccountantStaffSalaryMonthInside.rejected, state => {
+                state.loading = 'error'
+            })
+
+
+            .addCase(fetchAccountantBookKeepingOverhead.pending, state => {
+                state.loading = 'loading'
+            })
+            .addCase(fetchAccountantBookKeepingOverhead.fulfilled, (state, action) => {
+                state.overhead = action.payload.overheads;
+            })
+            .addCase(fetchAccountantBookKeepingOverhead.rejected, state => {
+                state.loading = 'error'
+            })
+
+
+            .addCase(fetchAccountantBookKeepingCollection.pending, state => {
+                state.loading = 'loading'
+            })
+            .addCase(fetchAccountantBookKeepingCollection.fulfilled, (state, action) => {
+                state.collection = action.payload;
+            })
+            .addCase(fetchAccountantBookKeepingCollection.rejected, state => {
+                state.loading = 'error'
+            })
+
+            .addCase(fetchAccountantBookKeepingTypesMoney.pending, state => {
+                state.loading = 'loading'
+            })
+            .addCase(fetchAccountantBookKeepingTypesMoney.fulfilled, (state, action) => {
+                state.typesMoney = action.payload.account_reports;
+            })
+            .addCase(fetchAccountantBookKeepingTypesMoney.rejected, state => {
+                state.loading = 'error'
+            })
+
+            .addCase(fetchAccountantDate.pending, state => {
+                state.loading = 'loading'
+            })
+            .addCase(fetchAccountantDate.fulfilled, (state, action) => {
+                state.date = action.payload.date;
+            })
+            .addCase(fetchAccountantDate.rejected, state => {
+                state.loading = 'error'
+            })
+
+
+
 
     }
 })
@@ -173,14 +331,17 @@ const {actions, reducer} = accountantSlice;
 export default reducer
 
 export const {
-    changePaymentType ,
-    onAddDevidend ,
+    changePaymentType,
+    onAddDevidend,
     onAddPayable,
     onDeleteDividend,
     changePaymentTypeDividend,
     changePaymentTypePayable,
     onDeletePayable,
-    onAddStaff
+    onAddStaff,
+    onAddOverhead,
+    onDeleteOverhead,
+    changePaymentTypeOverhead
 } = actions
 
 

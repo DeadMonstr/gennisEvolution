@@ -84,6 +84,13 @@ const Collection = () => {
         // amount: true
     }
 
+
+    const activeRowsInTableDividend = {
+        date: true,
+        amount: true,
+        typePayment_new: true
+    }
+
     const changeDate = (e) => {
         setDate( {
             ...date,
@@ -147,7 +154,6 @@ const Collection = () => {
             )
         }
         if (activeRoute === "investments") {
-            console.log(accountingData)
             return (
                 <>
 
@@ -156,6 +162,21 @@ const Collection = () => {
                         // typeOfMoney={"user"}
                         studentAtt={true}
                         activeRowsInTable={activeRowsInTableInvestment}
+                        users={accountingData}
+                    />
+                </>
+
+            )
+        }
+        if (activeRoute === "dividends") {
+            return (
+                <>
+
+                    <h1>{dataResult}</h1>
+                    <AccountingTable
+                        // typeOfMoney={"user"}
+                        studentAtt={true}
+                        activeRowsInTable={activeRowsInTableDividend}
                         users={accountingData}
                     />
                 </>
@@ -285,6 +306,14 @@ const Collection = () => {
                         })}
                     >
                         Invistitsiya
+                    </div>
+                    <div
+                        onClick={() => setActiveRoute("dividends")}
+                        className={classNames("collection__btns-item",{
+                            active: activeRoute === "dividends"
+                        })}
+                    >
+                        Dividends
                     </div>
                 </div>
 
