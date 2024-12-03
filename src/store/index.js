@@ -33,6 +33,7 @@ import taskManager from "slices/taskManagerSlice";
 import accountantSlice from "slices/accountantSlice";
 import {slice} from "../pages/webSite/test/register";
 import blockTestSlice from "../slices/blockTestSlice";
+import otchotSlice from "../slices/otchotSlice";
 
 const stringMiddlewere = () => (next) => (action) => {
     if (typeof action === 'string') {
@@ -77,7 +78,8 @@ const store = configureStore({
         slice,
         blockTestSlice,
         taskManager,
-        accountantSlice
+        accountantSlice,
+        otchotSlice
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware().concat(

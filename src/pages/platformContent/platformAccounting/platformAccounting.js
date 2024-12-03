@@ -109,6 +109,9 @@ const PlatformAccounting = () => {
                     <Link to={`../../historyAccounting/${locationId}`}>
                         <Button>Harajatlar tarixi</Button>
                     </Link>
+                    <Link to={`../../otchot/${locationId}`}>
+                        <Button>Otchot</Button>
+                    </Link>
                 </div>
 
                 <div>

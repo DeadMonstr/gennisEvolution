@@ -1,7 +1,7 @@
 import {useMemo} from "react";
 
 
-export const BackUrlForDoc = `http://192.168.1.61:5002/`
+export const BackUrlForDoc = `http://192.168.1.73:5002/`
 export const BackUrl = `${BackUrlForDoc}api/`
 export const ClassroomUrl = `http://localhost:3000/`
 export const ClassroomUrlForDoc = "http://192.168.1.52:5001/"
@@ -261,7 +261,7 @@ export const requireMenuItems = (id) => {
             //         iconClazz : "fa-map-marker-alt"
             //     }
             // ],
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer , ROLES.Accountant]
         },
         {
             to : "books",
