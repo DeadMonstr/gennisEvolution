@@ -132,6 +132,11 @@ const AccountantBookKeeping = () => {
                             Inkasatsiya
                         </Button>
                     </Link>
+                    <Link to={"../otchotAccount"}>
+                        <Button type={"submit"} >
+                            Otchot
+                        </Button>
+                    </Link>
                 </div>
 
             </div>

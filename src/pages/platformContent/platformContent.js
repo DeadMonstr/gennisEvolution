@@ -43,6 +43,7 @@ const PlatformStudentAccount =  React.lazy(() => import('./platformUser/studentA
 const PlatformStudentGroupsAttendances =  React.lazy(() => import('./platformUser/studentGroupsAttendance/studentGroupsAttendance'));
 const PlatformCollection =  React.lazy(() => import('./platformAccounting/collection/collection'));
 const PlatformHistoryAccounting =  React.lazy(() => import('./platformAccounting/historyAccounting/historyAccounting'));
+const PlatformOtchot =  React.lazy(() => import('./platformAccounting/otchotPage/otchotPage'));
 const PlatformDeletedGroupStudents =  React.lazy(() => import('./platformDeletedGroupStudents/platformDeletedGroupsStudents'));
 const PlatformCreateGroup =  React.lazy(() => import('./platformCreateGroup/platformCreateGroup'));
 const PlatformAddGroup =  React.lazy(() => import('./platformAddGroup/platformAddGroup'));
@@ -153,6 +154,7 @@ const PlatformContent = () => {
 
                     <Route path="collection/:locationId" element={<PlatformCollection/>}/>
                     <Route path="historyAccounting/:locationId" element={<PlatformHistoryAccounting/>}/>
+
                     <Route path="createGroup/:locationId" element={<PlatformCreateGroup/>}/>
                     <Route path="addGroup/:locationId/:groupId" element={<PlatformAddGroup/>}/>
 
@@ -195,6 +197,8 @@ const PlatformContent = () => {
                     <Route path="staffSalary/:userId/" element={<PlatformAccountantStaffSalary/>}/>
                     <Route path="staffSalaryMonth/:monthId" element={<PlatformAccountantStaffSalaryMonth/>}/>
                     <Route path="collectionAccount" element={<PlatformAccountantCollection/>}/>
+                    <Route path="otchotAccount" element={<PlatformOtchot/>}/>
+                    <Route path="otchot/:locationId" element={<PlatformOtchot/>}/>
                     <Route path="typesMoney" element={<PlatformAccountantTypesMoney/>}/>
 
                     <Route
