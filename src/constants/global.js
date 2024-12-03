@@ -261,7 +261,7 @@ export const requireMenuItems = (id) => {
             //         iconClazz : "fa-map-marker-alt"
             //     }
             // ],
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer , ROLES.Accountant]
         },
         {
             to : "books",
