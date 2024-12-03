@@ -17,7 +17,6 @@ import PlatformMessage from "components/platform/platformMessage";
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, formatDate, headers} from "constants/global";
 import {
-    changeNewStudents,
     changeNewStudentsDel,
     changeLead,
     deleteLead,
@@ -26,8 +25,16 @@ import {
     fetchNewStudentsData,
     fetchDebtorStudentsData,
     fetchLeadsData,
-    fetchCompletedDebtorsData, fetchedSearch, fetchingSearch, fetchDebtorsData,
-    onDelDebtors, onChangeProgress
+    fetchCompletedDebtorsData,
+    fetchedSearch,
+    fetchingSearch,
+    fetchDebtorsData,
+    onDelDebtors,
+    onChangeProgress,
+    fetchUserDataWithHistory,
+    fetchNewStudentsTaskData,
+    onDelNewStudents,
+    fetchCompletedNewStudentsTaskData, fetchCompletedLeadsData, onDelLeads
 } from "slices/taskManagerSlice";
 
 import cls from "./platformTaskManager.module.sass";
@@ -41,7 +48,7 @@ import switchCompletedBtn from "assets/icons/progress.svg";
 
 import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 import {setMessage} from "slices/messageSlice";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import Input from "components/platform/platformUI/input";
 import PlatformSearch from "components/platform/platformUI/search";
 import Table from "components/platform/platformUI/table";
@@ -81,25 +88,14 @@ const PlatformTaskManager = () => {
     const {
         unCompleted,
         completed,
-
-
-        newStudents,
-        newStudentsStatus,
-        completedNewStudents,
-        debtorStudent,
-        debtorStudentStatus,
         completedDebtorStudent,
-        leads,
-        completedLeads,
-        leadsStatus,
         progress,
         progressStatus,
         allProgress,
-        search,
-        searchStatus,
         isTable,
         unCompletedStatus,
-        completedStatus
+        completedStatus,
+        profile
     } = useSelector(state => state.taskManager)
 
 
@@ -108,8 +104,7 @@ const PlatformTaskManager = () => {
     const [activeMenu, setActiveMenu] = useState(menuList[0].name)
     const [isCompleted, setIsCompleted] = useState(false)
 
-    const [year, setYear] = useState()
-    const [month, setMonth] = useState()
+
 
 
     const dispatch = useDispatch()
@@ -124,8 +119,8 @@ const PlatformTaskManager = () => {
     const [dellLead, setDellLead] = useState(false)
     const [isConfirm, setIsConfirm] = useState(false)
     const [searchValue, setSearchValue] = useState("")
-    const [getUser, setGetUser] = useState({})
     const [tableData, setTableDate] = useState([])
+
 
     const [data, setData] = useState([])
     const [banListColors,setBanListColors] = useState([])
@@ -139,11 +134,14 @@ const PlatformTaskManager = () => {
 
     useEffect(() => {
         const oldCompleted = JSON.parse(localStorage.getItem("isCompleted"))
+        const type = localStorage.getItem("taskMenuType")
         if (oldCompleted) {
             setIsCompleted(oldCompleted)
         } else {
             setIsCompleted(false)
         }
+
+        setActiveMenu(type)
     }, [])
 
 
@@ -158,14 +156,20 @@ const PlatformTaskManager = () => {
                 case "leads":
                     setBanListColors(["red","yellow"])
                     break;
+                case "newStudents":
+                    setBanListColors(["green","red"])
+                    break;
+                case "debtors":
+                    setBanListColors(["green"])
+                    break;
             }
         } else {
             switch (activeMenu) {
                 case "debtors":
                     setBanListColors(["green"])
                     break;
-                case "students":
-                    setBanListColors(["green"])
+                case "newStudents":
+                    setBanListColors(["green","red"])
                     break;
                 case "leads":
                     setBanListColors(["green"])
@@ -191,26 +195,24 @@ const PlatformTaskManager = () => {
                 case "debtors":
                     dispatch(fetchCompletedDebtorsData({locationId, date: formatted}))
                     break;
-                // case "newStudents":
-                //     dispatch()
-                //     break;
-                // case "leads":
-                //     dispatch()
-                //     break;
-
-
+                case "newStudents":
+                    dispatch(fetchCompletedNewStudentsTaskData({locationId, date: formatted}))
+                    break;
+                case "leads":
+                    dispatch(fetchCompletedLeadsData({locationId,date: formatted}))
+                    break;
             }
         } else {
             switch (activeMenu) {
                 case "debtors":
                     dispatch(fetchDebtorsData({locationId, date: formatted}))
                     break;
-                // case "newStudents":
-                //     dispatch()
-                //     break;
-                // case "leads":
-                //     dispatch()
-                //     break;
+                case "newStudents":
+                    dispatch(fetchNewStudentsTaskData({locationId,date: formatted}))
+                    break;
+                case "leads":
+                    dispatch(fetchLeadsData({locationId,date: formatted}))
+                    break;
 
 
             }
@@ -218,7 +220,6 @@ const PlatformTaskManager = () => {
 
 
     }, [activeMenu, locationId, date,isCompleted])
-
 
     // set current data from fetched data
 
@@ -231,12 +232,12 @@ const PlatformTaskManager = () => {
                 case "debtors":
                     setData(completed.debtors)
                     break;
-                // case "newStudents":
-                //     dispatch()
-                //     break;
-                // case "leads":
-                //     dispatch()
-                //     break;
+                case "newStudents":
+                    setData(completed.students)
+                    break;
+                case "leads":
+                    setData(completed.leads)
+                    break;
 
 
             }
@@ -245,12 +246,12 @@ const PlatformTaskManager = () => {
                 case "debtors":
                     setData(unCompleted.debtors)
                     break;
-                // case "newStudents":
-                //     dispatch()
-                //     break;
-                // case "leads":
-                //     dispatch()
-                //     break;
+                case "newStudents":
+                    setData(unCompleted.students)
+                    break;
+                case "leads":
+                    setData(unCompleted.leads)
+                    break;
 
 
             }
@@ -262,15 +263,12 @@ const PlatformTaskManager = () => {
         unCompleted.students,
         unCompleted.leads,
         completed.debtors,
-        completed.debtors,
-        completed.debtors,
+        completed.students,
+        completed.leads,
     ])
 
 
-
-
     // length fetched data
-
 
     const calcLengthData = useCallback((type, isCompleted) => {
         if (isCompleted) {
@@ -297,8 +295,8 @@ const PlatformTaskManager = () => {
         unCompleted.students.length,
         unCompleted.leads.length,
         completed.debtors.length,
-        completed.debtors.length,
-        completed.debtors.length,
+        completed.students.length,
+        completed.leads.length,
     ])
 
 
@@ -325,6 +323,7 @@ const PlatformTaskManager = () => {
                             setActiveMenu(item.name)
                             // setIsCompleted(false)
                             setSearchValue("")
+                            localStorage.setItem("taskMenuType", item.name)
                         }}
                     >
                         {item.label}
@@ -335,48 +334,6 @@ const PlatformTaskManager = () => {
     }, [activeMenu, menuList, unCompleted, completed])
 
 
-    // useEffect(() => {
-    //     dispatch(fetchedProgress())
-    //
-    // }, [])
-
-    // useEffect(() => {
-    //     dispatch(fetchingProgress())
-    //     request(`${BackUrl}daily_statistics/${locationId}`, "POST", JSON.stringify({
-    //         date: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-    //     }), headers())
-    //         .then(res => {
-    //             // dispatch(fetchedProgress(res.info))
-    //             if (!res.info) {
-    //                 dispatch(setMessage({
-    //                     msg: res.status,
-    //                     type: "success",
-    //                     active: true
-    //                 }))
-    //             }
-    //         })
-    //         .catch(err => console.log(err))
-    // }, [date, leads, debtorStudent, newStudents, locationId])
-
-
-    // useEffect(() => {
-    //
-    //
-    //     request(`${BackUrl}task_new_students_filter/${locationId}`, "POST", JSON.stringify({date: `${date?.getFullYear()}-${date?.getMonth() + 1}-${date?.getDate()}`}), headers())
-    //         .then(res => {
-    //             console.log(res, "res")
-    //             setTableDate(res)
-    //
-    //             if (!res.info) {
-    //                 dispatch(setMessage({
-    //                     msg: res.status,
-    //                     type: "success",
-    //                     active: true
-    //                 }))
-    //             }
-    //         })
-    //         .catch(err => console.log(err))
-    // }, [date, locationId])
 
 
     const onChangeIsCompleted = (status) => {
@@ -384,6 +341,9 @@ const PlatformTaskManager = () => {
         setData([])
         setIsCompleted(status)
     }
+
+
+
 
 
     function showMessage(msg) {
@@ -407,10 +367,12 @@ const PlatformTaskManager = () => {
 
         if (activeMenu === "newStudents") {
 
-            request(`${BackUrl}task_new_students_calling/${locationId}`, "POST", JSON.stringify(res), headers())
+            request(`${BackUrl}call_to_new_students`, "POST", JSON.stringify(res), headers())
                 .then(res => {
-                    if (res?.student.id) {
-                        dispatch(changeNewStudentsDel({student: res.student}))
+                    if (res?.student.student_id) {
+                        dispatch(onDelNewStudents({id: res.student_id}))
+                        dispatch(onChangeProgress({progress: res.student.task_statistics, allProgress: res.student.task_daily_statistics}))
+
                         showMessage(res.student.msg)
                     } else {
                         showMessage(res.msg)
@@ -426,11 +388,7 @@ const PlatformTaskManager = () => {
             }
             request(`${BackUrl}call_to_debts`, "POST", JSON.stringify(result), headers())
                 .then(res => {
-
-
-
-
-                    dispatch(onDelDebtors({student: res.student_id}))
+                    dispatch(onDelDebtors({id: res.student_id}))
                     dispatch(onChangeProgress({progress: res.task_statistics, allProgress: res.task_daily_statistics}))
 
                     showMessage(res.message)
@@ -438,15 +396,16 @@ const PlatformTaskManager = () => {
                 .catch(err => console.log(err))
 
 
-        } else if (activeMenu === "lead") {
+        } else if (activeMenu === "leads") {
 
-            request(`${BackUrl}lead_crud/${studentId}`, "POST", JSON.stringify({
+            request(`${BackUrl}task_leads_update/${studentId}`, "POST", JSON.stringify({
                 ...res,
                 location_id: locationId
             }), headers())
                 .then(res => {
-                    if (res.lead) {
-                        dispatch(changeLead(res?.lead))
+                    if (res.lead_id) {
+                        dispatch(onDelLeads({id: res?.lead_id}))
+                        dispatch(onChangeProgress({progress: res.task_statistics, allProgress: res.task_daily_statistics}))
                     }
                     showMessage(res.msg)
                 })
@@ -458,6 +417,7 @@ const PlatformTaskManager = () => {
 
     const onClick = (id) => {
         setActiveModal(true)
+        dispatch(fetchUserDataWithHistory({id, type: activeMenu}))
         setStudentId(id)
     }
 
@@ -471,11 +431,12 @@ const PlatformTaskManager = () => {
             status: studentId?.status,
             ...data
         }
-        request(`${BackUrl}lead_crud/${studentId?.id}`, "DELETE", JSON.stringify(res), headers())
+        request(`${BackUrl}task_leads_delete/${studentId?.id}`, "DELETE", JSON.stringify(res), headers())
             .then((res) => {
                 setIsConfirm(false)
                 setDellLead(false)
-                dispatch(deleteLead({id: studentId?.id}))
+                dispatch(onDelLeads({id: studentId?.id}))
+                dispatch(onChangeProgress({progress: res.task_statistics, allProgress: res.task_daily_statistics}))
                 dispatch(setMessage({
                     msg: res.msg,
                     type: "success",
@@ -488,50 +449,24 @@ const PlatformTaskManager = () => {
         }
     }
 
-    // const searchedUsers = useCallback(() => {
-    //     let filteredArr;
-    //     switch (activeMenu) {
-    //         case "newStudents":
-    //             if (isCompleted)
-    //                 filteredArr = completedNewStudents
-    //             else
-    //                 filteredArr = newStudents
-    //             break;
-    //         case "lead":
-    //             if (isCompleted)
-    //                 filteredArr = completedLeads
-    //             else
-    //                 filteredArr = leads
-    //             break;
-    //         default:
-    //             if (isCompleted)
-    //                 filteredArr = completedDebtorStudent
-    //             else
-    //                 filteredArr = debtorStudent
-    //             break;
-    //     }
+
+
+    // const onSearch = (value) => {
+    //     setSearchValue(value)
+    //     if (value !== "") {
+    //         dispatch(fetchingSearch())
     //
-    // }, [activeMenu, search])
-
-
-    const onSearch = (value) => {
-        setSearchValue(value)
-        if (value !== "") {
-            dispatch(fetchingSearch())
-
-            request(`${BackUrl}search_student_in_task/${locationId}`, "POST", JSON.stringify({
-                text: value,
-                type: activeMenu,
-                status: isCompleted
-            }), headers())
-                .then(res => {
-                    dispatch(fetchedSearch(res.students))
-                })
-                .catch(err => console.log(err))
-        }
-
-
-    }
+    //         request(`${BackUrl}search_student_in_task/${locationId}`, "POST", JSON.stringify({
+    //             text: value,
+    //             type: activeMenu,
+    //             status: isCompleted
+    //         }), headers())
+    //             .then(res => {
+    //                 dispatch(fetchedSearch(res.students))
+    //             })
+    //             .catch(err => console.log(err))
+    //     }
+    // }
 
 
     const contextObj = useMemo(() => ({
@@ -542,7 +477,6 @@ const PlatformTaskManager = () => {
         isCompleted: isCompleted,
         dispatch: dispatch,
         location: locationId,
-        getSelect: setGetUser,
         completedLength: completedDebtorStudent.length
     }), [activeMenu, isCompleted, locationId, completedDebtorStudent])
 
@@ -552,18 +486,30 @@ const PlatformTaskManager = () => {
     // }
 
 
+
+    const searchedData = useMemo(() => {
+        const filteredData = data.slice()
+
+        return filteredData.filter(item =>
+            item.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+            item.surname.toLowerCase().includes(searchValue.toLowerCase()) ||
+            item.username.toLowerCase().includes(searchValue.toLowerCase())
+        )
+    }, [data, searchValue])
+
+
     const renderData =useCallback(() => {
 
-        if (unCompletedStatus === "loading" || unCompletedStatus === "idle") {
-            return <DefaultLoaderSmall/>
-        }
+        // if (unCompletedStatus === "loading" || unCompletedStatus === "idle" || completedStatus === "loading" || completedStatus === "idle" ) {
+        //     return <DefaultLoaderSmall/>
+        // }
 
         switch (isTable) {
             case true:
                 return (
                     <TableData
                         isCompleted={isCompleted}
-                        arr={data}
+                        arr={searchedData}
                         activeType={activeMenu}
                     />
                 )
@@ -571,26 +517,31 @@ const PlatformTaskManager = () => {
                 return (
                     <RenderCards
                         isCompleted={isCompleted}
-                        arr={data}
+                        arr={searchedData}
                         activeType={activeMenu}
                         banList={banListColors}
-                        status={false}
+                        status={unCompletedStatus || completedStatus}
                     />
                 )
         }
-    },[isTable,data,isCompleted,activeMenu,banListColors,unCompletedStatus,completedStatus])
+    },[isTable,searchedData,isCompleted,activeMenu,banListColors,unCompletedStatus,completedStatus,searchValue])
+
+
+
+
+
+
 
 
     return (
         <div className={cls.tasks}>
             <div className={cls.tasks__inner}>
                 <div className={cls.header}>
-                    <PlatformSearch search={searchValue} setSearch={onSearch}/>
+                    <PlatformSearch search={searchValue} setSearch={setSearchValue}/>
                     {/*<h1>My tasks</h1>*/}
                     {/*<div className={cls.header__search}>*/}
 
                     <div style={{display: "flex"}}>
-
                         <SwitchButton
                             isCompleted={isCompleted}
                             setIsCompleted={onChangeIsCompleted}
@@ -616,7 +567,6 @@ const PlatformTaskManager = () => {
                             progressStatus={progressStatus}
                         />
                     </div>
-
                     {
                         tableData.is_selected === true && !isCompleted ? null : <div className={cls.menuTask}>
                             <div className={cls.menuTask__list}>
@@ -626,67 +576,11 @@ const PlatformTaskManager = () => {
                             </div>
                         </div>
                     }
-
-
                 </div>
                 <div className={cls.tasks__handler}>
-
-
                     <FuncContext.Provider value={contextObj}>
                         <div className={cls.items}>
-                            {/*<div className={cls.items__inner}>*/}
-
-
-
-
                             {renderData()}
-                            {/*{*/}
-                            {/*    activeMenu === "lead"*/}
-                            {/*        ?*/}
-                            {/*        <Leads*/}
-                            {/*            isCompleted={isCompleted}*/}
-                            {/*            arr={searchValue ? search : isCompleted ? completedLeads : leads}*/}
-                            {/*            arrStatus={leadsStatus}*/}
-                            {/*        />*/}
-                            {/*        :*/}
-                            {/*        activeMenu === "newStudents"*/}
-                            {/*            ?*/}
-                            {/*            tableData.is_selected === true && !isCompleted ?*/}
-                            {/*                <TableData tableData={tableData}/> :*/}
-                            {/*                <Student*/}
-                            {/*                    arr={searchValue ? search : isCompleted ? completedNewStudents : newStudents}*/}
-                            {/*                    arrStatus={newStudentsStatus}*/}
-                            {/*                />*/}
-                            {/*            :*/}
-                            {/*            <Student*/}
-                            {/*                setNumber={setNumber}*/}
-                            {/*                arr={searchValue ? search : isCompleted ? completedDebtorStudent : debtorStudent}*/}
-                            {/*                arrStatus={searchValue ? searchStatus : debtorStudentStatus}*/}
-                            {/*            />*/}
-                            {/*}*/}
-
-
-                            {/*</div>*/}
-                            {/*{*/}
-                            {/*    debtorStudentStatus !== "loading"*/}
-                            {/*        ?*/}
-                            {/*        (debtorStudent.length + completedDebtorStudent.length) >= 100*/}
-                            {/*            ?*/}
-                            {/*            null*/}
-                            {/*            :*/}
-                            {/*            (debtorStudent.length !== 0 && activeMenu === "debtors" && !isCompleted)*/}
-                            {/*                ?*/}
-                            {/*                <div*/}
-                            {/*                    className={cls.scroll__plus}*/}
-                            {/*                    onClick={() => onGetStudents(number)}*/}
-                            {/*                >*/}
-                            {/*                    <i className={classNames("fas fa-plus", cls.icon)}/>*/}
-                            {/*                </div>*/}
-                            {/*                :*/}
-                            {/*                null*/}
-                            {/*        :*/}
-                            {/*        null*/}
-                            {/*}*/}
                         </div>
                     </FuncContext.Provider>
 
@@ -705,20 +599,13 @@ const PlatformTaskManager = () => {
                                 <div className={cls.completeTask__precent}>
                                     <div>
                                         <div className={cls.circleProgress}>
-                                            <Completed
-                                                progress={`${allProgress?.completed_tasks_percentage || 0}%`}
-                                                // progressStatus={progressStatus}
-                                            />
+                                            <Completed progress={`${allProgress?.completed_tasks_percentage || 0}%`}/>
                                         </div>
                                         <h2>All Rating</h2>
                                     </div>
                                     <div>
                                         <div className={cls.circleProgress}>
-                                            <Completed
-                                                progress={`${progress?.completed_tasks_percentage || 0}%`}
-                                                // progressStatus={progressStatus}
-                                            />
-
+                                            <Completed progress={`${progress?.completed_tasks_percentage || 0}%`}/>
                                         </div>
                                         <h2>{activeMenu}</h2>
                                     </div>
@@ -735,20 +622,23 @@ const PlatformTaskManager = () => {
             <Modal activeModal={activeModal} setActiveModal={setActiveModal}>
                 <div className={cls.userbox}>
                     <div className={cls.userbox__img}>
-                        <img src={getUser.img ? getUser.img : unknownUser} alt=""/>
+                        <Link to={`../profile/${studentId}`}>
+                            <img src={profile.img ? profile.img : unknownUser} alt=""/>
+                        </Link>
+
                     </div>
                     <h2 className={cls.userbox__name}>
-                        <span>{getUser.name} {getUser.surname}</span> <br/>
+                        <span>{profile.name} {profile.surname}</span> <br/>
                     </h2>
                     <div className={cls.userbox__info}>
                         <div className={cls.userbox__infos}>
                             <p className={cls.userbox__subjects}>
-                                balance :
-                                <span>{getUser.balance ? getUser.balance : <>balance yuq</>} </span>
+                                Balance :
+                                <span>{profile.balance ? profile.balance : <>No balance</>} </span>
                             </p>
                             <p className={cls.userbox__number}>
                                 Number :
-                                <span>{getUser.phone} </span>
+                                <span>{profile.phone} </span>
                             </p>
                         </div>
                     </div>
@@ -780,17 +670,17 @@ const PlatformTaskManager = () => {
                         </form>
                     }
                 </div>
-                {getUser.history?.length >= 1 ? <div className={cls.wrapperList}>
+                {profile.comments?.length >= 1 ? <div className={cls.wrapperList}>
                     {
-                        getUser.history && getUser.history?.map((item) => {
+                        profile.comments && profile.comments?.map((item) => {
                             return (
                                 <div className={cls.wrapperList__box}>
                                     <div className={cls.wrapperList__items}>
                                         <div className={cls.wrapperList__number}>
                                             Telefon qilingan :
                                             <span>
-                                            {activeMenu === "newStudents" ? item.day : item.added_date}
-                                        </span>
+                                                {activeMenu === "newStudents" ? item.day : item.added_date}
+                                            </span>
                                         </div>
                                         <div className={cls.wrapperList__comment}>
                                             Comment : <span>{item.comment}</span>
@@ -885,14 +775,24 @@ const Completed = ({progress, progressStatus, style = "black"}) => {
 }
 
 
-const RenderCards = ({isCompleted, arr, status, activeType, banList, banListCompleted}) => {
+const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
 
 
 
 
     const filteredItems = useCallback((color) => {
-        return arr.filter(item => item.moneyType === color)
-    }, [arr])
+        return arr.filter(item => {
+
+            if (activeType === "leads") {
+                return item.status === color
+            }
+
+            if (typeof item.moneyType === "string" && item.moneyType ) {
+                return item.moneyType === color
+            }
+            return item
+        })
+    }, [arr,activeType])
 
     if (status === "loading" || status === "idle") {
         return <DefaultLoader/>
@@ -902,7 +802,16 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList, banListComp
     return colorStatusList.map((item, i) => {
 
         switch (activeType) {
-            case "debtors" || "students":
+            case "debtors" :
+                if (banList.includes(item)) return null
+                return (
+                    <RenderItem
+                        arr={filteredItems(item)}
+                        index={i}
+                    />
+                )
+
+            case "newStudents":
                 if (banList.includes(item)) return null
                 return (
                     <RenderItem
@@ -911,9 +820,7 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList, banListComp
                     />
                 )
             case "leads":
-                if (isCompleted && banListCompleted.includes(item)) return null
-                if (!isCompleted && banList.includes(item)) return null
-
+                if (banList.includes(item)) return null
                 return (
                     <RenderItem
                         arr={filteredItems(item)}
@@ -971,6 +878,9 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList, banListComp
 // }
 
 const RenderItem = React.memo(({arr, index}) => {
+
+
+
     useEffect(() => {
         const elem = document.querySelectorAll("#main")
         const elements = document.querySelectorAll("#scroll__inner")
@@ -1033,25 +943,26 @@ const RenderItem = React.memo(({arr, index}) => {
 
 const TaskCard = ({item, index}) => {
 
-    const {activeMenu, click, onDelete, getStudentId, isCompleted, getSelect} = useContext(FuncContext)
+    const {activeMenu, click, onDelete, getStudentId, isCompleted} = useContext(FuncContext)
     const [style, setStyle] = useState({})
 
     useEffect(() => {
         switch (activeMenu) {
-            case "lead":
+            case "leads":
                 setStyle({
-                    generalBack: item?.moneyType === "red" ?
-                        "#FFE4E6" : item?.moneyType === "yellow" ?
+                    generalBack: item?.status === "red" ?
+                        "#FFE4E6" : item?.status === "yellow" ?
                             "#FEF9C3" : "#DCFCE7",
-                    backImage: item?.moneyType === "red" ?
-                        `url(${taskCardBack})` : item?.moneyType === "yellow" ?
+                    backImage: item?.status === "red" ?
+                        `url(${taskCardBack})` : item?.status === "yellow" ?
                             `url(${taskCardBack2})` : `url(${taskCardBack4})`,
-                    imageColor: item?.moneyType === "red" ?
-                        "#E11D48" : item?.moneyType === "yellow" ?
+                    imageColor: item?.status === "red" ?
+                        "#E11D48" : item?.status === "yellow" ?
                             "#FDE047" : "#BEF264"
                 })
                 break;
             default:
+
                 setStyle({
                     generalBack: item?.moneyType === "red" ?
                         "#FFE4E6" : "#FEF9C3",
@@ -1062,7 +973,7 @@ const TaskCard = ({item, index}) => {
                 })
                 break;
         }
-    }, [activeMenu])
+    }, [activeMenu,item.moneyType,item?.status])
 
     return (
         <motion.div
@@ -1071,22 +982,22 @@ const TaskCard = ({item, index}) => {
             style={{backgroundColor: style.generalBack}}
         >
             {
-                activeMenu === "lead" ?
+                (activeMenu === "leads" && !isCompleted) ?
                     <i
                         className={classNames("fas fa-trash", cls.icon)}
                         onClick={() => {
                             onDelete(true)
-                            getStudentId({id: item.id, status: item.moneyType})
+                            getStudentId({id: item.id, status: item.status})
                         }}
                     /> : null
             }
             <div
                 className={classNames(cls.item__info, {
-                    [cls.active]: activeMenu === "lead"
+                    [cls.active]: activeMenu === "leads"
                 })}
             >
                 {
-                    activeMenu === "lead" ? null : <h2
+                    activeMenu === "leads" ? null : <h2
                         className={cls.debt}
                         style={{backgroundColor: style.strBack}}
                     >
@@ -1098,10 +1009,10 @@ const TaskCard = ({item, index}) => {
                 <h2 className={cls.username}>{item?.name} {item?.surname}</h2>
                 <ul
                     className={classNames(cls.infoList, {
-                        [cls.active]: activeMenu === "lead"
+                        [cls.active]: activeMenu === "leads"
                     })}
                 >
-                    <li className={cls.infoList__item}>Number: <span>{item?.phone}</span></li>
+                    <li className={cls.infoList__item}>number: <span>{item?.phone}</span></li>
                     {
                         activeMenu === "newStudents" ? item?.subject?.map(item => {
                             return (
@@ -1115,11 +1026,11 @@ const TaskCard = ({item, index}) => {
                     {/*        <li className={cls.infoList__item}>IT: <span>390000</span></li>*/}
                     {/*    </> : null*/}
                     {/*}*/}
-                    {/*{*/}
-                    {/*    activeMenu === "lead" ? null : <li className={cls.infoList__item}>*/}
-                    {/*        Koment: <span>{item?.history[0]?.comment}  </span>*/}
-                    {/*    </li>*/}
-                    {/*}*/}
+                    {
+                        activeMenu === "leads" ? null : <li className={cls.infoList__item}>
+                            Koment: <span>{item?.comment}  </span>
+                        </li>
+                    }
                     {
                         activeMenu === "newStudents" ?
                             <li className={cls.infoList__item}>Smen: <span>{item?.shift}</span></li> : null
@@ -1142,7 +1053,6 @@ const TaskCard = ({item, index}) => {
                             // (item.status === "green" || isCompleted) ? null :
                         {
                             click(item?.id)
-                            getSelect(item)
                         }
                     }
                 >
@@ -1168,7 +1078,6 @@ const SwitchButton = ({isCompleted, setIsCompleted, setSearchValue}) => {
                         <div className={cls.icon__handlerSucces}>
                             <img className={cls.buttonIcon} src={switchCompletedBtn} alt=""/>
                         </div>
-
                         :
                         <div className={cls.icon__handler}>
                             <img src={switchXButton} className={cls.buttonIcon} alt=""/>
