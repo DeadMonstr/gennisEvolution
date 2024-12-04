@@ -79,7 +79,7 @@ const menuList = [
         label: "Lead"
     }
 ]
-const colorStatusList = ["red", "yellow", "green"]
+const colorStatusList = ["red", "yellow", "green", "navy"]
 
 const PlatformTaskManager = () => {
 
@@ -99,12 +99,8 @@ const PlatformTaskManager = () => {
     } = useSelector(state => state.taskManager)
 
 
-
-
     const [activeMenu, setActiveMenu] = useState(menuList[0].name)
     const [isCompleted, setIsCompleted] = useState(false)
-
-
 
 
     const dispatch = useDispatch()
@@ -123,13 +119,10 @@ const PlatformTaskManager = () => {
 
 
     const [data, setData] = useState([])
-    const [banListColors,setBanListColors] = useState([])
+    const [banListColors, setBanListColors] = useState([])
 
 
-
-
-
-
+    console.log(banListColors)
 
 
     useEffect(() => {
@@ -145,7 +138,6 @@ const PlatformTaskManager = () => {
     }, [])
 
 
-
     // Cards color banList
 
     useEffect(() => {
@@ -154,10 +146,10 @@ const PlatformTaskManager = () => {
         if (isCompleted) {
             switch (activeMenu) {
                 case "leads":
-                    setBanListColors(["red","yellow"])
+                    setBanListColors(["red", "yellow"])
                     break;
                 case "newStudents":
-                    setBanListColors(["green","red"])
+                    setBanListColors(["green", "red"])
                     break;
                 case "debtors":
                     setBanListColors(["green"])
@@ -169,7 +161,7 @@ const PlatformTaskManager = () => {
                     setBanListColors(["green"])
                     break;
                 case "newStudents":
-                    setBanListColors(["green","red"])
+                    setBanListColors(["green", "red"])
                     break;
                 case "leads":
                     setBanListColors(["green"])
@@ -178,9 +170,7 @@ const PlatformTaskManager = () => {
         }
 
 
-
-    },[isCompleted,activeMenu])
-
+    }, [isCompleted, activeMenu])
 
 
     // Fetch data from type and date
@@ -199,7 +189,7 @@ const PlatformTaskManager = () => {
                     dispatch(fetchCompletedNewStudentsTaskData({locationId, date: formatted}))
                     break;
                 case "leads":
-                    dispatch(fetchCompletedLeadsData({locationId,date: formatted}))
+                    dispatch(fetchCompletedLeadsData({locationId, date: formatted}))
                     break;
             }
         } else {
@@ -208,10 +198,10 @@ const PlatformTaskManager = () => {
                     dispatch(fetchDebtorsData({locationId, date: formatted}))
                     break;
                 case "newStudents":
-                    dispatch(fetchNewStudentsTaskData({locationId,date: formatted}))
+                    dispatch(fetchNewStudentsTaskData({locationId, date: formatted}))
                     break;
                 case "leads":
-                    dispatch(fetchLeadsData({locationId,date: formatted}))
+                    dispatch(fetchLeadsData({locationId, date: formatted}))
                     break;
 
 
@@ -219,7 +209,7 @@ const PlatformTaskManager = () => {
         }
 
 
-    }, [activeMenu, locationId, date,isCompleted])
+    }, [activeMenu, locationId, date, isCompleted])
 
     // set current data from fetched data
 
@@ -300,9 +290,6 @@ const PlatformTaskManager = () => {
     ])
 
 
-
-
-
     const renderMenuItems = useCallback(() => {
         return menuList.map((item, i) => {
             return (
@@ -334,16 +321,11 @@ const PlatformTaskManager = () => {
     }, [activeMenu, menuList, unCompleted, completed])
 
 
-
-
     const onChangeIsCompleted = (status) => {
         localStorage.setItem("isCompleted", status)
         setData([])
         setIsCompleted(status)
     }
-
-
-
 
 
     function showMessage(msg) {
@@ -360,8 +342,6 @@ const PlatformTaskManager = () => {
 
     const onSubmit = (data) => {
 
-
-        console.log("hello")
         const res = {
             id: studentId,
             ...data
@@ -370,16 +350,21 @@ const PlatformTaskManager = () => {
 
         if (activeMenu === "newStudents") {
 
+
+            dispatch(onDelNewStudents({id: res.id}))
+
+
             request(`${BackUrl}call_to_new_students`, "POST", JSON.stringify(res), headers())
                 .then(res => {
 
 
+                    console.log(res)
+
                     if (res?.student.student_id) {
-                        dispatch(onDelNewStudents({id: res.student_id}))
-
-
-
-                        dispatch(onChangeProgress({progress: res.student.task_statistics, allProgress: res.student.task_daily_statistics}))
+                        dispatch(onChangeProgress({
+                            progress: res.student.task_statistics,
+                            allProgress: res.student.task_daily_statistics
+                        }))
 
                         showMessage(res.student.msg)
                     } else {
@@ -394,9 +379,13 @@ const PlatformTaskManager = () => {
                 select: studentSelect,
                 ...res
             }
+
+            console.log(result)
             request(`${BackUrl}call_to_debts`, "POST", JSON.stringify(result), headers())
                 .then(res => {
-                    dispatch(onDelDebtors({id: res.student_id}))
+
+                    console.log(res)
+                    dispatch(onDelDebtors({id: result.id}))
                     dispatch(onChangeProgress({progress: res.task_statistics, allProgress: res.task_daily_statistics}))
 
                     showMessage(res.message)
@@ -413,7 +402,10 @@ const PlatformTaskManager = () => {
                 .then(res => {
                     if (res.lead_id) {
                         dispatch(onDelLeads({id: res?.lead_id}))
-                        dispatch(onChangeProgress({progress: res.task_statistics, allProgress: res.task_daily_statistics}))
+                        dispatch(onChangeProgress({
+                            progress: res.task_statistics,
+                            allProgress: res.task_daily_statistics
+                        }))
                     }
                     showMessage(res.msg)
                 })
@@ -458,7 +450,6 @@ const PlatformTaskManager = () => {
     }
 
 
-
     // const onSearch = (value) => {
     //     setSearchValue(value)
     //     if (value !== "") {
@@ -494,7 +485,6 @@ const PlatformTaskManager = () => {
     // }
 
 
-
     const searchedData = useMemo(() => {
         const filteredData = data.slice()
 
@@ -506,7 +496,7 @@ const PlatformTaskManager = () => {
     }, [data, searchValue])
 
 
-    const renderData =useCallback(() => {
+    const renderData = useCallback(() => {
 
         // if (unCompletedStatus === "loading" || unCompletedStatus === "idle" || completedStatus === "loading" || completedStatus === "idle" ) {
         //     return <DefaultLoaderSmall/>
@@ -532,13 +522,7 @@ const PlatformTaskManager = () => {
                     />
                 )
         }
-    },[isTable,searchedData,isCompleted,activeMenu,banListColors,unCompletedStatus,completedStatus,searchValue])
-
-
-
-
-
-
+    }, [isTable, searchedData, isCompleted, activeMenu, banListColors, unCompletedStatus, completedStatus, searchValue])
 
 
     return (
@@ -786,8 +770,6 @@ const Completed = ({progress, progressStatus, style = "black"}) => {
 const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
 
 
-
-
     const filteredItems = useCallback((color) => {
         return arr.filter(item => {
 
@@ -795,12 +777,12 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
                 return item.status === color
             }
 
-            if (typeof item.moneyType === "string" && item.moneyType ) {
+            if (typeof item.moneyType === "string" && item.moneyType) {
                 return item.moneyType === color
             }
             return item
         })
-    }, [arr,activeType])
+    }, [arr, activeType])
 
     if (status === "loading" || status === "idle") {
         return <DefaultLoader/>
@@ -812,6 +794,7 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
         switch (activeType) {
             case "debtors" :
                 if (banList.includes(item)) return null
+
                 return (
                     <RenderItem
                         arr={filteredItems(item)}
@@ -886,7 +869,6 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
 // }
 
 const RenderItem = React.memo(({arr, index}) => {
-
 
 
     useEffect(() => {
@@ -970,24 +952,24 @@ const TaskCard = ({item, index}) => {
                 })
                 break;
             default:
-
                 setStyle({
                     generalBack: item?.moneyType === "red" ?
-                        "#FFE4E6" : "#FEF9C3",
+                        "#FFE4E6" : item.moneyType === 'navy' ? "navy" : "#FEF9C3",
                     strBack: item?.moneyType === "red" ?
-                        "deeppink" : "#d7d700",
+                        "deeppink" : item.moneyType === "navy" ? "color" : "#d7d700",
                     backImage: item?.moneyType === "red" ?
                         `url(${taskCardBack})` : `url(${taskCardBack2})`
                 })
                 break;
         }
-    }, [activeMenu,item.moneyType,item?.status])
+    }, [activeMenu, item.moneyType, item?.status])
+
 
     return (
         <motion.div
             key={index}
             className={cls.item}
-            style={{backgroundColor: style.generalBack}}
+            style={{backgroundColor: style.generalBack, color: item.moneyType === "navy" ? "white" : ""}}
         >
             {
                 (activeMenu === "leads" && !isCompleted) ?
@@ -1003,6 +985,7 @@ const TaskCard = ({item, index}) => {
                 className={classNames(cls.item__info, {
                     [cls.active]: activeMenu === "leads"
                 })}
+
             >
                 {
                     activeMenu === "leads" ? null : <h2
@@ -1014,7 +997,8 @@ const TaskCard = ({item, index}) => {
                         }
                     </h2>
                 }
-                <h2 className={cls.username}>{item?.name} {item?.surname}</h2>
+                <h2 style={{color: item.moneyType === "navy" ? "white" : ""}}
+                    className={cls.username}>{item?.name} {item?.surname}</h2>
                 <ul
                     className={classNames(cls.infoList, {
                         [cls.active]: activeMenu === "leads"
@@ -1041,12 +1025,25 @@ const TaskCard = ({item, index}) => {
                     }
                     {
                         activeMenu === "newStudents" ?
-                            <li className={cls.infoList__item}>Smen: <span>{item?.shift}</span></li> : null
+                            <>
+
+                                <li className={cls.infoList__item}>Smen: <span>{item?.shift}</span></li>
+                                <li className={cls.infoList__item}>Number: <span>{item?.phone}</span></li>
+                                <li className={cls.infoList__item}>Parent number: <span>{item?.parent}</span></li>
+                            </> : null
                     }
                     {
                         activeMenu === "debtors" ?
-                            <li className={cls.infoList__item}>Tel status: <span>{item?.reason}</span>
-                            </li> : null
+                            <>
+
+                                <li className={cls.infoList__item}>Tel status: <span>{item?.reason}</span></li>
+
+                                <li className={cls.infoList__item}>Number: <span>{item?.phone}</span></li>
+                                <li className={cls.infoList__item}>Parent number: <span>{item?.parent}</span></li>
+                            </>
+
+
+                            : null
                     }
                 </ul>
             </div>
