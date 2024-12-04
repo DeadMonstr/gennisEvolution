@@ -5,28 +5,32 @@ import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
 import {fetchUserData} from "slices/usersProfileSlice";
 import {setMessage} from "slices/messageSlice";
+import Textarea from "components/platform/platformUI/textarea";
+import {useForm} from "react-hook-form";
 
 const BlockUser = ({userId}) => {
 
     const {user} = useSelector(state => state.usersProfile)
 
 
+    const [reason, setReason] = useState(null)
 
 
-    const [isBlocked,setIsBlocked] = useState(false)
+    const [isBlocked, setIsBlocked] = useState(false)
 
     useEffect(() => {
         if (user) {
             setIsBlocked(user.isBlocked)
         }
-    },[user])
+    }, [user])
 
     const {request} = useHttp()
     const dispatch = useDispatch()
 
     const onClick = () => {
 
-        request(`${BackUrl}add_blacklist/${userId}`,"GET",null,headers())
+
+        request(`${BackUrl}add_blacklist/${userId}`, "POST", JSON.stringify({reason: reason}), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -35,6 +39,7 @@ const BlockUser = ({userId}) => {
                         active: true
                     }))
 
+                    setReason("")
                     setIsBlocked(!isBlocked)
                 } else {
                     dispatch(setMessage({
@@ -61,7 +66,7 @@ const BlockUser = ({userId}) => {
 
             <div
                 onClick={onClick}
-                className={classNames("block_btn",{
+                className={classNames("block_btn", {
                     green: isBlocked
                 })}
             >
@@ -71,7 +76,9 @@ const BlockUser = ({userId}) => {
                         : "Qora royhatga solish"
                 }
 
+
             </div>
+            {!isBlocked ? <Textarea onChange={setReason} title={"Sababi"}/> : null}
         </div>
     );
 };
