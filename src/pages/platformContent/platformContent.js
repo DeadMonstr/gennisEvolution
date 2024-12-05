@@ -83,6 +83,7 @@ const PlatformAccountantCollection = React.lazy(() => import("pages/platformCont
 const PlatformAccountantTypesMoney = React.lazy(() => import("pages/platformContent/platformAccountant/bookKeeping/typesMoney/typesMoney"))
 
 const PlatformBlockTest =  React.lazy(() => import('./platformBlockTest/platformBlockTest'));
+const PlatformBill =  React.lazy(() => import('./platformBill/platformBill'));
 
 
 
@@ -200,6 +201,7 @@ const PlatformContent = () => {
                     <Route path="otchotAccount" element={<PlatformOtchot/>}/>
                     <Route path="otchot/:locationId" element={<PlatformOtchot/>}/>
                     <Route path="typesMoney" element={<PlatformAccountantTypesMoney/>}/>
+                    <Route path="accountantBill" element={<PlatformBill/>}/>
 
                     <Route
                         path="accounting/:locationId"
