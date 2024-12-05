@@ -90,7 +90,7 @@ const AccountantBookKeeping = () => {
             case "Overhead":
                 return <OverheadAccount data={overhead}/>
             case "Investments":
-                return <InvesmentAccount locations={locations}= data={invesment}/>
+                return <InvesmentAccount locations={locations} data={invesment}/>
         }
     }, [activePage, dividends, accountPayable, locations,staffSalary,overhead])
 

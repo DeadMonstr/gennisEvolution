@@ -481,14 +481,18 @@ const PlatformTaskManager = () => {
     }), [activeMenu, isCompleted, locationId, completedDebtorStudent])
 
 
-    // const resetStat = () => {
-    //     request(`${BackUrl}`, "")
-    // }
-
-
 
     const searchedData = useMemo(() => {
         const filteredData = data.slice()
+
+
+        if (searchValue && !isNaN(+searchValue) && typeof +searchValue === "number"  ) {
+            return filteredData.filter(item => {
+
+                return item.phone.includes(searchValue) ||
+                item?.parent?.includes(+searchValue)
+            })
+        }
 
         return filteredData.filter(item =>
             item.name.toLowerCase().includes(searchValue.toLowerCase()) ||

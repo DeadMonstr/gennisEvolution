@@ -137,7 +137,6 @@ const PlatformAccounting = () => {
                 <Route path={"capital"} element={<Capital path={"capital"} locationId={locationId} />}/>
                 <Route path={"investments"} element={<Invistitsiya path={"investments"} locationId={locationId} />}/>
                 <Route path={"dividends"} element={<Dividends path={"dividends"} locationId={locationId} />}/>
-
                 {/*<Route path={"debtStudents"} element={<DebtStudents/>}/>*/}
             </Routes>
         </section>
