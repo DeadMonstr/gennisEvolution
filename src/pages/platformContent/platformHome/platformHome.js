@@ -152,7 +152,7 @@ const Comments = () => {
                         {comment}
                     </h2>
                     <motion.div className={cls.comment__like}>
-                        <span>{name === "HOJIAKBAR" ? "9999"  :likes}</span>
+                        <span>{likes}</span>
                         <motion.i
                             variants={onLikeClick}
                             animate={activeAnimate}

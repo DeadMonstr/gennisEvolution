@@ -79,7 +79,7 @@ const menuList = [
         label: "Lead"
     }
 ]
-const colorStatusList = ["red", "yellow", "green", "navy"]
+const colorStatusList = ["red", "yellow", "green", "navy" , "black"]
 
 const PlatformTaskManager = () => {
 
@@ -954,9 +954,9 @@ const TaskCard = ({item, index}) => {
             default:
                 setStyle({
                     generalBack: item?.moneyType === "red" ?
-                        "#FFE4E6" : item.moneyType === 'navy' ? "navy" : "#FEF9C3",
+                        "#FFE4E6" : item.moneyType === 'navy' ? "navy" : item.moneyType === "black" ? "black" : "#DCFCE7",
                     strBack: item?.moneyType === "red" ?
-                        "deeppink" : item.moneyType === "navy" ? "color" : "#d7d700",
+                        "deeppink" : item.moneyType === "navy" ? "red" : "#d7d700",
                     backImage: item?.moneyType === "red" ?
                         `url(${taskCardBack})` : `url(${taskCardBack2})`
                 })
@@ -969,7 +969,7 @@ const TaskCard = ({item, index}) => {
         <motion.div
             key={index}
             className={cls.item}
-            style={{backgroundColor: style.generalBack, color: item.moneyType === "navy" ? "white" : ""}}
+            style={{backgroundColor: style.generalBack, color: item.moneyType === "navy" ? "white" : item.moneyType === "black" ? "white" : ""}}
         >
             {
                 (activeMenu === "leads" && !isCompleted) ?
@@ -997,7 +997,7 @@ const TaskCard = ({item, index}) => {
                         }
                     </h2>
                 }
-                <h2 style={{color: item.moneyType === "navy" ? "white" : ""}}
+                <h2 style={{color: item.moneyType === "navy" ? "white" : item.moneyType === "black" ? "white" : ""}}
                     className={cls.username}>{item?.name} {item?.surname}</h2>
                 <ul
                     className={classNames(cls.infoList, {
@@ -1027,7 +1027,7 @@ const TaskCard = ({item, index}) => {
                         activeMenu === "newStudents" ?
                             <>
 
-                                <li className={cls.infoList__item}>Smen: <span>{item?.shift}</span></li>
+                                <li className={cls.infoList__item}>Fani: <span>{item?.subjects}</span></li>
                                 <li className={cls.infoList__item}>Number: <span>{item?.phone}</span></li>
                                 <li className={cls.infoList__item}>Parent number: <span>{item?.parent}</span></li>
                             </> : null
