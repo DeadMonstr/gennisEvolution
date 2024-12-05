@@ -1,7 +1,7 @@
 import {useMemo} from "react";
 
 
-export const BackUrlForDoc = `http://192.168.1.14:5002/`
+export const BackUrlForDoc = `http://192.168.1.58:5002/`
 export const BackUrl = `${BackUrlForDoc}api/`
 export const ClassroomUrl = `http://localhost:3000/`
 export const ClassroomUrlForDoc = "http://192.168.1.52:5001/"

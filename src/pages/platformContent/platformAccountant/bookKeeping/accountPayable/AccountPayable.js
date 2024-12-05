@@ -15,8 +15,9 @@ import Select from "components/platform/platformUI/select";
 import Form from "components/platform/platformUI/form/Form";
 import InputForm from "components/platform/platformUI/inputForm";
 import Button from "components/platform/platformUI/button";
+import {fetchBill} from "../../../../../slices/billSlice";
 
-const AccountPayable = ({locations, data}) => {
+const AccountPayable = ({locations, dataPayable}) => {
 
     const status = [
         {name: "Debtor", status: true},
@@ -24,6 +25,9 @@ const AccountPayable = ({locations, data}) => {
     ]
 
     const {dataToChange} = useSelector(state => state.dataToChange)
+
+
+    const {data} = useSelector(state => state.billSlice)
     const [add, setAdd] = useState(false)
     const {register, handleSubmit} = useForm()
     const {selectedLocation} = useAuth()
@@ -37,9 +41,17 @@ const AccountPayable = ({locations, data}) => {
     const {isCheckedPassword} = useSelector(state => state.me)
     const [isConfirm, setIsConfirm] = useState(false)
 
+    const [account, setSelectedAccount] = useState(null)
+
 
     const {request} = useHttp()
 
+
+    console.log(account)
+
+    useEffect(() => {
+        dispatch(fetchBill())
+    }, [])
 
     useEffect(() => {
         dispatch(fetchDataToChange(selectedLocation))
@@ -59,14 +71,13 @@ const AccountPayable = ({locations, data}) => {
         return status.map((item, i) => {
             return (
                 <label key={i} className="radioLabel" htmlFor="">
-                    <input className="radio" {...register("debtor", {required: true})} type="radio"
+                    <input className="radio" {...register("status", {required: true})} type="radio"
                            value={item.status}/>
                     <span>{item.name}</span>
                 </label>
             )
         })
     }, [status])
-
 
     const renderPaymentType = useCallback(() => {
         return dataToChange?.payment_types?.map((item, i) => {
@@ -82,7 +93,7 @@ const AccountPayable = ({locations, data}) => {
 
 
     const renderData = () => {
-        return data.map((item, i) => (
+        return dataPayable.map((item, i) => (
             <tr>
                 <td>{i + 1}</td>
                 <td>{item.amount}</td>
@@ -180,7 +191,11 @@ const AccountPayable = ({locations, data}) => {
     const onSubmit = (data) => {
 
 
-        request(`${BackUrl}add_account_payable`, "POST", JSON.stringify({...data, location_id: loc}), headers())
+        request(`${BackUrl}add_account_payable`, "POST", JSON.stringify({
+            ...data,
+            location_id: loc,
+            account_id: Number(account)
+        }), headers())
             .then(res => {
                 dispatch(onAddPayable(res.account_payable))
                 setAdd(false)
@@ -246,10 +261,13 @@ const AccountPayable = ({locations, data}) => {
             <Modal activeModal={add} setActiveModal={() => setAdd(false)}>
                 <div className={cls.add}>
                     <Form typeSubmit={"hand"} onSubmit={handleSubmit(onSubmit)}>
-                        <InputForm register={register} title={"Amount sum"} name={"amount_sum"}/>
+                        <InputForm register={register} type={"number"} title={"Amount sum"} name={"amount_sum"}/>
                         <InputForm register={register} title={"Desc"} name={"desc"}/>
                         <InputForm register={register} title={"Date"} type={"date"} name={"date"}/>
+
+                        <Select onChangeOption={setSelectedAccount} options={data}/>
                         <Select value={loc} onChangeOption={setLoc} options={locations}/>
+
                         <div className={cls.debtor_type}>
                             {renderDebtType()}
                         </div>

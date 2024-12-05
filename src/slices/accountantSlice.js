@@ -58,7 +58,7 @@ export const fetchAccountantBookKeepingAccountPayable = createAsyncThunk(
     'accountantSlice/fetchAccountantBookKeepingAccountPayable',
     async (data) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_account_payable/${data.loc}/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
+        return await request(`${BackUrl}get_account_payable/`, "GET", null, headers())
     }
 )
 

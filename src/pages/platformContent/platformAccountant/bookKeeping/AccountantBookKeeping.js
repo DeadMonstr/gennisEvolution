@@ -79,7 +79,7 @@ const AccountantBookKeeping = () => {
             case "Dividend":
                 return <Dividend data={dividends} locations={locations}/>
             case "Account payable":
-                return <AccountPayable locations={locations} data={accountPayable}/>
+                return <AccountPayable locations={locations} dataPayable={accountPayable}/>
             case "Staff salary":
                 return <StaffSalary data={staffSalary} isDeleted={isDeleted}/>
             case "Overhead":

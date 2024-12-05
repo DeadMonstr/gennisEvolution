@@ -7,9 +7,10 @@ import {useForm} from "react-hook-form";
 import InputForm from "../../../components/platform/platformUI/inputForm";
 import {useDispatch, useSelector} from "react-redux";
 import {useHttp} from "../../../hooks/http.hook";
-import {onAddBill} from "../../../slices/billSlice";
+import {fetchBill, onAddBill} from "../../../slices/billSlice";
 import Button from "../../../components/platform/platformUI/button";
 import {useNavigate} from "react-router-dom";
+import {BackUrl, headers} from "../../../constants/global";
 
 
 const PlatformBill = () => {
@@ -20,6 +21,8 @@ const PlatformBill = () => {
     const {data} = useSelector(state => state.billSlice)
 
 
+
+
     const dispatch = useDispatch()
 
 
@@ -27,26 +30,27 @@ const PlatformBill = () => {
     const navigate = useNavigate()
 
 
-
-    // useEffect(() => {
-    // dispatch()
-    // } , [])
+    useEffect(() => {
+        dispatch(fetchBill())
+    }, [])
 
 
     const renderData = () => {
-        return data.map((item, index) => {
+        return data?.map((item, index) => {
             return (
                 <div className={cls.box} onClick={() => navigate(`./${item.id}`)}>
-                    <h2>{item.name}</h2>
+                    <h2>{item?.name}</h2>
 
                     <h3 className={cls.popup}>
-                        {item.name}
+                        {item?.name}
                     </h3>
 
                 </div>
             )
         })
     }
+
+
 
 
     const render = renderData()
@@ -60,7 +64,7 @@ const PlatformBill = () => {
 
                     <h1>Account</h1>
 
-                    <span>{data.length}</span>
+                    <span>{data?.length}</span>
                 </div>
 
 
@@ -87,31 +91,33 @@ const ModalBill = ({activeModal, setActiveModal}) => {
 
     const dispatch = useDispatch()
 
+    const {request} = useHttp()
+
     const onClick = (data) => {
         console.log(data)
 
-        const res = {
-            name: data.name,
-            id: new Date().getTime()
-        }
-        dispatch(onAddBill(res))
+        request(`${BackUrl}create_account` , "POST" , JSON.stringify(data) , headers())
+            .then(res => {
+                dispatch(onAddBill(res.account))
+                setValue("name", "")
 
-        setValue("name", "")
+                setActiveModal(false)
+            })
+            .catch(err => {
+                console.log(err)
+            })
 
-        setActiveModal(false)
+
+
+
 
     }
 
     return (
         <Modal setActiveModal={setActiveModal} activeModal={activeModal}>
-
-
             <Form onSubmit={handleSubmit(onClick)} extraClassname={cls.modal}>
                 <InputForm placeholder={"Nomi"} name={"name"} register={register}/>
-
-
             </Form>
-
         </Modal>
     )
 }
