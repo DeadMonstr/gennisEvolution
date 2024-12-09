@@ -58,7 +58,7 @@ export const fetchAccountantBookKeepingAccountPayable = createAsyncThunk(
     'accountantSlice/fetchAccountantBookKeepingAccountPayable',
     async (data) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_account_payable/`, "GET", null, headers())
+        return await request(`${BackUrl}get_account_payable/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
     }
 )
 
@@ -131,6 +131,12 @@ export const fetchAccountantDate = createAsyncThunk(
 )
 
 
+
+
+
+
+
+
 const accountantSlice = createSlice({
     name: "accountantSlice",
     initialState,
@@ -163,7 +169,6 @@ const accountantSlice = createSlice({
 
         onAddPayable: (state, action) => {
             state.accountPayable = [...state.accountPayable, action.payload]
-            console.log(action.payload)
         },
         onDeletePayable: (state, action) => {
             state.accountPayable = state.accountPayable.filter(item => item.id !== action.payload.id)
@@ -175,8 +180,12 @@ const accountantSlice = createSlice({
             state.accountPayable = state.accountPayable.map(item => {
 
                 if (item.id === action.payload.id) {
-                    return {...item, payment_type: action.payload.payment_type}
+                    return {...action.payload.data}
                 }
+
+                // if (item.id === action.payload.id) {
+                //     return {...item, payment_type: action.payload.payment_type}
+                // }
                 return item
             })
         },

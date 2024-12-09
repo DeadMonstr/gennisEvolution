@@ -52,7 +52,7 @@ const Accordion = ({img,title,subtitle,children,backOpen,setBackOpen,clazz,btns}
 
                 <div className={cls.btns}>
                     {
-                        btns.map(item => {
+                        btns?.map(item => {
                             return item
                         })
                     }

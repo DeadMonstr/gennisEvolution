@@ -101,15 +101,15 @@ const AccountPayable = ({locations, dataPayable}) => {
                 <td>{item.date}</td>
                 <td
                     onClick={() => {
-                        if (!item.status) {
-                            changeModal("changeTypePayment")
 
-                            setChangingData({
-                                id: item.id,
-                                payment_type: item.payment_type.id,
-                                userId: item.id,
-                            })
-                        }
+                        changeModal("changeTypePayment")
+
+                        setChangingData({
+                            id: item.id,
+                            payment_type: item.payment_type.id,
+                            userId: item.id,
+                        })
+
                     }}
                 >
                     <span
@@ -153,13 +153,13 @@ const AccountPayable = ({locations, dataPayable}) => {
         // dispatch(changePaymentType({id: id ,typePayment: value}))
 
 
-        request(`${BackUrl}crud_account_payable/${changingData.id}`, "POST", JSON.stringify({payment_type_id: value}), headers())
+        request(`${BackUrl}crud_account_payable/${changingData.id}/`, "POST", JSON.stringify({payment_type_id: value}), headers())
             .then(res => {
                 console.log(res)
-                dispatch(changePaymentTypePayable({id: id, payment_type: res.payment_type}))
+                dispatch(changePaymentTypePayable({id: id, data: res.payment_type}))
 
                 // dispatch(onAddDevidend(res.dividend))
-                // setAdd(false)
+                setActiveChangeModal(false)
             })
 
     }
@@ -177,7 +177,7 @@ const AccountPayable = ({locations, dataPayable}) => {
         setActiveChangeModal(false)
 
 
-        request(`${BackUrl}delete_account_payable/${changingData.id}`, "POST", JSON.stringify(data), headers())
+        request(`${BackUrl}delete_account_payable/${changingData.id}/`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 dispatch(onDeletePayable({id: changingData.id}))
                 // dispatch(changePaymentType({id: id, payment_type: res.payment_type}))
