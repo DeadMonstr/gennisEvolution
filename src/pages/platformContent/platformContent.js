@@ -83,6 +83,8 @@ const PlatformAccountantCollection = React.lazy(() => import("pages/platformCont
 const PlatformAccountantTypesMoney = React.lazy(() => import("pages/platformContent/platformAccountant/bookKeeping/typesMoney/typesMoney"))
 
 const PlatformBlockTest =  React.lazy(() => import('./platformBlockTest/platformBlockTest'));
+const PlatformBill =  React.lazy(() => import('./platformBill/platformBill'));
+const PlatformBillProfile =  React.lazy(() => import('./platformBill/platformBillProfile/platformBillProfile'));
 
 
 
@@ -113,6 +115,8 @@ const PlatformContent = () => {
                     <Route path="changeInfo/:userId/:userRole" element={<PlatformUserProfileChange/>}/>
                     <Route path="changePhoto/:userId/:userRole" element={<PlatformUserProfileChangePhoto/>}/>
                     <Route path="studentPayment/:userId/:role/*" element={<PlatformUserPayment/>}/>
+                    <Route path="accountantBill/:id" element={<PlatformBillProfile/>}/>
+
 
                     {/*<Route path="newStudents/:locationId" element={<PlatformNewStudents/>}/>*/}
                     {/*<Route path="studyingStudents/:locationId" element={<PlatformStudyingStudents/>}/>*/}
@@ -200,6 +204,7 @@ const PlatformContent = () => {
                     <Route path="otchotAccount" element={<PlatformOtchot/>}/>
                     <Route path="otchot/:locationId" element={<PlatformOtchot/>}/>
                     <Route path="typesMoney" element={<PlatformAccountantTypesMoney/>}/>
+                    <Route path="accountantBill" element={<PlatformBill/>}/>
 
                     <Route
                         path="accounting/:locationId"

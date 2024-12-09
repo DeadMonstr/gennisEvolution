@@ -174,7 +174,9 @@ const TaskManagerSlice = createSlice({
 
 
         onDelDebtors: (state, action) => {
-            state.unCompleted.debtors = state.unCompleted.debtors.filter(item => item.id !== action.payload.id)
+            state.unCompleted.debtors = [...state.unCompleted.debtors.filter(item => item.id !== action.payload.id)]
+
+            console.log(action.payload.id)
         },
 
         onChangeProgress: (state, action) => {

@@ -1,33 +1,164 @@
-import {useDispatch, useSelector} from "react-redux";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import React, {useCallback, useEffect, useState} from "react";
-import {useForm} from "react-hook-form";
-import {useAuth} from "hooks/useAuth";
-import {useHttp} from "hooks/http.hook";
-import {fetchDataToChange} from "slices/dataToChangeSlice";
-import cls from "../AccountantBookKeeping.module.sass";
-import {BackUrl, headers} from "constants/global";
-import {changePaymentTypePayable, onAddPayable, onDeletePayable} from "slices/accountantSlice";
-import Table from "components/platform/platformUI/table";
-import Modal from "components/platform/platformUI/modal";
-import Confirm from "components/platform/platformModals/confirm/confirm";
-import ConfimReason from "components/platform/platformModals/confirmReason/confimReason";
-import Select from "components/platform/platformUI/select";
-import Form from "components/platform/platformUI/form/Form";
-import InputForm from "components/platform/platformUI/inputForm";
-import Button from "components/platform/platformUI/button";
-import {fetchBill} from "../../../../../slices/billSlice";
 
-const AccountPayable = ({locations, dataPayable}) => {
+import cls from "../platformBill.module.sass"
+import Button from "../../../../components/platform/platformUI/button";
+import {useDispatch, useSelector} from "react-redux";
+import {
+    fetchBill,
+    fetchBillProfile,
+    fetchDataPayable, fetchDataPayables,
+    onAddBill,
+    onDeleteBill,
+    onEditBill
+} from "../../../../slices/billSlice";
+import Modal from "../../../../components/platform/platformUI/modal";
+import InputForm from "../../../../components/platform/platformUI/inputForm";
+import {useForm} from "react-hook-form";
+import Form from "../../../../components/platform/platformUI/form/Form";
+import {BackUrl, headers} from "../../../../constants/global";
+import {useHttp} from "../../../../hooks/http.hook";
+import Confirm from "../../../../components/platform/platformModals/confirm/confirm";
+import ConfimReason from "../../../../components/platform/platformModals/confirmReason/confimReason";
+import AccountPayable from "../../platformAccountant/bookKeeping/accountPayable/AccountPayable";
+import {useAuth} from "../../../../hooks/useAuth";
+import {fetchDataToChange} from "../../../../slices/dataToChangeSlice";
+import {changePaymentTypePayable, onAddPayable, onDeletePayable} from "../../../../slices/accountantSlice";
+import Table from "../../../../components/platform/platformUI/table";
+import Select from "../../../../components/platform/platformUI/select";
+import {fetchLocations} from "../../../../slices/locationsSlice";
+
+const PlatformBillProfile = () => {
+    const {id} = useParams()
+
+    const navigate = useNavigate()
+
+    const {profile} = useSelector(state => state.billSlice)
+
+    const {data, dataPayable} = useSelector(state => state.billSlice)
+    const {register, handleSubmit, setValue} = useForm()
+    const [isConfirm, setIsConfirm] = useState(false)
+
+    const [activeModal, setActiveModal] = React.useState(false)
+    const [activeModalEdit, setActiveModalEdit] = React.useState(false)
+
+    const {request} = useHttp()
+
+
+    const {locations} = useSelector(state => state.locations)
+
+    const dispatch = useDispatch()
+
+
+    useEffect(() => {
+        dispatch(fetchLocations())
+        dispatch(fetchBill())
+    }, [])
+
+    useEffect(() => {
+        dispatch(fetchBillProfile(id))
+
+        dispatch(fetchDataPayable(id))
+    }, [])
+
+    const onClickDelete = () => {
+        request(`${BackUrl}delete_account/${id}/`, "DELETE", null, headers())
+            .then(res => {
+                dispatch(onDeleteBill(id))
+                setValue("name", "")
+                setActiveModal(false)
+                navigate(-1)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+
+    }
+
+    const onEdit = (data) => {
+        request(`${BackUrl}crud_account/${id}/`, "POST", JSON.stringify(data), headers())
+            .then(res => {
+                dispatch(onEditBill({id: id, data: res.account}))
+                setValue("name", "")
+                setActiveModalEdit(false)
+                console.log(res)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+
+
+    }
+
+    return (
+        <div className={cls.billProfile}>
+            <header>
+                <div>
+                    <Link to={-1} className="backBtn">
+                        <i className="fas fa-arrow-left"/>
+                        Ortga
+                    </Link>
+                </div>
+            </header>
+
+
+            <div className={cls.header}>
+                <h2>Nomi : {profile.name} </h2>
+
+                <div style={{display: "flex", gap: "2rem"}}>
+                    <Button onClickBtn={() => {
+                        setActiveModalEdit(true)
+                        setValue("name", profile.name)
+                    }}>Edit</Button>
+                    <Button onClickBtn={() => setActiveModal(true)}>Delete</Button>
+                </div>
+            </div>
+
+
+            <AccountPayableBill years={dataPayable} dataAccount={data} locations={locations} id={id}/>
+
+
+            <Modal activeModal={activeModal} setActiveModal={() => setActiveModal(!activeModal)}>
+                <Confirm
+                    setActive={setActiveModal}
+                    text={"O'chirishni xohlaysizmi ?"}
+                    getConfirm={setIsConfirm}
+                />
+            </Modal>
+            {
+                isConfirm === "yes" ?
+                    <Modal
+                        activeModal={activeModal}
+                        setActiveModal={() => {
+                            setActiveModal(false)
+                            setIsConfirm(false)
+                        }}
+                    >
+                        <ConfimReason getConfirm={onClickDelete} reason={true}/>
+                    </Modal> : null
+            }
+
+            <Modal setActiveModal={setActiveModalEdit} activeModal={activeModalEdit}>
+                <Form onSubmit={handleSubmit(onEdit)} extraClassname={cls.modal}>
+                    <InputForm register={register} name={"name"}/>
+                </Form>
+            </Modal>
+
+        </div>
+    );
+};
+
+export const AccountPayableBill = ({years, locations, dataAccount, id}) => {
 
     const status = [
-        {name: "Debtor", status: true},
-        {name: "Not in debt", status: false}
+        {name: "Payable", status: true},
+        {name: "Receable", status: false}
     ]
 
+
+    const {dataPayables} = useSelector(state => state.accountantSlice)
+
     const {dataToChange} = useSelector(state => state.dataToChange)
-
-
-    const {data} = useSelector(state => state.billSlice)
     const [add, setAdd] = useState(false)
     const {register, handleSubmit} = useForm()
     const {selectedLocation} = useAuth()
@@ -41,21 +172,42 @@ const AccountPayable = ({locations, dataPayable}) => {
     const {isCheckedPassword} = useSelector(state => state.me)
     const [isConfirm, setIsConfirm] = useState(false)
 
-    const [account, setSelectedAccount] = useState(null)
+
+    const [payable , setPayable] = useState(null)
+
+
+    const [year, setYear] = useState(null)
+
+    const [month, setMonth] = useState(null)
 
 
     const {request} = useHttp()
 
 
-    console.log(account)
-
     useEffect(() => {
-        dispatch(fetchBill())
-    }, [])
+
+        const monthId = years?.years?.filter(item => item?.value === year)[0]?.months.filter(item => item.month === month)[0]?.id
+
+
+        if (month) {
+            // dispatch(fetchDataPayables({id, monthId}))
+
+            request(`${BackUrl}account_payables/${id}/${monthId}/`, "POST", null, headers())
+                .then(res => {
+                    console.log(res, "res")
+
+                    setPayable(res.payables)
+                })
+
+        }
+    }, [month])
+
+
+    console.log(payable , "payable")
 
     useEffect(() => {
         dispatch(fetchDataToChange(selectedLocation))
-    }, [selectedLocation])
+    }, [])
 
     const changeModal = (name) => {
         setActiveChangeModalName(name)
@@ -79,6 +231,7 @@ const AccountPayable = ({locations, dataPayable}) => {
         })
     }, [status])
 
+
     const renderPaymentType = useCallback(() => {
         return dataToChange?.payment_types?.map((item, i) => {
             return (
@@ -93,7 +246,7 @@ const AccountPayable = ({locations, dataPayable}) => {
 
 
     const renderData = () => {
-        return dataPayable.map((item, i) => (
+        return payable?.map((item, i) => (
             <tr>
                 <td>{i + 1}</td>
                 <td>{item.amount}</td>
@@ -152,15 +305,15 @@ const AccountPayable = ({locations, dataPayable}) => {
         // setActiveChangeModal(false)
         // dispatch(changePaymentType({id: id ,typePayment: value}))
 
-
-        request(`${BackUrl}crud_account_payable/${changingData.id}`, "POST", JSON.stringify({payment_type_id: value}), headers())
-            .then(res => {
-                console.log(res)
-                dispatch(changePaymentTypePayable({id: id, payment_type: res.payment_type}))
-
-                // dispatch(onAddDevidend(res.dividend))
-                // setAdd(false)
-            })
+        //
+        // request(`${BackUrl}crud_account_payable/${changingData.id}`, "POST", JSON.stringify({payment_type_id: value}), headers())
+        //     .then(res => {
+        //         console.log(res)
+        //         dispatch(changePaymentTypePayable({id: id, payment_type: res.payment_type}))
+        //
+        //         // dispatch(onAddDevidend(res.dividend))
+        //         // setAdd(false)
+        //     })
 
     }
 
@@ -173,17 +326,15 @@ const AccountPayable = ({locations, dataPayable}) => {
         //     ...data
         // }
 
-
-        setActiveChangeModal(false)
-
-
-        request(`${BackUrl}delete_account_payable/${changingData.id}`, "POST", JSON.stringify(data), headers())
-            .then(res => {
-                dispatch(onDeletePayable({id: changingData.id}))
-                // dispatch(changePaymentType({id: id, payment_type: res.payment_type}))
-                // dispatch(onAddDevidend(res.dividend))
-                // setAdd(false)
-            })
+        //
+        // setActiveChangeModal(false)
+        //
+        //
+        // request(`${BackUrl}delete_account_payable/${changingData.id}`, "POST", JSON.stringify(data), headers())
+        //     .then(res => {
+        //
+        //
+        //     })
 
     }
 
@@ -193,20 +344,27 @@ const AccountPayable = ({locations, dataPayable}) => {
 
         request(`${BackUrl}add_account_payable`, "POST", JSON.stringify({
             ...data,
-            location_id: loc,
-            account_id: Number(account)
+            account_id: id
         }), headers())
             .then(res => {
-                dispatch(onAddPayable(res.account_payable))
+                // dispatch(onAddPayable(res.account_payable))
                 setAdd(false)
             })
 
     }
     return (
-        <>
-            <div className={cls.plus} onClick={() => setAdd(true)}>
-                <i className="fas fa-plus"></i>
-            </div>
+        <div className={cls.bill}>
+           <div className={cls.billFilter}>
+               <Select options={years?.years} onChangeOption={setYear}/>
+               <Select
+                   options={years?.years?.filter(item => item?.value === year)[0]?.months.map(itemMonth => itemMonth.month)}
+                   onChangeOption={setMonth}
+               />
+               <div className={cls.plus} onClick={() => setAdd(true)}>
+                   <i className="fas fa-plus"></i>
+               </div>
+
+           </div>
             <Table>
                 <thead>
                 <tr>
@@ -264,10 +422,6 @@ const AccountPayable = ({locations, dataPayable}) => {
                         <InputForm register={register} type={"number"} title={"Amount sum"} name={"amount_sum"}/>
                         <InputForm register={register} title={"Desc"} name={"desc"}/>
                         <InputForm register={register} title={"Date"} type={"date"} name={"date"}/>
-
-                        <Select onChangeOption={setSelectedAccount} options={data}/>
-                        <Select value={loc} onChangeOption={setLoc} options={locations}/>
-
                         <div className={cls.debtor_type}>
                             {renderDebtType()}
                         </div>
@@ -280,9 +434,8 @@ const AccountPayable = ({locations, dataPayable}) => {
                     </Form>
                 </div>
             </Modal>
-        </>
+        </div>
     )
 }
 
-
-export default AccountPayable
+export default PlatformBillProfile;

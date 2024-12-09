@@ -79,7 +79,7 @@ const menuList = [
         label: "Lead"
     }
 ]
-const colorStatusList = ["red", "yellow", "green"]
+const colorStatusList = ["red", "yellow", "green", "navy", "black"]
 
 const PlatformTaskManager = () => {
 
@@ -99,13 +99,8 @@ const PlatformTaskManager = () => {
     } = useSelector(state => state.taskManager)
 
 
-
-
     const [activeMenu, setActiveMenu] = useState(menuList[0].name)
     const [isCompleted, setIsCompleted] = useState(false)
-
-
-
 
     const dispatch = useDispatch()
     const {request} = useHttp()
@@ -122,14 +117,8 @@ const PlatformTaskManager = () => {
     const [tableData, setTableDate] = useState([])
 
 
-    const [data, setData] = useState([])
-    const [banListColors,setBanListColors] = useState([])
-
-
-
-
-
-
+    const [data, setData] = useState(null)
+    const [banListColors, setBanListColors] = useState([])
 
 
     useEffect(() => {
@@ -154,10 +143,10 @@ const PlatformTaskManager = () => {
         if (isCompleted) {
             switch (activeMenu) {
                 case "leads":
-                    setBanListColors(["red","yellow"])
+                    setBanListColors(["red", "yellow"])
                     break;
                 case "newStudents":
-                    setBanListColors(["green","red"])
+                    setBanListColors(["green", "red", "navy", "black"])
                     break;
                 case "debtors":
                     setBanListColors(["green"])
@@ -169,7 +158,7 @@ const PlatformTaskManager = () => {
                     setBanListColors(["green"])
                     break;
                 case "newStudents":
-                    setBanListColors(["green","red"])
+                    setBanListColors(["green", "red", "navy", "black"])
                     break;
                 case "leads":
                     setBanListColors(["green"])
@@ -178,9 +167,7 @@ const PlatformTaskManager = () => {
         }
 
 
-
-    },[isCompleted,activeMenu])
-
+    }, [isCompleted, activeMenu])
 
 
     // Fetch data from type and date
@@ -199,7 +186,7 @@ const PlatformTaskManager = () => {
                     dispatch(fetchCompletedNewStudentsTaskData({locationId, date: formatted}))
                     break;
                 case "leads":
-                    dispatch(fetchCompletedLeadsData({locationId,date: formatted}))
+                    dispatch(fetchCompletedLeadsData({locationId, date: formatted}))
                     break;
             }
         } else {
@@ -208,10 +195,10 @@ const PlatformTaskManager = () => {
                     dispatch(fetchDebtorsData({locationId, date: formatted}))
                     break;
                 case "newStudents":
-                    dispatch(fetchNewStudentsTaskData({locationId,date: formatted}))
+                    dispatch(fetchNewStudentsTaskData({locationId, date: formatted}))
                     break;
                 case "leads":
-                    dispatch(fetchLeadsData({locationId,date: formatted}))
+                    dispatch(fetchLeadsData({locationId, date: formatted}))
                     break;
 
 
@@ -219,7 +206,7 @@ const PlatformTaskManager = () => {
         }
 
 
-    }, [activeMenu, locationId, date,isCompleted])
+    }, [activeMenu, locationId, date, isCompleted])
 
     // set current data from fetched data
 
@@ -252,8 +239,6 @@ const PlatformTaskManager = () => {
                 case "leads":
                     setData(unCompleted.leads)
                     break;
-
-
             }
         }
 
@@ -267,8 +252,6 @@ const PlatformTaskManager = () => {
         completed.leads,
     ])
 
-
-    // length fetched data
 
     const calcLengthData = useCallback((type, isCompleted) => {
         if (isCompleted) {
@@ -300,33 +283,30 @@ const PlatformTaskManager = () => {
     ])
 
 
-
-
-
     const renderMenuItems = useCallback(() => {
         return menuList.map((item, i) => {
             return (
                 <div className={cls.otherItems}>
                     <p
                         className={classNames(cls.other__item, {
-                            [cls.active]: activeMenu === item.name
+                            [cls.active]: activeMenu === item?.name
                         })}
                     >
-                        {calcLengthData(item.name, isCompleted)}
+                        {calcLengthData(item?.name, isCompleted)}
                     </p>
                     <h2
                         key={i}
                         className={classNames(cls.other__item, {
-                            [cls.active]: activeMenu === item.name
+                            [cls.active]: activeMenu === item?.name
                         })}
                         onClick={() => {
-                            setActiveMenu(item.name)
+                            setActiveMenu(item?.name)
                             // setIsCompleted(false)
                             setSearchValue("")
-                            localStorage.setItem("taskMenuType", item.name)
+                            localStorage.setItem("taskMenuType", item?.name)
                         }}
                     >
-                        {item.label}
+                        {item?.label}
                     </h2>
                 </div>
             )
@@ -359,6 +339,7 @@ const PlatformTaskManager = () => {
     }
 
     const onSubmit = (data) => {
+
         const res = {
             id: studentId,
             ...data
@@ -367,11 +348,21 @@ const PlatformTaskManager = () => {
 
         if (activeMenu === "newStudents") {
 
+
+            dispatch(onDelNewStudents({id: res.id}))
+
+
             request(`${BackUrl}call_to_new_students`, "POST", JSON.stringify(res), headers())
                 .then(res => {
+
+
+                    console.log(res)
+
                     if (res?.student.student_id) {
-                        dispatch(onDelNewStudents({id: res.student_id}))
-                        dispatch(onChangeProgress({progress: res.student.task_statistics, allProgress: res.student.task_daily_statistics}))
+                        dispatch(onChangeProgress({
+                            progress: res.student.task_statistics,
+                            allProgress: res.student.task_daily_statistics
+                        }))
 
                         showMessage(res.student.msg)
                     } else {
@@ -386,9 +377,13 @@ const PlatformTaskManager = () => {
                 select: studentSelect,
                 ...res
             }
+
+            console.log(result)
             request(`${BackUrl}call_to_debts`, "POST", JSON.stringify(result), headers())
                 .then(res => {
-                    dispatch(onDelDebtors({id: res.student_id}))
+
+                    console.log(res)
+                    dispatch(onDelDebtors({id: result.id}))
                     dispatch(onChangeProgress({progress: res.task_statistics, allProgress: res.task_daily_statistics}))
 
                     showMessage(res.message)
@@ -405,7 +400,10 @@ const PlatformTaskManager = () => {
                 .then(res => {
                     if (res.lead_id) {
                         dispatch(onDelLeads({id: res?.lead_id}))
-                        dispatch(onChangeProgress({progress: res.task_statistics, allProgress: res.task_daily_statistics}))
+                        dispatch(onChangeProgress({
+                            progress: res.task_statistics,
+                            allProgress: res.task_daily_statistics
+                        }))
                     }
                     showMessage(res.msg)
                 })
@@ -450,7 +448,6 @@ const PlatformTaskManager = () => {
     }
 
 
-
     // const onSearch = (value) => {
     //     setSearchValue(value)
     //     if (value !== "") {
@@ -481,9 +478,13 @@ const PlatformTaskManager = () => {
     }), [activeMenu, isCompleted, locationId, completedDebtorStudent])
 
 
+    // const resetStat = () => {
+    //     request(`${BackUrl}`, "")
+    // }
+
 
     const searchedData = useMemo(() => {
-        const filteredData = data.slice()
+        const filteredData = data?.slice()
 
 
         if (searchValue && !isNaN(+searchValue) && typeof +searchValue === "number"  ) {
@@ -502,7 +503,7 @@ const PlatformTaskManager = () => {
     }, [data, searchValue])
 
 
-    const renderData =useCallback(() => {
+    const renderData = useCallback(() => {
 
         // if (unCompletedStatus === "loading" || unCompletedStatus === "idle" || completedStatus === "loading" || completedStatus === "idle" ) {
         //     return <DefaultLoaderSmall/>
@@ -528,13 +529,7 @@ const PlatformTaskManager = () => {
                     />
                 )
         }
-    },[isTable,searchedData,isCompleted,activeMenu,banListColors,unCompletedStatus,completedStatus,searchValue])
-
-
-
-
-
-
+    }, [isTable, searchedData, isCompleted, activeMenu, banListColors, unCompletedStatus, completedStatus, searchValue])
 
 
     return (
@@ -782,21 +777,19 @@ const Completed = ({progress, progressStatus, style = "black"}) => {
 const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
 
 
-
-
     const filteredItems = useCallback((color) => {
-        return arr.filter(item => {
+        return arr?.filter(item => {
 
             if (activeType === "leads") {
                 return item.status === color
             }
 
-            if (typeof item.moneyType === "string" && item.moneyType ) {
+            if (typeof item.moneyType === "string" && item.moneyType) {
                 return item.moneyType === color
             }
             return item
         })
-    }, [arr,activeType])
+    }, [arr, activeType])
 
     if (status === "loading" || status === "idle") {
         return <DefaultLoader/>
@@ -807,7 +800,8 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
 
         switch (activeType) {
             case "debtors" :
-                if (banList.includes(item)) return null
+                if (banList?.includes(item)) return null
+
                 return (
                     <RenderItem
                         arr={filteredItems(item)}
@@ -816,15 +810,17 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
                 )
 
             case "newStudents":
-                if (banList.includes(item)) return null
+                if (banList?.includes(item)) return null
+
+
                 return (
                     <RenderItem
-                        arr={filteredItems(item)}
+                        arr={arr}
                         index={i}
                     />
                 )
             case "leads":
-                if (banList.includes(item)) return null
+                if (banList?.includes(item)) return null
                 return (
                     <RenderItem
                         arr={filteredItems(item)}
@@ -884,7 +880,6 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
 const RenderItem = React.memo(({arr, index}) => {
 
 
-
     useEffect(() => {
         const elem = document.querySelectorAll("#main")
         const elements = document.querySelectorAll("#scroll__inner")
@@ -908,7 +903,7 @@ const RenderItem = React.memo(({arr, index}) => {
     useEffect(() => {
         setWidth(wrapper.current?.scrollWidth - wrapper.current?.offsetWidth)
         x.set(0)
-    }, [arr.length, isCompleted, activeMenu])
+    }, [arr?.length, isCompleted, activeMenu])
     const controls = useDragControls()
 
     return (
@@ -931,7 +926,7 @@ const RenderItem = React.memo(({arr, index}) => {
                 dragControls={controls}
             >
                 {
-                    arr.map((item, i) => {
+                    arr?.map((item, i) => {
                         return (
                             <TaskCard
                                 item={item}
@@ -969,21 +964,25 @@ const TaskCard = ({item, index}) => {
 
                 setStyle({
                     generalBack: item?.moneyType === "red" ?
-                        "#FFE4E6" : "#FEF9C3",
+                        "#FFE4E6" : item.moneyType === 'navy' ? "navy" : item.moneyType === "black" ? "black" : "#FEF9C3",
                     strBack: item?.moneyType === "red" ?
-                        "deeppink" : "#d7d700",
+                        "deeppink" : item.moneyType === "navy" ? "red" : "#d7d700",
                     backImage: item?.moneyType === "red" ?
                         `url(${taskCardBack})` : `url(${taskCardBack2})`
                 })
                 break;
         }
-    }, [activeMenu,item.moneyType,item?.status])
+    }, [activeMenu, item.moneyType, item?.status])
+
 
     return (
         <motion.div
             key={index}
             className={cls.item}
-            style={{backgroundColor: style.generalBack}}
+            style={{
+                backgroundColor: style.generalBack,
+                color: item.moneyType === "navy" ? "white" : item.moneyType === "black" ? "white" : ""
+            }}
         >
             {
                 (activeMenu === "leads" && !isCompleted) ?
@@ -991,7 +990,7 @@ const TaskCard = ({item, index}) => {
                         className={classNames("fas fa-trash", cls.icon)}
                         onClick={() => {
                             onDelete(true)
-                            getStudentId({id: item.id, status: item.status})
+                            getStudentId({id: item?.id, status: item?.status})
                         }}
                     /> : null
             }
@@ -999,6 +998,7 @@ const TaskCard = ({item, index}) => {
                 className={classNames(cls.item__info, {
                     [cls.active]: activeMenu === "leads"
                 })}
+
             >
                 {
                     activeMenu === "leads" ? null : <h2
@@ -1010,20 +1010,15 @@ const TaskCard = ({item, index}) => {
                         }
                     </h2>
                 }
-                <h2 className={cls.username}>{item?.name} {item?.surname}</h2>
+                <h2 style={{color: item.moneyType === "navy" ? "white" : item.moneyType === "black" ? "white" : ""}}
+                    className={cls.username}>{item?.name} {item?.surname}</h2>
                 <ul
                     className={classNames(cls.infoList, {
                         [cls.active]: activeMenu === "leads"
                     })}
                 >
                     <li className={cls.infoList__item}>number: <span>{item?.phone}</span></li>
-                    {
-                        activeMenu === "newStudents" ? item?.subject?.map(item => {
-                            return (
-                                <li className={cls.infoList__item}>Fan: <span>{item}</span></li>
-                            )
-                        }) : null
-                    }
+
                     {/*{*/}
                     {/*    activeMenu === "debtors" ? <>*/}
                     {/*        <li className={cls.infoList__item}>Ingliz tili: <span>390000</span></li>*/}
@@ -1031,18 +1026,41 @@ const TaskCard = ({item, index}) => {
                     {/*    </> : null*/}
                     {/*}*/}
                     {
-                        activeMenu === "leads" ? null : <li className={cls.infoList__item}>
-                            Koment: <span>{item?.comment}  </span>
-                        </li>
+                        activeMenu === "leads" ?
+                            <li className={cls.infoList__item}>Register date: <span>{item?.day}  </span></li> :
+                            <>
+                                <li className={cls.infoList__item}>Koment: <span>{item?.comment}  </span></li>
+
+
+                            </>
                     }
                     {
                         activeMenu === "newStudents" ?
-                            <li className={cls.infoList__item}>Smen: <span>{item?.shift}</span></li> : null
+                            <>
+                                {/*{item?.subjects?.map(item =>*/}
+                                {/*    (*/}
+                                {/*        <li className={cls.infoList__item}>Fan: <span>{item}</span></li>*/}
+                                {/*    )*/}
+                                {/*)}*/}
+                                <li className={cls.infoList__item}>Fani: <span>{item?.subjects.map(item => (
+                                    `${item ? item : item?.name} `
+                                ))}</span></li>
+                                <li className={cls.infoList__item}>Number: <span>{item?.phone}</span></li>
+                                <li className={cls.infoList__item}>Parent number: <span>{item?.parent}</span></li>
+                            </> : null
                     }
                     {
                         activeMenu === "debtors" ?
-                            <li className={cls.infoList__item}>Tel status: <span>{item?.reason}</span>
-                            </li> : null
+                            <>
+
+                                <li className={cls.infoList__item}>Tel status: <span>{item?.reason}</span></li>
+
+                                <li className={cls.infoList__item}>Number: <span>{item?.phone}</span></li>
+                                <li className={cls.infoList__item}>Parent number: <span>{item?.parent}</span></li>
+                            </>
+
+
+                            : null
                     }
                 </ul>
             </div>

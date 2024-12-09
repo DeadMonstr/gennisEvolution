@@ -1,0 +1,139 @@
+@import "styles/abstracts/variables"
+@import "styles/abstracts/mixins"
+
+.bill
+
+  display: flex
+  flex-direction: column
+  padding: 2rem
+
+
+  &__wrapper
+    display: flex
+    gap: 2rem
+    flex-wrap: wrap
+    .box
+      //width: 150px
+      max-height: 150px
+
+      padding: 3rem
+      flex-wrap: wrap
+      max-width: 240px
+      border-radius: 10px
+      display: flex
+      flex-direction: column
+      align-items: center
+      justify-content: center
+      cursor: pointer
+      border: 1px solid
+      position: relative
+      &:hover .popup
+        opacity: 1
+        visibility: visible
+      h2
+        width: 100%
+
+
+        overflow: hidden
+        text-overflow: ellipsis
+
+      .popup
+        width: max-content
+        max-width: 30rem
+        visibility: hidden
+        opacity: 0
+        background-color: grey
+        padding: .5rem 1rem
+        border-radius: 5px
+        position: absolute
+        top: 70%
+        left: 50%
+        transform: translateX(-50%)
+        z-index: 200
+        color: white
+        transition: all .1s
+
+
+  .plus_main
+    display: flex
+    justify-content: space-between
+    align-items: center
+.plus
+  width: 5rem
+  height: 5rem
+  background-color: $color-main
+  border-radius: 50%
+  display: flex
+  align-self: flex-end
+  align-items: center
+  justify-content: center
+  transition: all .2s
+  margin-top: 10px
+  @include btn-active
+  i
+    font-size: 2.5rem
+
+.billProfile
+  padding: 2rem
+  .header
+    padding: 2rem
+    h2
+
+      font-size: 2.5rem
+
+
+
+  .backBtn
+    width: fit-content
+    height: fit-content
+    padding: .7rem 2rem
+    font-size: 1.6rem
+    color: white
+    background-color: $color-grey-dark
+    border-radius: 15px
+    cursor: pointer
+    user-select: none
+    transition: all .6s
+    display: flex
+    align-items: center
+    justify-content: center
+    i
+      font-size: 1.8rem
+      color: white
+      margin-right: 1rem
+    &:hover
+      background-color: $color-main-dark
+      box-shadow: 0 0 7px 1px $color-main-light
+    &:active
+      transform: scale(.9)
+
+.modal
+  margin: 0 auto
+  width: fit-content
+  padding: 4rem
+  background-color: white
+  border-radius: 15px
+  input
+    width: 30rem!important
+
+.add
+  width: 50rem
+  max-height: 60rem
+  background-color: white
+  border-radius: 15px
+  padding: 2rem
+  form
+    display: flex
+    flex-direction: column
+    gap: 1rem
+    .debtor_type
+      display: flex
+      gap: 2rem
+    .payment_type
+      display: flex
+      gap: 2rem
+
+.billFilter
+  display: flex
+  align-items: flex-end
+  justify-content: flex-end
