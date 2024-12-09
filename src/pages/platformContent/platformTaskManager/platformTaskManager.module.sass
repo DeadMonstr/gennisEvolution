@@ -1,3 +1,7 @@
+
+
+
+
 .tasks
   padding: 5rem 8rem
 
@@ -217,6 +221,21 @@
   display: flex
   position: relative
   //box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4)
+  &.red
+    background-color: #FFE4E6
+  &.yellow
+    background-color: #FEF9C3
+  &.green
+    background-color: #6bfa88
+  &.black
+    background-color: #3a3a3a
+  &.navy
+    background-color: #2e8cff
+  &.noColor
+    background-color: #eaeaea
+
+
+
 
   .icon
     color: black
@@ -241,7 +260,8 @@
       border-radius: 7.5px
       width: fit-content
       padding: .5rem 1rem
-      color: white
+      color: #4b4b4b
+      background-color: white
 
     .username
       padding-bottom: 1rem
@@ -354,9 +374,9 @@
   &__number
     display: flex
     justify-content: space-between
-  &__comment
-    display: flex
-    justify-content: space-between
+  //&__comment
+  //  display: flex
+  //  justify-content: space-between
 
 
 .switchBox
@@ -529,4 +549,5 @@ table
     display: none
     border-radius: 10px
     background-color: #726666
+
 

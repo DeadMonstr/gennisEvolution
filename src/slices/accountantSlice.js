@@ -14,6 +14,7 @@ const initialState = {
     overhead: [],
     collection: [],
     typesMoney: [],
+    invesment: [],
 
 
 
@@ -130,13 +131,14 @@ export const fetchAccountantDate = createAsyncThunk(
     }
 )
 
+export const fetchAccountantInvestment = createAsyncThunk(
+    'accountantSlice/fetchAccountantInvestment',
+    async () => {
+        const {request} = useHttp();
 
-
-
-
-
-
-
+        return await request(`${BackUrl}investments`, "GET", null, headers())
+    }
+)
 const accountantSlice = createSlice({
     name: "accountantSlice",
     initialState,
@@ -318,6 +320,9 @@ const accountantSlice = createSlice({
                 state.loading = 'error'
             })
 
+
+
+
             .addCase(fetchAccountantDate.pending, state => {
                 state.loading = 'loading'
             })
@@ -325,6 +330,19 @@ const accountantSlice = createSlice({
                 state.date = action.payload.date;
             })
             .addCase(fetchAccountantDate.rejected, state => {
+                state.loading = 'error'
+            })
+
+
+
+
+            .addCase(fetchAccountantInvestment.pending, state => {
+                state.loading = 'loading'
+            })
+            .addCase(fetchAccountantInvestment.fulfilled, (state, action) => {
+                state.invesment = action.payload;
+            })
+            .addCase(fetchAccountantInvestment.rejected, state => {
                 state.loading = 'error'
             })
 

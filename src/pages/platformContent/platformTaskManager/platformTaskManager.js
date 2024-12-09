@@ -41,7 +41,10 @@ import cls from "./platformTaskManager.module.sass";
 import unknownUser from "assets/user-interface/user_image.png";
 import taskCardBack from "assets/background-img/TaskCardBack.png";
 import taskCardBack2 from "assets/background-img/TaskCardBack2.png";
-import taskCardBack4 from "assets/background-img/TaskCardBack4.png";
+import taskCardBack3 from "assets/background-img/greenBg.png";
+import taskCardBack4 from "assets/background-img/blackBg.png";
+import taskCardBack5 from "assets/background-img/navyBg.png";
+import taskCardBack6 from "assets/background-img/grayBg.png";
 import switchXButton from "assets/icons/bx_task-x.svg";
 import switchCompletedBtn from "assets/icons/progress.svg";
 
@@ -79,7 +82,7 @@ const menuList = [
         label: "Lead"
     }
 ]
-const colorStatusList = ["red", "yellow", "green", "navy", "black"]
+const colorStatusList = ["red", "yellow", "green", "navy", "black","noColor"]
 
 const PlatformTaskManager = () => {
 
@@ -134,6 +137,7 @@ const PlatformTaskManager = () => {
     }, [])
 
 
+
     // Cards color banList
 
     useEffect(() => {
@@ -148,7 +152,7 @@ const PlatformTaskManager = () => {
                     setBanListColors(["green", "red", "navy", "black"])
                     break;
                 case "debtors":
-                    setBanListColors(["green"])
+                    setBanListColors([])
                     break;
             }
         } else {
@@ -313,11 +317,16 @@ const PlatformTaskManager = () => {
     }, [activeMenu, menuList, unCompleted, completed])
 
 
+
+
     const onChangeIsCompleted = (status) => {
         localStorage.setItem("isCompleted", status)
         setData([])
         setIsCompleted(status)
     }
+
+
+
 
 
     function showMessage(msg) {
@@ -372,7 +381,6 @@ const PlatformTaskManager = () => {
                 ...res
             }
 
-            console.log(result)
             request(`${BackUrl}call_to_debts`, "POST", JSON.stringify(result), headers())
                 .then(res => {
 
@@ -478,14 +486,21 @@ const PlatformTaskManager = () => {
 
 
     const searchedData = useMemo(() => {
-        const filteredData = data?.slice()
+        const filteredData = data?.slice() || []
 
-        return filteredData?.filter(item =>
-            item?.name?.toLowerCase()?.includes(searchValue?.toLowerCase()) ||
-            item?.surname?.toLowerCase()?.includes(searchValue?.toLowerCase()) ||
-            item?.username?.toLowerCase()?.includes(searchValue?.toLowerCase()) ||
-            item?.phone?.toLowerCase()?.includes(searchValue?.toLowerCase()) ||
-            item?.parent?.toLowerCase()?.includes(searchValue?.toLowerCase())
+
+        if (searchValue && !isNaN(+searchValue) && typeof +searchValue === "number"  ) {
+            return filteredData.filter(item => {
+
+                return item.phone.includes(searchValue) ||
+                item?.parent?.includes(+searchValue)
+            })
+        }
+
+        return filteredData.filter(item =>
+            item.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+            item.surname.toLowerCase().includes(searchValue.toLowerCase()) ||
+            item.username.toLowerCase().includes(searchValue.toLowerCase())
         )
     }, [data, searchValue])
 
@@ -774,7 +789,11 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
             if (typeof item.moneyType === "string" && item.moneyType) {
                 return item.moneyType === color
             }
-            return item
+
+            if (color === "noColor" && typeof item.moneyType !== "string" ) {
+                return item
+            }
+
         })
     }, [arr, activeType])
 
@@ -782,6 +801,16 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
         return <DefaultLoader/>
     }
 
+
+    if (activeType === "newStudents") {
+
+        return (
+            <RenderItem
+                arr={arr}
+                index={1}
+            />
+        )
+    }
 
     return colorStatusList.map((item, i) => {
 
@@ -796,16 +825,6 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
                     />
                 )
 
-            case "newStudents":
-                if (banList?.includes(item)) return null
-
-
-                return (
-                    <RenderItem
-                        arr={arr}
-                        index={i}
-                    />
-                )
             case "leads":
                 if (banList?.includes(item)) return null
                 return (
@@ -932,41 +951,54 @@ const TaskCard = ({item, index}) => {
     const {activeMenu, click, onDelete, getStudentId, isCompleted} = useContext(FuncContext)
     const [style, setStyle] = useState({})
 
+    const renderBgImage = (color) => {
+        switch (color) {
+            case "red":
+                return `url(${taskCardBack})`
+            case "yellow":
+                return `url(${taskCardBack2})`
+            case "green":
+                return `url(${taskCardBack3})`
+            case "black":
+                return `url(${taskCardBack4})`
+            case "navy":
+                return `url(${taskCardBack5})`
+            default:
+                return `url(${taskCardBack6})`
+
+        }
+    }
+
+
+
+
     useEffect(() => {
         switch (activeMenu) {
             case "leads":
                 setStyle({
-                    generalBack: item?.status === "red" ?
-                        "#FFE4E6" : item?.status === "yellow" ?
-                            "#FEF9C3" : "#DCFCE7",
-                    backImage: item?.status === "red" ?
-                        `url(${taskCardBack})` : item?.status === "yellow" ?
-                            `url(${taskCardBack2})` : `url(${taskCardBack4})`,
-                    imageColor: item?.status === "red" ?
-                        "#E11D48" : item?.status === "yellow" ?
-                            "#FDE047" : "#BEF264"
+                    backImage: renderBgImage(item?.status),
                 })
                 break;
             default:
+
                 setStyle({
-                    generalBack: item?.moneyType === "red" ?
-                        "#FFE4E6" : item.moneyType === 'navy' ? "navy" : item.moneyType === "black" ? "black" : "#FEF9C3",
-                    strBack: item?.moneyType === "red" ?
-                        "deeppink" : item.moneyType === "navy" ? "red" : "#d7d700",
-                    backImage: item?.moneyType === "red" ?
-                        `url(${taskCardBack})` : `url(${taskCardBack2})`
+                    // generalBack: `${cls.b}`,
+                    // generalBack: item?.moneyType === "red" ?
+                    //     "#FFE4E6" : item.moneyType === 'navy' ? "navy" : item.moneyType === "black" ? "black" :  "#FEF9C3",
+
+                    backImage: renderBgImage(item?.moneyType)
                 })
                 break;
         }
     }, [activeMenu, item.moneyType, item?.status])
 
 
+
     return (
         <motion.div
             key={index}
-            className={cls.item}
+            className={classNames(cls.item, cls[item?.moneyType || item?.status || "noColor"])}
             style={{
-                backgroundColor: style.generalBack,
                 color: item.moneyType === "navy" ? "white" : item.moneyType === "black" ? "white" : ""
             }}
         >
@@ -989,14 +1021,14 @@ const TaskCard = ({item, index}) => {
                 {
                     activeMenu === "leads" ? null : <h2
                         className={cls.debt}
-                        style={{backgroundColor: style.strBack}}
+
                     >
                         {
                             activeMenu === "debtors" ? item?.balance : item?.registered_date
                         }
                     </h2>
                 }
-                <h2 style={{color: item.moneyType === "navy" ? "white" : item.moneyType === "black" ? "white" : ""}}
+                <h2 style={{color: item.moneyType === "navy" ? "white" : item?.moneyType === "black" ? "white" : ""}}
                     className={cls.username}>{item?.name} {item?.surname}</h2>
                 <ul
                     className={classNames(cls.infoList, {

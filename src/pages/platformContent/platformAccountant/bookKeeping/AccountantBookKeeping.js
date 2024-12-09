@@ -11,7 +11,7 @@ import Button from "components/platform/platformUI/button";
 import {
     fetchAccountantBookKeepingAccountPayable,
     fetchAccountantBookKeepingDividend, fetchAccountantBookKeepingOverhead,
-    fetchAccountantBookKeepingStaffSalary, fetchAccountantBookKeepingTypesMoney,
+    fetchAccountantBookKeepingStaffSalary, fetchAccountantBookKeepingTypesMoney, fetchAccountantInvestment,
 } from "slices/accountantSlice";
 
 
@@ -20,13 +20,15 @@ import AccountPayable from "./accountPayable/AccountPayable";
 import Dividend from "./dividend/Dividend";
 import OverheadAccount from "./overhead/OverheadAccount";
 import {Link, useNavigate} from "react-router-dom";
+import InvesmentAccount from "pages/platformContent/platformAccountant/bookKeeping/invesmentAccount/invesmentAccount";
 
 
 const optionsPage = [
     "Dividend",
     "Account payable",
     "Staff salary",
-    "Overhead"
+    "Overhead",
+    "Investments"
 ]
 
 
@@ -44,7 +46,7 @@ const AccountantBookKeeping = () => {
     const dispatch = useDispatch()
 
 
-    const {dividends, accountPayable,staffSalary,overhead,typesMoney} = useSelector(state => state.accountantSlice)
+    const {dividends, accountPayable,staffSalary,overhead,typesMoney , invesment} = useSelector(state => state.accountantSlice)
 
     useEffect(() => {
         dispatch(fetchLocations())
@@ -69,6 +71,9 @@ const AccountantBookKeeping = () => {
             dispatch(fetchAccountantBookKeepingStaffSalary({isDeleted,isArchive}))
         } else if (activePage === "Overhead") {
             dispatch(fetchAccountantBookKeepingOverhead({isDeleted,isArchive}))
+        } else if (activePage === "Investments") {
+            dispatch(fetchAccountantInvestment())
+
         }
     }, [loc, activePage, isDeleted,isArchive])
 
@@ -84,6 +89,8 @@ const AccountantBookKeeping = () => {
                 return <StaffSalary data={staffSalary} isDeleted={isDeleted}/>
             case "Overhead":
                 return <OverheadAccount data={overhead}/>
+            case "Investments":
+                return <InvesmentAccount locations={locations} data={invesment}/>
         }
     }, [activePage, dividends, accountPayable, locations,staffSalary,overhead])
 
