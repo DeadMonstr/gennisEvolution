@@ -41,16 +41,11 @@ export const fetchDataPayable = createAsyncThunk(
 )
 
 
-
-
-
-
-
 export const fetchDataPayables = createAsyncThunk(
     "billSlice/fetchDataPayables",
-    async ({id , monthId , deleted }) => {
+    async ({id, monthId, deleted, archive}) => {
         const {request} = useHttp()
-        return await    request(`${BackUrl}account_payables/${id}/${monthId}/${deleted}/`, "POST", null, headers())
+        return await request(`${BackUrl}account_payables/${id}/${monthId}/${deleted}/${archive}/`, "POST", null, headers())
     }
 )
 
@@ -63,9 +58,6 @@ export const fetchAccountantPayableHistory = createAsyncThunk(
         return await request(`${BackUrl}get_payable_histories/${id}/`, "GET", null, headers())
     }
 )
-
-
-
 
 
 const billSlice = createSlice({
@@ -98,7 +90,6 @@ const billSlice = createSlice({
         },
 
 
-
         // onChangePayablePayment: (state , action) => {
         //     state.payable = [...state.payable.filter(item => item.id !== action.payload.id) , action.payload.data]
         // },
@@ -111,7 +102,6 @@ const billSlice = createSlice({
                 return item
             })
         },
-
 
 
         onAddPayableHistory: (state, action) => {
@@ -128,7 +118,6 @@ const billSlice = createSlice({
                 return item
             })
         },
-
 
 
     },
@@ -164,8 +153,6 @@ const billSlice = createSlice({
             })
 
 
-
-
             .addCase(fetchDataPayable.pending, state => {
                 state.loading = true
             })
@@ -178,9 +165,6 @@ const billSlice = createSlice({
                 state.loading = false
                 state.error = true
             })
-
-
-
 
 
             .addCase(fetchDataPayables.pending, state => {
@@ -196,8 +180,6 @@ const billSlice = createSlice({
                 state.loading = false
                 state.error = true
             })
-
-
 
 
             .addCase(fetchAccountantPayableHistory.pending, state => {
@@ -221,4 +203,14 @@ const billSlice = createSlice({
 
 export default billSlice.reducer
 
-export const {onAddBill, onDeleteBill, onEditBill , onAddPayable , onChangeHistoryPayment, onChangePayablePayment , onAddPayableHistory , onDeletePayable , onDeletePayableHistory} = billSlice.actions
+export const {
+    onAddBill,
+    onDeleteBill,
+    onEditBill,
+    onAddPayable,
+    onChangeHistoryPayment,
+    onChangePayablePayment,
+    onAddPayableHistory,
+    onDeletePayable,
+    onDeletePayableHistory
+} = billSlice.actions

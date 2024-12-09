@@ -30,6 +30,7 @@ import Table from "../../../../components/platform/platformUI/table";
 import Select from "../../../../components/platform/platformUI/select";
 import {fetchLocations} from "../../../../slices/locationsSlice";
 import Textarea from "../../../../components/platform/platformUI/textarea";
+import classNames from "classnames";
 
 
 const PlatformBillProfile = () => {
@@ -175,7 +176,7 @@ export const AccountPayableBill = ({years, locations, dataAccount}) => {
 
 
     const [deleted, setDeleted] = useState(false)
-    const [archive, setArchive] = useState(false)
+    const [archive, setArchive] = useState(true)
 
     const [activeChangeModal, setActiveChangeModal] = useState(false)
     const [changePayment, setChangePayment] = useState(false)
@@ -210,13 +211,12 @@ export const AccountPayableBill = ({years, locations, dataAccount}) => {
 
 
     useEffect(() => {
-        if (month && year ) {
-            console.log(years?.years?.filter(item => item?.value === year)[0]?.months.filter(item => item.month === month)[0]?.id, "jhellodasdy")
+        if (month && year) {
             const monthId = years?.years?.filter(item => item?.value === year)[0]?.months.filter(item => item.month === month)[0]?.id
-            dispatch(fetchDataPayables({id, monthId, deleted}))
+            dispatch(fetchDataPayables({id, monthId, archive, deleted}))
 
         }
-    }, [month, year  , deleted ])
+    }, [month, year, deleted, archive])
 
     useEffect(() => {
         dispatch(fetchDataToChange(selectedLocation))
@@ -371,6 +371,8 @@ export const AccountPayableBill = ({years, locations, dataAccount}) => {
             <div className={cls.billFilter}>
 
                 <Button onClickBtn={() => setDeleted(!deleted)}>Deleted</Button>
+                <Button
+                        onClickBtn={() => setArchive(!archive)}>Archive</Button>
                 <Select options={years?.years} onChangeOption={setYear}/>
                 <Select
                     options={years?.years?.filter(item => item?.value === year)[0]?.months.map(itemMonth => itemMonth.month)}
