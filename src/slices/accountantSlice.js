@@ -17,7 +17,6 @@ const initialState = {
     invesment: [],
 
 
-
     date: [],
 
 
@@ -133,10 +132,10 @@ export const fetchAccountantDate = createAsyncThunk(
 
 export const fetchAccountantInvestment = createAsyncThunk(
     'accountantSlice/fetchAccountantInvestment',
-    async () => {
+    async (data) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}investments`, "GET", null, headers())
+        return await request(`${BackUrl}get_investments/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
     }
 )
 const accountantSlice = createSlice({
@@ -210,6 +209,26 @@ const accountantSlice = createSlice({
                 return item
             })
         },
+
+        changePaymentTypeInvesment: (state, action) => {
+            state.invesment = state.invesment.map(item => {
+                if (item.id === action.payload.id) {
+                    return {...action.payload.data}
+                }
+                return item
+            })
+        },
+
+        onAddInvesment: (state, action) => {
+            state.invesment = [...state.invesment, action.payload]
+        },
+
+        onDeleteInvesment: (state, action) => {
+
+            state.invesment = state.invesment.filter(item => item.id !== action.payload)
+
+        },
+
 
 
     },
@@ -321,8 +340,6 @@ const accountantSlice = createSlice({
             })
 
 
-
-
             .addCase(fetchAccountantDate.pending, state => {
                 state.loading = 'loading'
             })
@@ -334,21 +351,15 @@ const accountantSlice = createSlice({
             })
 
 
-
-
             .addCase(fetchAccountantInvestment.pending, state => {
                 state.loading = 'loading'
             })
             .addCase(fetchAccountantInvestment.fulfilled, (state, action) => {
-                state.invesment = action.payload;
+                state.invesment = action.payload.investments
             })
             .addCase(fetchAccountantInvestment.rejected, state => {
                 state.loading = 'error'
             })
-
-
-
-
     }
 })
 
@@ -368,7 +379,10 @@ export const {
     onAddStaff,
     onAddOverhead,
     onDeleteOverhead,
-    changePaymentTypeOverhead
+    changePaymentTypeOverhead,
+    onDeleteInvesment,
+    onAddInvesment,
+    changePaymentTypeInvesment
 } = actions
 
 

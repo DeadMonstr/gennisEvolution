@@ -38,15 +38,22 @@ const AccountantBookKeeping = () => {
 
 
     const [activePage, setActivePage] = useState("Dividend")
-    const [loc,setLoc] = useState()
-    const [isDeleted,setIsDeleted] = useState(false)
-    const [isArchive,setIsArchive] = useState(false)
+    const [loc, setLoc] = useState()
+    const [isDeleted, setIsDeleted] = useState(false)
+    const [isArchive, setIsArchive] = useState(false)
 
 
     const dispatch = useDispatch()
 
 
-    const {dividends, accountPayable,staffSalary,overhead,typesMoney , invesment} = useSelector(state => state.accountantSlice)
+    const {
+        dividends,
+        accountPayable,
+        staffSalary,
+        overhead,
+        typesMoney,
+        invesment
+    } = useSelector(state => state.accountantSlice)
 
     useEffect(() => {
         dispatch(fetchLocations())
@@ -64,18 +71,18 @@ const AccountantBookKeeping = () => {
     useEffect(() => {
         console.log(activePage)
         if (activePage === "Dividend") {
-            dispatch(fetchAccountantBookKeepingDividend({loc, isDeleted,isArchive}));
+            dispatch(fetchAccountantBookKeepingDividend({loc, isDeleted, isArchive}));
         } else if (activePage === "Account payable") {
-            dispatch(fetchAccountantBookKeepingAccountPayable({loc, isDeleted,isArchive}))
+            dispatch(fetchAccountantBookKeepingAccountPayable({loc, isDeleted, isArchive}))
         } else if (activePage === "Staff salary") {
-            dispatch(fetchAccountantBookKeepingStaffSalary({isDeleted,isArchive}))
+            dispatch(fetchAccountantBookKeepingStaffSalary({isDeleted, isArchive}))
         } else if (activePage === "Overhead") {
-            dispatch(fetchAccountantBookKeepingOverhead({isDeleted,isArchive}))
+            dispatch(fetchAccountantBookKeepingOverhead({isDeleted, isArchive}))
         } else if (activePage === "Investments") {
-            dispatch(fetchAccountantInvestment())
+            dispatch(fetchAccountantInvestment({isDeleted, isArchive}))
 
         }
-    }, [loc, activePage, isDeleted,isArchive])
+    }, [loc, activePage, isDeleted, isArchive])
 
 
     const renderPage = useCallback(() => {
@@ -90,12 +97,9 @@ const AccountantBookKeeping = () => {
             case "Overhead":
                 return <OverheadAccount data={overhead}/>
             case "Investments":
-                return <InvesmentAccount locations={locations} data={invesment}/>
+                return <InvesmentAccount locations={locations}/>
         }
-    }, [activePage, dividends, accountPayable, locations,staffSalary,overhead])
-
-
-
+    }, [activePage, dividends, accountPayable, locations, staffSalary, overhead])
 
 
     const renderTypesMoney = () => {
@@ -118,8 +122,6 @@ const AccountantBookKeeping = () => {
     }
 
 
-
-
     return (
         <div className={cls.bookKeeping}>
             <div className={cls.header}>
@@ -128,19 +130,21 @@ const AccountantBookKeeping = () => {
                 </div>
                 <div>
                     <Select title={"Page"} value={activePage} options={optionsPage} onChangeOption={setActivePage}/>
-                    {
-                        (activePage === "Dividend" || activePage === "Account payable") &&
-                        <Select value={loc} onChangeOption={setLoc} options={locations}/>
-                    }
-                    <Button type={"danger"} active={isDeleted} onClickBtn={() => setIsDeleted(!isDeleted)}>Deleted</Button>
-                    <Button type={"warning"} active={isArchive} onClickBtn={() => setIsArchive(!isArchive)}>Archive</Button>
+                    {/*{*/}
+                    {/*    (activePage === "Dividend" || activePage === "Account payable") &&*/}
+                    {/*    <Select value={loc} onChangeOption={setLoc} options={locations}/>*/}
+                    {/*}*/}
+                    <Button type={"danger"} active={isDeleted}
+                            onClickBtn={() => setIsDeleted(!isDeleted)}>Deleted</Button>
+                    <Button type={"warning"} active={isArchive}
+                            onClickBtn={() => setIsArchive(!isArchive)}>Archive</Button>
                     <Link to={"../collectionAccount"}>
-                        <Button type={"submit"} >
+                        <Button type={"submit"}>
                             Inkasatsiya
                         </Button>
                     </Link>
                     <Link to={"../otchotAccount"}>
-                        <Button type={"submit"} >
+                        <Button type={"submit"}>
                             Otchot
                         </Button>
                     </Link>
@@ -153,10 +157,6 @@ const AccountantBookKeeping = () => {
         </div>
     );
 };
-
-
-
-
 
 
 export default AccountantBookKeeping;

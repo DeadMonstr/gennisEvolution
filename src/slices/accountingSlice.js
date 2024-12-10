@@ -45,11 +45,11 @@ const pages = [
         name: "Kapital xarajatlari",
         disabled: false
     },
-    {
-        value: "investments",
-        name: "Invistitsiya",
-        disabled: false
-    },
+    // {
+    //     value: "investments",
+    //     name: "Invistitsiya",
+    //     disabled: false
+    // },
     {
         value: "dividends",
         name: "Dividends",
@@ -258,7 +258,9 @@ const accountingSlice = createSlice({
         },
         onAddItem : (state , actions) => {
             state.data.data = [...state.data.data , actions.payload]
-        }
+        },
+
+
 
 
     },

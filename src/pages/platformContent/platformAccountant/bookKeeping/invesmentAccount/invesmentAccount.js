@@ -5,7 +5,14 @@ import {useHttp} from "hooks/http.hook";
 import {fetchDataToChange} from "slices/dataToChangeSlice";
 import cls from "pages/platformContent/platformAccountant/bookKeeping/AccountantBookKeeping.module.sass";
 import {BackUrl, headers} from "constants/global";
-import {changePaymentTypeOverhead, onAddOverhead, onDeleteOverhead} from "slices/accountantSlice";
+import {
+    changePaymentTypeInvesment,
+    changePaymentTypeOverhead,
+    onAddInvesment,
+    onAddOverhead,
+    onDeleteInvesment,
+    onDeleteOverhead
+} from "slices/accountantSlice";
 import Table from "components/platform/platformUI/table";
 import Modal from "components/platform/platformUI/modal";
 import Confirm from "components/platform/platformModals/confirm/confirm";
@@ -16,17 +23,17 @@ import InputForm from "components/platform/platformUI/inputForm";
 import Button from "components/platform/platformUI/button";
 
 
-const InvesmentAccount = ({data}) => {
+const InvesmentAccount = ({locations}) => {
 
     const {dataToChange} = useSelector(state => state.dataToChange)
-
+    const {invesment} = useSelector(state => state.accountantSlice)
 
     const [add, setAdd] = useState(false)
 
     const [activeChangeModal, setActiveChangeModal] = useState(false)
     const [activeChangeModalName, setActiveChangeModalName] = useState("")
     const [activeCheckPassword, setActiveCheckPassword] = useState(false)
-    const [changingData, setChangingData] = useState({})
+    const [changingData, setChangingData] = useState(null)
     const {isCheckedPassword} = useSelector(state => state.me)
     const [isConfirm, setIsConfirm] = useState(false)
     const [loc, setLoc] = useState(false)
@@ -34,7 +41,7 @@ const InvesmentAccount = ({data}) => {
 
     const dispatch = useDispatch()
 
-
+    const newLocation = [...locations, {name: "Boshqa", value: "other"}]
     const {request} = useHttp()
 
 
@@ -54,10 +61,12 @@ const InvesmentAccount = ({data}) => {
 
 
     const renderData = () => {
-        return data?.map((item, i) => (
+        return invesment?.map((item, i) => (
             <tr>
                 <td>{i + 1}</td>
-                <td>{item.amount_sum}</td>
+                <td>{item?.location}</td>
+                <td>{item?.name}</td>
+                <td>{item?.amount}</td>
                 <td
                     onClick={() => {
                         if (!item.status) {
@@ -75,20 +84,21 @@ const InvesmentAccount = ({data}) => {
                     <span
                         className={cls.typePayment}
                     >
-                        {item.payment_type_name}
+                        {item?.typePayment}
                     </span>
                 </td>
-                <td>{item.day}</td>
-                <td>{item.reason}</td>
+                <td>{item?.date}</td>
+                {/*<td>{item.reason}</td>*/}
                 <td>
                     {
-                        !item.status &&
+                        !item?.status &&
                         <span
                             onClick={() => {
+
                                 changeModal("deletePayment")
                                 setChangingData({
                                     id: item.id,
-                                    msg: "Overhead ni o'chirishni hohlaysizmi"
+                                    msg: "Invistitsiya ni o'chirishni hohlaysizmi"
                                 })
                             }}
                             className={cls.delete}
@@ -105,12 +115,14 @@ const InvesmentAccount = ({data}) => {
 
     const changePayment = (id, value) => {
 
-        // setActiveChangeModal(false)
         // dispatch(changePaymentType({id: id ,typePayment: value}))
 
-        request(`${BackUrl}change_account_overhead/${id}/${value}`, "POST", null, headers())
+        request(`${BackUrl}update_payment_type/${id}/${value}/`, "POST", null, headers())
             .then(res => {
-                dispatch(changePaymentTypeOverhead({id: id,data: res.data}))
+                dispatch(changePaymentTypeInvesment({id: id, data: res.investment}))
+                setActiveChangeModal(false)
+
+
             })
     }
 
@@ -118,13 +130,12 @@ const InvesmentAccount = ({data}) => {
     const getConfirmDelete = (data) => {
 
 
+        dispatch(onDeleteInvesment(changingData?.id))
 
-        setActiveChangeModal(false)
-
-
-        request(`${BackUrl}delete_account_overhead/${changingData.id}`, "DELETE", JSON.stringify(data), headers())
+        request(`${BackUrl}delete_investment/${changingData?.id}/`, "DELETE", JSON.stringify(data), headers())
             .then(res => {
-                dispatch(onDeleteOverhead({id: changingData.id}))
+
+                setActiveChangeModal(false)
 
             })
 
@@ -135,7 +146,7 @@ const InvesmentAccount = ({data}) => {
         return dataToChange?.payment_types?.map((item, i) => {
             return (
                 <label key={i} className="radioLabel" htmlFor="">
-                    <input className="radio" {...register("type_payment", {required: true})} type="radio"
+                    <input className="radio" {...register("payment_type_id", {required: true})} type="radio"
                            value={item.id}/>
                     <span>{item.name}</span>
                 </label>
@@ -150,9 +161,10 @@ const InvesmentAccount = ({data}) => {
             ...data,
         }
 
-        request(`${BackUrl}/account/investments`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}investment/${loc ? `${loc}/` : ""}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
-                dispatch(onAddOverhead(res.data))
+                dispatch(onAddInvesment(res.investment))
+                console.log(res.investment)
                 setAdd(false)
             })
     }
@@ -166,10 +178,12 @@ const InvesmentAccount = ({data}) => {
                 <thead>
                 <tr>
                     <th>№</th>
+                    <th>Location</th>
+                    <th>Name</th>
                     <th>Amount</th>
                     <th>Payment type</th>
                     <th>Date</th>
-                    <th>Reason</th>
+                    {/*<th>Reason</th>*/}
                     <th></th>
                 </tr>
                 </thead>
@@ -215,9 +229,17 @@ const InvesmentAccount = ({data}) => {
             <Modal activeModal={add} setActiveModal={() => setAdd(false)}>
                 <div className={cls.add}>
                     <Form typeSubmit={"hand"} onSubmit={handleSubmit(onSubmit)}>
+                        <InputForm register={register} title={"Name"} name={"name"}/>
                         <InputForm register={register} title={"Amount"} type={"number"} name={"amount"}/>
                         <InputForm register={register} title={"Date"} type={"date"} name={"date"}/>
-                        <InputForm register={register} title={"Reason"} name={"reason"}/>
+
+                        <Select value={loc} onChangeOption={setLoc} options={newLocation}/>
+
+
+                        {loc === "other" ?
+                            <InputForm register={register} name={"otherReason"}/> :
+                            null
+                        }
                         <div className={cls.payment_type}>
                             {renderPaymentType()}
                         </div>
@@ -228,7 +250,6 @@ const InvesmentAccount = ({data}) => {
         </>
     )
 }
-
 
 
 export default InvesmentAccount

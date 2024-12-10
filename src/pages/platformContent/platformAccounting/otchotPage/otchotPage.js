@@ -46,7 +46,7 @@ const OtchotPage = () => {
 
     const renderData = () => {
         return dataToChange?.payment_types?.map(item => (
-            <Button active={item.id === activePayment}  onClickBtn={() => setActivePayment(item.id)}>
+            <Button active={item.id === activePayment} onClickBtn={() => setActivePayment(item.id)}>
                 {item.name}
             </Button>
         ))
@@ -100,7 +100,7 @@ const OtchotPage = () => {
 };
 
 
-const RenderLeft = ({data , formatSalary}) => {
+const RenderLeft = ({data, formatSalary}) => {
 
 
     const renderData = () => {
@@ -135,14 +135,14 @@ const RenderLeft = ({data , formatSalary}) => {
 }
 
 
-const RenderRight = ({data , formatSalary}) => {
+const RenderRight = ({data, formatSalary}) => {
 
 
     const renderData = () => {
         return data?.right?.map((item, i) => (
             <tr>
                 <td>{i + 1}</td>
-                <td>{item?.type_name ? item.type_name : item.reason}</td>
+                <td>{item?.type_name ? item.type_name : item.reason ? item.reason : item.desc}</td>
                 <td>{formatSalary(item?.amount ? item.amount : item.amount_sum)}</td>
                 <td>{item?.date ? item.date : item.day}</td>
             </tr>
