@@ -7,7 +7,7 @@ import cls from "pages/platformContent/platformAccountant/bookKeeping/Accountant
 import {BackUrl, headers} from "constants/global";
 import {
     changePaymentTypeInvesment,
-    changePaymentTypeOverhead,
+    changePaymentTypeOverhead, fetchAccountantBookKeepingTypesMoney,
     onAddInvesment,
     onAddOverhead,
     onDeleteInvesment,
@@ -122,6 +122,7 @@ const InvesmentAccount = ({locations}) => {
                 dispatch(changePaymentTypeInvesment({id: id, data: res.investment}))
                 setActiveChangeModal(false)
 
+                dispatch(fetchAccountantBookKeepingTypesMoney())
 
             })
     }
@@ -134,6 +135,7 @@ const InvesmentAccount = ({locations}) => {
 
         request(`${BackUrl}delete_investment/${changingData?.id}/`, "DELETE", JSON.stringify(data), headers())
             .then(res => {
+                dispatch(fetchAccountantBookKeepingTypesMoney())
 
                 setActiveChangeModal(false)
 
@@ -164,6 +166,8 @@ const InvesmentAccount = ({locations}) => {
         request(`${BackUrl}investment/${loc ? `${loc}/` : ""}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 dispatch(onAddInvesment(res.investment))
+                dispatch(fetchAccountantBookKeepingTypesMoney())
+
                 console.log(res.investment)
                 setAdd(false)
             })

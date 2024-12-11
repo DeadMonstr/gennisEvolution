@@ -2,7 +2,7 @@ import {useDispatch, useSelector} from "react-redux";
 import React, {useState} from "react";
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
-import {fetchAccountantBookKeepingStaffSalary} from "slices/accountantSlice";
+import {fetchAccountantBookKeepingStaffSalary, fetchAccountantBookKeepingTypesMoney} from "slices/accountantSlice";
 import Table from "components/platform/platformUI/table";
 import cls from "../AccountantBookKeeping.module.sass";
 import Modal from "components/platform/platformUI/modal";
@@ -42,6 +42,8 @@ const StaffSalary = ({data,isDeleted}) => {
             .then(res => {
                 console.log(res)
                 dispatch(fetchAccountantBookKeepingStaffSalary({isDeleted}))
+                dispatch(fetchAccountantBookKeepingTypesMoney())
+
 
                 // dispatch(onAddDevidend(res.dividend))
                 // setAdd(false)

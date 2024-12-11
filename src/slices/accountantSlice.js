@@ -49,7 +49,7 @@ export const fetchAccountantBookKeepingDividend = createAsyncThunk(
     'accountantSlice/fetchAccountantBookKeepingDividend',
     async (data) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_dividend/${data.loc}/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
+        return await request(`${BackUrl}get_dividend/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
     }
 )
 
@@ -83,9 +83,9 @@ export const fetchAccountantBookKeepingOverhead = createAsyncThunk(
 export const fetchAccountantBookKeepingCollection = createAsyncThunk(
     'accountantSlice/fetchAccountantBookKeepingCollection',
     async (data) => {
-        const {location, date, activeFilter} = data
+        const {date, activeFilter} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}encashment/${location}`, "POST", JSON.stringify({
+        return await request(`${BackUrl}encashment/`, "POST", JSON.stringify({
                 ...date,
                 activeFilter
             }),

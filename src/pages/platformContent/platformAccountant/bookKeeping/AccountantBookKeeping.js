@@ -25,7 +25,7 @@ import InvesmentAccount from "pages/platformContent/platformAccountant/bookKeepi
 
 const optionsPage = [
     "Dividend",
-    "Account payable",
+    "Account payable and receivable",
     "Staff salary",
     "Overhead",
     "Investments"
@@ -38,9 +38,13 @@ const AccountantBookKeeping = () => {
 
 
     const [activePage, setActivePage] = useState("Dividend")
-    const [loc, setLoc] = useState()
     const [isDeleted, setIsDeleted] = useState(false)
     const [isArchive, setIsArchive] = useState(false)
+
+    useEffect(() => {
+        const active = localStorage.getItem("activePageType")
+        setActivePage(active)
+    },[])
 
 
     const dispatch = useDispatch()
@@ -52,28 +56,28 @@ const AccountantBookKeeping = () => {
         staffSalary,
         overhead,
         typesMoney,
-        invesment
+
     } = useSelector(state => state.accountantSlice)
 
     useEffect(() => {
         dispatch(fetchLocations())
         dispatch(fetchAccountantBookKeepingTypesMoney())
     }, [])
+    
+    const onChangePage = (activePage) => {
+
+        localStorage.setItem("activePageType", activePage)
+        setActivePage(activePage)
+    }
+
+
 
 
     useEffect(() => {
-        if (locations.length > 0) {
-            setLoc(locations[0].value)
-        }
-    }, [locations])
-
-
-    useEffect(() => {
-        console.log(activePage)
         if (activePage === "Dividend") {
-            dispatch(fetchAccountantBookKeepingDividend({loc, isDeleted, isArchive}));
-        } else if (activePage === "Account payable") {
-            dispatch(fetchAccountantBookKeepingAccountPayable({loc, isDeleted, isArchive}))
+            dispatch(fetchAccountantBookKeepingDividend({isDeleted, isArchive}));
+        } else if (activePage === "Account payable and receivable") {
+            dispatch(fetchAccountantBookKeepingAccountPayable({ isDeleted, isArchive}))
         } else if (activePage === "Staff salary") {
             dispatch(fetchAccountantBookKeepingStaffSalary({isDeleted, isArchive}))
         } else if (activePage === "Overhead") {
@@ -82,7 +86,7 @@ const AccountantBookKeeping = () => {
             dispatch(fetchAccountantInvestment({isDeleted, isArchive}))
 
         }
-    }, [loc, activePage, isDeleted, isArchive])
+    }, [activePage, isDeleted, isArchive])
 
 
     const renderPage = useCallback(() => {
@@ -90,7 +94,7 @@ const AccountantBookKeeping = () => {
         switch (activePage) {
             case "Dividend":
                 return <Dividend data={dividends} locations={locations}/>
-            case "Account payable":
+            case "Account payable and receivable":
                 return <AccountPayable locations={locations} dataPayable={accountPayable}/>
             case "Staff salary":
                 return <StaffSalary data={staffSalary} isDeleted={isDeleted}/>
@@ -129,7 +133,7 @@ const AccountantBookKeeping = () => {
                     {renderTypesMoney()}
                 </div>
                 <div>
-                    <Select title={"Page"} value={activePage} options={optionsPage} onChangeOption={setActivePage}/>
+                    <Select title={"Page"} value={activePage} options={optionsPage} onChangeOption={onChangePage}/>
                     {/*{*/}
                     {/*    (activePage === "Dividend" || activePage === "Account payable") &&*/}
                     {/*    <Select value={loc} onChangeOption={setLoc} options={locations}/>*/}

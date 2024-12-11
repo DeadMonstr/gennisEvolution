@@ -5,7 +5,12 @@ import {useHttp} from "hooks/http.hook";
 import {fetchDataToChange} from "slices/dataToChangeSlice";
 import cls from "../AccountantBookKeeping.module.sass";
 import {BackUrl, headers} from "constants/global";
-import {changePaymentTypeDividend, onAddDevidend, onDeleteDividend} from "slices/accountantSlice";
+import {
+    changePaymentTypeDividend,
+    fetchAccountantBookKeepingTypesMoney,
+    onAddDevidend,
+    onDeleteDividend
+} from "slices/accountantSlice";
 import Table from "components/platform/platformUI/table";
 import Modal from "components/platform/platformUI/modal";
 import Confirm from "components/platform/platformModals/confirm/confirm";
@@ -137,6 +142,7 @@ const Dividend = ({data, locations}) => {
         request(`${BackUrl}delete_dividend/${changingData.id}`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 dispatch(onDeleteDividend({id: changingData.id}))
+                dispatch(fetchAccountantBookKeepingTypesMoney())
                 // dispatch(changePaymentType({id: id, payment_type: res.payment_type}))
 
                 // dispatch(onAddDevidend(res.dividend))
@@ -170,6 +176,7 @@ const Dividend = ({data, locations}) => {
             .then(res => {
                 console.log(res)
                 dispatch(onAddDevidend(res.dividend))
+                dispatch(fetchAccountantBookKeepingTypesMoney())
                 setAdd(false)
             })
     }

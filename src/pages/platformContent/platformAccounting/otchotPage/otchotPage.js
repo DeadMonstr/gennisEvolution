@@ -10,39 +10,46 @@ import {useHttp} from "../../../../hooks/http.hook";
 import Table from "../../../../components/platform/platformUI/table";
 
 const OtchotPage = () => {
-    const {year, data} = useSelector(state => state.otchotSlice)
+    const {years, data,current_year,current_month} = useSelector(state => state.otchotSlice)
 
 
     const {dataToChange} = useSelector(state => state.dataToChange)
     const dispatch = useDispatch()
     const {locationId} = useParams()
 
-    const [years, setYears] = useState(null)
-    const [months, setMonth] = useState(null)
+    const [year, setYear] = useState(null)
+    const [month, setMonth] = useState(null)
     const [activePayment, setActivePayment] = useState(null)
 
-    const {request} = useHttp()
     useEffect(() => {
         dispatch(fetchYear())
-
         dispatch(fetchDataToChange(locationId))
     }, [])
 
+
+
+    useEffect(() => {
+        if (current_year && current_month) {
+            console.log(current_month,current_year, "hasjhdbvajsd ")
+            setYear(current_year)
+            setMonth(current_month)
+        }
+    },[current_year,current_month])
 
     useEffect(() => {
 
 
         const res = {
-            month_id: year.filter(item => item?.value === years)[0]?.months.filter(item => item.month === months)[0]?.id,
-            years_id: year.filter(item => item.value === years)[0]?.id,
+            month_id: years?.filter(item => item?.value === year)[0]?.months.filter(item => item.month === month)[0]?.id,
+            years_id: years?.filter(item => item.value === year)[0]?.id,
             payment_type_id: activePayment,
         }
 
-        if (activePayment && months && years) {
+        if (activePayment && month && year) {
             dispatch(fetchData({id: locationId, data: res}))
         }
 
-    }, [activePayment, months, years])
+    }, [activePayment, month, years,year])
 
     const renderData = () => {
         return dataToChange?.payment_types?.map(item => (
@@ -53,8 +60,9 @@ const OtchotPage = () => {
     }
     const style = {
         display: "flex",
-
     }
+
+    console.log(month)
 
     const formatSalary = (salary) => {
         return Number(salary).toLocaleString();
@@ -70,10 +78,11 @@ const OtchotPage = () => {
 
                 <div>
                     <div style={style}>
-                        <Select title={"Yilni tanlang"} options={year} onChangeOption={setYears}/>
-                        {years ? <Select
+                        <Select title={"Yilni tanlang"} value={year} options={years} onChangeOption={setYear}/>
+                        {year ? <Select
                             title={"Oyni tanlang"}
-                            options={year.filter(item => item?.value === years)[0]?.months.map(itemMonth => itemMonth.month)}
+                            value={month}
+                            options={years.filter(item => item?.value === year)[0]?.months.map(itemMonth => itemMonth.month)}
                             onChangeOption={setMonth}
                         /> : null}
                     </div>

@@ -21,7 +21,6 @@ const Collection = () => {
 
     const [activeRoute, setActiveRoute] = useState("dividend")
     const [activeFilter, setActiveFilter] = useState("cash")
-    const [location, setLocation] = useState(null)
     const [date, setDate] = useState({
         ot: "",
         do: ""
@@ -30,20 +29,14 @@ const Collection = () => {
 
     const {collection} = useSelector(state => state.accountantSlice)
     const {dataToChange} = useSelector(state => state.dataToChange)
-    const {locations} = useSelector(state => state.locations)
 
 
     useEffect(() => {
         dispatch(fetchDataToChange())
-        dispatch(fetchLocations())
     }, [])
 
 
-    useEffect(() => {
-        if (locations.length) {
-            setLocation(locations[0].value)
-        }
-    }, [locations])
+
 
 
     // useEffect(() => {
@@ -66,68 +59,69 @@ const Collection = () => {
     }
 
     const renderTables = useCallback(() => {
-        console.log(collection,activeRoute)
 
-        if (activeRoute === "dividend") {
-            return (
-                <>
-                    <h1>{collection.all_dividend}</h1>
-
-                    <DividendTable data={collection.dividends}/>
-
-                </>
-            )
+        switch (activeRoute) {
+            case "dividend":
+                return (
+                    <>
+                        <h1>{collection.all_dividend}</h1>
+                        <DividendTable data={collection.dividends}/>
+                    </>
+                )
+            case "accountPayable":
+                return (
+                    <>
+                        <h1>{collection.all_account_payables}</h1>
+                        <AccountPayableTable data={collection.account_payables}/>
+                    </>
+                )
+            case "accountReceivable":
+                return (
+                    <>
+                        <h1>{collection.all_account_receivables}</h1>
+                        <AccountPayableTable data={collection.account_receivables}/>
+                    </>
+                )
+            case "investment":
+                return (
+                    <>
+                        <h1>{collection.all_investments}</h1>
+                        <Investment data={collection.investments}/>
+                    </>
+                )
+            case "staffSalary":
+                return (
+                    <>
+                        <h1>{collection.all_salary}</h1>
+                        <StaffSalaryTable data={collection.salaries}/>
+                    </>
+                )
+            case "overheads":
+                return (
+                    <>
+                        <h1>{collection.all_overheads}</h1>
+                        <OverheadTable data={collection.overheads}/>
+                    </>
+                )
         }
-        // if (activeRoute === "accountPayable") {
-        //     return (
-        //         <>
-        //             <h1>{collection.all_dividend}</h1>
-        //             <AccountingTable
-        //                 typeOfMoney={"user"}
-        //                 studentAtt={true}
-        //                 activeRowsInTable={activeRowsInTableEmployeeSalary}
-        //                 users={accountingData}
-        //             />
-        //         </>
-        //
-        //     )
-        // }
-        if (activeRoute === "staffSalary") {
-            return (
-                <>
-                    <h1>{collection.all_salary}</h1>
-
-                    <StaffSalaryTable data={collection.salaries}/>
-
-                </>
-            )
-        }
 
 
-        if (activeRoute === "overheads") {
-            return (
-                <>
-                    <h1>{collection.all_overheads}</h1>
-                    <OverheadTable data={collection.overheads}/>
-                </>
-            )
-        }
+
     }, [activeRoute, collection])
 
 
     const {request} = useHttp()
 
     useEffect(() => {
-        if (location &&( date.ot && date.do) && activeFilter) {
+        if (( date.ot && date.do) && activeFilter) {
             const newData = {
-                location,
                 date,
                 activeFilter
             }
             dispatch(fetchAccountantBookKeepingCollection(newData))
         }
 
-    }, [activeFilter, date, location])
+    }, [activeFilter, date])
 
 
     const renderTypes = useCallback(() => {
@@ -160,7 +154,6 @@ const Collection = () => {
                     </Link>
                 </div>
                 <div>
-                    <Select options={locations} value={location} onChangeOption={setLocation}/>
                     <form className="changeDate">
                         <input
                             name="ot"
@@ -198,15 +191,22 @@ const Collection = () => {
                         Dividend
                     </div>
 
-                    {/*<div*/}
-                    {/*    onClick={() => setActiveRoute("accountPayable")}*/}
-                    {/*    className={classNames("collection__btns-item", {*/}
-                    {/*        active: activeRoute === "accountPayable"*/}
-                    {/*    })}*/}
-                    {/*>*/}
-                    {/*    Account Payable*/}
-                    {/*</div>*/}
-
+                    <div
+                        onClick={() => setActiveRoute("accountPayable")}
+                        className={classNames("collection__btns-item", {
+                            active: activeRoute === "accountPayable"
+                        })}
+                    >
+                        Account Payable
+                    </div>
+                    <div
+                        onClick={() => setActiveRoute("accountReceivable")}
+                        className={classNames("collection__btns-item", {
+                            active: activeRoute === "accountReceivable"
+                        })}
+                    >
+                        Account Receivable
+                    </div>
                     <div
                         onClick={() => setActiveRoute("staffSalary")}
                         className={classNames("collection__btns-item", {
@@ -222,6 +222,14 @@ const Collection = () => {
                         })}
                     >
                         Qo'shimcha xarajatlar
+                    </div>
+                    <div
+                        onClick={() => setActiveRoute("investment")}
+                        className={classNames("collection__btns-item", {
+                            active: activeRoute === "investment"
+                        })}
+                    >
+                        Investitsiyalar
                     </div>
 
                 </div>
@@ -300,13 +308,6 @@ const AccountPayableTable = ({data}) => {
                                 >
                                     {item.payment_type.name}
                                 </span>
-                            </td>
-                            <td>
-                                {
-                                    item.debtor === true ?
-                                        <i className={`fa fa-check ${cls.item_check}`}/> :
-                                        <i className={`fa fa-times ${cls.item_false}`}/>
-                                }
                             </td>
                         </tr>
                     )
@@ -400,4 +401,46 @@ const OverheadTable = ({data}) => {
         </Table>
     )
 }
+
+const Investment = ({data}) => {
+    return (
+        <Table>
+            <thead>
+            <tr>
+                <th>№</th>
+                <th>Reason</th>
+                <th>Amount</th>
+                <th>Paymnet type</th>
+                <th>Target</th>
+                <th>Date</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {data?.map((item,index) => {
+                return (
+                    <tr>
+                        <td>{index + 1}</td>
+                        <td>{item.name}</td>
+                        <td>{item.amount}</td>
+                        <td>
+                                <span
+                                    className={cls.typePayment}
+                                >
+                                    {item.typePayment}
+                                </span>
+                        </td>
+
+                        <td>{item.reason}</td>
+                        <td>{item.date}</td>
+                    </tr>
+                )
+            })}
+            </tbody>
+
+
+        </Table>
+    )
+}
+
 export default Collection;

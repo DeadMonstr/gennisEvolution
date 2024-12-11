@@ -6,7 +6,7 @@ import {fetchDataToChange} from "slices/dataToChangeSlice";
 import cls from "../AccountantBookKeeping.module.sass";
 import {BackUrl, headers} from "constants/global";
 import {
-    changePaymentTypeDividend, changePaymentTypeOverhead,
+    changePaymentTypeDividend, changePaymentTypeOverhead, fetchAccountantBookKeepingTypesMoney,
     onAddDevidend,
     onAddOverhead,
     onDeleteDividend,
@@ -117,6 +117,8 @@ const OverheadAccount = ({data, locations}) => {
         request(`${BackUrl}change_account_overhead/${id}/${value}`, "POST", null, headers())
             .then(res => {
                 dispatch(changePaymentTypeOverhead({id: id,data: res.data}))
+                dispatch(fetchAccountantBookKeepingTypesMoney())
+
             })
     }
 
@@ -131,6 +133,8 @@ const OverheadAccount = ({data, locations}) => {
         request(`${BackUrl}delete_account_overhead/${changingData.id}`, "DELETE", JSON.stringify(data), headers())
             .then(res => {
                 dispatch(onDeleteOverhead({id: changingData.id}))
+                dispatch(fetchAccountantBookKeepingTypesMoney())
+
 
             })
 
@@ -159,6 +163,8 @@ const OverheadAccount = ({data, locations}) => {
         request(`${BackUrl}/account/overhead`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 dispatch(onAddOverhead(res.data))
+                dispatch(fetchAccountantBookKeepingTypesMoney())
+
                 setAdd(false)
             })
     }

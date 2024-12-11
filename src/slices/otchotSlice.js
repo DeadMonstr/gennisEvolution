@@ -25,7 +25,11 @@ export const fetchData = createAsyncThunk(
 
 
 const initialState = {
-    year: [],
+
+    current_year: null,
+    current_month: null,
+
+    years: [],
     data: [],
     loading: [],
     error: []
@@ -43,7 +47,9 @@ const otchotSlice = createSlice({
             .addCase(fetchYear.fulfilled , (state , action) => {
                 state.loading = false
                 state.error = true
-                state.year = action.payload.years
+                state.years = action.payload.years
+                state.current_year = action.payload.year.value
+                state.current_month = action.payload.month.month
             })
             .addCase(fetchYear.rejected , state => {
                 state.loading = false
