@@ -17,9 +17,10 @@ const OtchotPage = () => {
     const dispatch = useDispatch()
     const {locationId} = useParams()
 
-    const [years, setYears] = useState(null)
+    const [years, setYears] = useState(year[0].value)
     const [months, setMonth] = useState(null)
     const [activePayment, setActivePayment] = useState(null)
+
 
     const {request} = useHttp()
     useEffect(() => {
@@ -60,6 +61,7 @@ const OtchotPage = () => {
         return Number(salary).toLocaleString();
     };
 
+
     return (
         <div className={cls.otchot}>
             <div className={cls.otchot__wrapper}>
@@ -70,12 +72,15 @@ const OtchotPage = () => {
 
                 <div>
                     <div style={style}>
-                        <Select title={"Yilni tanlang"} options={year} onChangeOption={setYears}/>
-                        {years ? <Select
+                        <Select title={"Yilni tanlang"}
+                                options={year} onChangeOption={setYears}
+
+                        />
+                        <Select
                             title={"Oyni tanlang"}
                             options={year.filter(item => item?.value === years)[0]?.months.map(itemMonth => itemMonth.month)}
                             onChangeOption={setMonth}
-                        /> : null}
+                        />
                     </div>
                     <div style={style}>
                         {renderData()}
