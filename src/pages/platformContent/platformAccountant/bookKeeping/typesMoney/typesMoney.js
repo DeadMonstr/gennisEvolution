@@ -33,7 +33,12 @@ const TypesMoney = () => {
     },[])
 
 
-    console.log(date)
+    useEffect(() => {
+        if (date.length)
+        setYear(date[0].value)
+    },[date])
+
+
 
     const renderTypes = useCallback(() => {
         if (dataToChange) {
@@ -53,6 +58,7 @@ const TypesMoney = () => {
 
 
     const {request} = useHttp()
+
 
 
     useEffect(() => {

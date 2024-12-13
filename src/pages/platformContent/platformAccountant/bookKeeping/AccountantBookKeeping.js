@@ -94,8 +94,8 @@ const AccountantBookKeeping = () => {
         switch (activePage) {
             case "Dividend":
                 return <Dividend data={dividends} locations={locations}/>
-            case "Account payable and receivable":
-                return <AccountPayable locations={locations} dataPayable={accountPayable}/>
+            // case "Account payable and receivable":
+            //     return <AccountPayable locations={locations} dataPayable={accountPayable}/>
             case "Staff salary":
                 return <StaffSalary data={staffSalary} isDeleted={isDeleted}/>
             case "Overhead":

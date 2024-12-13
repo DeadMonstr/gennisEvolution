@@ -62,7 +62,6 @@ const OtchotPage = () => {
         display: "flex",
     }
 
-    console.log(month)
 
     const formatSalary = (salary) => {
         return Number(salary).toLocaleString();
@@ -94,12 +93,15 @@ const OtchotPage = () => {
 
             <div className={cls.table}>
                 <div>
+                    <h1>Db</h1>
                     <RenderLeft formatSalary={formatSalary} data={data}/>
 
                     <h1>Umumiy summa : {formatSalary(data.left_total)}</h1>
                 </div>
 
                 <div>
+                    <h1>Kr</h1>
+
                     <RenderRight data={data} formatSalary={formatSalary}/>
                     <h1>Umumiy summa : {formatSalary(data.right_total)}</h1>
                 </div>

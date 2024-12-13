@@ -7,13 +7,19 @@ import {useDispatch, useSelector} from "react-redux";
 import {
     fetchBill,
     fetchBillProfile,
-    fetchDataPayable, fetchDataPayables,
-    onAddBill,
+    fetchDataPayable,
+    fetchDataPayables,
     onDeleteBill,
     onEditBill,
-    onAddPayable, fetchAccountantPayableHistory, onAddPayableHistory,
-    onDeletePayableHistory, onDeletePayable, onChangePayablePayment, onChangeHistoryPayment
-} from "../../../../slices/billSlice";
+    fetchAccountantPayableHistory,
+    onAddPayableHistory,
+    onDeletePayableHistory,
+    onChangePayablePayment,
+    onChangeHistoryPayment,
+    onAddLeft,
+    onAddRight,
+    fetchAccountDatas, onDeleteTableData
+} from "slices/billSlice";
 import Modal from "../../../../components/platform/platformUI/modal";
 import InputForm from "../../../../components/platform/platformUI/inputForm";
 import {useForm} from "react-hook-form";
@@ -39,9 +45,9 @@ const PlatformBillProfile = () => {
     const navigate = useNavigate()
 
     const {profile} = useSelector(state => state.billSlice)
+    const {register, handleSubmit, reset, setValue} = useForm()
 
-    const {data, dataPayable} = useSelector(state => state.billSlice)
-    const {register, handleSubmit, setValue} = useForm()
+    const {dataPayable, typeProfile,} = useSelector(state => state.billSlice)
     const [isConfirm, setIsConfirm] = useState(false)
 
     const [activeModal, setActiveModal] = React.useState(false)
@@ -61,10 +67,12 @@ const PlatformBillProfile = () => {
     }, [])
 
     useEffect(() => {
-        dispatch(fetchBillProfile(id))
-
+        dispatch(fetchAccountDatas(id))
         dispatch(fetchDataPayable(id))
     }, [])
+
+
+
 
 
     const onClickDelete = () => {
@@ -92,8 +100,6 @@ const PlatformBillProfile = () => {
             .catch(err => {
                 console.log(err)
             })
-
-
     }
 
     return (
@@ -109,21 +115,28 @@ const PlatformBillProfile = () => {
 
 
             <div className={cls.header}>
-                <h2>Nomi : {profile.name} </h2>
+                <h2>Nomi : {profile?.name} </h2>
 
                 <div style={{display: "flex", gap: "2rem"}}>
-                    <Button onClickBtn={() => {
-                        setActiveModalEdit(true)
-                        setValue("name", profile.name)
-                    }}>Edit</Button>
-                    <Button onClickBtn={() => setActiveModal(true)}>Delete</Button>
+                    <Button
+                        type={"submit"}
+                        onClickBtn={() => {
+                            setActiveModalEdit(true)
+                            setValue("name", profile?.name)
+                        }}
+                    >
+                        Edit
+                    </Button>
+                    <Button type={"danger"} onClickBtn={() => setActiveModal(true)}>Delete</Button>
 
 
                 </div>
+
+
             </div>
 
 
-            <AccountPayableBill years={dataPayable} dataAccount={data} locations={locations}/>
+            <AccountPayableBill years={dataPayable} locations={locations}/>
 
 
             <Modal activeModal={activeModal} setActiveModal={() => setActiveModal(!activeModal)}>
@@ -156,162 +169,276 @@ const PlatformBillProfile = () => {
     );
 };
 
-export const AccountPayableBill = ({years, locations, dataAccount}) => {
+export const AccountPayableBill = ({years, locations}) => {
 
-    const status = [
-        {name: "Payable", status: true},
-        {name: "Receable", status: false}
-    ]
 
     const {id} = useParams()
 
 
-    const {payable, history} = useSelector(state => state.billSlice)
+    const {total_sum,typeProfile} = useSelector(state => state.billSlice)
 
     const {dataToChange,} = useSelector(state => state.dataToChange)
-    const [add, setAdd] = useState(false)
-    const {register, handleSubmit, reset} = useForm()
     const {selectedLocation} = useAuth()
     const dispatch = useDispatch()
 
 
     const [deleted, setDeleted] = useState(false)
-    const [archive, setArchive] = useState(true)
 
+    const [activeDeleteModal, setActiveDeleteModal] = useState(false)
     const [activeChangeModal, setActiveChangeModal] = useState(false)
-    const [changePayment, setChangePayment] = useState(false)
-    const [changePaymentData, setChangePaymentData] = useState(null)
+
     const [changingData, setChangingData] = useState({})
 
     const [isConfirm, setIsConfirm] = useState(false)
-
     const [activeBill, setActiveBill] = useState(false)
 
 
-    const [deleteItem, setDeleteItem] = useState(null)
+    useEffect(() => {
+        dispatch(fetchBillProfile({id, deleted}))
+    },[deleted,id])
 
-    const [activeHistory, setActiveAddHistory] = useState(false)
-
-    const [activeBillData, setActiveBillData] = useState(null)
-
-
-    const [year, setYear] = useState(null)
-
-    const [month, setMonth] = useState(null)
 
 
     const {request} = useHttp()
 
 
-    useEffect(() => {
-        if (activeBillData) {
-            dispatch(fetchAccountantPayableHistory({id: activeBillData?.id}))
-        }
-    }, [activeBillData])
+    // useEffect(() => {
+    //     if (activeBillData) {
+    //         dispatch(fetchAccountantPayableHistory({id: activeBillData?.id}))
+    //     }
+    // }, [activeBillData])
 
-
-    useEffect(() => {
-        if (month && year) {
-            const monthId = years?.years?.filter(item => item?.value === year)[0]?.months.filter(item => item.month === month)[0]?.id
-            dispatch(fetchDataPayables({id, monthId, archive, deleted}))
-
-        }
-    }, [month, year, deleted, archive])
+    //
+    // useEffect(() => {
+    //     if (month && year) {
+    //         const monthId = years?.years?.filter(item => item?.value === year)[0]?.months.filter(item => item.month === month)[0]?.id
+    //         dispatch(fetchDataPayables({id, monthId, archive, deleted}))
+    //
+    //     }
+    // }, [month, year, deleted, archive])
 
     useEffect(() => {
         dispatch(fetchDataToChange(selectedLocation))
     }, [])
 
 
-    const renderDebtType = useCallback(() => {
-        return status.map((item, i) => {
-            return (
-                <label key={i} className="radioLabel" htmlFor="">
-                    <input className="radio" {...register("status", {required: true})} type="radio"
-                           value={item.status}/>
-                    <span>{item.name}</span>
-                </label>
-            )
-        })
-    }, [status])
 
 
-    const renderPaymentType = useCallback(() => {
-        return dataToChange?.payment_types?.map((item, i) => {
-            return (
-                <label key={i} className="radioLabel" htmlFor="">
-                    <input className="radio" {...register("type_payment", {required: true})} type="radio"
-                           value={item.id}/>
-                    <span>{item.name}</span>
-                </label>
-            )
-        })
-    }, [dataToChange?.payment_types])
+    const onDeletePayableData = (data) => {
 
 
-    const renderData = () => {
-        return payable?.map((item, i) => (
 
+
+
+        if (changingData.side === "left") {
+            request(`${BackUrl}${typeProfile === "receivable" ? "delete_account_payable" : "delete_history"}/${changingData.item.id}/`, "DELETE", JSON.stringify(data), headers())
+                .then(res => {
+                    dispatch(onDeleteTableData({id: changingData.item.id,side: "left"}))
+                    dispatch(fetchAccountDatas(id))
+
+
+                    setActiveDeleteModal(false)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        } else {
+            request(`${BackUrl}${typeProfile === "receivable" ? "delete_history" : "delete_account_payable"}/${changingData.item.id}/`, "DELETE", JSON.stringify(data), headers())
+                .then(res => {
+                    dispatch(onDeleteTableData(({id: changingData.item.id, side: "right"})))
+                    dispatch(fetchAccountDatas(id))
+
+                    setActiveDeleteModal(false)
+
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
+
+
+
+
+
+    }
+
+    const ChangePayment = (id) => {
+
+        if (changingData.side === "left") {
+            request(`${BackUrl}${typeProfile === "receivable" ? "crud_account_payable" : "crud_history"}/${changingData.item.id}/`, "POST", JSON.stringify({payment_type_id: Number(id)}), headers())
+                .then(res => {
+                    setActiveChangeModal(false)
+                    dispatch(onChangePayablePayment({id: changingData.item.id, data: res.payment_type, side: "left"}))
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        } else {
+            request(`${BackUrl}${typeProfile === "receivable" ? "crud_history" : "crud_account_payable"}/${changingData.item.id}/`, "POST", JSON.stringify({payment_type_id: Number(id)}), headers())
+                .then(res => {
+                    setActiveChangeModal(false)
+                    dispatch(onChangePayablePayment({id: changingData.item.id, data: res.history, side: "right"}))
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
+
+
+
+
+
+    }
+
+    return (
+        <div className={cls.bill}>
+
+
+            <div className={cls.billFilter}>
+                <h1>{total_sum}</h1>
+                <Button
+                    active={deleted}
+                    onClickBtn={() => setDeleted(!deleted)}
+                    type={"danger"}
+                >
+                    Deleted
+                </Button>
+
+
+                {/*<Select value={year} options={years?.years} onChangeOption={setYear}/>*/}
+                {/*<Select*/}
+                {/*    value={month}*/}
+                {/*    options={years?.years?.filter(item => item?.value === year)[0]?.months.map(itemMonth => itemMonth.month)}*/}
+                {/*    onChangeOption={setMonth}*/}
+                {/*/>*/}
+                {/*<div className={cls.plus} onClick={() => setAdd(true)}>*/}
+                {/*    <i className="fas fa-plus"></i>*/}
+                {/*</div>*/}
+            </div>
+
+
+            <div className={cls.tables}>
+
+
+                <Left
+                    setActiveChangeModal={setActiveChangeModal}
+                    setActiveDeleteModal={setActiveDeleteModal}
+                    setChangingData={setChangingData}
+                />
+                <Right
+                    setActiveChangeModal={setActiveChangeModal}
+                    setActiveDeleteModal={setActiveDeleteModal}
+                    setChangingData={setChangingData}
+                />
+
+
+            </div>
+
+
+            <Modal activeModal={activeDeleteModal} setActiveModal={() => setActiveChangeModal(!setActiveDeleteModal)}>
+                <Confirm
+                    setActive={activeDeleteModal}
+                    text={"O'chirishni xohlaysizmi ?"}
+                    getConfirm={setIsConfirm}
+                />
+            </Modal>
+            {
+                isConfirm === "yes" ?
+                    <Modal
+                        activeModal={activeDeleteModal}
+                        setActiveModal={() => {
+                            setActiveDeleteModal(false)
+                            setIsConfirm(false)
+                        }}
+                    >
+                        <ConfimReason getConfirm={onDeletePayableData} reason={true}/>
+                    </Modal> : null
+            }
+
+
+            <Modal activeModal={activeChangeModal} setActiveModal={setActiveChangeModal}>
+
+                <div className={cls.change}>
+                    <Select value={changingData?.item?.payment_type?.id} options={dataToChange?.payment_types} onChangeOption={ChangePayment}/>
+                </div>
+
+
+            </Modal>
+
+
+        </div>
+    )
+}
+
+const Left = ({setChangingData,setActiveDeleteModal,setActiveChangeModal}) => {
+
+
+    const {id} = useParams()
+
+    const {typeProfile, total_left, dataAccount} = useSelector(state => state.billSlice)
+
+
+    const [addDb, setAddDb] = useState(false)
+    const {register, handleSubmit, setValue, reset} = useForm()
+    const {dataToChange} = useSelector(state => state.dataToChange)
+
+
+    const {request} = useHttp()
+    const dispatch = useDispatch()
+
+    const onSubmitDb = (data) => {
+
+        request(`${BackUrl}${typeProfile === "receivable" ? "add_account_payable" : "create_payable_history"}`, "POST", JSON.stringify({
+            ...data,
+            account_id: id,
+            status: data.status === "true"
+        }), headers())
+            .then(res => {
+                setAddDb(false)
+                reset()
+                dispatch(fetchAccountDatas(id))
+                dispatch(onAddLeft(res.data))
+            })
+    }
+
+    const renderPayableData = () => {
+        return dataAccount?.left?.map((item, i) => (
             <>
-
-
-                <tr onClick={() => {
-                    setActiveBillData(item)
-                }}>
-
-
+                <tr>
                     <td>{i + 1}</td>
-                    <td onClick={() => {
-                        setActiveBill(true)
-                        setActiveBillData(item)
-                    }}
-                    >{item.amount}</td>
-                    <td>{item.remaining_sum}</td>
+                    <td>{item.amount}</td>
                     <td>{item.desc}</td>
                     <td>{item.date}</td>
                     <td
                         onClick={() => {
-
-
-                            setChangingData(item)
-                            setChangePayment(true)
-
+                            setChangingData({item, side:"left"})
+                            setActiveChangeModal(true)
                         }}
                     >
-                    <span
-                        className={cls.typePayment}
-                    >
-                        {item.payment_type.name}
-                    </span>
+                        <span
+                            className={cls.typePayment}
+                        >
+                            {item.payment_type.name}
+                        </span>
                     </td>
+
+
                     <td>
                         {
-                            !item.status &&
+                            !item.deleted &&
                             <span
                                 onClick={() => {
-                                    setActiveChangeModal(true)
+                                    setActiveDeleteModal(true)
 
-
-                                    setDeleteItem(item)
+                                    setChangingData({item, side: "left"})
                                 }}
                                 className={cls.delete}
                             >
-                        <i className="fas fa-times"/>
-                    </span>
+                                <i className="fas fa-times"/>
+                            </span>
                         }
                     </td>
-                    <td>
-                        <span
-                            onClick={() => {
-                                setActiveAddHistory(true)
 
-                            }}
-                            className={cls.add_icon}
-                        >
-                            <i className="fas fa-plus"/>
-                        </span>
-
-                    </td>
 
                 </tr>
 
@@ -320,294 +447,14 @@ export const AccountPayableBill = ({years, locations, dataAccount}) => {
         ))
     }
 
-    const render = renderData()
 
+    const renderPayable = renderPayableData()
 
-    const onSubmit = (data) => {
-        request(`${BackUrl}add_account_payable`, "POST", JSON.stringify({
-            ...data,
-            account_id: id,
-            status: data.status === "true" ? true : false
-        }), headers())
-            .then(res => {
-                reset()
-                dispatch(onAddPayable(res.account_payable))
-                setAdd(false)
-            })
-    }
-
-
-    const onDeletePayableData = (data) => {
-
-
-        request(`${BackUrl}delete_account_payable/${deleteItem.id}/`, "POST", JSON.stringify(data), headers())
-            .then(res => {
-                console.log(res)
-                dispatch(onDeletePayable(deleteItem.id))
-                setActiveChangeModal(false)
-            })
-            .catch(err => {
-                console.log(err)
-            })
-
-
-    }
-
-    const ChangePayment = (id) => {
-
-        request(`${BackUrl}crud_account_payable/${changingData.id}/`, "POST", JSON.stringify({payment_type_id: Number(id)}), headers())
-            .then(res => {
-                setChangePayment(false)
-                dispatch(onChangePayablePayment({id: changingData.id, data: res.payment_type}))
-            })
-            .catch(err => {
-                console.log(err)
-            })
-
-    }
-
-    return (
-        <div className={cls.bill}>
-            <div className={cls.billFilter}>
-
-                <Button onClickBtn={() => setDeleted(!deleted)}>Deleted</Button>
-                <Button
-                        onClickBtn={() => setArchive(!archive)}>Archive</Button>
-                <Select options={years?.years} onChangeOption={setYear}/>
-                <Select
-                    options={years?.years?.filter(item => item?.value === year)[0]?.months.map(itemMonth => itemMonth.month)}
-                    onChangeOption={setMonth}
-                />
-                <div className={cls.plus} onClick={() => setAdd(true)}>
-                    <i className="fas fa-plus"></i>
-                </div>
-            </div>
-
-            <Table>
-                <thead>
-                <tr>
-                    <th>№</th>
-                    <th>Amount</th>
-                    <th>Remaining sum</th>
-                    <th>Desc</th>
-                    <th>Date</th>
-                    <th>Payment type</th>
-                    <th>Status</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {month ? render : null}
-                </tbody>
-            </Table>
-
-
-            <Modal activeModal={activeChangeModal} setActiveModal={() => setActiveChangeModal(!activeChangeModal)}>
-                <Confirm
-                    setActive={setActiveChangeModal}
-                    text={"O'chirishni xohlaysizmi ?"}
-                    getConfirm={setIsConfirm}
-                />
-            </Modal>
-            {
-                isConfirm === "yes" ?
-                    <Modal
-                        activeModal={activeChangeModal}
-                        setActiveModal={() => {
-                            setActiveChangeModal(false)
-                            setIsConfirm(false)
-                        }}
-                    >
-                        <ConfimReason getConfirm={onDeletePayableData} reason={true}/>
-                    </Modal> : null
-            }
-
-            <Modal activeModal={add} setActiveModal={() => setAdd(false)}>
-                <div className={cls.add}>
-                    <Form typeSubmit={"hand"} onSubmit={handleSubmit(onSubmit)}>
-                        <InputForm register={register} type={"number"} title={"Amount sum"} name={"amount_sum"}/>
-                        <InputForm register={register} title={"Desc"} name={"desc"}/>
-                        <InputForm register={register} title={"Date"} type={"date"} name={"date"}/>
-                        <div className={cls.debtor_type}>
-                            {renderDebtType()}
-                        </div>
-
-                        <div className={cls.payment_type}>
-                            {renderPaymentType()}
-                        </div>
-
-                        <Button onSubmit={handleSubmit(onSubmit)} type={"submit"}>Submit</Button>
-                    </Form>
-                </div>
-            </Modal>
-
-            <Modal activeModal={changePayment} setActiveModal={setChangePayment}>
-
-                <div className={cls.change}>
-                    <Select options={dataToChange?.payment_types} onChangeOption={ChangePayment}/>
-                </div>
-
-
-            </Modal>
-
-
-            <AddPayableHistory
-                activeHistory={activeHistory}
-                setActiveAddHistory={setActiveAddHistory}
-                activeBillData={activeBillData}
-                dataToChange={dataToChange}
-            />
-
-
-            <PayableHistory history={history} activeBill={activeBill} setActiveBill={setActiveBill}/>
-
-        </div>
-    )
-}
-
-
-export const PayableHistory = ({history, activeBill, setActiveBill}) => {
-
-    const [activeChangeModal, setActiveChangeModal] = useState(false)
-    const dispatch = useDispatch()
-
-    const [isConfirm, setIsConfirm] = useState(false)
-
-    const [dataHistory, setDataHistory] = useState(null)
-    const [changingData, setChangingData] = useState({})
-
-
-    const {dataToChange,} = useSelector(state => state.dataToChange)
-
-
-    const [changePayment, setChangePayment] = useState(false)
-    const {request} = useHttp()
-
-    const onDeleteHistory = (id) => {
-        request(`${BackUrl}delete_history/${dataHistory.id}/`, "DELETE", null, headers())
-            .then(res => {
-                console.log(res)
-                setActiveChangeModal(false)
-
-                dispatch(onDeletePayableHistory(dataHistory.id))
-            })
-            .catch(err => {
-                console.log(err)
-            })
-
-    }
-
-
-    const ChangePayment = (id) => {
-
-        request(`${BackUrl}crud_history/${changingData.id}/`, "POST", JSON.stringify({payment_type_id: Number(id)}), headers())
-            .then(res => {
-                setChangePayment(false)
-                dispatch(onChangeHistoryPayment({id: changingData.id, data: res.history}))
-            })
-            .catch(err => {
-                console.log(err)
-            })
-
-    }
-    return (
-        <Modal activeModal={activeBill} setActiveModal={() => setActiveBill(false)}>
-
-            <div className={cls.add}>
-
-                <Table className={cls.table}>
-                    <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                        <th>Payment type</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    {history?.map((item, i) => (
-                        <tr>
-                            <td>{i + 1}</td>
-                            <td>{item.sum}</td>
-                            <td>{item.date}</td>
-                            <td> <span
-                                onClick={() => {
-                                    setChangingData(item)
-                                    setChangePayment(true)
-                                }}
-
-                                className={cls.typePayment}
-                            >
-                        {item.payment_type.name}
-                    </span></td>
-                            <td>
-                                <span
-
-                                    onClick={() => {
-                                        setActiveChangeModal(true)
-                                        setDataHistory(item)
-                                    }} className={cls.delete}>
-                                    <i className={"fa fa-times"}/>
-                                </span></td>
-                        </tr>
-                    ))}
-                    </tbody>
-
-                </Table>
-            </div>
-
-            <Modal activeModal={activeChangeModal} setActiveModal={() => setActiveChangeModal(!activeChangeModal)}>
-                <Confirm
-                    setActive={setActiveChangeModal}
-                    text={"O'chirishni xohlaysizmi ?"}
-                    getConfirm={setIsConfirm}
-                />
-            </Modal>
-            {
-                isConfirm === "yes" ?
-                    <Modal
-                        activeModal={activeChangeModal}
-                        setActiveModal={() => {
-                            setActiveChangeModal(false)
-                            setIsConfirm(false)
-                        }}
-                    >
-                        <ConfimReason getConfirm={onDeleteHistory} reason={true}/>
-                    </Modal> : null
-            }
-
-
-            <Modal activeModal={changePayment} setActiveModal={setChangePayment}>
-
-                <div className={cls.change}>
-                    <Select options={dataToChange?.payment_types} onChangeOption={ChangePayment}/>
-                </div>
-
-
-            </Modal>
-        </Modal>
-
-
-    )
-}
-
-export const AddPayableHistory = ({activeHistory, setActiveAddHistory, activeBillData, dataToChange}) => {
-
-    const {register, handleSubmit, reset} = useForm()
-
-
-    const dispatch = useDispatch()
-
-    const {request} = useHttp()
-
-
-    const renderPaymentType = useCallback(() => {
+    const renderPaymentType = useCallback((register) => {
         return dataToChange?.payment_types?.map((item, i) => {
             return (
                 <label key={i} className="radioLabel" htmlFor="">
-                    <input className="radio" {...register("type_payment", {required: true})} type="radio"
+                    <input required className="radio" {...register("type_payment", {required: true})} type="radio"
                            value={item.id}/>
                     <span>{item.name}</span>
                 </label>
@@ -615,40 +462,204 @@ export const AddPayableHistory = ({activeHistory, setActiveAddHistory, activeBil
         })
     }, [dataToChange?.payment_types])
 
-    const onSubmitHistory = (data) => {
-        request(`${BackUrl}create_payable_history/${activeBillData.id}/`, "POST", JSON.stringify(data), headers())
+
+    return (
+        <>
+            <div className={cls.item}>
+                <div className={cls.item_header}>
+                    <h1>{typeProfile === "payable" ? "Db" : "Kr"}</h1>
+                    <h2>{total_left}</h2>
+                    <div className={cls.plus} onClick={() => setAddDb(true)}>
+                        <i className="fas fa-plus"></i>
+                    </div>
+                </div>
+                <Table>
+                    <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Amount</th>
+                        <th>Desc</th>
+                        <th>Date</th>
+                        <th>Payment type</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {renderPayable}
+                    </tbody>
+                </Table>
+
+            </div>
+
+            <Modal activeModal={addDb} setActiveModal={() => setAddDb(false)}>
+                <div className={cls.add}>
+                    <Form typeSubmit={"hand"} onSubmit={handleSubmit(onSubmitDb)}>
+                        <InputForm required register={register} type={"number"} title={"Amount sum"}
+                                   name={"amount_sum"}/>
+                        <InputForm required register={register} title={"Desc"} name={"desc"}/>
+                        <InputForm required register={register} title={"Date"} type={"date"} name={"date"}/>
+                        {/*<div className={cls.debtor_type}>*/}
+                        {/*    {renderDebtType()}*/}
+                        {/*</div>*/}
+
+                        <div className={cls.payment_type}>
+                            {renderPaymentType(register)}
+                        </div>
+
+                        <Button type={"submit"}>Submit</Button>
+                    </Form>
+                </div>
+            </Modal>
+        </>
+
+
+    )
+}
+
+const Right = ({setChangingData,setActiveDeleteModal,setActiveChangeModal}) => {
+
+    const {id} = useParams()
+    const {typeProfile, total_right, dataAccount} = useSelector(state => state.billSlice)
+
+
+    const [addKr, setAddKr] = useState(false)
+    const {register, handleSubmit, setValue, reset} = useForm()
+    const {dataToChange} = useSelector(state => state.dataToChange)
+
+
+    const {request} = useHttp()
+    const dispatch = useDispatch()
+
+
+    const onSubmitKr = (data) => {
+        request(`${BackUrl}${typeProfile === "receivable" ? "create_payable_history" : "add_account_payable"}`, "POST", JSON.stringify({
+            ...data,
+            account_id: id,
+            status: data.status === "true"
+        }), headers())
             .then(res => {
+                setAddKr(false)
                 reset()
-                console.log(res.history)
-                setActiveAddHistory(false)
-                dispatch(onAddPayableHistory(res.history))
-                // setAdd(false)
-            })
-            .catch(err => {
-                console.log(err)
+                dispatch(fetchAccountDatas(id))
+                dispatch(onAddRight(res.data))
             })
     }
 
+    const renderReceivableData = () => {
+        return dataAccount?.right?.map((item, i) => (
+            <>
+                <tr>
+                    <td>{i + 1}</td>
+                    <td>{item.amount}</td>
+                    <td>{item.desc}</td>
+                    <td>{item.date}</td>
+                    <td
+                        onClick={ () => {
+                            setChangingData({item, side:"right"})
+                            setActiveChangeModal(true)
+                        }}
+                    >
+                        <span
+                            className={cls.typePayment}
+                        >
+                            {item.payment_type.name}
+                        </span>
+                    </td>
+
+
+                    <td>
+                        {
+                            !item.deleted &&
+                            <span
+                                onClick={() => {
+                                    setActiveDeleteModal(true)
+                                    setChangingData({item,side:"right"})
+                                }}
+                                className={cls.delete}
+                            >
+                                <i className="fas fa-times"/>
+                            </span>
+                        }
+                    </td>
+
+
+                </tr>
+
+            </>
+
+        ))
+    }
+
+
+    const renderReceivable = renderReceivableData()
+
+
+    const renderPaymentType = useCallback((register) => {
+        return dataToChange?.payment_types?.map((item, i) => {
+            return (
+                <label key={i} className="radioLabel" htmlFor="">
+                    <input required className="radio" {...register("type_payment", {required: true})} type="radio"
+                           value={item.id}/>
+                    <span>{item.name}</span>
+                </label>
+            )
+        })
+    }, [dataToChange?.payment_types])
+
+
     return (
+        <>
 
-        <Modal activeModal={activeHistory} setActiveModal={() => setActiveAddHistory(false)}>
-
-            <div className={cls.add}>
-
-                <Form onSubmit={handleSubmit(onSubmitHistory)}>
-                    <InputForm register={register} type={"number"} title={"Amount sum"} name={"sum"}/>
-
-                    <InputForm register={register} title={"Date"} type={"date"} name={"date"}/>
-
-                    <Textarea register={register} title={"Desc"} name={"reason"}/>
-
-                    <div className={cls.payment_type}>
-                        {renderPaymentType()}
+            <div className={cls.item}>
+                <div className={cls.item_header}>
+                    <h1>{typeProfile === "receivable" ? "Db" : "Kr"}</h1>
+                    <h2>{total_right}</h2>
+                    <div className={cls.plus} onClick={() => setAddKr(true)}>
+                        <i className="fas fa-plus"></i>
                     </div>
+                </div>
+                <Table>
+                    <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Amount</th>
+                        <th>Desc</th>
+                        <th>Date</th>
+                        <th>Payment type</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {renderReceivable}
+                    </tbody>
+                </Table>
 
-                </Form>
             </div>
-        </Modal>
+
+
+            <Modal activeModal={addKr} setActiveModal={() => setAddKr(false)}>
+                <div className={cls.add}>
+                    <Form typeSubmit={"hand"} onSubmit={handleSubmit(onSubmitKr)}>
+                        <InputForm required register={register} type={"number"} title={"Amount sum"}
+                                   name={"amount_sum"}/>
+                        <InputForm required register={register} title={"Desc"} name={"desc"}/>
+                        <InputForm required register={register} title={"Date"} type={"date"} name={"date"}/>
+
+
+                        <div className={cls.payment_type}>
+                            {renderPaymentType(register)}
+                        </div>
+
+                        <Button type={"submit"}>Submit</Button>
+                    </Form>
+                </div>
+            </Modal>
+        </>
+
     )
 }
+
+
 export default PlatformBillProfile;

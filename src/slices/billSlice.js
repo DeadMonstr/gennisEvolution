@@ -1,14 +1,33 @@
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
-import {useHttp} from "../hooks/http.hook";
-import {BackUrl, headers} from "../constants/global";
+import {useHttp} from "hooks/http.hook";
+import {BackUrl, headers} from "constants/global";
 
 
 const initialState = {
-    data: [],
+    data: {
+        payable: [],
+        receivable: []
+    },
+
+
+    dataAccount: {
+        left: [],
+        right: []
+    },
+
+
+    total_left: 0,
+    total_right: 0,
+    total_sum: 0,
+
+
+    typeProfile: "",
+
     profile: [],
     dataPayable: [],
     payable: [],
     history: [],
+
     loading: false,
     error: false
 }
@@ -16,7 +35,7 @@ const initialState = {
 
 export const fetchBill = createAsyncThunk(
     "billSlice/fetchBill",
-    async () => {
+    async (activePage) => {
         const {request} = useHttp()
         return await request(`${BackUrl}get_accounts`, "GET", null, headers())
     }
@@ -25,9 +44,21 @@ export const fetchBill = createAsyncThunk(
 
 export const fetchBillProfile = createAsyncThunk(
     "billSlice/fetchBillProfile",
+    async (data) => {
+
+        const {id,archive,deleted} = data
+
+        const {request} = useHttp()
+        return await request(`${BackUrl}account_profile/${id}/${deleted || false}/`, "GET", null, headers())
+    }
+)
+
+
+export const fetchAccountDatas = createAsyncThunk(
+    "billSlice/fetchAccountDatas",
     async (id) => {
         const {request} = useHttp()
-        return await request(`${BackUrl}account_profile/${id}/`, "GET", null, headers())
+        return await request(`${BackUrl}account_datas/${id}`, "GET", null, headers())
     }
 )
 
@@ -66,27 +97,41 @@ const billSlice = createSlice({
     reducers: {
 
         onAddBill: (state, action) => {
-            state.data = [...state.data, action.payload]
 
-
+            if (action.payload.type === "payable") {
+                state.data.payable = [...state.data.payable, action.payload.data]
+            } else {
+                state.data.receivable = [...state.data.receivable, action.payload.data]
+            }
         },
         onDeleteBill: (state, action) => {
             state.data = state.data?.filter(item => item.id !== action.payload)
 
-            console.log(action.payload)
         },
         onEditBill: (state, action) => {
             state.profile = action.payload.data
 
         },
 
-        onAddPayable: (state, action) => {
-            state.payable = [...state.payable, action.payload]
+        onAddLeft: (state, action) => {
+            state.dataAccount.left = [...state.dataAccount.left, action.payload]
+        },
+
+        onAddRight: (state, action) => {
+            state.dataAccount.right = [...state.dataAccount.right, action.payload]
         },
 
 
-        onDeletePayable: (state, action) => {
-            state.payable = state.payable?.filter(item => item.id !== action.payload)
+
+
+        onDeleteTableData: (state, action) => {
+            if (action.payload.side === "left") {
+                state.dataAccount.left = state.dataAccount.left.filter(item => item.id !== action.payload.id)
+
+            } else {
+                state.dataAccount.right = state.dataAccount.right.filter(item => item.id !== action.payload.id)
+            }
+
         },
 
 
@@ -95,12 +140,27 @@ const billSlice = createSlice({
         // },
 
         onChangePayablePayment: (state, action) => {
-            state.payable = state.payable.map(item => {
-                if (item.id === action.payload.id) {
-                    return {...action.payload.data}
-                }
-                return item
-            })
+
+
+            console.log(action.payload.data, "dataaaaaaaaa")
+
+            if (action.payload.side === "left") {
+                state.dataAccount.left = state.dataAccount.left.map(item => {
+                    if (item.id === action.payload.id) {
+                        return {...action.payload.data}
+                    }
+                    return item
+                })
+            } else {
+                state.dataAccount.right = state.dataAccount.right.map(item => {
+                    if (item.id === action.payload.id) {
+                        return {...action.payload.data}
+                    }
+                    return item
+                })
+            }
+
+
         },
 
 
@@ -131,7 +191,9 @@ const billSlice = createSlice({
             .addCase(fetchBill.fulfilled, (state, action) => {
                 state.loading = false
                 state.error = true
-                state.data = action.payload.accounts
+                state.data.payable = action.payload.accounts_payable
+                state.data.receivable = action.payload.accounts_receivable
+
             })
             .addCase(fetchBill.rejected, state => {
                 state.loading = false
@@ -145,9 +207,29 @@ const billSlice = createSlice({
             .addCase(fetchBillProfile.fulfilled, (state, action) => {
                 state.loading = false
                 state.error = true
-                state.profile = action.payload.account
+                state.profile = action.payload.data.account
+                state.dataAccount.left = action.payload.data.left || []
+                state.dataAccount.right = action.payload.data.right || []
+                state.typeProfile = action.payload.data.type_account
+
             })
             .addCase(fetchBillProfile.rejected, state => {
+                state.loading = false
+                state.error = true
+            })
+
+
+            .addCase(fetchAccountDatas.pending, state => {
+                state.loading = true
+            })
+            .addCase(fetchAccountDatas.fulfilled, (state, action) => {
+                state.loading = false
+                state.error = true
+                state.total_left = action.payload.account.left
+                state.total_right = action.payload.account.right
+                state.total_sum = action.payload.account.remaining_sum
+            })
+            .addCase(fetchAccountDatas.rejected, state => {
                 state.loading = false
                 state.error = true
             })
@@ -204,13 +286,14 @@ const billSlice = createSlice({
 export default billSlice.reducer
 
 export const {
-    onAddBill,
+    onAddLeft,
+    onAddRight,
     onDeleteBill,
     onEditBill,
-    onAddPayable,
+    onAddBill,
     onChangeHistoryPayment,
     onChangePayablePayment,
     onAddPayableHistory,
-    onDeletePayable,
+    onDeleteTableData,
     onDeletePayableHistory
 } = billSlice.actions

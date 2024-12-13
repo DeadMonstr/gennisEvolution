@@ -164,7 +164,6 @@ const OverheadAccount = ({data, locations}) => {
             .then(res => {
                 dispatch(onAddOverhead(res.data))
                 dispatch(fetchAccountantBookKeepingTypesMoney())
-
                 setAdd(false)
             })
     }
