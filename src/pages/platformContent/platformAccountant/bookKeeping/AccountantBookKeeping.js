@@ -25,7 +25,6 @@ import InvesmentAccount from "pages/platformContent/platformAccountant/bookKeepi
 
 const optionsPage = [
     "Dividend",
-    "Account payable and receivable",
     "Staff salary",
     "Overhead",
     "Investments"
@@ -76,15 +75,12 @@ const AccountantBookKeeping = () => {
     useEffect(() => {
         if (activePage === "Dividend") {
             dispatch(fetchAccountantBookKeepingDividend({isDeleted, isArchive}));
-        } else if (activePage === "Account payable and receivable") {
-            dispatch(fetchAccountantBookKeepingAccountPayable({ isDeleted, isArchive}))
         } else if (activePage === "Staff salary") {
             dispatch(fetchAccountantBookKeepingStaffSalary({isDeleted, isArchive}))
         } else if (activePage === "Overhead") {
             dispatch(fetchAccountantBookKeepingOverhead({isDeleted, isArchive}))
         } else if (activePage === "Investments") {
             dispatch(fetchAccountantInvestment({isDeleted, isArchive}))
-
         }
     }, [activePage, isDeleted, isArchive])
 
@@ -94,8 +90,6 @@ const AccountantBookKeeping = () => {
         switch (activePage) {
             case "Dividend":
                 return <Dividend data={dividends} locations={locations}/>
-            // case "Account payable and receivable":
-            //     return <AccountPayable locations={locations} dataPayable={accountPayable}/>
             case "Staff salary":
                 return <StaffSalary data={staffSalary} isDeleted={isDeleted}/>
             case "Overhead":
