@@ -11,7 +11,6 @@ import Message from "components/platform/platformMessage";
 import DefaultLoader from "components/loader/defaultLoader/DefaultLoader";
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, ClassroomUrl} from "constants/global";
-import PlatformMessage from "components/platform/platformMessage";
 import {setMessage} from "slices/messageSlice";
 import Input from "components/platform/platformUI/input";
 
@@ -38,16 +37,12 @@ const Login = () => {
 
         const user = {
             username: username,
-            password: password
+            password: password,
         }
 
         setPostDataStatus("loading")
         request(`${BackUrl}login2`,"POST",JSON.stringify(user))
             .then(res => {
-                if (res.class) {
-                    window.location.replace(`${ClassroomUrl}get_user/${res.access_token}/${res.refresh_token}`)
-                    return {success: false}
-                }
                 if (res.success) {
                     localStorage.setItem("userData", JSON.stringify(res.data))
                     dispatch(setUser(res.data))
@@ -96,7 +91,7 @@ const Login = () => {
         } else {
             return (
                 <>
-                    <h1 className="title">Login</h1>
+                    <h1 className="title">Login Admin</h1>
                     <Input
                         name={"username"}
                         title={"Username"}
