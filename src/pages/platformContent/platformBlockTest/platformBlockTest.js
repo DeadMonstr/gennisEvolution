@@ -174,7 +174,6 @@ export const AddDefination = ({setActive, activeModal}) => {
     const onClick = (data) => {
         request(`${BackUrl}defenations`, "POST", JSON.stringify(data), headers())
             .then(res => {
-                console.log(res)
                 setActive(false)
                 setValue("name", "")
             })
@@ -183,7 +182,7 @@ export const AddDefination = ({setActive, activeModal}) => {
         <Modal setActiveModal={setActive} activeModal={activeModal}>
             <div className={cls.modal}>
                 <Form onSubmit={handleSubmit(onClick)}>
-                    <InputTest title={"Yo'nalish nomi"} register={register} name={'name'}/>
+                    <InputTest required={true} title={"Yo'nalish nomi"} register={register} name={'name'}/>
 
                 </Form>
             </div>

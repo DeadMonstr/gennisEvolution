@@ -336,7 +336,6 @@ const Index = () => {
             }
 
 
-            console.log(item)
 
             return <Link to={`../../insideGroup/${item?.teacher[0]?.group_id}`} className="lesson" style={style}>
                 <h1>{item?.teacher[0]?.name}</h1>
