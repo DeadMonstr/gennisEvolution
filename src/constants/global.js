@@ -7,10 +7,10 @@ import {useMemo} from "react";
 // export const ClassroomUrlForDoc = "http://192.168.1.61:5001/"
 
 
-// export const BackUrl = "/api/"
-// export const ClassroomUrl = `https://classroom.gennis.uz/`
-// export const BackUrlForDoc = "/"
-// export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
+export const BackUrl = "/api/"
+export const ClassroomUrl = `https://classroom.gennis.uz/`
+export const BackUrlForDoc = "/"
+export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
 
 export const headers = () => {
     const token = sessionStorage.getItem("token")

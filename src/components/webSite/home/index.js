@@ -180,7 +180,7 @@ const Home = () => {
                     {
                         isMobile ?
                             <Link
-                                to={'/login'}
+                                to={'login'}
                                 style={{textDecoration: "none", width: "150px", height: "35px"}}
                             >
                                 <WebButton style={"blackWhite"}>Login</WebButton>
