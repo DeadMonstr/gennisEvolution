@@ -166,7 +166,7 @@ const HeaderPc = ({status, activeBar, setActiveBar, children}) => {
                 </div>
             </div>
             <Link
-                to={'/login'}
+                to={`/login`}
                 style={{cursor: "pointer"}}
             >
                 {
