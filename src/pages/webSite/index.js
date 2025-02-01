@@ -91,7 +91,7 @@ const WebSite = () => {
                         <WebSiteLoader/>
                     ) : (
 
-                        <AnimateSharedLayout type="crossfade">
+                        // <AnimateSharedLayout type="crossfade">
                         <>
                             <Context.Provider value={{sectionTop, setSectionTop}}>
                                 <Routes>
@@ -103,7 +103,7 @@ const WebSite = () => {
                                 </Routes>
                             </Context.Provider>
                         </>
-                        // </AnimateSharedLayout>
+                         /*</AnimateSharedLayout>*/
                     )
 
 
