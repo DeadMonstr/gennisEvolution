@@ -57,7 +57,7 @@ const PlatformBlockTest = () => {
         request(`${BackUrl}students_test?${query}&location_id=${locationId}`, "GET", null, headers())
             .then(res => {
                 setFilteredData(res)
-                console.log(res)
+
             })
             .catch(err => console.error("Error fetching data:", err));
     };
