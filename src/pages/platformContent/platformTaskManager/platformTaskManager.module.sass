@@ -1,0 +1,553 @@
+
+
+
+
+.tasks
+  padding: 5rem 8rem
+
+  &__modal
+    width: fit-content
+    height: fit-content
+    background-color: white
+    padding: 1rem 3rem
+    border-radius: 2rem
+
+    .wrapper
+      //height: 250px
+      display: flex
+      flex-direction: column
+      justify-content: space-around
+
+      button
+        margin-top: 2rem
+
+  &__inner
+    padding: 2rem 5rem
+    width: 100%
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4)
+    border-radius: 3rem
+    display: flex
+    flex-direction: column
+
+    .header
+      padding: 2rem 0
+      width: 100%
+      display: flex
+      justify-content: space-between
+      align-items: center
+      border-bottom: 2px solid rgba(0, 0, 0, 0.2)
+      font-size: 1.6rem
+
+      &__search
+        width: 300px
+
+      &__userInfo
+        display: flex
+        gap: 2rem
+
+        .inner
+          display: flex
+          flex-direction: column
+          gap: .7rem
+
+        img
+          width: 60px
+          height: 60px
+
+    .info
+      width: 100%
+      display: flex
+
+      &__progress
+        width: 90%
+        display: flex
+        align-items: center
+        flex-direction: column
+        padding: 3rem 0
+        gap: 10rem
+        border-radius: 20px
+        background: #E0F2FE
+
+        .completeTask
+          //width: 35%
+          display: flex
+          justify-content: space-between
+
+          &__progress
+            display: flex
+            gap: 3rem
+
+            .taskItem
+              width: 300px
+              padding: 3rem 2rem
+              border-radius: 1rem
+              background-color: rgba(255, 115, 0, 0.7)
+              color: white
+              display: flex
+              flex-direction: column
+              gap: 2rem
+              font-size: 1.6rem
+              cursor: pointer
+              transition: .7s
+
+              &.active
+                box-shadow: 0 0 15px 0 rgba(255, 115, 0, 0.7)
+
+              &:nth-child(2)
+                background-color: rgba(5, 196, 255, 0.7)
+
+                &.active
+                  box-shadow: 0 0 15px 0 rgba(5, 196, 255, 0.7)
+
+              &__info
+                display: flex
+                gap: 2rem
+
+                .icon
+                  padding: 1rem
+                  background-color: rgba(255, 255, 255, 0.3)
+                  border-radius: 1rem
+
+          &__precent
+            display: flex
+            //flex-direction: column
+            justify-content: space-between
+            gap: 4rem
+            align-items: center
+            font-size: 1.6rem
+
+            .circleProgress
+              border-radius: 50%
+              width: 100px
+              height: 100px
+              box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4)
+              display: flex
+              justify-content: center
+              align-items: center
+
+    .menuTask
+      width: 100%
+      display: flex
+      flex-direction: column
+      gap: 5rem
+      font-size: 1.6rem
+
+      &__list
+        display: flex
+        justify-content: space-between
+        border-bottom: 2px solid rgba(26, 26, 26, 0.3)
+        color: rgba(26, 26, 26, 0.3)
+        font-size: 1.4rem
+        padding: .7rem 0
+
+        .other
+          display: flex
+          gap: 3rem
+
+          .otherItems
+            display: flex
+            flex-direction: column
+            align-items: center
+            gap: 1rem
+            p
+              font-size: 1.8rem
+
+          &__item
+            cursor: pointer
+            z-index: 2
+
+            &.active
+              color: rgba(26, 26, 26, 0.6)
+
+      &__date
+        width: 100%
+        display: flex
+        justify-content: center
+        align-items: center
+        font-size: 1.6rem
+
+    .items
+      padding: 2rem 0
+      width: 75%
+      display: flex
+      flex-direction: column
+      //align-items: center
+      gap: 5rem
+
+      //&__inner
+      //  height: 100%
+      //  width: 87%
+      //  display: flex
+      //  flex-direction: column
+      //  gap: 3rem
+
+      .scroll
+        display: flex
+        gap: 3rem
+        overflow: hidden
+
+        &__plus
+          width: 100px
+          height: 100px
+          display: flex
+          justify-content: center
+          align-items: center
+
+          .icon
+            font-size: 6rem
+            cursor: pointer
+            color: #05C4FF
+
+        &__inner
+          display: flex
+          align-items: center
+          gap: 3rem
+          cursor: w-resize
+
+      &__red
+        display: flex
+        gap: 3rem
+        overflow: hidden
+
+      &__yellow
+        display: flex
+        gap: 3rem
+        overflow: hidden
+
+.item
+  width: 450px
+  height: 240px
+  border-radius: 2rem
+  display: flex
+  position: relative
+  //box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4)
+  &.red
+    background-color: #FFE4E6
+  &.yellow
+    background-color: #FEF9C3
+  &.green
+    background-color: #6bfa88
+  &.black
+    background-color: #3a3a3a
+  &.navy
+    background-color: #2e8cff
+  &.noColor
+    background-color: #eaeaea
+
+
+
+
+  .icon
+    color: black
+    font-size: 1.6rem
+    position: absolute
+    top: 1.5rem
+    left: 1.5rem
+
+  &__info
+    width: 60%
+    height: 100%
+    display: flex
+    flex-direction: column
+    justify-content: space-between
+    font-size: 1.3rem
+    padding: 2rem
+
+    &.active
+      justify-content: flex-end
+
+    .debt
+      border-radius: 7.5px
+      width: fit-content
+      padding: .5rem 1rem
+      color: #4b4b4b
+      background-color: white
+
+    .username
+      padding-bottom: 1rem
+      width: fit-content
+      border-bottom: 2px solid rgba(26, 26, 26, 0.3)
+      color: rgba(26, 26, 26, 0.5)
+
+    .infoList
+      height: 50%
+      display: flex
+      flex-direction: column
+      justify-content: space-around
+      list-style: none
+      padding-right: 2rem
+      font-size: 1.4rem
+
+      &.active
+        margin-top: 1rem
+        height: 43%
+
+      &__item
+        display: flex
+        justify-content: space-between
+
+  &__image
+    width: 40%
+    height: 100%
+    display: flex
+    align-items: center
+    background-repeat: no-repeat
+    background-position: right
+    background-size: cover
+    border-radius: 0 2rem 2rem 0
+
+    .circle
+      width: 162px
+      height: 162px
+      border-radius: 50%
+      display: flex
+      justify-content: center
+      align-items: center
+      margin-left: -13px
+      background-color: white
+      cursor: pointer
+
+      img
+        width: 90%
+        height: 90%
+
+
+.userbox
+  background-color: #FFFFFF
+  border-radius: 2rem
+  width: 518px
+  display: flex
+  align-items: center
+  flex-direction: column
+  padding: 30px 0 30px 0
+  &__info
+    width: 100%
+    display: flex
+    flex-direction: column
+    align-items: center
+    font-family: Inter
+  &__name
+    text-align: center
+    font-size: 20px
+
+    font-weight: 500
+    line-height: 28px
+  &__infos
+    display: flex
+    justify-content: space-between
+    flex-direction: column
+    width: 50%
+    color: #52525B
+
+  &__number , &__subjects
+    display: flex
+    justify-content: space-between
+    margin: 5px
+    font-size: 1.6rem
+    color: #52525B
+  &__inputs
+    width: 100%
+
+  &__img
+    img
+      width: 170px
+      height: 170px
+.wrapperList
+  //height: 600px
+  padding: 20px
+  background: white
+  overflow: auto
+  margin: 0 0 0 20px
+  border-radius: 10px
+  width: 40rem
+  max-height: 700px
+
+  &__box
+    margin: 5px
+    background-color: #E0F2FE
+    padding: 10px
+    border-radius: 5px
+    height: fit-content
+    font-size: 2rem
+    font-weight: 500
+    line-height: 28px
+  &__number
+    display: flex
+    justify-content: space-between
+  //&__comment
+  //  display: flex
+  //  justify-content: space-between
+
+
+.switchBox
+  display: flex
+  align-items: center
+  height: 50px
+  border-radius: 50px
+  justify-content: space-between
+
+
+.switch
+  display: flex
+  align-items: center
+  justify-content: start
+  gap: 30px
+  width: 220px
+  height: 50px
+  border-radius: 50px
+  cursor: pointer
+  padding: 10px
+  transition: background-color 0.3s ease
+  color: white
+
+
+.inProgress
+  background-color: #ff8c42
+
+
+
+
+.completed
+  background-color: #34c9eb
+
+.icon__handler
+  width: 40px
+  height: 40px
+  background: white
+  border-radius: 50%
+  display: flex
+  margin-left: 1.7px
+  margin-top: -8px
+  align-items: center
+  justify-content: center
+  transition: 0.3s ease-in-out
+  user-select: none
+
+.icon__handlerSucces
+  width: 40px
+  height: 40px
+  background: white
+  border-radius: 50%
+  display: flex
+  margin-left: 16.3rem
+  margin-top: -8px
+  align-items: center
+  justify-content: center
+  transition: 0.3s ease-in-out
+  user-select: none
+
+
+.iconButton
+  width: 23px
+  height: 23px
+  margin-right: 10px
+
+.buttonIcon
+  width: 20px
+  height: 20px
+  object-fit: cover
+
+.textContent
+  font-size: 21px
+  user-select: none
+  transition: 0.3s ease-in-out
+
+.textContentSucces
+  font-size: 21px
+  margin-left: -45px
+  transition: 0.3s ease-in-out
+
+
+.tasks__handler
+  width: 100%
+  height: auto
+  display: flex
+  justify-content: space-between
+
+.tasks__main
+  width: 70%
+  height: 100%
+  display: flex
+  flex-direction: column
+
+
+
+//.menuTask
+//  width: 100%
+//  display: flex
+//  flex-direction: column
+//  gap: 5rem
+//  font-size: 1.6rem
+//
+//  &__list
+//    display: flex
+//    justify-content: space-between
+//    border-bottom: 2px solid rgba(26, 26, 26, 0.3)
+//    color: rgba(26, 26, 26, 0.3)
+//    font-size: 1.4rem
+//    padding: .7rem 0
+//
+//    .other
+//      display: flex
+//      gap: 3rem
+//
+//      &__item
+//        cursor: pointer
+//        z-index: 2
+//
+//        &.active
+//          color: rgba(26, 26, 26, 0.6)
+
+.contentTask
+  width: 100%
+  height: auto
+  display: flex
+  flex-direction: column
+  gap: 40px
+  padding: 10px
+
+  &__inner
+    display: flex
+    justify-content: space-between
+
+.tasks__banner
+  width: 30%
+  height: auto
+  gap: 15px
+  display: flex
+  flex-direction: column
+  align-items: center
+  border-left: 4px solid #CBD5E1
+
+table
+  tr
+    td:hover
+      .popup
+        visibility: visible
+        opacity: 1
+.popup
+  width: max-content
+  max-width: 30rem
+  visibility: hidden
+  opacity: 0
+  background-color: grey
+  padding: .5rem 1rem
+  border-radius: 5px
+  position: absolute
+  top: 70%
+  left: 30%
+  transform: translateX(-50%)
+  z-index: 200
+  color: white
+  transition: all .1s
+.table_results
+  height: calc(100vh - 50rem)
+  overflow: auto
+  &::-webkit-scrollbar
+    width: 5px
+
+    display: none
+    border-radius: 10px
+    background-color: #726666
+
+

@@ -1,0 +1,56 @@
+
+
+.radioLabel
+  color: #303030
+  font-size: 14px
+  font-weight: 400
+  margin-right: 7px
+  cursor: pointer
+  margin-top: 10px
+  display: flex
+
+
+.radioInput
+  margin: 0
+  visibility: hidden
+  display: none
+
+.wrapper
+  width: 2rem
+  display: flex
+  align-items: center
+  justify-content: center
+  .customRadio
+    cursor: pointer
+    width: 20px
+    height: 20px
+    border: 2px solid
+    border-radius: 50%
+    display: inline-block
+    position: relative
+    &.active
+      border: 2px solid
+      color: #00C2FF
+      &:after
+        opacity: 1 !important
+        transform: translate(-50%, -50%) scale(1) !important
+    &:after
+      content: ''
+      width: 10px
+      height: 10px
+      background: #00C2FF
+      position: absolute
+      border-radius: 50%
+      top: 50%
+      left: 50%
+      transform: translate(-50%, -50%) scale(0)
+      opacity: 0
+      transition: all .4s
+.text
+  margin-left: 1rem
+  font-size: 1.6rem
+  font-weight: 600
+  max-width: 90%
+
+
+

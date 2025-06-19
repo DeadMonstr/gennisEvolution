@@ -1,0 +1,52 @@
+
+
+.label
+  width: fit-content
+  height: fit-content
+  display: flex
+  flex-direction: column
+  //gap: .7rem
+  position: relative
+  transition: .7s
+
+  .info
+    width: 100%
+    display: flex
+    justify-content: space-between
+    span
+      font-weight: 500
+      font-size: 1.8rem
+      margin-bottom: .5rem
+
+  &__inner
+    outline: none
+    //width: fit-content
+    min-width: 240px
+    min-height: 40px
+    padding: .5rem 1rem
+    font-size: 1.6rem
+    border-radius: .5rem
+    border: 2px solid #384455
+
+    &.error
+      border: 1px solid #900B09
+
+  //&__title
+    font-size: 1.6rem
+    position: absolute
+    left: 2rem
+    top: -.8rem
+    background-color: white
+    padding: .1rem .3rem
+    color: #676767
+    z-index: 10
+
+    &.disabled
+      color: #949494
+
+    &.error
+      color: #900B09
+
+  &__error
+    font-size: 1.6rem
+    color: #900B09
