@@ -22,30 +22,32 @@ const App = () => {
 
     return (
         <Routes>
-            {/*<Route path="/*"  element={<Website/>} />*/}
+            <Route path="/*"  element={<Website/>} />
 
             <Route path="/login" element={<Login/>} />
             <Route path="/register_test" element={<Register/>}/>
 
-
-            <Route path="/register"  element={<FastRegister/>} />
-            {/*<Route element={<RequireAuth allowedRules={[ROLES.Admin,ROLES.Director]}/>} >*/}
-            {/*    <Route path="registerTeacher/*"  element={<RegisterTeacher/>}/>*/}
-            {/*    <Route path="registerEmployee/*"  element={<RegisterEmployee/>}/>*/}
-            {/*</Route>*/}
+            <Route path="/register"  element={<FastRegister/>}/>
+            <Route element={<RequireAuth allowedRules={[ROLES.Admin,ROLES.Director]}/>} >
+                <Route path="registerTeacher/*"  element={<RegisterTeacher/>}/>
+                <Route path="registerEmployee/*"  element={<RegisterEmployee/>}/>
+            </Route>
 
 
             <Route element={<RequireAuth allowedRules={[ROLES.Admin,ROLES.Director,ROLES.User,ROLES.Student,ROLES.Teacher,ROLES.Programmer,ROLES.Smm,ROLES.Editor,ROLES.Accountant]}/>} >
                 <Route path="/platform"  element={<Platform/>} >
                     <Route path="/platform/*" element={<PlatformContent/>}/>
                 </Route>
+
                 <Route path="registerStudent/*"  element={<RegisterUser/>}/>
+
+
             </Route>
 
 
-            <Route path="/platform"  element={<Platform/>} >
-                <Route path="/platform/*" element={<PlatformContent/>}/>
-            </Route>
+            {/*<Route path="/platform"  element={<Platform/>} >*/}
+            {/*    <Route path="/platform/*" element={<PlatformContent/>}/>*/}
+            {/*</Route>*/}
 
             <Route
                 path="/platform/"
@@ -69,10 +71,7 @@ const App = () => {
                 element={<QrCodeRegister/>}
             />
 
-            <Route
-                path="/"
-                element={<Navigate to="/login" replace />}
-            />
+
 
         </Routes>
 
