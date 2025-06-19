@@ -85,6 +85,7 @@ const PlatformAccountantTypesMoney = React.lazy(() => import("pages/platformCont
 const PlatformBlockTest =  React.lazy(() => import('./platformBlockTest/platformBlockTest'));
 const PlatformBill =  React.lazy(() => import('./platformBill/platformBill'));
 const PlatformBillProfile =  React.lazy(() => import('./platformBill/platformBillProfile/platformBillProfile'));
+const PlatformAdminRating =  React.lazy(() => import('./platformAdminRating/platformAdminRating'));
 
 
 
@@ -214,6 +215,11 @@ const PlatformContent = () => {
                     <Route
                         path="books/*"
                         element={<PlatformBooks/>}
+                    />
+
+                    <Route
+                        path="adminRating"
+                        element={<PlatformAdminRating/>}
                     />
 
 
