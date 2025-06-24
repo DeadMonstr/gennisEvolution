@@ -6,7 +6,7 @@ import user_img from "assets/user-interface/user_image.png"
 
 import "../tables.sass"
 
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {BackUrl, BackUrlForDoc} from "constants/global";
 
 
@@ -23,7 +23,7 @@ const UsersTable = React.memo(({
 }) =>  {
 
     const [usersList,setUsersList] = useState([])
-
+    const location = useLocation();
     const dispatch = useDispatch()
 
     // console.log(usersList)
@@ -36,11 +36,16 @@ const UsersTable = React.memo(({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const LinkToUser = (e,id) => {
         if (cache) {
-            navigate(`../profile/${id}`)
+            navigate(`../profile/${id}`);
         } else {
             if (!blockLink) {
-                if (e.target.type !== "checkbox" && !e.target.classList.contains("delete") && !e.target.classList.contains("fa-times")) {
-                    navigate(`../../profile/${id}`)
+                const isDelete = e.target.classList.contains("delete") || e.target.classList.contains("fa-times");
+                const isCheckbox = e.target.type === "checkbox";
+
+                if (!isCheckbox && !isDelete) {
+                    const isInParentsList = location.pathname.includes("parentsList");
+                    const path = isInParentsList ? `../parentList/${id}` : `../../profile/${id}`;
+                    navigate(path);
                 }
             }
         }

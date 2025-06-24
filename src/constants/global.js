@@ -1,8 +1,8 @@
 import {useMemo} from "react";
 
 
-// export const BackUrlForDoc = `http://26.253.30.50:5002/`
-// export const BackUrl = `${BackUrlForDoc}api/`
+export const BackUrlForDoc = `http://26.196.249.247:5002/`
+export const BackUrl = `${BackUrlForDoc}api/`
 // export const ClassroomUrl = `http://localhost:3000/`
 // export const ClassroomUrlForDoc = "http://26.253.30.50:5001/"
 
@@ -10,9 +10,9 @@ import {useMemo} from "react";
 // export const BackUrlForDoc = "https://admin.gennis.uz/"
 
 
-export const BackUrl = "/api/"
+// export const BackUrl = "/api/"
 export const ClassroomUrl = `https://classroom.gennis.uz/`
-export const BackUrlForDoc = "/"
+// export const BackUrlForDoc = "/"
 export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
 
 export const headers = () => {
@@ -416,6 +416,20 @@ export const requireMenuItems = (id) => {
             classIcon: "fa-dollar-sign",
             roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
         },
+        {
+            to: "parentSection",
+            name: "Ota-ona bo'limi",
+            classIcon: "fa-dollar-sign",
+            roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
+        },
+        {
+            to: `parentsList`,
+            name: "Ota-onalar ro'yxati",
+            classIcon: "fa-users",
+            location: true,
+            children: true,
+            roles: [ROLES.Director,ROLES.Programmer, ROLES.Accountant]
+        }
     ]
 }
 

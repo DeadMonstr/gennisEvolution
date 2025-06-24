@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useHttp} from "hooks/http.hook";
 
 import {
-    fetchCreateGroupTools,
+    fetchCreateGroupTools, fetchNewStudents,
     setActiveBtn,
     setPage
 } from "slices/newStudentsSlice";
@@ -26,6 +26,7 @@ import {fetchDataToChange} from "slices/dataToChangeSlice";
 import {useAuth} from "hooks/useAuth";
 import PlatformMessage from "components/platform/platformMessage";
 import {setMessage} from "slices/messageSlice";
+import {fetchTeachers, fetchTeachersByLocation} from "../../../slices/teachersSlice";
 
 
 
@@ -74,7 +75,7 @@ const PlatformCreateGroup = () => {
 const Users = ({locationId,setGroupData,groupData}) => {
 
 
-    const {fetchFilteredStudentsStatus} = useSelector(state => state.newStudents)
+    const {newStudents, fetchFilteredStudentsStatus} = useSelector(state => state.newStudents)
     const {filters} = useSelector(state => state.filters)
 
 
@@ -83,9 +84,9 @@ const Users = ({locationId,setGroupData,groupData}) => {
     const [students,setStudents] = useState([])
     const [teachers,setTeachers] = useState([])
     const [groupError,setGroupError] = useState([])
-
+    const {teacherss, btns, fetchTeachersStatus} = useSelector(state => state.teachers)
     const [currentPage, setCurrentPage] = useState(1);
-
+    console.log(students,'dd')
 
     const {selectedLocation} = useAuth()
 
@@ -121,17 +122,18 @@ const Users = ({locationId,setGroupData,groupData}) => {
         if (activeType === "students") {
             const newData = {
                 name: "newStudents",
-                location: locationId
+                location: locationId,
             }
-            dispatch(fetchFilters(newData))
+            dispatch(fetchNewStudents(1))
             setUsers(students)
         } else if (activeType === "teachers") {
             const newData = {
                 name: "teachers",
                 location: locationId
             }
-            dispatch(fetchFilters(newData))
+            dispatch(fetchTeachersByLocation(1))
             setUsers(teachers)
+            console.log(teachers,'t')
         }
     },[locationId,activeType])
 
