@@ -72,7 +72,7 @@ const shifts = [
 ]
 const genders = [
     {
-        name: "erke",
+        name: "Erkak",
     },
     {
         name: "Ayol"

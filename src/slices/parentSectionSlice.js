@@ -20,9 +20,9 @@ export const fetchParentData = createAsyncThunk(
 
 export const fetchParentsData = createAsyncThunk(
     'parentSectionSlice/fetchParentsData',
-    async (id) => {
+    async ({locationId , type}) => {
         const {request} = useHttp()
-        return await request(`${BackUrl}parent/get_list/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}parent/get_list/${locationId}/${type}`, "GET", null, headers())
     }
 )
 
@@ -40,8 +40,8 @@ const parentSectionSlice = createSlice({
             state.data = action.payload
         },
         onDeleteParent: (state, action) => {
-            state.parents = state.parents.filter(item => item.id !== action.payload.id)
-        }
+            state.parents = state.parents.filter(item => item.id !== action.payload)
+        },
     },
     extraReducers: builder => {
         builder
@@ -83,6 +83,7 @@ export const {
     onChangeParentSource,
     onAddChildrenToParent,
     onRemoveChildrenFromParent,
-    onDeleteParent
+    onDeleteParent,
+
 
 } = actions
