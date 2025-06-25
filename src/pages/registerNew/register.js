@@ -41,7 +41,7 @@ const registerInputList = [
         name: "phone",
         label: "Telefon raqami",
         type: "number"
-    },{
+    }, {
         name: "phoneParent",
         label: "Ota-ona telefon raqami",
         type: "number"
@@ -53,6 +53,11 @@ const registerInputList = [
         name: "password_confirm",
         label: "Parolni tasdiqlang",
         type: "password"
+    },
+    {
+        name: "address",
+        label: "Manzil",
+        type: "text"
     }
 ]
 
@@ -65,6 +70,14 @@ const shifts = [
         name: "2-smen"
     },
 ]
+const genders = [
+    {
+        name: "erke",
+    },
+    {
+        name: "Ayol"
+    }
+]
 
 const types = [
     {
@@ -76,6 +89,10 @@ const types = [
     }, {
         id: "employer",
         name: "Ishchi"
+    },
+    {
+        id: "parent",
+        name: "Ota/ona"
     }
 ]
 
@@ -102,6 +119,8 @@ const Register = () => {
     const [languages, setLanguages] = useState([])
     const [jobs, setJobs] = useState([])
     const [selectedSubjects, setSelectedSubjects] = useState([])
+    const [selectedSex, setSelectedSex] = useState("")
+    const [addresses, setAddresses] = useState("")
     const [selectedLocation, setSelectedLocation] = useState(location)
     const [selectedJob, setSelectedJob] = useState(null)
     const [studyTime, setStudyTime] = useState(1)
@@ -114,12 +133,12 @@ const Register = () => {
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
 
-    const [activeError,setActiveError] = useState(false)
-    const [errorMessage,setErrorMessage] = useState("")
+    const [activeError, setActiveError] = useState(false)
+    const [errorMessage, setErrorMessage] = useState("")
 
     const [loading, setLoading] = useState(false)
 
-    useEffect(()=> {
+    useEffect(() => {
         const data = JSON.parse(localStorage.getItem("schoolStudent"))
 
         if (data && Object.keys(data).length > 0) {
@@ -130,10 +149,10 @@ const Register = () => {
         }
 
 
-    },[])
+    }, [])
 
 
-    const registerSelectList = useMemo(() =>  [
+    const registerSelectList = useMemo(() => [
         {
             name: "loc",
             label: "O'quv markazi joylashuvi",
@@ -164,8 +183,14 @@ const Register = () => {
             opts: jobs,
             onFunc: (value) => setSelectedJob(value),
             keyValue: "name"
+        },
+        {
+            name: "sex",
+            label: "Jinsi",
+            opts: genders,
+            onFunc: (value) => setSelectedSex(value)
         }
-    ], [locations, jobs, shifts, languages, subjects])
+    ], [locations, jobs, shifts, languages, subjects, selectedSex])
 
     useEffect(() => {
         dispatch(fetchData())
@@ -185,31 +210,50 @@ const Register = () => {
         setLoading(true)
 
         const newData = JSON.parse(localStorage.getItem("schoolStudent"))
+        let res
+        if (type === "parent") {
+            res = {
+                ...data,
+                address: addresses,
+                sex: selectedSex,
+                location_id: +selectedLocation
+            }
+        } else {
 
-        const res = {
-            ...data,
-            password,
-            password_confirm: confirmPassword,
-            shift: studyTime,
-            language: +studyLang,
-            job: selectedJob,
-            location: +selectedLocation,
-            selectedSubjects: selectedSubjects,
-            school_user_id: newData?.id
+            res = {
+                ...data,
+                password,
+                password_confirm: confirmPassword,
+                shift: studyTime,
+                language: +studyLang,
+                job: selectedJob,
+                location: +selectedLocation,
+                selectedSubjects: selectedSubjects,
+                school_user_id: newData?.id,
+            }
         }
-        console.log(type)
-        const route = type === "employer" ? "register_staff" : type === "student" ? "register" : "register_teacher"
+        console.log(res)
+        const route = type === "employer" ? "register_staff" : type === "student" ? "register" : type === "parent" ? "parent/crud/" : "register_teacher"
         request(`${BackUrl}${route}`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 setLoading(false)
                 if (data) {
                     localStorage.removeItem("schoolStudent")
                 }
-                dispatch(setMessage({
-                    msg: res.msg,
-                    type: "success",
-                    active: true
-                }))
+                if (type === "parent") {
+                    dispatch(setMessage({
+                        msg: "Muvofaqqiyatli qo'shildi",
+                        type: "success",
+                        active: true
+                    }))
+                }else {
+                    dispatch(setMessage({
+                        msg: res.msg,
+                        type: "success",
+                        active: true
+                    }))
+                }
+
                 navigate("../home")
             })
             .catch(err => console.log(err))
@@ -252,15 +296,14 @@ const Register = () => {
     }
 
 
-
     useEffect(() => {
         setIsCheckPass(confirmPassword !== password)
 
-    }, [confirmPassword,password])
+    }, [confirmPassword, password])
 
     const checkUsername = (username) => {
         setLoading(true)
-        request(`${BackUrl}check_username`,"POST", JSON.stringify(username))
+        request(`${BackUrl}check_username`, "POST", JSON.stringify(username))
             .then(res => {
                 setLoading(false)
                 // if (res.found) {
@@ -275,7 +318,7 @@ const Register = () => {
                         type: "manual",
                         message: "username band"
 
-                    },  { shouldFocus: true })
+                    }, {shouldFocus: true})
                     setActiveError(true)
                     setErrorMessage("Username band")
                 } else {
@@ -360,6 +403,17 @@ const Register = () => {
                                     </div>
                                 )
                             }
+                            if (item.name === "address") {
+                                return (
+                                    <Input value={""}
+                                           title={item.label}
+                                           type={item.type}
+                                           onChange={setAddresses}
+                                           required
+                                    />
+                                )
+                            }
+
                             return (
                                 <InputForm
                                     register={register}
@@ -382,6 +436,10 @@ const Register = () => {
                             if (type !== "student" && item.name === "shift") return null
                             if (type !== "employer" && item.name === "job") return null
                             if (type === "employer" && item.name === "subs") return null
+                            if (type === "parent" && item.name === "shift") return null
+                            if (type === "parent" && item.name === "subs") return null
+                            if (type !== "parent" && item.name === "address") return null
+                            if (type === "parent" && item.name === "lang") return null
                             if (item.name === "subs") {
                                 return (
                                     <>
@@ -415,7 +473,7 @@ const Register = () => {
                                     </>
                                 )
                             }
-                            if (item.name === "loc"||item.name === "lang"||item.name === "shift") {
+                            if (item.name === "loc" || item.name === "lang" || item.name === "shift" || item.name === "sex") {
                                 return (
                                     <Select
                                         title={item.label}
@@ -436,13 +494,22 @@ const Register = () => {
                         })
                     }
                     {
-                        loading? <DefaultLoaderSmall/>:
-                        <Button
-                            formId={"form"}
-                            disabled={isCheckPass || isCheckLen || activeError|| (type !== "employer" ? selectedSubjects.length===0 : false) || (type === "employer" && !selectedJob)}
-                            type={'submit'}>
-                            Yakunlash
-                        </Button>
+                        loading ? <DefaultLoaderSmall/> :
+                            <Button
+                                formId={"form"}
+                                // disabled={
+                                //     isCheckPass ||
+                                //     isCheckLen ||
+                                //     activeError ||
+                                //     (type !== "employer" ? selectedSubjects.length === 0 : false) ||
+                                //     (type === "employer" && !selectedJob) ||
+                                //     (type !== "parent" ? selectedSubjects.length === 0 : false)
+                                // }
+                                type={'submit'}
+                            >
+                                Yakunlash
+                            </Button>
+
                     }
                 </form>
             </div>
