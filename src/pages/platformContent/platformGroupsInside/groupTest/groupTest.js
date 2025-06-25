@@ -117,7 +117,6 @@ const GroupTest = () => {
     // }
 
     // const onSetStudentsResult = (id,name,value) => {
-    //
     //     setStudents(students => students.map(item => {
     //         if (item.id === id) {
     //             return {...item, [name]: value}
