@@ -5,8 +5,8 @@ import {BackUrl, headers, ROLES} from "constants/global";
 const initialState = {
     id: null,
     username: null,
-    // role: process.env.NODE_ENV !== "production" ? ROLES.Director : null,
-    role: null,
+    role: process.env.NODE_ENV !== "production" ? ROLES.Director : null,
+    // role: null,
     name:null,
     surname: null,
     location: null,

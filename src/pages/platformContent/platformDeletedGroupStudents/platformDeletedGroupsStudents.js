@@ -123,6 +123,7 @@ const PlatformGroupDeletedStudents = () => {
                 name: true,
                 surname : true,
                 phone : true,
+                money: true,
                 reg_date: true,
                 deleted_date: true,
                 reason: true,
@@ -132,6 +133,7 @@ const PlatformGroupDeletedStudents = () => {
             name: true,
             surname : true,
             phone : true,
+            money: true,
             reg_date: true,
             deleted_date: true
         }

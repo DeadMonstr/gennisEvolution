@@ -1,12 +1,13 @@
 import {useMemo} from "react";
 
 
-export const BackUrlForDoc = `http://192.168.1.14:5002/`
+export const BackUrlForDoc = `http://26.253.30.50:5002/`
 export const BackUrl = `${BackUrlForDoc}api/`
 export const ClassroomUrl = `http://localhost:3000/`
-export const ClassroomUrlForDoc = "http://192.168.1.61:5001/"
+export const ClassroomUrlForDoc = "http://26.253.30.50:5001/"
 
-
+// export const BackUrl = "https://admin.gennis.uz/api/"
+// export const BackUrlForDoc = "https://admin.gennis.uz/"
 // export const BackUrl = "/api/"
 // export const ClassroomUrl = `https://classroom.gennis.uz/`
 // export const BackUrlForDoc = "/"
@@ -65,6 +66,12 @@ export const requireMenuItems = (id) => {
             roles: [ROLES.Admin,ROLES.Director]
         },
         {
+            to: "adminRating",
+            name: "Admin rating",
+            classIcon: "fa-chart-bar",
+            roles: [ROLES.Director,ROLES.Admin]
+        },
+        {
             to : "blockTest",
             name: "Block test",
             classIcon: "fa-tasks",
@@ -83,6 +90,31 @@ export const requireMenuItems = (id) => {
             name: "Yangi Registratsiya",
             classIcon: "fa-edit",
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        },
+
+        {
+            to : "schools",
+            name: "Maktablar",
+            classIcon: "fa-school",
+            location: true,
+            children: true,
+            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        },
+        {
+            to: "registeredSchoolStudents",
+            name: "Registered Students",
+            classIcon: "fa-users",
+            location: true,
+            children: true,
+            roles: [ROLES.Admin,ROLES.Director]
+        },
+        {
+            to : "myStudents",
+            name: "My students",
+            classIcon: "fa-users",
+            location: true,
+            children: true,
+            roles: [ROLES.Teacher]
         },
         // {
         //     to : "/registerTeacher",
@@ -382,6 +414,20 @@ export const requireMenuItems = (id) => {
             classIcon: "fa-dollar-sign",
             roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
         },
+        {
+            to: "parentSection",
+            name: "Ota-ona bo'limi",
+            classIcon: "fa-dollar-sign",
+            roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
+        },
+        {
+            to: `parentsList`,
+            name: "Ota-onalar ro'yxati",
+            classIcon: "fa-users",
+            location: true,
+            children: true,
+            roles: [ROLES.Director,ROLES.Programmer, ROLES.Accountant]
+        }
     ]
 }
 

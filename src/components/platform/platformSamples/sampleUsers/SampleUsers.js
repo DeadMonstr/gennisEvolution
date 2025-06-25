@@ -145,18 +145,31 @@ const SampleUsers = (props) => {
                 }
                 if (!filters[key]?.activeFilters?.length) return true;
                 if (Array.isArray(user[key])) {
-                    return user[key]?.some(keyEle =>
-                        filters[key].activeFilters?.some(
-                            keyFil => keyFil.toLowerCase().includes(keyEle.toLowerCase())
-                        )
-                    );
+                    return Array.isArray(filters[key]?.activeFilters) &&
+                        user[key].some(keyEle =>
+                            typeof keyEle === "string" &&
+                            filters[key].activeFilters.some(
+                                keyFil =>
+                                    typeof keyFil === "string" &&
+                                    keyFil.toLowerCase().includes(keyEle.toLowerCase())
+                            )
+                        );
                 }
+
+
+// Yoki string filtrlashda:
                 if (typeof filters[key]?.activeFilters === "string") {
                     if (typeof user[key] === "number") {
-                        return +filters[key]?.activeFilters === +user[key]
+                        return +filters[key]?.activeFilters === +user[key];
                     }
-                    return filters[key]?.activeFilters === user[key]
+                    return (user[key] || "").toLowerCase?.() === filters[key]?.activeFilters.toLowerCase?.();
                 }
+                // if (typeof filters[key]?.activeFilters === "string") {
+                //     if (typeof user[key] === "number") {
+                //         return +filters[key]?.activeFilters === +user[key]
+                //     }
+                //     return filters[key]?.activeFilters === user[key]
+                // }
                 return filters[key]?.activeFilters?.includes(user[key]);
             });
         });
@@ -166,10 +179,10 @@ const SampleUsers = (props) => {
     const searchedUsers = useMemo(() => {
         const filteredHeroes = multiPropsFilter.slice()
         setCurrentPage(1)
-        return filteredHeroes.filter(item =>
-            item.name.toLowerCase().includes(search.toLowerCase()) ||
-            item.surname.toLowerCase().includes(search.toLowerCase()) ||
-            item.username.toLowerCase().includes(search.toLowerCase())
+        return filteredHeroes?.filter(item =>
+            item.name?.toLowerCase().includes(search.toLowerCase()) ||
+            item.surname?.toLowerCase().includes(search.toLowerCase()) ||
+            item.username?.toLowerCase().includes(search.toLowerCase())
         )
     }, [multiPropsFilter, search])
 
@@ -360,7 +373,9 @@ const SampleUsers = (props) => {
                                 pageSize={PageSize}
                                 onPageChange={page => {
                                     setCurrentPage(page)
-                                    dispatch(funcsSlice?.setPage({page}))
+                                    if (funcsSlice.setPage) {
+                                        dispatch(funcsSlice?.setPage({page}))
+                                    }
                                 }}
                             />
                         </main>
@@ -494,8 +509,6 @@ const SampleUsers = (props) => {
                                             )
                                         })
                                     }
-
-
                                 </motion.div>
                             </motion.div>
                         </main>

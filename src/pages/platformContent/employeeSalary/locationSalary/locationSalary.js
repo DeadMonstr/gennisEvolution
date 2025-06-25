@@ -27,6 +27,7 @@ const LocationSalary = ({userId}) => {
             salary: true,
             residue: true,
             taken_salary: true,
+            debt: true,
             black_salary: true
         }
     },[])

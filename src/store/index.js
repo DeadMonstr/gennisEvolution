@@ -35,6 +35,10 @@ import {slice} from "../pages/webSite/test/register";
 import blockTestSlice from "../slices/blockTestSlice";
 import otchotSlice from "../slices/otchotSlice";
 import billSlice from "../slices/billSlice";
+import schoolProfile from "slices/schoolProfileSlice";
+import schools from "slices/schoolsSlice";
+import schoolTeacherProfile from "slices/schoolTeacherProfileSlice";
+import parentSlice from "slices/parentSectionSlice"
 
 const stringMiddlewere = () => (next) => (action) => {
     if (typeof action === 'string') {
@@ -81,7 +85,11 @@ const store = configureStore({
         taskManager,
         accountantSlice,
         otchotSlice,
-        billSlice
+        billSlice,
+        schoolProfile,
+        schools,
+        schoolTeacherProfile,
+        parentSlice
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware().concat(

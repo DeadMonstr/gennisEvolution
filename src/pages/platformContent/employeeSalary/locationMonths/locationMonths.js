@@ -129,6 +129,7 @@ const LocationMonths = () => {
                         <h1>Qolgan oylik: {selectedMonth?.residue}</h1>
                         <h1>Olingan oylik: {selectedMonth?.taken_salary}</h1>
                         <h1>Black salary: {selectedMonth?.black_salary}</h1>
+                        <h1>Qarz: {selectedMonth?.salary_debt}</h1>
                     </div>
                     <div>
                         <RequireAuthChildren allowedRules={[ROLES.Admin]}>

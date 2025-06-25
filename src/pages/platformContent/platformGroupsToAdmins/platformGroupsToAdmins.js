@@ -8,6 +8,7 @@ import {fetchGroups} from "slices/groupsSlice";
 import {fetchFilters} from "slices/filtersSlice";
 import {ROLES} from "constants/global";
 import {setSelectedLocation} from "slices/meSlice";
+import {fetchDataToChange} from "slices/dataToChangeSlice";
 
 
 
@@ -24,6 +25,7 @@ const PlatformGroupsToAdmins = () => {
 
     useEffect(()=> {
         dispatch(fetchGroups(locationId))
+        dispatch(fetchDataToChange())
         const newData = {
             name: "groups",
             location: locationId

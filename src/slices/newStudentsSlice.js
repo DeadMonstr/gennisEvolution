@@ -102,7 +102,7 @@ export const fetchNewStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewStudents',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}newStudents/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}newStudents/1`, "GET", null, headers())
     }
 )
 
@@ -243,6 +243,7 @@ const newStudentsSlice = createSlice({
                 state.newStudents = action.payload.newStudents.map(item => {
                     return {...item,checked: false}
                 })
+                console.log(state.newStudents)
                 state.checkedUsers = []
             })
             .addCase(fetchNewStudents.rejected, state => {

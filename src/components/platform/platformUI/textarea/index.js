@@ -16,12 +16,14 @@ const Textarea = React.memo((
 		onChange,
 		style,
 		extraClassName,
+		clazzLabel,
 		value
 	}) => {
 
-
+	console.log(clazzLabel)
 	return register ? (
-		<label style={style} className={styles.textareaLabel} htmlFor={name}>
+		<label style={style} className={classNames(styles.textareaLabel , clazzLabel)} htmlFor={name}>
+
 			{
 				title || subTitle ?
 					<div className={styles.info}>
@@ -53,7 +55,7 @@ const Textarea = React.memo((
 			</div>
 		</label>
 	) : (
-		<label style={style} className={styles.textareaLabel} htmlFor={name}>
+		<label style={style} className={classNames(styles.textareaLabel , clazzLabel)} htmlFor={name}>
 			<div className={styles.info}>
 				<span>{title} </span>
 				<span>{subTitle}</span>

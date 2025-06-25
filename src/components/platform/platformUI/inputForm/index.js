@@ -24,8 +24,8 @@ const InputForm = ({title, name, type, required, register, defaultValue, placeho
                 className="input-fields"
             />
             {
-                error &&
-                <span className="error-field">{error?.message}</span>
+                error?.length &&
+                <span className="error-field">{error?.[name].message}</span>
             }
         </label>
     );

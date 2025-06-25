@@ -29,7 +29,6 @@ const GroupTest = () => {
 
     const [tests, setTests] = useState([])
 
-    const [currentMonth, setCurrentMonth] = useState()
 
 
     const [active, setActive] = useState(false)
@@ -57,7 +56,22 @@ const GroupTest = () => {
                 setYear(res.current_year)
                 setMonth(res.current_month)
 
-                setCurrentMonth(res.current_month)
+
+                if (res.years_list.length === 1) {
+                    setYear(res.years_list[0])
+                }else {
+                    setYear(res.current_year)
+                }
+
+                if (res.month_list.length === 1) {
+                    setMonth(res.month_list[0])
+                } else {
+                    setMonth(res.current_month)
+                }
+
+
+
+
 
             })
     }, [])
@@ -67,7 +81,6 @@ const GroupTest = () => {
         if (year) {
             request(`${BackUrl}filter_datas_in_group/${groupId}`, "POST", JSON.stringify({year}), headers())
                 .then(res => {
-
                     setMonths(res.month_list)
                 })
                 .catch(err => {
@@ -104,7 +117,6 @@ const GroupTest = () => {
     // }
 
     // const onSetStudentsResult = (id,name,value) => {
-    //
     //     setStudents(students => students.map(item => {
     //         if (item.id === id) {
     //             return {...item, [name]: value}
@@ -179,13 +191,12 @@ const GroupTest = () => {
                                 btns={[
                                     <a href={`${BackUrlForDoc}${item.file}`} download><i style={{color: "grey", fontSize: "3rem"}} className="fas fa-file"></i></a>,
                                     <h1>Level: {item.level}</h1>,
-                                    (currentMonth === month &&
-                                        <Button type={"submit"} onClickBtn={() => onClick(item, "result")}>
-                                            {item.students.length > 0 ? "Natijani O'zgartirish" : "Natijani Qo'shish"}
-                                        </Button>
-                                    ),
-                                    (!item.students.length &&
-                                        <Button onClickBtn={() => onClick(item, "test")}>Test O'zgartirish</Button>)
+
+                                    <Button type={"submit"} onClickBtn={() => onClick(item, "result")}>
+                                        {item.students.length > 0 ? "Natijani O'zgartirish" : "Natijani Qo'shish"}
+                                    </Button>,
+
+                                    <Button onClickBtn={() => onClick(item, "test")}>Test O'zgartirish</Button>
                                 ]}
                                 title={item.name}
                             >
@@ -427,8 +438,7 @@ const ChangeCreateTestModal = ({activeTest, setActiveTest, setTests, setChangedT
                 </div>
 
                 <div className={cls.btns}>
-                    {Object.keys(changedTest).length > 0 && !changedTest.status &&
-                        <Button formId={""} onClickBtn={onDeleteTest} type={"danger"}>O'chirish</Button>}
+                    <Button formId={""} onClickBtn={onDeleteTest} type={"danger"}>O'chirish</Button>
                     <Button formId={"form"} type={"submit"}>Tasdiqlash</Button>
                 </div>
 

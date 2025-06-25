@@ -248,6 +248,7 @@ const AccountingTable = React.memo(({
                         {activeRowsInTable.salary ? <td>{item.salary}</td> : null}
                         {activeRowsInTable.residue ? <td>{item.residue}</td> : null}
                         {activeRowsInTable.taken_salary ? <td>{item.taken_salary}</td> : null}
+                        {activeRowsInTable.debt ? <td>{item.debt}</td> : null}
                         {activeRowsInTable.black_salary ? <td>{item.black_salary}</td> : null}
                     </tr>
                 )
@@ -566,6 +567,7 @@ const AccountingTable = React.memo(({
                                 {activeRowsInTable.salary ? <th>Oylik</th> : null}
                                 {activeRowsInTable.residue ? <th>Qolgan</th> : null}
                                 {activeRowsInTable.taken_salary ? <th>Olingan oylik</th> : null}
+                                {activeRowsInTable.debt ? <th>Qarz</th> : null}
                                 {activeRowsInTable.black_salary ? <th>Black salary</th> : null}
 
                             </tr>

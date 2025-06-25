@@ -39,7 +39,6 @@ const GroupsTable = React.memo(({groups, activeRowsInTable}) => {
 
     const renderElements = useCallback(() => {
         return groupsList?.map((item, index) => {
-            console.log(item , "item")
             return (
                 <tr key={index} onClick={() => LinkToGroup(item.id)}>
                     <td>{index + 1}</td>

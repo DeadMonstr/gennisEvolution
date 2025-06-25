@@ -23,8 +23,6 @@ const PersonalInfo = React.memo(({accessData, userId}) => {
 
     return (
         <div>
-
-
             <AllLabels
                 userId={userId}
                 data={accessData.activeToChange}
@@ -44,8 +42,8 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
     const [selectedSubjects, setSelectedSubjects] = useState([])
     const [shift, setShift] = useState("")
 
-
     const {type} = useSelector(state => state.message)
+
 
     useEffect(() => {
         setSelectedSubjects([])
@@ -69,14 +67,14 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
     }, [selectedLocation])
 
     useEffect(() => {
-        if (extraInfo?.subject?.value && dataToChange?.subjects) {
+        if (extraInfo?.subject?.value?.length && dataToChange?.subjects) {
             const newData = dataToChange?.subjects?.map(sb => ({
                 ...sb,
                 disabled: extraInfo?.subject?.value.some(item => item.name.toLowerCase() === sb.name.toLowerCase())
             }))
             setSubjects(newData)
         }
-    }, [extraInfo?.subject?.value, dataToChange?.subjects])
+    }, [extraInfo?.subject?.value?.length, dataToChange?.subjects])
 
     useEffect(() => {
         if (subjects?.length) {
@@ -520,27 +518,25 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
             {
                 data?.subject ?
                     <>
-                        {
-                            selectedSubjects?.length < 3 ?
-                                <label htmlFor="subjects">
-                                    <select
-                                        id="subjects"
-                                        className="input-fields"
-                                        onChange={e => onGetSubject(e.target.value)}
-                                    >
-                                        <option value="Fan tanla">Fan tanlang</option>
-                                        {
-                                            subjects?.map((item, index) => {
-                                                return (
-                                                    <option disabled={item.disabled} key={index}
-                                                            value={item.name}>{item.name}</option>
-                                                )
-                                            })
-                                        }
-                                    </select>
-                                </label>
-                                : null
-                        }
+
+                        <label htmlFor="subjects">
+                            <select
+                                id="subjects"
+                                className="input-fields"
+                                onChange={e => onGetSubject(e.target.value)}
+                            >
+                                <option value="Fan tanla">Fan tanlang</option>
+                                {
+                                    subjects?.map((item, index) => {
+                                        return (
+                                            <option disabled={item.disabled} key={index}
+                                                    value={item.name}>{item.name}</option>
+                                        )
+                                    })
+                                }
+                            </select>
+                        </label>
+
                         <div className="subjects">
                             <h3>Tanlangan fanlar:</h3>
                             <div className="subjects__wrapper">

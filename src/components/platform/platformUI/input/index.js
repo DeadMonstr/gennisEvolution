@@ -19,7 +19,9 @@ const Input = (props) => {
         others,
         clazz,
         placeholder,
-        disabled
+        disabled,
+        clazzLabel,
+        readonly
     } = props
 
 
@@ -36,7 +38,9 @@ const Input = (props) => {
 
 
     useEffect(() => {
-        setInput(value)
+        if (value) {
+            setInput(value)
+        }
     }, [value])
 
     useEffect(() => {
@@ -51,7 +55,7 @@ const Input = (props) => {
 
 
     return (
-        <label className={classNames("input-label")} htmlFor={name}>
+        <label className={classNames("input-label",clazzLabel)} htmlFor={name}>
             <span
                 className={classNames("name-field", {"disabled": disabled})}
             >
@@ -65,7 +69,8 @@ const Input = (props) => {
                 type={type === "password" ? typePassword : type}
                 id={name}
                 className={classNames("input-fields", clazz)}
-                value={type === "number" ? input : input || ""}
+                value={input || ""}
+                readOnly={props.readOnly}
                 onChange={e => setInput(e.target.value)}
             />
 
