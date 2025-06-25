@@ -14,7 +14,7 @@ export const fetchParentData = createAsyncThunk(
     'parentSectionSlice/fetchParentData',
     async (id) => {
         const {request} = useHttp()
-        return await request(`${BackUrl}parent/crud/2`, "GET", null, headers())
+        return await request(`${BackUrl}parent/crud/${id}`, "GET", null, headers())
     }
 )
 
@@ -22,7 +22,7 @@ export const fetchParentsData = createAsyncThunk(
     'parentSectionSlice/fetchParentsData',
     async (id) => {
         const {request} = useHttp()
-        return await request(`${BackUrl}parent/get_list/1`, "GET", null, headers())
+        return await request(`${BackUrl}parent/get_list/${id}`, "GET", null, headers())
     }
 )
 

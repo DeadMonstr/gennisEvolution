@@ -73,7 +73,6 @@ const PlatformParentsList = () => {
         { name: 'delete', icon: 'fa-trash', type: 'delete' },
     ], []);
 
-    console.log('parents:', parents);
 
     return (
         <>

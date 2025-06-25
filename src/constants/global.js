@@ -8,8 +8,6 @@ export const ClassroomUrlForDoc = "http://26.253.30.50:5001/"
 
 // export const BackUrl = "https://admin.gennis.uz/api/"
 // export const BackUrlForDoc = "https://admin.gennis.uz/"
-
-
 // export const BackUrl = "/api/"
 // export const ClassroomUrl = `https://classroom.gennis.uz/`
 // export const BackUrlForDoc = "/"
@@ -416,6 +414,20 @@ export const requireMenuItems = (id) => {
             classIcon: "fa-dollar-sign",
             roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
         },
+        {
+            to: "parentSection",
+            name: "Ota-ona bo'limi",
+            classIcon: "fa-dollar-sign",
+            roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
+        },
+        {
+            to: `parentsList`,
+            name: "Ota-onalar ro'yxati",
+            classIcon: "fa-users",
+            location: true,
+            children: true,
+            roles: [ROLES.Director,ROLES.Programmer, ROLES.Accountant]
+        }
     ]
 }
 

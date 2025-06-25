@@ -509,8 +509,6 @@ const SampleUsers = (props) => {
                                             )
                                         })
                                     }
-
-
                                 </motion.div>
                             </motion.div>
                         </main>
