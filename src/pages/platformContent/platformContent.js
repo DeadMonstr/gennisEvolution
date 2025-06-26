@@ -86,6 +86,13 @@ const PlatformBlockTest =  React.lazy(() => import('./platformBlockTest/platform
 const PlatformBill =  React.lazy(() => import('./platformBill/platformBill'));
 const PlatformBillProfile =  React.lazy(() => import('./platformBill/platformBillProfile/platformBillProfile'));
 const PlatformAdminRating =  React.lazy(() => import('./platformAdminRating/platformAdminRating'));
+const PlatformFilteredTestedGroups =  React.lazy(() => import('./platformFilteredTestedGroups/platformFilteredTestedGroups'));
+
+const PlatformSchools =  React.lazy(() => import('./platformSchools/platformSchools'));
+const PlatformSchoolProfile =  React.lazy(() => import('./platformSchoolProfile/platformSchoolProfile'));
+const PlatformSchoolTeacher =  React.lazy(() => import('./platformSchoolTeacher/platformSchoolTeacher'));
+const PlatformSchoolTeacherStudents =  React.lazy(() => import('./platformSchoolTeacherStudents/platformSchoolTeacherStudents'));
+const PlatformSchoolStudentsRegister =  React.lazy(() => import('./platformSchoolStudentsRegister/platformSchoolStudentsRegister'));
 
 
 
@@ -109,6 +116,8 @@ const PlatformContent = () => {
                     <Route path="taskManager/:locationId" element={<PlatformTaskManager/>}/>
                     <Route path="blockTest/:locationId" element={<PlatformBlockTest/>}/>
                     <Route path="newRegister" element={<PlatformNewRegister/>}/>
+                    <Route path="adminRating" element={<PlatformAdminRating/>} />
+
                     {/*<Route path="registerStudent/*" element={<RegisterUser/>}/>*/}
 
                     <Route path="profile/:userId/*" element={<PlatformUserProfile/>}/>
@@ -145,11 +154,13 @@ const PlatformContent = () => {
                     <Route path="teachersRating/:locationId" element={<PlatformTeachersRating/>} />
 
                     <Route path="groups/:locationId/*" element={<PlatformGroups/>}/>
+                    <Route path="filteredGroups/:locationId/*" element={<PlatformFilteredTestedGroups/>}/>
                     <Route path="myGroups/:userId" element={<PlatformMyGroups/>}/>
 
 
                     {/*<Route path="overheadBooks.js/:locationId" element={<PlatformAccounting/>}/>*/}
                     <Route path="accounting/:locationId/*" element={<PlatformAccounting/>} />
+
 
                     <Route path="employeeSalary/:userId/*" element={<PlatformEmployeeSalary/>} />
                     <Route path="employeeMonthSalary/:monthId/:userId" element={<PlatformEmployeeMonthSalary/>}/>
@@ -207,6 +218,12 @@ const PlatformContent = () => {
                     <Route path="typesMoney" element={<PlatformAccountantTypesMoney/>}/>
                     <Route path="accountantBill" element={<PlatformBill/>}/>
 
+                    <Route path="schools/*" element={<PlatformSchools/>}/>
+                    <Route path="school/:id" element={<PlatformSchoolProfile/>}/>
+                    <Route path="schoolTeacher/:id" element={<PlatformSchoolTeacher/>}/>
+                    <Route path="myStudents/:id" element={<PlatformSchoolTeacherStudents/>}/>
+                    <Route path="registeredSchoolStudents/:id" element={<PlatformSchoolStudentsRegister/>}/>
+
                     <Route
                         path="accounting/:locationId"
                         element={<Navigate to="studentsPayments" replace />}
@@ -215,11 +232,6 @@ const PlatformContent = () => {
                     <Route
                         path="books/*"
                         element={<PlatformBooks/>}
-                    />
-
-                    <Route
-                        path="adminRating"
-                        element={<PlatformAdminRating/>}
                     />
 
 

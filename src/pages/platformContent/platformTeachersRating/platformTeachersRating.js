@@ -196,6 +196,7 @@ const ObservationStatistics = (props) => {
                 type_rating: "observation",
                 year
             }), headers())
+
                 .then(res => {
                     setData(res.teachers_list.map((item, index) => {
                         return {

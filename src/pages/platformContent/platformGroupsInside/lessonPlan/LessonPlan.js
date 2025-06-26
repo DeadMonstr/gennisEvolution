@@ -7,7 +7,7 @@ import classNames from "classnames";
 import {BackUrl, BackUrlForDoc, headers} from "constants/global";
 import userImg from "assets/user-interface/user_image.png";
 import {useHttp} from "hooks/http.hook";
-import {useParams} from "react-router";
+import {useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {useAuth} from "hooks/useAuth";
 
@@ -49,6 +49,7 @@ const LessonPlan = ({backBtn}) => {
     const {request} = useHttp()
 
     useEffect(() => {
+        console.log(groupId)
         if (groupId) {
             request(`${BackUrl}lesson_plan_list/${groupId}`, "GET", null, headers() )
                 .then(res => {

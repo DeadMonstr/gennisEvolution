@@ -343,6 +343,8 @@ const PlatformTaskManager = () => {
 
     const onSubmit = (data) => {
 
+        console.log("hello")
+
         const res = {
             id: studentId,
             ...data
@@ -664,7 +666,7 @@ const PlatformTaskManager = () => {
                                 }
                             </div>
                             <div className={cls.userbox__footer_btn}>
-                                <Button type={"submit"}>
+                                <Button type={"submit"} formId>
                                     Button
                                 </Button>
                             </div>

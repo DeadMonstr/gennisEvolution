@@ -60,9 +60,11 @@ const PlatformGroupInside = () => {
             <Route path="observedTeacherLessons" element={<ObservedTeacherLessons/>}/>
             <Route path="test" element={<GroupTest/>}/>
 
-            <Route path="*" element={
-                <Navigate to="info/information" replace/>
-            }
+            <Route
+                path="*"
+                element={
+                    <Navigate to="info/information" replace/>
+                }
             />
         </Routes>
     )
@@ -167,11 +169,7 @@ const GroupInfo = ({groupId}) => {
         setActiveChangeModal(false)
     }
 
-
     const dispatch = useDispatch()
-
-
-
 
     const activateBtn = (id) => {
         dispatch(setActiveBtn({id}))
@@ -220,7 +218,10 @@ const GroupInfo = ({groupId}) => {
             </header>
             <div className={cls.error}>
                 <h1>{!isTime ? "Guruhga dars jadvali belgilanmagan !" : null}</h1>
-                <h1>{msg}</h1>
+                {msg && msg?.map(item => (
+                    <h1>{item}</h1>
+                ))}
+
             </div>
 
             <div className={cls.subheader}>

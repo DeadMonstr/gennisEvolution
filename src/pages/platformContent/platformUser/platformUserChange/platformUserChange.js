@@ -39,7 +39,6 @@ const PlatformUserChange = () => {
     const [activeRoute,setActiveRoute] = useState("personalInfo")
     const dispatch = useDispatch()
 
-
     useEffect(()=> {
         const data = {
             id : userId,
@@ -85,7 +84,6 @@ const PlatformUserChange = () => {
 
     },[role, userRole, activeToChange, extraInfo, user])
 
-    console.log(user?.role, "roleeee")
 
     return (
         isCheckedPassword ?

@@ -19,9 +19,6 @@ import Pagination from "components/platform/platformUI/pagination";
 
 const SampleAccounting = React.lazy(() => import("components/platform/platformSamples/sampleAccaunting/SampleAccounting"))
 
-
-
-
 const StudentsDiscount = ({locationId, path}) => {
 
     const {data, fetchAccDataStatus, fetchedDataType, btns,location} = useSelector(state => state.accounting)
@@ -48,7 +45,7 @@ const StudentsDiscount = ({locationId, path}) => {
             }
             dispatch(fetchAccData(data))
             const newData = {
-                name: "debt_students",
+                name: "discounts",
                 location: locationId,
                 type: ""
             }
@@ -57,9 +54,10 @@ const StudentsDiscount = ({locationId, path}) => {
         }
     }, [locationId])
 
-    useEffect(() => {
-        dispatch(onChangeAccountingPage({value: path}))
-    },[])
+
+    // useEffect(() => {
+    //     dispatch(onChangeAccountingPage({value: path}))
+    // },[])
 
 
     useEffect(() => {

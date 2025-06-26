@@ -10,8 +10,8 @@ import Pagination from "components/platform/platformUI/pagination";
 
 import "components/platform/platformSamples/platformSamples.sass"
 import Button from "components/platform/platformUI/button";
-import {useDispatch} from "react-redux";
-import {Link, Navigate, Route, Routes, useLocation} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {Link, Navigate, Route, Routes, useLocation, useNavigate, useParams} from "react-router-dom";
 import Select from "components/platform/platformUI/select";
 import UsersTable from "components/platform/platformUI/tables/usersTable";
 import Modals from "components/platform/platformModals";
@@ -140,6 +140,8 @@ import PlatformGroupInside from "pages/platformContent/platformGroupsInside/plat
 // };
 
 
+
+
 const SampleGroups = (props) => {
 
 
@@ -160,40 +162,41 @@ const SampleGroups = (props) => {
         selectedOption
     } = props
 
-    let PageSize = useMemo(()=> 50,[])
+    const {dataToChange} = useSelector(state => state.dataToChange)
+
+
+
+
+
+    let PageSize = useMemo(() => 50, [])
 
     const filterRef = useRef()
     const sectionRef = useRef({
         scrollTop: 0
     })
-    const [dataBtns,setDataBtns] = useState([])
+    const [dataBtns, setDataBtns] = useState([])
     const [currentPage, setCurrentPage] = useState(page);
-    const [activeOthers,setActiveOthers] = useState(false)
-    const [heightOtherFilters,setHeightOtherFilters] = useState(0)
-    const [search,setSearch] = useState("")
-    const [deletedData,setDeletedData] = useState(false)
-    // const [usersList,setUsersList] = useState()
-    const [currentScroll,setCurrentScroll] = useState()
+    const [activeOthers, setActiveOthers] = useState(false)
+    const [heightOtherFilters, setHeightOtherFilters] = useState(0)
+    const [search, setSearch] = useState("")
+    const [deletedData, setDeletedData] = useState(false)
+    const [isTest, setIsTest] = useState(false)
+    const [currentScroll, setCurrentScroll] = useState()
 
 
 
-    const [msg,setMsg] = useState("")
-    const [typeMsg,setTypeMsg] = useState("")
-    const [activeMessage,setActiveMessage] = useState(false)
 
-    const [linkUser,setLinkUser] = useState(false)
 
-    useEffect(()=>{
+
+
+    useEffect(() => {
         setDataBtns(btns)
-    },[btns])
+    }, [btns])
 
 
     const scrollEvent = (e) => {
         setCurrentScroll(e.target.scrollTop)
     }
-
-
-
 
 
     const multiPropsFilter = useMemo(() => {
@@ -212,20 +215,16 @@ const SampleGroups = (props) => {
                 return filters[key]?.activeFilters?.includes(group[key]);
             });
         });
-    },[filters,groups]) ;
+    }, [filters, groups]);
 
 
-
-    const searchedGroups= useMemo(() => {
+    const searchedGroups = useMemo(() => {
         const filteredGroups = multiPropsFilter.slice()
         setCurrentPage(1)
         return filteredGroups.filter(group =>
             group.name.toLowerCase().includes(search.toLowerCase())
         )
-    },[multiPropsFilter,search])
-
-
-
+    }, [multiPropsFilter, search])
 
 
     const currentTableData = useMemo(() => {
@@ -236,7 +235,6 @@ const SampleGroups = (props) => {
 
 
     const clazzBtnFilter = activeOthers ? "funcButtons__btn funcButtons__btn-active" : "funcButtons__btn "
-
 
 
     const dispatch = useDispatch()
@@ -268,7 +266,7 @@ const SampleGroups = (props) => {
     //     )
     // }
 
-    const [currentLocation,setCurrentLocation] = useState(false)
+    const [currentLocation, setCurrentLocation] = useState(false)
 
     const location = useLocation()
 
@@ -276,7 +274,7 @@ const SampleGroups = (props) => {
         if (location) {
             setCurrentLocation(location)
         }
-    },[location])
+    }, [location])
 
     useEffect(() => {
         if (location !== currentLocation) {
@@ -284,15 +282,22 @@ const SampleGroups = (props) => {
                 if (sectionRef.current?.scrollTop) {
                     sectionRef.current.scrollTop = currentScroll
                 }
-            },500)
+            }, 500)
         }
-    },[location])
+    }, [location])
 
+
+
+    const navigate = useNavigate()
+
+    const onClickTest = () => {
+        navigate(`../filteredGroups/${locationId}`)
+    }
 
     return (
         <>
             <Routes>
-                <Route path="list" element={<List sectionRef={sectionRef} currentScroll={currentScroll} >
+                <Route path="list" element={<List sectionRef={sectionRef} currentScroll={currentScroll}>
                     <section className="section" onScroll={scrollEvent} ref={sectionRef}>
                         <header className="section__header">
                             <div>
@@ -320,6 +325,11 @@ const SampleGroups = (props) => {
                                 >
                                     Filterlar
                                 </Button>
+
+
+                                <Button onClickBtn={onClickTest}>Test</Button>
+
+
                             </div>
 
                             <Filters
@@ -351,14 +361,14 @@ const SampleGroups = (props) => {
 
 
                     </section>
-                </List>} />
+                </List>}/>
 
-                <Route path="insideGroup/:groupId/*" element={<PlatformGroupInside/>}  />
+                <Route path="insideGroup/:groupId/*" element={<PlatformGroupInside/>}/>
 
-                <Route path="*"  element={
+                <Route path="*" element={
                     // This links to /:userId/messages, no matter
                     // how many segments were matched by the *
-                    <Navigate to="list" replace />
+                    <Navigate to="list" replace/>
                 }
                 />
             </Routes>

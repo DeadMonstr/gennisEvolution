@@ -18,7 +18,6 @@ const Modal = ({activeModal,children,setActiveModal,link,id="",zIndex , extraCla
 
     const onClickOutside = useCallback((e) => {
 
-        console.log(e.target.classList.contains(`modal-${id}`),id)
         if (e.target.classList.contains(`modal-${id}`)) {
             if (setActiveModal) {
 

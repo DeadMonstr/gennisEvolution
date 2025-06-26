@@ -2,73 +2,93 @@ import React, {useCallback, useEffect, useState} from 'react';
 
 
 import "./select.sass"
+import classNames from "classnames";
 
-const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaultValue,number,group,all,extra,keyValue,autoSelect,value,required,allFromOptions}) => {
+const Select = React.memo(({
+                               id,
+                               name,
+                               options,
+                               title,
+                               onChangeOption,
+                               teachers,
+                               defaultValue,
+                               number,
+                               group,
+                               all,
+                               extra,
+                               keyValue,
+                               autoSelect,
+                               value,
+                               required,
+                               allFromOptions,
+                               keyName,
+                               clazzLabel
+                           }) => {
 
-    const [optionsData,setOptionsData] = useState(null)
-    const [selectOption,setSelectOption] = useState("")
-    const [isChanged,setIsChanged] = useState(false)
+    const [optionsData, setOptionsData] = useState(null)
+    const [selectOption, setSelectOption] = useState("")
+    const [isChanged, setIsChanged] = useState(false)
 
 
-    useEffect(()=> {
+    useEffect(() => {
 
         setOptionsData(options)
-    },[options])
+    }, [options])
 
-    useEffect(()=> {
+    useEffect(() => {
         if (value) {
             setSelectOption(value)
         }
-    },[value])
+    }, [value])
 
-    useEffect(()=> {
+    useEffect(() => {
         if (defaultValue) {
             setSelectOption(defaultValue)
         }
-    },[defaultValue,setSelectOption])
+    }, [defaultValue, setSelectOption])
 
     useEffect(() => {
         if (isChanged) {
             if (!selectOption) return
             if (id) {
-                onChangeOption(id,selectOption)
+                onChangeOption(id, selectOption)
                 setIsChanged(false)
             } else {
                 onChangeOption(selectOption)
                 setIsChanged(false)
             }
         }
-    },[selectOption, onChangeOption, id])
+    }, [selectOption, onChangeOption, id])
 
 
     useEffect(() => {
         if (autoSelect)
-        for (let i = 0; i < options?.length;i++) {
-            if (options[i].disabled && !defaultValue) {
-                const value = options[i][keyValue] || options[i].value || options[i].id || options[i].name || options[i]
-                setSelectOption(value)
+            for (let i = 0; i < options?.length; i++) {
+                if (options[i].disabled && !defaultValue) {
+                    const value = options[i][keyValue] || options[i].value || options[i].id || options[i].name || options[i]
+                    setSelectOption(value)
+                }
             }
-        }
-    },[options,keyValue])
+    }, [options, keyValue])
 
 
     const renderOptionsOfSelect = useCallback(() => {
-        return optionsData?.map((item,index) => {
+        return optionsData?.map((item, index) => {
 
             const value = item[keyValue] || item.value || item.id || item.name || item
-            const key =  item.name || item.value|| item.year  || item
+            const key = item[keyName] || item.name || item.value || item.year || item
 
             if (!item.length)
-            if (item.name?.includes('Hamma') && allFromOptions) {
-                return <option
-                    disabled={item.disabled}
-                    {...extra}
-                    key={index}
-                    value={[]}
-                >
-                    {item.name}
-                </option>
-            }
+                if (item.name?.includes('Hamma') && allFromOptions) {
+                    return <option
+                        disabled={item.disabled}
+                        {...extra}
+                        key={index}
+                        value={[]}
+                    >
+                        {item.name}
+                    </option>
+                }
             if (teachers) {
                 return <option
                     disabled={item.disabled}
@@ -96,15 +116,14 @@ const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaul
             // }
             // return <option {...extra}  disabled={item.disabled} key={index} value={item.value ? item.value : item.name}>{item.name}</option>
         })
-    },[number, optionsData, teachers])
-
+    }, [number, optionsData, teachers])
 
 
     const renderedOptions = renderOptionsOfSelect()
 
 
     return (
-        <label className={`select-label`} htmlFor={name ? `select_field-${name}` :null}>
+        <label className={classNames(`select-label`, clazzLabel)} htmlFor={name ? `select_field-${name}` : null}>
             <span className="name-field">{title}</span>
             <select
                 required={required}
@@ -121,6 +140,6 @@ const Select = React.memo(({id,name,options,title,onChangeOption,teachers,defaul
             </select>
         </label>
     );
-}) ;
+});
 
 export default Select;

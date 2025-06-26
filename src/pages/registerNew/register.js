@@ -89,7 +89,8 @@ const Register = () => {
         formState: {errors},
         handleSubmit,
         clearErrors,
-        setError
+        setError,
+        setValue
     } = useForm({
         mode: "onBlur"
     })
@@ -117,6 +118,20 @@ const Register = () => {
     const [errorMessage,setErrorMessage] = useState("")
 
     const [loading, setLoading] = useState(false)
+
+    useEffect(()=> {
+        const data = JSON.parse(localStorage.getItem("schoolStudent"))
+
+        if (data && Object.keys(data).length > 0) {
+
+            setValue("name", data.name)
+            setValue("surname", data.surname)
+
+        }
+
+
+    },[])
+
 
     const registerSelectList = useMemo(() =>  [
         {
@@ -168,6 +183,9 @@ const Register = () => {
 
     const onSubmit = (data) => {
         setLoading(true)
+
+        const newData = JSON.parse(localStorage.getItem("schoolStudent"))
+
         const res = {
             ...data,
             password,
@@ -176,12 +194,17 @@ const Register = () => {
             language: +studyLang,
             job: selectedJob,
             location: +selectedLocation,
-            selectedSubjects: selectedSubjects
+            selectedSubjects: selectedSubjects,
+            school_user_id: newData?.id
         }
+        console.log(type)
         const route = type === "employer" ? "register_staff" : type === "student" ? "register" : "register_teacher"
         request(`${BackUrl}${route}`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 setLoading(false)
+                if (data) {
+                    localStorage.removeItem("schoolStudent")
+                }
                 dispatch(setMessage({
                     msg: res.msg,
                     type: "success",
@@ -261,6 +284,8 @@ const Register = () => {
             })
     }
 
+
+    console.log(type)
     return (
         <div className={cls.main}>
             <div className={cls.main__container}>
@@ -272,6 +297,7 @@ const Register = () => {
                 />
                 <h1>Registratsiya</h1>
                 <form
+                    id="form"
                     className={cls.form}
                     onSubmit={handleSubmit(onSubmit)}
                 >
@@ -412,6 +438,7 @@ const Register = () => {
                     {
                         loading? <DefaultLoaderSmall/>:
                         <Button
+                            formId={"form"}
                             disabled={isCheckPass || isCheckLen || activeError|| (type !== "employer" ? selectedSubjects.length===0 : false) || (type === "employer" && !selectedJob)}
                             type={'submit'}>
                             Yakunlash

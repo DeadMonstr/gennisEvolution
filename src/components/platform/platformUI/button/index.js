@@ -22,6 +22,7 @@ const Button = ({children = "",active,onClickBtn,name,extraMsg,extraClass,formId
             disabled={disabled}
             name={name}
             form={formId}
+            type={formId ? "submit" : "button"}
             className={classNames(cls.btnPlatform,cls[type],{
                 [cls.active]: active,
                 [cls.disabled]: disabled,

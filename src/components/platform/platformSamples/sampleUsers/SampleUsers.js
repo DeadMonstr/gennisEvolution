@@ -360,7 +360,9 @@ const SampleUsers = (props) => {
                                 pageSize={PageSize}
                                 onPageChange={page => {
                                     setCurrentPage(page)
-                                    dispatch(funcsSlice?.setPage({page}))
+                                    if (funcsSlice.setPage) {
+                                        dispatch(funcsSlice?.setPage({page}))
+                                    }
                                 }}
                             />
                         </main>

@@ -1,0 +1,59 @@
+@import "styles/abstracts/variables"
+@import "styles/abstracts/mixins"
+
+.schoolProfile
+  padding: 3rem
+  .header
+    width: 100%
+    display: flex
+    justify-content: space-between
+    .links
+      width: fit-content
+      display: flex
+      align-items: center
+      justify-content: center
+      &__item
+        font-size: 2rem
+        padding: 1rem 2rem
+        cursor: pointer
+        user-select: none
+        font-weight: 600
+        @include btn-active
+        &.active
+          color: $color-main
+          border-bottom: 1px solid $color-main
+
+
+
+.info
+  width: 100%
+  padding: 2rem
+  &__header
+    width: 100%
+    display: flex
+    align-items: center
+    justify-content: flex-end
+  &__wrapper
+    width: 100%
+    display: flex
+    flex-direction: column
+    gap: 2rem
+
+
+.register
+  width: 40rem
+  height: fit-content
+  padding: 2rem
+  box-shadow: $box-shadow
+  background-color: white
+  display: flex
+  flex-direction: column
+  gap: 2rem
+  border-radius: 10px
+  .wrapper
+    width: 100%
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    gap: 2rem
