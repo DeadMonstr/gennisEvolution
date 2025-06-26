@@ -5,14 +5,14 @@ import {BackUrl, headers} from "constants/global";
 const initialState = {
     data: [
         {
-            "completed_leads": 0,
+            "completed_leads": 3,
             "completed_new_students": 0,
             "debt_students": 0,
             "leads": 0,
             "location_id": 4,
             "location_name": "Sergeli",
-            "new_students": 0,
-            "not_completed_leads": 0,
+            "new_students": 1,
+            "not_completed_leads": 1,
             "task_statistics": null
         },
         {

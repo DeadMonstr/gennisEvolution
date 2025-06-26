@@ -58,21 +58,7 @@ const PlatformAdminRating = () => {
     const [activeDate, setActiveDate] = useState(true)
 
     const getDate = (date) => {
-        console.log(date)
         dispatch(fetchAdminRating({ date }))
-        // const fullDate = formatFullDate(date)
-        //
-        // if (fullDate === lastFormattedDate) {
-        //     // Повторный клик — убираем выделение, сохраняем только год.месяц
-        //     setSelectedDate(null)
-        //     setFormattedValue(formatYearMonth(date))
-        //     setLastFormattedDate(null)
-        // } else {
-        //     // Первый клик — выделяем и сохраняем полную дату
-        //     setSelectedDate(date)
-        //     setFormattedValue(fullDate)
-        //     setLastFormattedDate(fullDate)
-        // }
     }
 
     return (
@@ -355,11 +341,9 @@ const LeadRating = () => {
     useEffect(() => {
         if (list) {
             setData(list?.data?.map((item, index) => {
-                const completed = item.leads - item.not_completed_leads;
-
                 return {
                     name: item.location_name,
-                    ["Completed leads"]: completed > 0 ? completed : 1,
+                    ["Completed leads"]: item.completed_leads ?? 1,
                     ["Not completed leads"]: item.not_completed_leads ?? 1,
                     fill2: Object.values(colors2)[index],
                     fill3: Object.values(colors3)[index],
