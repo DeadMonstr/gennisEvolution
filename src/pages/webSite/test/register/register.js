@@ -91,10 +91,12 @@ export const Register = () => {
                 setValue("surname", "")
                 setValue("phone", "")
                 setValue("father_name", "")
-                setStudentIdModal(true)
+                if(res.success) {
+                    setStudentIdModal(true)
+                }
                 setStudentId(res)
                 dispatch(setMessage({
-                    msg: `${res.message} , Student id ${res.unique_id}`,
+                    msg: `${res.success === false ? res.msg : `${res.message} , Student id ${res.unique_id}`}`,
                     type: "success",
                     active: true
                 }))

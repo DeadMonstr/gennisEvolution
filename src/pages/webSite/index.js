@@ -55,7 +55,7 @@ const WebSite = () => {
                     dispatch(fetchedLocations([]))
                 }
             })
-            .catch(err => console.log(err))
+            // .catch(err => console.log(err))
     }, [])
 
 
@@ -103,7 +103,7 @@ const WebSite = () => {
                                 </Routes>
                             </Context.Provider>
                         </>
-                        // </AnimateSharedLayout>
+                         // </AnimateSharedLayout>
                     )
 
 

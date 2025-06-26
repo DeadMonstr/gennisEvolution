@@ -40,8 +40,8 @@ const datas = [
 ]
 
 const PlatformParentSection = () => {
-    let {locationId} = useParams()
 
+    const locationId = localStorage.getItem("location_id")
     const [childModal, setChildModal] = useState(false)
     const [editable, setEditable] = useState(false)
     const [selectedItems, setSelectedItems] = useState([]);
@@ -55,11 +55,13 @@ const PlatformParentSection = () => {
     const {data} = useSelector(state => state.parentSlice)
     const children = data.children
     const {request} = useHttp()
+    const {id} = useParams()
     useEffect(() => {
-        dispatch(fetchParentData())
-        dispatch(fetchStudyingStudents(1))
+        dispatch(fetchParentData(id))
+        dispatch(fetchStudyingStudents(locationId))
     }, []);
 
+    console.log(data , "da")
     const handleSelectAll = () => {
         if (selectAll) {
             setSelectedItems([]);
@@ -97,7 +99,7 @@ const PlatformParentSection = () => {
     };
 
     const onSubmit = (data) => {
-        return request(`${BackUrl}parent/crud/2`, "PUT", JSON.stringify(data), headers())
+        return request(`${BackUrl}parent/crud/${id}`, "PUT", JSON.stringify(data), headers())
             .then(res => {
                 dispatch(onChangeParentSource(res))
                 dispatch(setMessage({
@@ -116,7 +118,7 @@ const PlatformParentSection = () => {
             student_id: studentId
         }
 
-        return await request(`${BackUrl}parent/remove_students/2`, "POST", JSON.stringify(body), headers())
+        return await request(`${BackUrl}parent/remove_students/${id}`, "POST", JSON.stringify(body), headers())
             .then(res => {
                 console.log(res, 're')
                 dispatch(onRemoveChildrenFromParent(res))
@@ -132,11 +134,12 @@ const PlatformParentSection = () => {
     }
 
     const onHandleSubmit = async () => {
+        console.log("dasd")
         const body = {
             student_ids: selectedItems
         };
 
-            return await request(`${BackUrl}parent/add_students/2`, "POST", JSON.stringify(body), headers())
+            return await request(`${BackUrl}parent/add_students/${id}`, "POST", JSON.stringify(body), headers())
             .then(res => {
                 dispatch(onAddChildrenToParent(res))
                 setChildModal(false);
@@ -213,7 +216,7 @@ const PlatformParentSection = () => {
     const renderTable = () => {
         return studyingStudents.map((item, index) => (
             <tr key={item.id}>
-                <td>{item.id}</td>
+                <td>{index + 1}</td>
                 <td>{item.name} {item.surname}</td>
                 <td>{item.age}</td>
                 <td>{item.number}</td>
@@ -248,11 +251,12 @@ const PlatformParentSection = () => {
                         {renderTable()}
                         </tbody>
                     </Table>
-                    <WebButton onClick={onHandleSubmit} style={{display: "flex", alignSelf: "end"}} children={"Qo'shish"}/>
+                    <Button extraClass={cls.modal__btn} onClickBtn={onHandleSubmit}>Qo'shmoq</Button>
                 </div>
             </Modal>
         )
     }
+
 
     return (
         <div className={cls.main}>
@@ -263,24 +267,24 @@ const PlatformParentSection = () => {
                              src={img} alt=""/>
                         <h2>{data.name} {data.surname}</h2>
                         <span>
-                            Father
+                            {data.sex === "Erkak" ? "Ota" : "Ona"}
                         </span>
                         {
                             editable ? (
                                     <form onSubmit={handleSubmit(onSubmit)}
                                           className={cls.main__leftBar__profileBox__bio__sources}>
                                         <InputForm clazz={cls.main__leftBar__profileBox__bio__sources__ints}
-                                                   title={'Name'}
+                                                   title={'Ism'}
                                                    register={register}
                                                    name={"name"}
                                                    defaultValue={data.name}/>
                                         <InputForm clazz={cls.main__leftBar__profileBox__bio__sources__ints}
-                                                   title={'Surname'}
+                                                   title={'Familya'}
                                                    name={"surname"}
                                                    register={register}
                                                    defaultValue={data.surname}/>
                                         <InputForm clazz={cls.main__leftBar__profileBox__bio__sources__ints}
-                                                   title={'Phone'}
+                                                   title={'Tel raqam'}
                                                    name={"phone"}
                                                    register={register}
                                                    defaultValue={data.phone}/>
@@ -294,6 +298,7 @@ const PlatformParentSection = () => {
                                                    name={'birthday'}
                                                    register={register}
                                                    type={'date'}
+                                                   defaultValue={data.birth_day}
                                         />
                                         <button className={cls.main__leftBar__profileBox__bio__sources__int}
                                                    children={"Tahrirlash"}></button>
@@ -325,7 +330,7 @@ const PlatformParentSection = () => {
                                                title={'Birthday'}
                                                onChange={() => "sas"}
                                                readOnly={true}
-                                               value={data.born_date}/>
+                                               value={data.birth_day}/>
                                     </div>
                                 )
                         }
@@ -339,10 +344,11 @@ const PlatformParentSection = () => {
                     <Button onClickBtn={onHandleClick} extraClass={cls.main__rightBar__header__editBtn}
                             children={<i className={"fas fa-pen"}/>}/>
                 </div>
+                <Button onClickBtn={onHanle} extraClass={cls.main__rightBar__itemsBox__btn}
+                        children={<i className="fas fa-plus"/>}/>
                 <div className={cls.main__rightBar__itemsBox}>
                     {renderCards()}
-                    <Button onClickBtn={onHanle} extraClass={cls.main__rightBar__itemsBox__btn}
-                            children={<i className="fas fa-plus"/>}/>
+
                 </div>
             </div>
             <div>
