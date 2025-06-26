@@ -22,15 +22,15 @@ const App = () => {
 
     return (
         <Routes>
-            <Route path="/*"  element={<Website/>} />
+            {/*<Route path="/*"  element={<Website/>} />*/}
 
             <Route path="/login" element={<Login/>} />
-            <Route path="/register_test" element={<Register/>}/>
+            {/*<Route path="/register_test" element={<Register/>}/>*/}
 
-            <Route path="/register"  element={<FastRegister/>}/>
+            {/*<Route path="/register"  element={<FastRegister/>}/>*/}
             {/*<Route element={<RequireAuth allowedRules={[ROLES.Admin,ROLES.Director]}/>} >*/}
-                <Route path="registerTeacher/*"  element={<RegisterTeacher/>}/>
-                <Route path="registerEmployee/*"  element={<RegisterEmployee/>}/>
+            {/*    <Route path="registerTeacher/*"  element={<RegisterTeacher/>}/>*/}
+            {/*    <Route path="registerEmployee/*"  element={<RegisterEmployee/>}/>*/}
             {/*</Route>*/}
 
 
@@ -54,22 +54,22 @@ const App = () => {
                 element={<Navigate to="home" replace />}
             />
             <Route
-                path="registerStudent"
-                element={<Navigate to="/registerStudent/step_1" replace />}
+                path="*"
+                element={<Navigate to="login" replace />}
             />
-            <Route
-                path="registerTeacher"
-                element={<Navigate to="/registerTeacher/step_1" replace />}
-            />
-            <Route
-                path="registerEmployee"
-                element={<Navigate to="/registerEmployee/step_1" replace />}
-            />
+            {/*<Route*/}
+            {/*    path="registerTeacher"*/}
+            {/*    element={<Navigate to="/registerTeacher/step_1" replace />}*/}
+            {/*/>*/}
+            {/*<Route*/}
+            {/*    path="registerEmployee"*/}
+            {/*    element={<Navigate to="/registerEmployee/step_1" replace />}*/}
+            {/*/>*/}
 
-            <Route
-                path="/discountUserChirchik"
-                element={<QrCodeRegister/>}
-            />
+            {/*<Route*/}
+            {/*    path="/discountUserChirchik"*/}
+            {/*    element={<QrCodeRegister/>}*/}
+            {/*/>*/}
 
 
 

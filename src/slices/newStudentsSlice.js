@@ -102,7 +102,7 @@ export const fetchNewStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewStudents',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}newStudents/1`, "GET", null, headers())
+        return await request(`${BackUrl}newStudents/${id}`, "GET", null, headers())
     }
 )
 

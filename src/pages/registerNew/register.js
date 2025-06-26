@@ -232,7 +232,6 @@ const Register = () => {
                 school_user_id: newData?.id,
             }
         }
-        console.log(res)
         const route = type === "employer" ? "register_staff" : type === "student" ? "register" : type === "parent" ? "parent/crud/" : "register_teacher"
         request(`${BackUrl}${route}`, "POST", JSON.stringify(res), headers())
             .then(res => {
@@ -328,7 +327,6 @@ const Register = () => {
     }
 
 
-    console.log(type)
     return (
         <div className={cls.main}>
             <div className={cls.main__container}>
