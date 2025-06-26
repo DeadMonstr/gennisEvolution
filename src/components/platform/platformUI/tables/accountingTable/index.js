@@ -250,6 +250,7 @@ const AccountingTable = React.memo(({
                         {activeRowsInTable.taken_salary ? <td>{item.taken_salary}</td> : null}
                         {activeRowsInTable.debt ? <td>{item.debt}</td> : null}
                         {activeRowsInTable.black_salary ? <td>{item.black_salary}</td> : null}
+                        {activeRowsInTable.fine ? <td>-{item.total_fine}</td> : null}
                     </tr>
                 )
             } else if (typeOfMoney === 'book') {
@@ -569,6 +570,7 @@ const AccountingTable = React.memo(({
                                 {activeRowsInTable.taken_salary ? <th>Olingan oylik</th> : null}
                                 {activeRowsInTable.debt ? <th>Qarz</th> : null}
                                 {activeRowsInTable.black_salary ? <th>Black salary</th> : null}
+                                {activeRowsInTable.fine ? <th>Jarima</th> : null}
 
                             </tr>
                             :
