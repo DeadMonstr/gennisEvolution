@@ -38,6 +38,7 @@ import billSlice from "../slices/billSlice";
 import schoolProfile from "slices/schoolProfileSlice";
 import schools from "slices/schoolsSlice";
 import schoolTeacherProfile from "slices/schoolTeacherProfileSlice";
+import adminRatingSlice from "slices/adminRatingSlice"
 import parentSlice from "slices/parentSectionSlice"
 
 const stringMiddlewere = () => (next) => (action) => {
@@ -89,6 +90,7 @@ const store = configureStore({
         schoolProfile,
         schools,
         schoolTeacherProfile,
+        adminRatingSlice,
         parentSlice
     },
     middleware: getDefaultMiddleware =>
