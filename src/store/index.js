@@ -38,8 +38,8 @@ import billSlice from "../slices/billSlice";
 import schoolProfile from "slices/schoolProfileSlice";
 import schools from "slices/schoolsSlice";
 import schoolTeacherProfile from "slices/schoolTeacherProfileSlice";
-import adminRatingSlice from "slices/adminRatingSlice"
 import parentSlice from "slices/parentSectionSlice"
+import adminRatingSlice from "slices/adminRatingSlice"
 
 const stringMiddlewere = () => (next) => (action) => {
     if (typeof action === 'string') {
@@ -90,8 +90,8 @@ const store = configureStore({
         schoolProfile,
         schools,
         schoolTeacherProfile,
-        adminRatingSlice,
-        parentSlice
+        parentSlice,
+        adminRatingSlice
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware().concat(

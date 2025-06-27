@@ -1,0 +1,294 @@
+import React, {useEffect, useMemo, useState} from 'react';
+
+import cls from "./schoolTeachers.module.sass"
+import {useNavigate, useParams} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {
+    addSchoolDirector, addSchoolTeacher,
+    changeSchoolDirector, changeSchoolTeacher, deleteSchoolTeacher,
+    fetchSchoolDirectors,
+    fetchSchoolTeachers
+} from "slices/schoolProfileSlice";
+import {useHttp} from "hooks/http.hook";
+import {BackUrl, headers} from "constants/global";
+import Table from "components/platform/platformUI/table";
+import Modal from "components/platform/platformUI/modal";
+import Confirm from "components/platform/platformModals/confirm/confirm";
+import Pagination from "components/platform/platformUI/pagination";
+import Input from "components/platform/platformUI/input";
+import Button from "components/platform/platformUI/button";
+import {setMessage} from "slices/messageSlice";
+
+
+
+export const SchoolTeachers = () => {
+
+    const {id} = useParams()
+
+    const {teachers} = useSelector(state => state.schoolProfile)
+
+
+    let PageSize = useMemo(() => 50, [])
+    const [currentPage, setCurrentPage] = useState(1);
+    const [activeAdd, setActiveAdd] = useState(false)
+    const [activeChange, setActiveChange] = useState(false)
+    const [changingData, setChangingData] = useState({})
+    const [activeDelete, setActiveDelete] = useState(false)
+
+    const dispatch= useDispatch()
+
+    // useEffect(() => {
+    //     dispatch(fetchSchoolTeachers(id))
+    // },[id])
+
+
+    const currentTableData = useMemo(() => {
+        const firstPageIndex = (currentPage - 1) * PageSize;
+        const lastPageIndex = firstPageIndex + PageSize;
+        return teachers.slice(firstPageIndex, lastPageIndex);
+    }, [PageSize, currentPage, teachers]);
+
+
+    const onClickAdd = () => {
+        setActiveAdd(true)
+    }
+
+    const onClickChange = (data) => {
+        setActiveChange(true)
+        setChangingData(data)
+    }
+
+    const onClickDelete = (id) => {
+        setActiveDelete(true)
+        setChangingData({id})
+    }
+
+
+    const {request} = useHttp()
+
+    const onDelete = (data) => {
+        if (data === "yes") {
+            request(`${BackUrl}crud_school_user/${changingData.id}`,"DELETE", null, headers())
+                .then(res => {
+                    dispatch(deleteSchoolTeacher(id))
+                    setActiveDelete(false)
+                })
+        }
+    }
+
+    const navigate = useNavigate()
+
+    const onLink = (e,id) => {
+        if (!e.target.classList.contains("fa-pen") && !e.target.classList.contains("fa-trash")) {
+            navigate(`../schoolTeacher/${id}`)
+        }
+
+    }
+
+    return (
+        <div className={cls.wrapper}>
+            <div className={cls.header}>
+
+                <div className={cls.add} onClick={onClickAdd}>
+                    <i className="fas fa-plus"></i>
+                </div>
+            </div>
+            <div className={cls.container}>
+                <Table>
+                    <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Username</th>
+                        <th>Ism</th>
+                        <th>Familya</th>
+                        <th>Tel</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {
+                        currentTableData.map((item,index) => {
+                            return (
+                                <tr onClick={(e) => onLink(e,item.id)}>
+                                    <td>{index+1}</td>
+                                    <td>{item.username}</td>
+                                    <td>{item.name}</td>
+                                    <td>{item.surname}</td>
+                                    <td>{item.phone}</td>
+                                    <td className={cls.change}>
+                                        <i className="fas fa-pen" onClick={() => onClickChange(item)}></i>
+                                    </td>
+                                    <td className={cls.delete}>
+
+                                        <i className="fas fa-trash" onClick={() => onClickDelete(item.id)}></i>
+
+                                    </td>
+                                </tr>
+                            )
+                        })
+                    }
+
+                    </tbody>
+
+
+                </Table>
+
+
+                <Modal activeModal={activeAdd} setActiveModal={() => setActiveAdd(false)}>
+                    <CrudTeachers setActiveModal={setActiveAdd}/>
+                </Modal>
+
+                <Modal activeModal={activeChange} setActiveModal={()=>setActiveChange(false)}>
+                    <CrudTeachers info={changingData} setActiveModal={setActiveChange}/>
+                </Modal>
+
+                <Modal activeModal={activeDelete} setActiveModal={() => setActiveDelete()}>
+                    <Confirm getConfirm={onDelete} text={"O'qituvchini o'chirishni hohlaysizmi"} setActive={setActiveDelete}/>
+                </Modal>
+
+
+                <Pagination
+                    className="pagination-bar"
+                    currentPage={currentPage}
+                    totalCount={teachers.length}
+                    pageSize={PageSize}
+                    onPageChange={page => {
+                        setCurrentPage(page)
+                    }}
+                />
+
+            </div>
+        </div>
+    );
+};
+
+const CrudTeachers = ({info,setActiveModal}) => {
+
+    const {id} = useParams()
+
+    const [name,setName] = useState("")
+    const [surname,setSurname] = useState("")
+    const [phone,setPhone] = useState("")
+    const [share,setShare] = useState("")
+    const [error,setError] = useState("")
+    const [username,setUsername] = useState("")
+    const [loading,setLoading] = useState(false)
+
+    const [isChange,setIsChange] = useState(false)
+
+
+    useEffect(() => {
+        if (info) {
+            setName(info.name)
+            setSurname(info.surname)
+            setPhone(info.phone)
+            setUsername(info.username)
+            setIsChange(true)
+        }
+    },[info])
+
+
+    const {request} = useHttp()
+
+
+    const dispatch = useDispatch()
+
+
+    const onSubmit = () => {
+
+        const data = {
+            username,
+            name,
+            surname,
+            phone,
+            school_id: id,
+            type_user: "teacher",
+        }
+
+
+        if (isChange) {
+            request(`${BackUrl}crud_school_user/${info.id}`,"PUT",JSON.stringify(data),headers())
+                .then(res => {
+                    dispatch(setMessage({
+                        msg: "O'qituvchi muvaffaqiyatli o'zgartirildi",
+                        type: "success",
+                        active: true
+                    }))
+                    dispatch(changeSchoolTeacher(res.user))
+                })
+        } else {
+            request(`${BackUrl}crud_school_user/`,"POST",JSON.stringify(data),headers())
+                .then(res => {
+                    dispatch(setMessage({
+                        msg: "O'qituvchi muvaffaqiyatli yaratildi",
+                        type: "success",
+                        active: true
+                    }))
+                    dispatch(addSchoolTeacher(res.user))
+                })
+        }
+        setActiveModal(false)
+    }
+
+    useEffect(() => {
+
+        if (!username) return;
+
+
+
+        if (username !== info?.username) {
+            setLoading(true)
+            request(`${BackUrl}check_username`,"POST", JSON.stringify(username))
+                .then(res => {
+                    setLoading(false)
+                    if (res.found) {
+                        setError("Username band")
+                    } else {
+                        setError("")
+                    }
+                })
+        }
+    },[username,info])
+
+
+
+
+    return (
+        <div className={cls.addModal}>
+            <h1>{isChange ? "O'qituvchini malumotlarini o'zgartirish" : "O'qituvchi qo'shish"}</h1>
+            <div className={cls.wrapper}>
+                {!!error && <div className={cls.error}>{error}</div>}
+                <Input
+                    value={username}
+                    title={"username"}
+                    name={"username"}
+                    type={"text"}
+                    onChange={setUsername}
+                />
+                <Input
+                    title={"Ism"}
+                    name={"name"}
+                    type={"text"}
+                    value={name}
+                    onChange={setName}
+                />
+                <Input
+                    title={"Familya"}
+                    name={"surname"}
+                    type={"text"}
+                    value={surname}
+                    onChange={setSurname}
+                />
+                <Input
+                    title={"Tel"}
+                    name={"phone"}
+                    type={"text"}
+                    value={phone}
+                    onChange={setPhone}
+                />
+            </div>
+            <Button disabled={error} onClickBtn={onSubmit} type={"submit"}>Qo'shish</Button>
+        </div>
+    )
+}

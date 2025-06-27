@@ -25,6 +25,7 @@ import {useHttp} from "../../../hooks/http.hook";
 import {setMessage} from "../../../slices/messageSlice";
 import Confirm from "../../../components/platform/platformModals/confirm/confirm";
 import ConfimReason from "../../../components/platform/platformModals/confirmReason/confimReason";
+import PlatformSearch from "../../../components/platform/platformUI/search";
 
 
 const datas = [
@@ -49,6 +50,8 @@ const PlatformParentSection = () => {
     const [deletePortal, setDeletePortal] = useState(false);
     const [isConfirm, setIsConfirm] = useState(false)
     const [studentId, setStudentId] = useState([]);
+    const [filteredStudyingStudents, setFilteredStudyingStudents] = useState([])
+    const [search, setSearch] = useState("")
     const {studyingStudents} = useSelector(state => state.studyingStudents)
     const {register, handleSubmit, setValue} = useForm()
     const dispatch = useDispatch();
@@ -61,12 +64,28 @@ const PlatformParentSection = () => {
         dispatch(fetchStudyingStudents(locationId))
     }, []);
 
-    console.log(data , "da")
+    useEffect(() => {
+        if (studyingStudents)
+            setFilteredStudyingStudents(studyingStudents)
+    }, [studyingStudents])
+
+    console.log(data, "da")
+
+    useEffect(() => {
+        setFilteredStudyingStudents(
+            studyingStudents.filter(item =>
+                    item.name.toLowerCase().includes(search.toLowerCase()) ||
+                    item.surname.toLowerCase().includes(search.toLowerCase()) ||
+                    item.username.toLowerCase().includes(search.toLowerCase())
+                )
+        )
+    }, [search])
+
     const handleSelectAll = () => {
         if (selectAll) {
             setSelectedItems([]);
         } else {
-            setSelectedItems(studyingStudents.map(item => item.student_id));
+            setSelectedItems(filteredStudyingStudents.map(item => item.student_id));
         }
         setSelectAll(!selectAll);
     };
@@ -79,7 +98,7 @@ const PlatformParentSection = () => {
         } else {
             const newSelected = [...selectedItems, id];
             setSelectedItems(newSelected);
-            if (newSelected.length === studyingStudents.length) {
+            if (newSelected.length === filteredStudyingStudents.length) {
                 setSelectAll(true);
             }
         }
@@ -139,7 +158,7 @@ const PlatformParentSection = () => {
             student_ids: selectedItems
         };
 
-            return await request(`${BackUrl}parent/add_students/${id}`, "POST", JSON.stringify(body), headers())
+        return await request(`${BackUrl}parent/add_students/${id}`, "POST", JSON.stringify(body), headers())
             .then(res => {
                 dispatch(onAddChildrenToParent(res))
                 setChildModal(false);
@@ -152,16 +171,10 @@ const PlatformParentSection = () => {
                     active: true
                 }));
 
-        })
-
-
-
+            })
 
 
     };
-
-
-
 
 
     const renderCards = () => {
@@ -206,7 +219,8 @@ const PlatformParentSection = () => {
                 {
                     editable ? <button onClick={() => {
                         setDeletePortal(true)
-                        setStudentId(item.id)}}
+                        setStudentId(item.id)
+                    }}
                                        className={cls.card__closeBtn}>X</button> : null
                 }
 
@@ -214,7 +228,7 @@ const PlatformParentSection = () => {
         ))
     }
     const renderTable = () => {
-        return studyingStudents.map((item, index) => (
+        return filteredStudyingStudents.map((item, index) => (
             <tr key={item.id}>
                 <td>{index + 1}</td>
                 <td>{item.name} {item.surname}</td>
@@ -234,6 +248,10 @@ const PlatformParentSection = () => {
                 <div className={cls.modal}>
                     <div className={cls.modal__header}>
                         <h1>Qo'shish</h1>
+                        <PlatformSearch
+                            search={search}
+                            setSearch={setSearch}
+                        />
                     </div>
                     <Table className={cls.modal__table}>
                         <thead>
@@ -301,7 +319,7 @@ const PlatformParentSection = () => {
                                                    defaultValue={data.birth_day}
                                         />
                                         <button className={cls.main__leftBar__profileBox__bio__sources__int}
-                                                   children={"Tahrirlash"}></button>
+                                                children={"Tahrirlash"}></button>
                                     </form>
                                 ) :
                                 (
@@ -368,7 +386,7 @@ const PlatformParentSection = () => {
                                 setIsConfirm(false)
                             }}
                         >
-                            <ConfimReason  getConfirm={getConfirm} reason={true}/>
+                            <ConfimReason getConfirm={getConfirm} reason={true}/>
                         </Modal> : null
                 }
             </div>

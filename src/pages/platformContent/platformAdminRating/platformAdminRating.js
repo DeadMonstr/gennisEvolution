@@ -14,7 +14,7 @@ import Input from "components/platform/platformUI/input";
 import cls from "./platformAdminRating.module.sass";
 import 'react-calendar/dist/Calendar.css';
 import {useDispatch, useSelector} from "react-redux";
-import {fetchAdminRating} from "slices/adminRatingSlice";
+import {fetchAdminRating} from "../../../slices/adminRatingSlice";
 
 const colors = {
     a: '#12C2E9',    // голубой
@@ -52,7 +52,6 @@ const PlatformAdminRating = () => {
         const day = String(date.getDate()).padStart(2, '0')
         const formattedValue = `${year}-${month}-${day}`
         dispatch(fetchAdminRating({ date: formattedValue }))
-
     }, [])
 
     const [activeSwitch, setActiveSwitch] = useState(true)
@@ -108,9 +107,9 @@ const PlatformAdminRating = () => {
                         </>
                         : <>
                             <AdminRatingTable/>
-                            {/*<NewStudentsRatingTable/>*/}
-                            {/*<LeadRatingTable/>*/}
-                            {/*<DebtorsRatingTable/>*/}
+                            <NewStudentsRatingTable/>
+                            <LeadRatingTable/>
+                            <DebtorsRatingTable/>
                         </>
                 }
             </div>
@@ -123,13 +122,11 @@ const AdminRating = () => {
     const list = useSelector(state => state.adminRatingSlice)
     const [data, setData] = useState([])
 
-
-    console.log(list)
     useEffect(() => {
         if (list) {
             setData(list?.data?.map((item, index) => ({
                 name: item?.location_name,
-                value: item?.task_statistics?.completed_tasks,
+                value: item?.task_statistics?.completed_tasks_percentage ?? 0,
                 fill: Object.values(colors)[index]
             })))
         }
@@ -169,18 +166,15 @@ const AdminRating = () => {
 
 const AdminRatingTable = () => {
 
-    const {data} = useSelector(state => state.adminRatingSlice)
+    const list = useSelector(state => state.adminRatingSlice)
 
-
-    console.log(data, "reyting")
     const renderList = () => {
-        if (!data.length) return ;
-        return data?.map((item, index) => {
+        return list.data.map((item, index) => {
             return (
                 <tr>
-                    <td>{index + 1}</td>
-                    <td>{item?.location_name}</td>
-                    <td>{item?.task_statistics && item?.task_statistics?.total_tasks}</td>
+                    <td>{1 + index}</td>
+                    <td>{item.location_name}</td>
+                    <td>{item.task_statistics?.completed_tasks_percentage ?? 0}</td>
                 </tr>
             )
         })
@@ -411,8 +405,6 @@ const LeadRatingTable = () => {
 
     const list = useSelector(state => state.adminRatingSlice)
 
-
-    console.log(list)
     const renderList = () => {
         return list.data.map((item, index) => {
             return (
@@ -457,7 +449,7 @@ const DebtorsRating = () => {
         if (list) {
             setData(list?.data?.map((item, index) => ({
                 name: item?.location_name,
-                value: item?.task_statistics ?? 1,
+                value: item?.debt_students,
                 // value: 1,
                 fill: Object.values(colors)[index]
             })))
