@@ -14,7 +14,7 @@ import Input from "components/platform/platformUI/input";
 import cls from "./platformAdminRating.module.sass";
 import 'react-calendar/dist/Calendar.css';
 import {useDispatch, useSelector} from "react-redux";
-import {fetchAdminRating} from "../../../slices/adminRatingSlice";
+import {fetchAdminRating} from "slices/adminRatingSlice";
 
 const colors = {
     a: '#12C2E9',    // голубой
@@ -166,15 +166,18 @@ const AdminRating = () => {
 
 const AdminRatingTable = () => {
 
-    const list = useSelector(state => state.adminRatingSlice)
+    const {data} = useSelector(state => state.adminRatingSlice)
 
+
+    console.log(data)
     const renderList = () => {
-        return list.data.map((item, index) => {
+        if (!data.length) return ;
+        return data?.map((item, index) => {
             return (
                 <tr>
-                    <td>{1 + index}</td>
-                    <td>{item.location_name}</td>
-                    <td>{item.task_statistics ?? 1}</td>
+                    <td>{index + 1}</td>
+                    <td>{item?.location_name}</td>
+                    <td>{item?.task_statistics && item?.task_statistics.total_tasks}</td>
                 </tr>
             )
         })

@@ -1,6 +1,6 @@
 import cls from "../style.module.sass"
 import InputForm from "components/platform/platformUI/inputForm";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import {BackUrl, headers} from "constants/global";
 import {useHttp} from "hooks/http.hook";
@@ -20,7 +20,8 @@ export const RegisterStudent = ({
                                     deleteSub,
                                     onChangeSub,
                                     selectedSubjects,
-                                    language
+                                    language,
+                                    setSelectedSubjects
                                 }) => {
     const {
         register,
@@ -28,7 +29,8 @@ export const RegisterStudent = ({
         handleSubmit,
         clearErrors,
         setError,
-        setValue
+        setValue,
+        reset
     } = useForm({
         mode: "onBlur"
     })
@@ -38,7 +40,8 @@ export const RegisterStudent = ({
     const [errorMessage, setErrorMessage] = useState("")
     const [isCheckLen, setIsCheckLen] = useState(false)
     const [isCheckPass, setIsCheckPass] = useState(false)
-    const [password, setPassword] = useState("12345678")
+    const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
     const {location} = useSelector(state => state.me)
 
     const [lang, setLang] = useState(1)
@@ -46,11 +49,15 @@ export const RegisterStudent = ({
 
     const dispatch = useDispatch()
 
-    const [confirmPassword, setConfirmPassword] = useState("12345678")
     const [selectedLocation, setSelectedLocation] = useState(location)
 
     const [selectedShift, setSelectedShift] = useState(shifts)
     const [selectedGender, setSelectedGender] = useState(genders)
+
+    useEffect(() => {
+        setSelectedLocation(location)
+    } , [location])
+
     const checkUsername = (username) => {
         setLoading(true)
         request(`${BackUrl}check_username`, "POST", JSON.stringify(username))
@@ -76,12 +83,18 @@ export const RegisterStudent = ({
                 }
             })
     }
-    console.log(password , confirmPassword)
+
     const onCheckLength = (value) => {
+        console.log(value)
         setIsCheckLen(value?.length < 8)
         setIsCheckPass(confirmPassword?.length !== 0 ? value !== confirmPassword : false)
         setPassword(value)
     }
+
+    useEffect(() => {
+        setIsCheckPass(confirmPassword !== password)
+
+    }, [confirmPassword, password])
     const onSubmit = (data) => {
         const res = {
             ...data,
@@ -94,7 +107,6 @@ export const RegisterStudent = ({
         }
 
 
-
         request(`${BackUrl}/register`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 console.log(res)
@@ -103,13 +115,22 @@ export const RegisterStudent = ({
                     type: res.isError ? "error" : "success",
                     active: true
                 }))
+                setSelectedSubjects([])
+                reset()
+
             })
+            .catch(err => {
+                console.log(err)
+            })
+
 
     }
 
+
     return (
         <form className={cls.form}
-
+                  id="form"
+              onSubmit={handleSubmit(onSubmit)}
         >
 
             <InputForm
@@ -163,10 +184,14 @@ export const RegisterStudent = ({
                 name={"password"}
                 title={"Parol"}
                 required
-                defaultValue={password}
+                value={"12345678"}
                 type={"password"}
                 onChange={onCheckLength}
             />
+            {isCheckLen ? <p className={cls.error}>Parolingiz 8 ta dan kam bo'lmasligi
+                kerak</p> : null
+
+            }
             <Input
                 register={register}
                 name={"password_confirm"}
@@ -175,8 +200,10 @@ export const RegisterStudent = ({
                 defaultValue={confirmPassword}
                 type={"password"}
                 onChange={setConfirmPassword}
+                value={"12345678"}
 
             />
+            {isCheckPass ? <p className={cls.error}>Parol har xil</p> : null}
             <InputForm
                 register={register}
                 name={"address"}
@@ -190,9 +217,10 @@ export const RegisterStudent = ({
                 cols="30"
                 rows="10"
             />
-            <Select defaultValue={selectedLocation} options={locations} onChangeOption={setSelectedLocation}/>
-            <Select defaultValue={lang} options={language} onChangeOption={setLang}/>
-            <Select options={subjects} onChangeOption={onChangeSub}/>
+            <Select title={"O'quv markazi joylashuvi"} defaultValue={location} options={locations}
+                    onChangeOption={setSelectedLocation}/>
+            <Select title={"Ta'lim tili"}  options={language} onChangeOption={setLang}/>
+            <Select title={"Fan"} options={subjects} onChangeOption={onChangeSub}/>
             {
                 selectedSubjects.length > 0
                     ?
@@ -216,10 +244,11 @@ export const RegisterStudent = ({
                     null
             }
 
-            <Select defaultValue={selectedShift} options={shifts} onChangeOption={setSelectedShift}/>
+            <Select title={"Ta'lim vaqti"} defaultValue={selectedShift} options={shifts}
+                    onChangeOption={setSelectedShift}/>
             {/*<Select defaultValue={selectedGender} options={genders} onChangeOption={setSelectedGender}/>*/}
 
-            <Button onClickBtn={handleSubmit(onSubmit)}>Yakunlash</Button>
+            <Button type={"submit"} formId={"form"}>Yakunlash</Button>
 
         </form>
     );

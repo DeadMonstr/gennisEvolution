@@ -155,6 +155,7 @@ const Register = () => {
 
     }, [])
 
+    console.log(jobs , "kob")
 
     const registerSelectList = useMemo(() => [
         {
@@ -210,6 +211,8 @@ const Register = () => {
         }
     }, [data])
 
+
+
     const onSubmit = (data) => {
         setLoading(true)
 
@@ -250,14 +253,13 @@ const Register = () => {
                         type: "success",
                         active: true
                     }))
-                }else {
+                } else {
                     dispatch(setMessage({
                         msg: res.msg,
                         type: "success",
                         active: true
                     }))
                 }
-
                 navigate("../home")
             })
             .catch(err => console.log(err))
@@ -280,6 +282,25 @@ const Register = () => {
         })
         setSelectedSubjects(arr => [...arr, ...filteredSubjects])
     }
+    const checkUsername = (username) => {
+        setLoading(true)
+        request(`${BackUrl}check_username`, "POST", JSON.stringify(username))
+            .then(res => {
+                setLoading(false)
+                if (res.found) {
+                    setError('username', {
+                        type: "manual",
+                        message: "username band"
+
+                    }, {shouldFocus: true})
+                    setActiveError(true)
+                    setErrorMessage("Username band")
+                } else {
+                    setActiveError(false)
+                }
+            })
+    }
+
 
     const onDeleteSub = (id) => {
         setSubjects(subjects => {
@@ -305,43 +326,50 @@ const Register = () => {
 
     }, [confirmPassword, password])
 
-    const checkUsername = (username) => {
-        setLoading(true)
-        request(`${BackUrl}check_username`, "POST", JSON.stringify(username))
-            .then(res => {
-                setLoading(false)
-                // if (res.found) {
-                //     setActiveError(true)
-                //     setErrorMessage("Username band")
-                // } else {
-                //     setActiveError(false)
-                //     setErrorMessage("")
-                // }
-                if (res.found) {
-                    setError('username', {
-                        type: "manual",
-                        message: "username band"
-
-                    }, {shouldFocus: true})
-                    setActiveError(true)
-                    setErrorMessage("Username band")
-                } else {
-                    setActiveError(false)
-                }
-            })
-    }
-
 
     const renderComponent = () => {
         switch (type) {
             case "student":
-                return <RegisterStudent language={languages} deleteSub={onDeleteSub} onChangeSub={onChangeSub} selectedSubjects={selectedSubjects} setSelectedSubjects={setSelectedSubjects} locations={locations} subjects={subjects}  languages={languages} shifts={shifts} genders={genders} setSubjects={setSubjects} />
+                return <RegisterStudent
+                    language={languages}
+                    deleteSub={onDeleteSub}
+                    onChangeSub={onChangeSub}
+                    selectedSubjects={selectedSubjects}
+                    setSelectedSubjects={setSelectedSubjects}
+                    locations={locations} subjects={subjects}
+                    languages={languages}
+                    shifts={shifts}
+                    genders={genders}
+                    setSubjects={setSubjects}
+                />
             case "parent":
-                return <RegisterParent/>
+                return <RegisterParent
+                    locations={locations}
+                    genders={genders}
+
+                />
             case "employer":
-                return <RegisterWorker/>
+                return <RegisterWorker
+                    language={languages}
+                    locations={locations}
+                    jobs={jobs}
+                    languages={languages}
+                    shifts={shifts}
+                    genders={genders}
+                />
             case "teacher":
-                return <RegisterTeacher/>
+                return <RegisterTeacher
+                    language={languages}
+                    deleteSub={onDeleteSub}
+                    onChangeSub={onChangeSub}
+                    selectedSubjects={selectedSubjects}
+                    setSelectedSubjects={setSelectedSubjects}
+                    locations={locations} subjects={subjects}
+                    languages={languages}
+                    shifts={shifts}
+                    genders={genders}
+                    setSubjects={setSubjects}
+                />
         }
     }
 
@@ -357,180 +385,180 @@ const Register = () => {
                 />
                 <h1>Registratsiya</h1>
 
-                {/*<form*/}
-                {/*    id="form"*/}
-                {/*    className={cls.form}*/}
-                {/*    onSubmit={handleSubmit(onSubmit)}*/}
-                {/*>*/}
-                {/*    {*/}
-                {/*        registerInputList.map(item => {*/}
-                {/*            if (type !== "student" && item.name === "phoneParent") return null*/}
-                {/*            if (item.name === "username") {*/}
-                {/*                return (*/}
-                {/*                    <>*/}
-                {/*                        <InputForm*/}
-                {/*                            register={register}*/}
-                {/*                            name={item.name}*/}
-                {/*                            title={item.label}*/}
-                {/*                            type={item.type}*/}
-                {/*                            onBlur={checkUsername}*/}
-                {/*                            required*/}
-                {/*                        />*/}
-                {/*                        {*/}
-                {/*                            // activeError ? <span className={cls.form__error}>*/}
-                {/*                            //     Username band*/}
-                {/*                            // </span> : null*/}
-                {/*                            errors?.username &&*/}
-                {/*                            <span className={cls.form__error}>*/}
-                {/*                                {errors?.username?.message}*/}
-                {/*                            </span>*/}
-                {/*                        }*/}
-                {/*                    </>*/}
-                {/*                )*/}
-                {/*            }*/}
-                {/*            if (item.name === "password") {*/}
-                {/*                return (*/}
-                {/*                    <div className={cls.form__inner}>*/}
-                {/*                        <Input*/}
-                {/*                            value={"12345678"}*/}
-                {/*                            title={item.label}*/}
-                {/*                            type={"password"}*/}
-                {/*                            onChange={onCheckLength}*/}
-                {/*                            required*/}
-                {/*                        />*/}
-                {/*                        {*/}
-                {/*                            isCheckLen ? <p className={cls.error}>Parolingiz 8 ta dan kam bo'lmasligi*/}
-                {/*                                kerak</p> : null*/}
-                {/*                        }*/}
-                {/*                    </div>*/}
-                {/*                )*/}
-                {/*            }*/}
-                {/*            if (item.name === "password_confirm") {*/}
-                {/*                return (*/}
-                {/*                    <div className={cls.form__inner}>*/}
-                {/*                        <Input*/}
-                {/*                            value={"12345678"}*/}
-                {/*                            title={item.label}*/}
-                {/*                            type={"password"}*/}
-                {/*                            onChange={setConfirmPassword}*/}
-                {/*                            required*/}
-                {/*                        />*/}
-                {/*                        {*/}
-                {/*                            isCheckPass ? <p className={cls.error}>Parol har xil</p> : null*/}
-                {/*                        }*/}
-                {/*                    </div>*/}
-                {/*                )*/}
-                {/*            }*/}
-                {/*            if (item.name === "address") {*/}
-                {/*                return (*/}
-                {/*                    <Input value={""}*/}
-                {/*                           title={item.label}*/}
-                {/*                           type={item.type}*/}
-                {/*                           onChange={setAddresses}*/}
-                {/*                           required*/}
-                {/*                    />*/}
-                {/*                )*/}
-                {/*            }*/}
+                <form
+                    id="form"
+                    className={cls.form}
+                    onSubmit={handleSubmit(onSubmit)}
+                >
+                    {
+                        registerInputList.map(item => {
+                            if (type !== "student" && item.name === "phoneParent") return null
+                            if (item.name === "username") {
+                                return (
+                                    <>
+                                        <InputForm
+                                            register={register}
+                                            name={item.name}
+                                            title={item.label}
+                                            type={item.type}
+                                            onBlur={checkUsername}
+                                            required
+                                        />
+                                        {
+                                            // activeError ? <span className={cls.form__error}>
+                                            //     Username band
+                                            // </span> : null
+                                            errors?.username &&
+                                            <span className={cls.form__error}>
+                                                {errors?.username?.message}
+                                            </span>
+                                        }
+                                    </>
+                                )
+                            }
+                            if (item.name === "password") {
+                                return (
+                                    <div className={cls.form__inner}>
+                                        <Input
+                                            value={"12345678"}
+                                            title={item.label}
+                                            type={"password"}
+                                            onChange={onCheckLength}
+                                            required
+                                        />
+                                        {
+                                            isCheckLen ? <p className={cls.error}>Parolingiz 8 ta dan kam bo'lmasligi
+                                                kerak</p> : null
+                                        }
+                                    </div>
+                                )
+                            }
+                            if (item.name === "password_confirm") {
+                                return (
+                                    <div className={cls.form__inner}>
+                                        <Input
+                                            value={"12345678"}
+                                            title={item.label}
+                                            type={"password"}
+                                            onChange={setConfirmPassword}
+                                            required
+                                        />
+                                        {
+                                            isCheckPass ? <p className={cls.error}>Parol har xil</p> : null
+                                        }
+                                    </div>
+                                )
+                            }
+                            if (item.name === "address") {
+                                return (
+                                    <Input value={""}
+                                           title={item.label}
+                                           type={item.type}
+                                           onChange={setAddresses}
+                                           required
+                                    />
+                                )
+                            }
 
-                {/*            return (*/}
-                {/*                <InputForm*/}
-                {/*                    register={register}*/}
-                {/*                    name={item.name}*/}
-                {/*                    title={item.label}*/}
-                {/*                    type={item.type}*/}
-                {/*                    required*/}
-                {/*                />*/}
-                {/*            )*/}
-                {/*        })*/}
-                {/*    }*/}
-                {/*    <textarea*/}
-                {/*        {...register("comment")}*/}
-                {/*        placeholder={"Qo'shimcha ma'lumot (shart emas)"}*/}
-                {/*        cols="30"*/}
-                {/*        rows="10"*/}
-                {/*    />*/}
-                {/*    {*/}
-                {/*        registerSelectList.map(item => {*/}
-                {/*            if (type !== "student" && item.name === "shift") return null*/}
-                {/*            if (type !== "employer" && item.name === "job") return null*/}
-                {/*            if (type === "employer" && item.name === "subs") return null*/}
-                {/*            if (type === "parent" && item.name === "shift") return null*/}
-                {/*            if (type === "parent" && item.name === "subs") return null*/}
-                {/*            if (type !== "parent" && item.name === "address") return null*/}
-                {/*            if (type === "parent" && item.name === "lang") return null*/}
-                {/*            if (item.name === "subs") {*/}
-                {/*                return (*/}
-                {/*                    <>*/}
-                {/*                        <Select*/}
-                {/*                            title={item.label}*/}
-                {/*                            options={item.opts}*/}
-                {/*                            onChangeOption={item.onFunc}*/}
-                {/*                        />*/}
-                {/*                        {*/}
-                {/*                            selectedSubjects.length > 0*/}
-                {/*                                ?*/}
-                {/*                                <div className={cls.place}>*/}
-                {/*                                    {*/}
-                {/*                                        selectedSubjects.map((item, i) => {*/}
-                {/*                                            return <p*/}
-                {/*                                                key={i}*/}
-                {/*                                                className={cls.place__inner}*/}
-                {/*                                            >*/}
-                {/*                                                {item.name}*/}
-                {/*                                                <i*/}
-                {/*                                                    className={classNames("fas fa-times", cls.innerIcon)}*/}
-                {/*                                                    onClick={() => onDeleteSub(item.id)}*/}
-                {/*                                                />*/}
-                {/*                                            </p>*/}
-                {/*                                        })*/}
-                {/*                                    }*/}
-                {/*                                </div>*/}
-                {/*                                :*/}
-                {/*                                null*/}
-                {/*                        }*/}
-                {/*                    </>*/}
-                {/*                )*/}
-                {/*            }*/}
-                {/*            if (item.name === "loc" || item.name === "lang" || item.name === "shift" || item.name === "sex") {*/}
-                {/*                return (*/}
-                {/*                    <Select*/}
-                {/*                        title={item.label}*/}
-                {/*                        options={item.opts}*/}
-                {/*                        onChangeOption={item.onFunc}*/}
-                {/*                        defaultValue={item.defValue}*/}
-                {/*                    />*/}
-                {/*                )*/}
-                {/*            }*/}
-                {/*            return (*/}
-                {/*                <Select*/}
-                {/*                    keyValue={item.keyValue}*/}
-                {/*                    title={item.label}*/}
-                {/*                    options={item.opts}*/}
-                {/*                    onChangeOption={item.onFunc}*/}
-                {/*                />*/}
-                {/*            )*/}
-                {/*        })*/}
-                {/*    }*/}
-                {/*    {*/}
-                {/*        loading ? <DefaultLoaderSmall/> :*/}
-                {/*            <Button*/}
-                {/*                formId={"form"}*/}
-                {/*                // disabled={*/}
-                {/*                //     isCheckPass ||*/}
-                {/*                //     isCheckLen ||*/}
-                {/*                //     activeError ||*/}
-                {/*                //     (type !== "employer" ? selectedSubjects.length === 0 : false) ||*/}
-                {/*                //     (type === "employer" && !selectedJob) ||*/}
-                {/*                //     (type !== "parent" ? selectedSubjects.length === 0 : false)*/}
-                {/*                // }*/}
-                {/*                type={'submit'}*/}
-                {/*            >*/}
-                {/*                Yakunlash*/}
-                {/*            </Button>*/}
+                            return (
+                                <InputForm
+                                    register={register}
+                                    name={item.name}
+                                    title={item.label}
+                                    type={item.type}
+                                    required
+                                />
+                            )
+                        })
+                    }
+                    <textarea
+                        {...register("comment")}
+                        placeholder={"Qo'shimcha ma'lumot (shart emas)"}
+                        cols="30"
+                        rows="10"
+                    />
+                    {
+                        registerSelectList.map(item => {
+                            if (type !== "student" && item.name === "shift") return null
+                            if (type !== "employer" && item.name === "job") return null
+                            if (type === "employer" && item.name === "subs") return null
+                            if (type === "parent" && item.name === "shift") return null
+                            if (type === "parent" && item.name === "subs") return null
+                            if (type !== "parent" && item.name === "address") return null
+                            if (type === "parent" && item.name === "lang") return null
+                            if (item.name === "subs") {
+                                return (
+                                    <>
+                                        <Select
+                                            title={item.label}
+                                            options={item.opts}
+                                            onChangeOption={item.onFunc}
+                                        />
+                                        {
+                                            selectedSubjects.length > 0
+                                                ?
+                                                <div className={cls.place}>
+                                                    {
+                                                        selectedSubjects.map((item, i) => {
+                                                            return <p
+                                                                key={i}
+                                                                className={cls.place__inner}
+                                                            >
+                                                                {item.name}
+                                                                <i
+                                                                    className={classNames("fas fa-times", cls.innerIcon)}
+                                                                    onClick={() => onDeleteSub(item.id)}
+                                                                />
+                                                            </p>
+                                                        })
+                                                    }
+                                                </div>
+                                                :
+                                                null
+                                        }
+                                    </>
+                                )
+                            }
+                            if (item.name === "loc" || item.name === "lang" || item.name === "shift" || item.name === "sex") {
+                                return (
+                                    <Select
+                                        title={item.label}
+                                        options={item.opts}
+                                        onChangeOption={item.onFunc}
+                                        defaultValue={item.defValue}
+                                    />
+                                )
+                            }
+                            return (
+                                <Select
+                                    keyValue={item.keyValue}
+                                    title={item.label}
+                                    options={item.opts}
+                                    onChangeOption={item.onFunc}
+                                />
+                            )
+                        })
+                    }
+                    {
+                        loading ? <DefaultLoaderSmall/> :
+                            <Button
+                                formId={"form"}
+                                // disabled={
+                                //     isCheckPass ||
+                                //     isCheckLen ||
+                                //     activeError ||
+                                //     (type !== "employer" ? selectedSubjects.length === 0 : false) ||
+                                //     (type === "employer" && !selectedJob) ||
+                                //     (type !== "parent" ? selectedSubjects.length === 0 : false)
+                                // }
+                                type={'submit'}
+                            >
+                                Yakunlash
+                            </Button>
 
-                {/*    }*/}
-                {/*</form>*/}
-                {renderComponent()}
+                    }
+                </form>
+                {/*{renderComponent()}*/}
             </div>
         </div>
     );
