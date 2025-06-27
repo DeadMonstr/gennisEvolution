@@ -243,6 +243,7 @@ const newStudentsSlice = createSlice({
                 state.newStudents = action.payload.newStudents.map(item => {
                     return {...item,checked: false}
                 })
+                console.log(state.newStudents)
                 state.checkedUsers = []
             })
             .addCase(fetchNewStudents.rejected, state => {

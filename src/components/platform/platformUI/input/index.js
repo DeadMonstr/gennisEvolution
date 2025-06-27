@@ -20,7 +20,8 @@ const Input = (props) => {
         clazz,
         placeholder,
         disabled,
-        clazzLabel
+        clazzLabel,
+        readonly
     } = props
 
 
@@ -69,6 +70,7 @@ const Input = (props) => {
                 id={name}
                 className={classNames("input-fields", clazz)}
                 value={input || ""}
+                readOnly={props.readOnly}
                 onChange={e => setInput(e.target.value)}
             />
 

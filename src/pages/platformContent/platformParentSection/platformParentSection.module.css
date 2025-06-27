@@ -1,0 +1,237 @@
+.main {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.main__leftBar {
+  width: 30%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.main__leftBar__profileBox {
+  width: 90%;
+  height: 90%;
+  border-radius: 3rem;
+  background: #FFFFFF;
+  box-shadow: 0 0 15px 2px #4b4b4b;
+  overflow: hidden;
+}
+.main__leftBar__profileBox__bio {
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+.main__leftBar__profileBox__bio__sources__int {
+  width: 350px;
+  margin-top: 2rem;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1.6rem;
+  font-family: Monospaced, monospace;
+  background: #2e8cff;
+  color: white;
+}
+.main__leftBar__profileBox__bio__img {
+  max-width: 30%;
+}
+.main__leftBar__profileBox__bio h2 {
+  font-size: 2rem;
+}
+.main__leftBar__profileBox__bio span {
+  border: 1px #B0F0AA solid;
+  background: #CFF6CC;
+  color: #11D300;
+  font-size: 1.7rem;
+  border-radius: 2rem;
+  padding: 0.4rem;
+  font-family: Monospaced, monospace;
+}
+.main__leftBar__profileBox__bio__int {
+  user-input: none;
+  width: 350px !important;
+  color: #4b4b4b !important;
+}
+.main__rightBar {
+  width: 70%;
+  padding-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.main__rightBar__header {
+  width: 100%;
+  height: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 3rem;
+}
+.main__rightBar__header__editBtn {
+  background: #E0F2FE !important;
+}
+.main__rightBar__header__editBtn:hover {
+  width: 300px;
+}
+.main__rightBar__itemsBox {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  overflow-y: auto;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5rem;
+  padding: 1rem;
+}
+.main__rightBar__itemsBox__btn {
+  display: flex;
+  align-self: center;
+  border-radius: 50% !important;
+}
+
+.card {
+  width: 400px;
+  height: 230px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 0 7px 2px #ccc;
+  border-radius: 2rem;
+  position: relative;
+}
+.card__info {
+  width: 60%;
+  height: 100%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.card__info__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+}
+.card__info__header span {
+  background: #2e8cff;
+  border-radius: 1rem;
+  padding: 1rem;
+  font-size: 13px;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: Monospaced, monospace;
+}
+.card__info__user {
+  width: 100%;
+  height: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.card__info__user__detail {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: Monospaced, monospace;
+}
+.card__info__user__detail__content {
+  color: #05C4FF;
+}
+.card__info__user__detail__key {
+  color: #4b4b4b;
+}
+.card__userImgBox {
+  width: 34%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  border-top-right-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  padding-top: 4rem;
+  background-position-x: 30rem;
+}
+.card__userImgBox__img {
+  width: 100%;
+  height: 70%;
+  margin-left: -4rem;
+  margin-top: -0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  border: 8px solid #ccc;
+}
+.card__userImgBox__img__photo {
+  width: 95%;
+  height: 95%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.card__closeBtn {
+  position: absolute;
+  right: -2.3rem;
+  top: -1rem;
+  border-radius: 0.5rem;
+  color: white;
+  height: 4.5rem;
+  font-size: 4rem;
+  padding: 0.5rem;
+  display: flex;
+  z-index: 1;
+  align-items: center;
+  background: #F43F5E;
+  border: none;
+  cursor: pointer;
+}
+
+.modal {
+  width: 700px;
+  background: white;
+  height: 60vh;
+  gap: 3rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-radius: 2rem;
+}
+.modal__header {
+  padding: 1rem;
+}
+.modal__table {
+  max-height: 500px;
+  height: 100%;
+  overflow: hidden;
+  overflow-y: auto;
+}
+.modal__table thead {
+  background: #E0E7FF;
+  padding: 2rem;
+  height: 5rem;
+}
+.modal__table tbody {
+  max-height: 400px;
+  height: 100%;
+}
+
+/*# sourceMappingURL=platformParentSection.module.css.map */

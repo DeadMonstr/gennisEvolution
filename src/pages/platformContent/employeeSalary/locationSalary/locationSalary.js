@@ -28,7 +28,8 @@ const LocationSalary = ({userId}) => {
             residue: true,
             taken_salary: true,
             debt: true,
-            black_salary: true
+            black_salary: true,
+            fine: true
         }
     },[])
 
@@ -45,7 +46,6 @@ const LocationSalary = ({userId}) => {
                 users={locationMonths}
                 extraInfo={extraInfo}
             />
-
 
         </div>
     );

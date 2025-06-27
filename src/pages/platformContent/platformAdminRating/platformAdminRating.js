@@ -126,7 +126,7 @@ const AdminRating = () => {
         if (list) {
             setData(list?.data?.map((item, index) => ({
                 name: item?.location_name,
-                value: item?.task_statistics ?? 1,
+                value: item?.task_statistics?.completed_tasks_percentage ?? 0,
                 fill: Object.values(colors)[index]
             })))
         }
@@ -174,7 +174,7 @@ const AdminRatingTable = () => {
                 <tr>
                     <td>{1 + index}</td>
                     <td>{item.location_name}</td>
-                    <td>{item.task_statistics ?? 1}</td>
+                    <td>{item.task_statistics?.completed_tasks_percentage ?? 0}</td>
                 </tr>
             )
         })
@@ -449,7 +449,7 @@ const DebtorsRating = () => {
         if (list) {
             setData(list?.data?.map((item, index) => ({
                 name: item?.location_name,
-                value: item?.task_statistics ?? 1,
+                value: item?.debt_students,
                 // value: 1,
                 fill: Object.values(colors)[index]
             })))

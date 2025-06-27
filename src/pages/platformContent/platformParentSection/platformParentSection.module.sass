@@ -1,0 +1,217 @@
+.main
+  width: 100%
+  height: 100%
+  display: flex
+  align-items: center
+  &__leftBar
+    width: 30%
+    height: 100%
+    display: flex
+    align-items: center
+    justify-content: center
+    &__profileBox
+      width: 90%
+      height: 90%
+      border-radius: 3rem
+      background: #FFFFFF
+      box-shadow: 0 0 15px 2px #4b4b4b
+      overflow: hidden
+      &__bio
+        width: 100%
+        height: 100%
+        padding: 1rem
+        display: flex
+        flex-direction: column
+        align-items: center
+        justify-content: center
+        gap: 2rem
+        &__sources
+          &__int
+            width: 350px
+            margin-top: 2rem
+            height: 40px
+            display: flex
+            align-items: center
+            justify-content: center
+            border-radius: 1rem
+            border: none
+            cursor: pointer
+            font-size: 1.6rem
+            font-family: Monospaced, monospace
+            background: #2e8cff
+            color: white
+        &__img
+          max-width: 30%
+        h2
+          font-size: 2rem
+        span
+          border: 1px #B0F0AA solid
+          background: #CFF6CC
+          color: #11D300
+          font-size: 1.7rem
+          border-radius: 2rem
+          padding: .4rem
+          font-family: Monospaced, monospace
+
+        &__int
+          user-input: none
+          width: 350px !important
+          color: #4b4b4b !important
+  &__rightBar
+    width: 70%
+    padding-top: 3rem
+    display: flex
+    flex-direction: column
+    height: 100%
+    &__header
+      width: 100%
+      height: 10%
+      display: flex
+      align-items: center
+      justify-content: space-between
+      gap: 1rem
+      padding: 3rem
+      &__editBtn
+        background: #E0F2FE !important
+    &__itemsBox
+      width: 100%
+      height: auto
+      overflow: hidden
+      overflow-y: auto
+      max-height: 90vh
+      display: flex
+      align-items: center
+      flex-wrap: wrap
+      gap: 5rem
+      padding: 1rem
+      &__btn
+        display: flex
+        //align-self: center
+        border-radius: 50% !important
+        width: 5rem
+        height: 5rem
+
+
+.card
+  width: 400px
+  height: 230px
+  background: white
+  display: flex
+  align-items: center
+  justify-content: space-between
+  //overflow: hidden
+  box-shadow: 0 0 7px 2px #ccc
+  border-radius: 2rem
+  position: relative
+
+  &__info
+    width: 60%
+    height: 100%
+    padding: 1rem
+    display: flex
+    flex-direction: column
+    justify-content: space-between
+    &__header
+      width: 100%
+      display: flex
+      align-items: center
+      padding: .2rem
+      span
+        background: #2e8cff
+        border-radius: 1rem
+        padding: 1rem
+        font-size: 13px
+        align-items: center
+        justify-content: center
+        color: white
+        font-family: Monospaced, monospace
+    &__user
+      width: 100%
+      height: 60%
+      display: flex
+      flex-direction: column
+      align-items: center
+      gap: 1rem
+      &__detail
+        width: 100%
+        display: flex
+        align-items: center
+        justify-content: space-between
+        font-family: Monospaced, monospace
+        &__content
+          color: #05C4FF
+        &__key
+          color: #4b4b4b
+  &__userImgBox
+    width: 34%
+    height: 100%
+    display: flex
+    //align-items: center
+    justify-content: center
+    border-top-right-radius: 2rem
+    border-bottom-right-radius: 2rem
+    padding-top: 4rem
+    background-position-x: 30rem
+    &__img
+      width: 100%
+      height: 70%
+      margin-left: -4rem
+      margin-top: -.5rem
+      border-radius: 50%
+      display: flex
+      align-items: center
+      justify-content: center
+      background-size: cover
+      border: 8px solid #ccc
+      &__photo
+        width: 95%
+        height: 95%
+        border-radius: 50%
+        object-fit: cover
+  &__closeBtn
+    position: absolute
+    right: -2.3rem
+    top: -1rem
+    border-radius: .5rem
+    color: white
+    height: 4.5rem
+    font-size: 4rem
+    padding: .5rem
+    display: flex
+    z-index: 1
+    align-items: center
+    background: #F43F5E
+    border: none
+    cursor: pointer
+
+.modal
+  width: 700px
+  background: white
+  height: 60vh
+  gap: 3rem
+  display: flex
+  flex-direction: column
+  padding: 1rem
+  align-items: start
+  border-radius: 2rem
+  &__header
+    padding: 1rem
+  &__btn
+    align-self: end
+    background: #00c2ff!important
+    color: white!important
+    border-color: #00c2ff!important
+    //width: 100%
+
+  &__table
+    max-height: 500px
+    height: 100%
+    overflow: hidden
+    overflow-y: auto
+    thead
+      background: #E0E7FF
+      padding: 2rem
+      height: 5rem
+    tbody
+      max-height: 400px
+      height: 100%

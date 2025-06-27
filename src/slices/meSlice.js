@@ -84,6 +84,7 @@ const meSlice = createSlice({
             sessionStorage.setItem('refresh_token', action.payload.refresh_token);
             localStorage.setItem('user', action.payload.username);
             localStorage.setItem('role', action.payload.role);
+            localStorage.setItem('location_id', action.payload.location_id);
             state.id = action.payload.id;
             state.username = action.payload.username;
             state.name = action.payload.name;
@@ -92,6 +93,7 @@ const meSlice = createSlice({
             state.location = action.payload.location_id
             state.links = action.payload.links
             state.contract_url = action.payload.contract_url
+
         },
 
         changePaymentType: (state,action) => {
@@ -152,6 +154,9 @@ const meSlice = createSlice({
                 state.profile_photo = action.payload.profile_photo
                 sessionStorage.setItem('token', action.payload.access_token);
                 state.location = action.payload.location_id
+                localStorage.setItem('location_id', action.payload.location_id);
+
+
             })
             .addCase(fetchMe.rejected,state => {state.meLoadingStatus = 'error'} )
 

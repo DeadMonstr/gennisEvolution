@@ -24,10 +24,7 @@ const StudentGroupsAttendance = () => {
     useEffect(() => {
         dispatch(fetchAttendancesStudent(studentId))
         dispatch(fetchStudentGroupDates(studentId))
-
     },[studentId])
-
-
 
 
     const {studentAtt,fetchAttendancesStatus,studentDates} = useSelector(state => state.attendances)
