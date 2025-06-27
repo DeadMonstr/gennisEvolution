@@ -52,6 +52,7 @@ const PlatformAdminRating = () => {
         const day = String(date.getDate()).padStart(2, '0')
         const formattedValue = `${year}-${month}-${day}`
         dispatch(fetchAdminRating({ date: formattedValue }))
+
     }, [])
 
     const [activeSwitch, setActiveSwitch] = useState(true)
@@ -107,9 +108,9 @@ const PlatformAdminRating = () => {
                         </>
                         : <>
                             <AdminRatingTable/>
-                            <NewStudentsRatingTable/>
-                            <LeadRatingTable/>
-                            <DebtorsRatingTable/>
+                            {/*<NewStudentsRatingTable/>*/}
+                            {/*<LeadRatingTable/>*/}
+                            {/*<DebtorsRatingTable/>*/}
                         </>
                 }
             </div>
@@ -122,11 +123,13 @@ const AdminRating = () => {
     const list = useSelector(state => state.adminRatingSlice)
     const [data, setData] = useState([])
 
+
+    console.log(list)
     useEffect(() => {
         if (list) {
             setData(list?.data?.map((item, index) => ({
                 name: item?.location_name,
-                value: item?.task_statistics ?? 1,
+                value: item?.task_statistics?.completed_tasks,
                 fill: Object.values(colors)[index]
             })))
         }
@@ -169,7 +172,7 @@ const AdminRatingTable = () => {
     const {data} = useSelector(state => state.adminRatingSlice)
 
 
-    console.log(data)
+    console.log(data, "reyting")
     const renderList = () => {
         if (!data.length) return ;
         return data?.map((item, index) => {
@@ -177,7 +180,7 @@ const AdminRatingTable = () => {
                 <tr>
                     <td>{index + 1}</td>
                     <td>{item?.location_name}</td>
-                    <td>{item?.task_statistics && item?.task_statistics.total_tasks}</td>
+                    <td>{item?.task_statistics && item?.task_statistics?.total_tasks}</td>
                 </tr>
             )
         })
@@ -408,6 +411,8 @@ const LeadRatingTable = () => {
 
     const list = useSelector(state => state.adminRatingSlice)
 
+
+    console.log(list)
     const renderList = () => {
         return list.data.map((item, index) => {
             return (

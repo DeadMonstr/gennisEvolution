@@ -1,17 +1,17 @@
 import {useMemo} from "react";
 
 
-// export const BackUrlForDoc = `http://26.253.30.50:5002/`
-// export const BackUrl = `${BackUrlForDoc}api/`
-// export const ClassroomUrl = `http://localhost:3000/`
-// export const ClassroomUrlForDoc = "http://26.253.30.50:5001/"
+export const BackUrlForDoc = `http://26.253.30.50:5002/`
+export const BackUrl = `${BackUrlForDoc}api/`
+export const ClassroomUrl = `http://localhost:3000/`
+export const ClassroomUrlForDoc = "http://26.253.30.50:5001/"
 
-export const BackUrl = "https://admin.gennis.uz/api/"
-export const BackUrlForDoc = "https://admin.gennis.uz/"
+// export const BackUrl = "https://admin.gennis.uz/api/"
+// export const BackUrlForDoc = "https://admin.gennis.uz/"
 // export const BackUrl = "/api/"
-export const ClassroomUrl = `https://classroom.gennis.uz/`
+// export const ClassroomUrl = `https://classroom.gennis.uz/`
 // export const BackUrlForDoc = "/"
-export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
+// export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
 
 export const headers = () => {
     const token = sessionStorage.getItem("token")
