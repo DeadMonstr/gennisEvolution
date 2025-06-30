@@ -43,6 +43,8 @@ const PlatformParentSection = () => {
 
     const locationId = localStorage.getItem("location_id")
     const [childModal, setChildModal] = useState(false)
+    const [activeError, setActiveError] = useState(false)
+    const [errorMessage, setErrorMessage] = useState("")
     const [editable, setEditable] = useState(false)
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
@@ -50,7 +52,7 @@ const PlatformParentSection = () => {
     const [isConfirm, setIsConfirm] = useState(false)
     const [studentId, setStudentId] = useState([]);
     const {studyingStudents} = useSelector(state => state.studyingStudents)
-    const {register, handleSubmit, setValue} = useForm()
+    const {register, handleSubmit,formState: {errors}, setError, setValue} = useForm()
     const dispatch = useDispatch();
     const {data} = useSelector(state => state.parentSlice)
     const children = data.children
@@ -98,10 +100,40 @@ const PlatformParentSection = () => {
         return `${year}-${month}-${day}`; // yyyy-mm-dd
     };
 
+    const onCheckUsername = (username) => {
+        const body = {
+            username: username
+        }
+        request(`${BackUrl}check_exist_username/${id}`, "POST", JSON.stringify(body), headers())
+            .then(res => {
+                if (res.found === true){
+                    setErrorMessage("Username band")
+                    setActiveError(true)
+
+                }else {
+                    setErrorMessage("Username bo'sh")
+                    setActiveError(false)
+                }
+            })
+    }
+
     const onSubmit = (data) => {
         return request(`${BackUrl}parent/crud/${id}`, "PUT", JSON.stringify(data), headers())
             .then(res => {
                 dispatch(onChangeParentSource(res))
+                dispatch(setMessage({
+                    msg: "Ma'lumot o'zgartirildi",
+                    type: "success",
+                    active: true
+                }))
+                setChildModal(false);
+                setEditable(false);
+            })
+    }
+
+    const onHandlePassword = (data) => {
+        request(`${BackUrl}change_student_password/${id}`, "POST", JSON.stringify(data), headers())
+            .then(res => {
                 dispatch(setMessage({
                     msg: "Ma'lumot o'zgartirildi",
                     type: "success",
@@ -266,13 +298,20 @@ const PlatformParentSection = () => {
                         <img rel="preload" className={cls.main__leftBar__profileBox__bio__img} crossOrigin="Anonymous"
                              src={img} alt=""/>
                         <h2>{data.name} {data.surname}</h2>
-                        <span>
-                            {data.sex === "Erkak" ? "Ota" : "Ona"}
-                        </span>
                         {
                             editable ? (
+                                <>
+
+
                                     <form onSubmit={handleSubmit(onSubmit)}
                                           className={cls.main__leftBar__profileBox__bio__sources}>
+                                        { errorMessage && <h2 style={{color: activeError ? "red" : "green"}}>{errorMessage}</h2>}
+                                        <InputForm clazz={cls.main__leftBar__profileBox__bio__sources__ints}
+                                                   title={'Username'}
+                                                   register={register}
+                                                   name={"username"}
+                                                   onBlur={onCheckUsername}
+                                                   defaultValue={data.username}/>
                                         <InputForm clazz={cls.main__leftBar__profileBox__bio__sources__ints}
                                                    title={'Ism'}
                                                    register={register}
@@ -298,14 +337,31 @@ const PlatformParentSection = () => {
                                                    name={'birthday'}
                                                    register={register}
                                                    type={'date'}
-                                                   defaultValue={data.birth_day}
+                                                   defaultValue={data.date}
                                         />
                                         <button className={cls.main__leftBar__profileBox__bio__sources__int}
                                                    children={"Tahrirlash"}></button>
                                     </form>
+                                    <form onSubmit={handleSubmit(onHandlePassword)}>
+                                        <InputForm clazz={cls.main__leftBar__profileBox__bio__sources__ints}
+                                                   title={"Parolni o'zgartirish"}
+                                                   register={register}
+                                                   name={'password'}
+                                                   type={"number"}
+                                                   />
+                                        <button className={cls.main__leftBar__profileBox__bio__sources__int}
+                                                children={"O'zgartirish"}></button>
+                                    </form>
+                                </>
+
                                 ) :
                                 (
                                     <div className={cls.main__leftBar__profileBox__bio__source}>
+                                        <Input clazz={cls.main__leftBar__profileBox__bio__int}
+                                               title={'Username'}
+                                               onChange={() => "sas"}
+                                               readOnly={true}
+                                               value={data.username}/>
                                         <Input clazz={cls.main__leftBar__profileBox__bio__int}
                                                title={'Ism'}
                                                onChange={() => "sas"}
@@ -330,7 +386,7 @@ const PlatformParentSection = () => {
                                                title={'Birthday'}
                                                onChange={() => "sas"}
                                                readOnly={true}
-                                               value={data.birth_day}/>
+                                               value={data.date}/>
                                     </div>
                                 )
                         }
