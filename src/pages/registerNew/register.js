@@ -1,69 +1,15 @@
-import React, {useState, useEffect, useMemo} from 'react';
-import {useForm} from "react-hook-form";
-import classNames from "classnames";
+import React, {useState, useEffect} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {useNavigate} from "react-router-dom";
-
-import InputForm from "components/platform/platformUI/inputForm";
-import Button from "components/platform/platformUI/button";
-import Input from "components/platform/platformUI/input";
 import Select from "components/platform/platformUI/select";
 import {fetchData} from "slices/registerSlice";
-import {setMessage} from "slices/messageSlice";
-import {useHttp} from "hooks/http.hook";
-import {BackUrl, headers} from "constants/global";
 
 import cls from "./style.module.sass";
-import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
+
 import {RegisterStudent} from "pages/registerNew/registerStudent/registerStudent";
 import {RegisterParent} from "pages/registerNew/registerParent/registerParent";
 import {RegisterTeacher} from "pages/registerNew/registerTeacher/registerTeacher";
 import {RegisterWorker} from "pages/registerNew/registerWorker/registerWorker";
 
-const registerInputList = [
-    {
-        name: "username",
-        label: "Username",
-        type: "text"
-    }, {
-        name: "name",
-        label: "Ism",
-        type: "text"
-    }, {
-        name: "surname",
-        label: "Familiya",
-        type: "text"
-    }, {
-        name: "father_name",
-        label: "Otasining ismi",
-        type: "text"
-    }, {
-        name: "birth_day",
-        label: "Tug'ilgan sana",
-        type: "date"
-    }, {
-        name: "phone",
-        label: "Telefon raqami",
-        type: "number"
-    }, {
-        name: "phoneParent",
-        label: "Ota-ona telefon raqami",
-        type: "number"
-    }, {
-        name: "password",
-        label: "Parol",
-        type: "password"
-    }, {
-        name: "password_confirm",
-        label: "Parolni tasdiqlang",
-        type: "password"
-    },
-    {
-        name: "address",
-        label: "Manzil",
-        type: "text"
-    }
-]
 
 const shifts = [
     {
