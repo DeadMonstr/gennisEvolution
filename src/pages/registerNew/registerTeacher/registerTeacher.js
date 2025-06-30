@@ -15,7 +15,6 @@ import {useDispatch, useSelector} from "react-redux";
 export const RegisterTeacher = ({
                                     locations,
                                     subjects,
-                                    shifts,
                                     genders,
                                     deleteSub,
                                     onChangeSub,

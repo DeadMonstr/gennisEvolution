@@ -94,7 +94,6 @@ export const RegisterParent = ({
                     type: res.isError ? "error" : "success",
                     active: true
                 }))
-
                 reset()
             })
 
@@ -186,7 +185,7 @@ export const RegisterParent = ({
             {/*<Select title={"Ta'lim vaqti"} defaultValue={selectedShift} options={shifts} onChangeOption={setSelectedShift}/>*/}
             <Select title={"Jinsi"}  options={genders} onChangeOption={setSelectedGender}/>
 
-            <Button>Yakunlash</Button>
+            <Button type={"submit"}>Yakunlash</Button>
 
         </form>
     );
