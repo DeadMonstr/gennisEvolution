@@ -183,7 +183,6 @@ export const RegisterParent = ({
             />
             <Select title={"O'quv markazi joylashuvi"} defaultValue={selectedLocation} options={locations} onChangeOption={setSelectedLocation}/>
             {/*<Select title={"Ta'lim vaqti"} defaultValue={selectedShift} options={shifts} onChangeOption={setSelectedShift}/>*/}
-            <Select title={"Jinsi"}  options={genders} onChangeOption={setSelectedGender}/>
 
             <Button type={"submit"}>Yakunlash</Button>
 
