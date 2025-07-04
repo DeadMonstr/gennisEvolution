@@ -21,7 +21,8 @@ export const RegisterStudent = ({
                                     onChangeSub,
                                     selectedSubjects,
                                     language,
-                                    setSelectedSubjects
+                                    setSelectedSubjects,
+                                    setSubjects
                                 }) => {
     const {
         register,
@@ -56,7 +57,7 @@ export const RegisterStudent = ({
 
     useEffect(() => {
         setSelectedLocation(location)
-    } , [location])
+    }, [location])
 
     const checkUsername = (username) => {
         setLoading(true)
@@ -115,6 +116,7 @@ export const RegisterStudent = ({
                     type: res.isError ? "error" : "success",
                     active: true
                 }))
+                setSubjects(subjects)
                 setSelectedSubjects([])
                 reset()
 
@@ -129,7 +131,7 @@ export const RegisterStudent = ({
 
     return (
         <form className={cls.form}
-                  id="form"
+              id="form"
               onSubmit={handleSubmit(onSubmit)}
         >
 
@@ -140,6 +142,13 @@ export const RegisterStudent = ({
                 onBlur={checkUsername}
                 required
             />
+            {activeError ? <span className={cls.form__error}>
+                              Username band
+                          </span> :
+                errors?.username &&
+                <span className={cls.form__error}>
+                                     {errors?.username?.message}
+                          </span>}
             <InputForm
                 register={register}
                 name={"name"}
@@ -219,7 +228,7 @@ export const RegisterStudent = ({
             />
             <Select title={"O'quv markazi joylashuvi"} defaultValue={location} options={locations}
                     onChangeOption={setSelectedLocation}/>
-            <Select title={"Ta'lim tili"}  options={language} onChangeOption={setLang}/>
+            <Select title={"Ta'lim tili"} options={language} onChangeOption={setLang}/>
             <Select title={"Fan"} options={subjects} onChangeOption={onChangeSub}/>
             {
                 selectedSubjects.length > 0

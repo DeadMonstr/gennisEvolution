@@ -112,6 +112,13 @@ export const RegisterParent = ({
                 onBlur={checkUsername}
                 required
             />
+            {activeError ? <span className={cls.form__error}>
+                              Username band
+                          </span> :
+                errors?.username &&
+                <span className={cls.form__error}>
+                                     {errors?.username?.message}
+                          </span>}
             <InputForm
                 register={register}
                 name={"name"}
@@ -184,7 +191,7 @@ export const RegisterParent = ({
             <Select title={"O'quv markazi joylashuvi"} defaultValue={selectedLocation} options={locations} onChangeOption={setSelectedLocation}/>
             {/*<Select title={"Ta'lim vaqti"} defaultValue={selectedShift} options={shifts} onChangeOption={setSelectedShift}/>*/}
 
-            <Button type={"submit"}>Yakunlash</Button>
+            <Button type={"submit"} formId={"form"}>Yakunlash</Button>
 
         </form>
     );

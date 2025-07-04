@@ -6,11 +6,11 @@ import {useMemo} from "react";
 // export const ClassroomUrl = `http://localhost:3000/`
 // export const ClassroomUrlForDoc = "http://26.253.30.50:5001/"
 
-// export const BackUrl = "https://admin.gennis.uz/api/"
-// export const BackUrlForDoc = "https://admin.gennis.uz/"
-export const BackUrl = "/api/"
+export const BackUrl = "https://admin.gennis.uz/api/"
+export const BackUrlForDoc = "https://admin.gennis.uz/"
+// export const BackUrl = "/api/"
 export const ClassroomUrl = `https://classroom.gennis.uz/`
-export const BackUrlForDoc = "/"
+// export const BackUrlForDoc = "/"
 export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
 
 export const headers = () => {
@@ -175,6 +175,14 @@ export const requireMenuItems = (id) => {
             children: true,
 
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        },
+        {
+            to: `parentsList`,
+            name: "Ota-onalar ro'yxati",
+            classIcon: "fa-user-friends",
+            location: true,
+            children: true,
+            roles: [ROLES.Director,ROLES.Programmer, ROLES.Accountant , ROLES.Admin]
         },
         {
             to : "groups",
@@ -420,14 +428,7 @@ export const requireMenuItems = (id) => {
         //     classIcon: "fa-dollar-sign",
         //     roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
         // },
-        {
-            to: `parentsList`,
-            name: "Ota-onalar ro'yxati",
-            classIcon: "fa-users",
-            location: true,
-            children: true,
-            roles: [ROLES.Director,ROLES.Programmer, ROLES.Accountant , ROLES.Admin]
-        }
+
     ]
 }
 

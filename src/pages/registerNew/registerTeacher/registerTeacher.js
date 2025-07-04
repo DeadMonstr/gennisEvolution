@@ -21,6 +21,7 @@ export const RegisterTeacher = ({
                                     selectedSubjects,
                                     language,
                                     setSelectedSubjects,
+                                    setSubjects
                                 }) => {
     const {
         register,
@@ -96,6 +97,7 @@ export const RegisterTeacher = ({
             .then(res => {
                 console.log(res)
                 setSelectedSubjects([])
+                setSubjects(subjects)
                 reset()
                 dispatch(setMessage({
                     msg: res.isError ? res.message : res.msg,
@@ -120,6 +122,13 @@ export const RegisterTeacher = ({
                 onBlur={checkUsername}
                 required
             />
+            {activeError ? <span className={cls.form__error}>
+                              Username band
+                          </span> :
+                errors?.username &&
+                <span className={cls.form__error}>
+                                     {errors?.username?.message}
+                          </span>}
             <InputForm
                 register={register}
                 name={"name"}
@@ -191,7 +200,7 @@ export const RegisterTeacher = ({
             />
             <Select title={"O'quv markazi joylashuvi"} defaultValue={selectedLocation} options={locations}
                     onChangeOption={setSelectedLocation}/>
-            <Select title={"Ta'lim tili"}  options={language} onChangeOption={setLang}/>
+            <Select title={"Ta'lim tili"} options={language} onChangeOption={setLang}/>
             <Select title={"Fan"} options={subjects} onChangeOption={onChangeSub}/>
             {
                 selectedSubjects.length > 0
