@@ -63,8 +63,8 @@ const ChangeGroupInfo = () => {
 
     useEffect(() => {
         if (data) {
-            setEduLang(data?.information?.eduLang?.value)
-            setCourseType(data?.information?.groupCourseType?.value)
+            setEduLang(data?.information?.eduLang?.id)
+            setCourseType(data?.information?.groupCourseType?.id)
             setStatus(groupStatus)
             setTeacher(teacherId)
             setSelectedLevel(level.id)
