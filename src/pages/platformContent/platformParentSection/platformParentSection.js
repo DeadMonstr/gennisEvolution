@@ -19,7 +19,7 @@ import {useDispatch, useSelector} from "react-redux";
 import InputForm from "../../../components/platform/platformUI/inputForm";
 import WebButton from "../../../components/webSite/webSiteUI/webButton/webButton";
 import {fetchNewFilteredStudents} from "../../../slices/newStudentsSlice";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {fetchStudyingStudents} from "../../../slices/studyingStudentsSlice";
 import {useHttp} from "../../../hooks/http.hook";
 import {setMessage} from "../../../slices/messageSlice";
@@ -61,6 +61,8 @@ const PlatformParentSection = () => {
     const children = data.children
     const {request} = useHttp()
     const {id} = useParams()
+    const navigate = useNavigate()
+
     useEffect(() => {
         dispatch(fetchParentData(id))
         dispatch(fetchStudyingStudents(locationId))
@@ -211,7 +213,7 @@ const PlatformParentSection = () => {
 
     const renderCards = () => {
         return children?.map(item => (
-            <div className={cls.card}>
+            <div  className={cls.card}>
                 <div className={cls.card__info}>
                     <div className={cls.card__info__header}>
                         <span>Fan: {item.subject}</span>
@@ -243,7 +245,7 @@ const PlatformParentSection = () => {
                         </div>
                     </div>
                 </div>
-                <div style={{background: `url(${cardBg})`}} className={cls.card__userImgBox}>
+                <div onClick={() => navigate(`../studyingStudents/${locationId}/profile/${item.user_id}/info`)} style={{background: `url(${cardBg})`}} className={cls.card__userImgBox}>
                     <div className={cls.card__userImgBox__img}>
                         <img className={cls.card__userImgBox__img__photo} src={userImg} alt=""/>
                     </div>
@@ -291,11 +293,11 @@ const PlatformParentSection = () => {
                         <th>Ism Familiya</th>
                         <th>Yosh</th>
                         <th>Telefon raqam</th>
-                        <th>
-                            <input className={cls.checkbox} type="checkbox"
-                                   checked={selectAll}
-                                   onChange={handleSelectAll}/>
-                        </th>
+                        {/*<th>*/}
+                        {/*    <input className={cls.checkbox} type="checkbox"*/}
+                        {/*           checked={selectAll}*/}
+                        {/*           onChange={handleSelectAll}/>*/}
+                        {/*</th>*/}
                         </thead>
                         <tbody>
                         {renderTable()}

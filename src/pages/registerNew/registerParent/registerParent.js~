@@ -12,14 +12,12 @@ import Button from "components/platform/platformUI/button";
 import {setMessage} from "slices/messageSlice";
 import {useDispatch, useSelector} from "react-redux";
 
-export const RegisterWorker = ({
-                                   locations,
-                                   jobs,
-                                   genders,
-                                   deleteSub,
-                                   selectedSubjects,
-                                   language
-                               }) => {
+export const RegisterParent = ({
+                                    locations,
+
+                                    genders,
+                                    selectedSubjects,
+                                }) => {
     const {
         register,
         formState: {errors},
@@ -31,7 +29,6 @@ export const RegisterWorker = ({
     } = useForm({
         mode: "onBlur"
     })
-
     const [loading, setLoading] = useState(false)
     const {request} = useHttp()
     const [activeError, setActiveError] = useState(false)
@@ -41,19 +38,18 @@ export const RegisterWorker = ({
     const [password, setPassword] = useState("12345678")
     const {location} = useSelector(state => state.me)
 
-    const [lang, setLang] = useState(1)
-
-
     const dispatch = useDispatch()
+
+    const [confirmPassword, setConfirmPassword] = useState("12345678")
+    const [selectedLocation, setSelectedLocation] = useState(location)
+
+    const [selectedGender, setSelectedGender] = useState(genders)
+
 
     useEffect(() => {
         setSelectedLocation(location)
     } , [location])
-    const [confirmPassword, setConfirmPassword] = useState("12345678")
-    const [selectedLocation, setSelectedLocation] = useState(location)
-    const [selectJob, setSelectJob] = useState(null)
 
-    const [selectedGender, setSelectedGender] = useState(genders)
     const checkUsername = (username) => {
         setLoading(true)
         request(`${BackUrl}check_username`, "POST", JSON.stringify(username))
@@ -78,28 +74,23 @@ export const RegisterWorker = ({
         setPassword(value)
     }
 
-
-
     useEffect(() => {
         setIsCheckPass(confirmPassword !== password)
 
     }, [confirmPassword, password])
-
     const onSubmit = (data) => {
         const res = {
             ...data,
-            job: jobs.filter(item => item.id === +selectJob) [0]?.name,
-            location: selectedLocation,
-            language: lang,
+            location_id: selectedLocation,
             password,
             password_confirm: confirmPassword,
             sex: selectedGender
         }
 
-        request(`${BackUrl}/register_staff`, "POST", JSON.stringify(res), headers())
+        request(`${BackUrl}parent/crud/`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 dispatch(setMessage({
-                    msg: res.isError ? res.message : res.msg,
+                    msg: "Muvaffaqiyatli qo'shildi",
                     type: res.isError ? "error" : "success",
                     active: true
                 }))
@@ -198,13 +189,9 @@ export const RegisterWorker = ({
                 rows="10"
             />
             <Select title={"O'quv markazi joylashuvi"} defaultValue={selectedLocation} options={locations} onChangeOption={setSelectedLocation}/>
-            <Select title={"Ta'lim tili"} defaultValue={lang} options={language} onChangeOption={setLang}/>
-            <Select title={"Ish faoliyati"} options={jobs} onChangeOption={setSelectJob}/>
-
             {/*<Select title={"Ta'lim vaqti"} defaultValue={selectedShift} options={shifts} onChangeOption={setSelectedShift}/>*/}
-            <Select title={"Jinsi"}  options={genders} onChangeOption={setSelectedGender}/>
 
-            <Button type={"submit"} formId={"form"}>Yakunlash</Button>
+            <Button type={"submit"}>Yakunlash</Button>
 
         </form>
     );

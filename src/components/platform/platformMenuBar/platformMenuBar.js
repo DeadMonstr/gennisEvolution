@@ -189,7 +189,7 @@ const SimpleLink = React.memo(({item, activeElem, onDropMenu, menuActive, setMen
                     to={`${item.to}${linkItem}`}
                     className={({isActive}) => "menu-bar__menu-link" + (isActive ? " menu-bar__menu-link_active" : "")}
                 >
-                    <i className={`fas ${item.classIcon} icon-link`}/>
+                    <i className={`fas  ${item.classIcon} icon-link`}/>
                     <span className={activeElem}>{item.name}</span>
                 </NavLink>
             </li>

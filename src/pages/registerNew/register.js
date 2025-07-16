@@ -150,6 +150,7 @@ const Register = () => {
                     defaultValue={types[0]}
                 />
                 <h1>Registratsiya</h1>
+
                 {renderComponent()}
             </div>
         </div>
@@ -157,13 +158,6 @@ const Register = () => {
 };
 
 export default Register;
-
-
-
-
-
-
-
 
 
 
