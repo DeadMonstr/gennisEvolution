@@ -1,17 +1,17 @@
 import {useMemo} from "react";
 
 
-// export const BackUrlForDoc = `http://26.253.30.50:5002/`
-// export const BackUrl = `${BackUrlForDoc}api/`
-// export const ClassroomUrl = `http://localhost:3000/`
-// export const ClassroomUrlForDoc = "http://26.253.30.50:5001/"
+export const BackUrlForDoc = `http://26.253.30.50:5002/`
+export const BackUrl = `${BackUrlForDoc}api/`
+export const ClassroomUrl = `http://localhost:3000/`
+export const ClassroomUrlForDoc = "http://26.253.30.50:5001/"
 
-export const BackUrl = "https://admin.gennis.uz/api/"
-export const BackUrlForDoc = "https://admin.gennis.uz/"
-// export const BackUrl = "/api/"
-export const ClassroomUrl = `https://classroom.gennis.uz/`
-// export const BackUrlForDoc = "/"
-export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
+// export const BackUrl = "https://admin.gennis.uz/api/"
+// export const BackUrlForDoc = "https://admin.gennis.uz/"
+// // // export const BackUrl = "/api/"
+// export const ClassroomUrl = `https://classroom.gennis.uz/`
+// // export const BackUrlForDoc = "/"
+// export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
 
 export const headers = () => {
     const token = sessionStorage.getItem("token")
@@ -37,7 +37,7 @@ export function formatDate(date) {
 }
 
 export const ROLES = {
-    User: "a21b32c43",
+    User: "a21b3 2c43",
     Admin: "b55a77c90",
     Director: "c56b13a36",
     Programmer: "r2313m23s",
@@ -46,6 +46,7 @@ export const ROLES = {
     Smm: "a21b00q41",
     Editor: "n41c88z45",
     Accountant: "ak47a76m69",
+    Main_admin: "a21b32c43"
 }
 
 
@@ -63,13 +64,13 @@ export const requireMenuItems = (id) => {
             classIcon: "fa-tasks",
             location: true,
             children: true,
-            roles: [ROLES.Admin,ROLES.Director]
+            roles: [ROLES.Admin,ROLES.Director , ROLES.Main_admin]
         },
         {
             to: "adminRating",
             name: "Admin rating",
             classIcon: "fa-chart-bar",
-            roles: [ROLES.Director,ROLES.Admin]
+            roles: [ROLES.Director,ROLES.Admin , ROLES.Main_admin]
         },
         // {
         //     to : "blockTest",

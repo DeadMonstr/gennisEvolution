@@ -16,7 +16,6 @@ import RequireAuth from "components/requireAuth/requireAuth";
 
 import QrCodeRegister from "pages/platformContent/qrCode/qrCodeRegister/qrCodeRegister";
 import {ROLES} from "constants/global";
-import {Register} from "../../pages/webSite/test/register/register";
 
 const App = () => {
 
@@ -34,7 +33,7 @@ const App = () => {
             {/*</Route>*/}
 
 
-            <Route element={<RequireAuth allowedRules={[ROLES.Admin,ROLES.Director,ROLES.User,ROLES.Student,ROLES.Teacher,ROLES.Programmer,ROLES.Smm,ROLES.Editor,ROLES.Accountant]}/>} >
+            <Route element={<RequireAuth allowedRules={[ROLES.Admin,ROLES.Director,ROLES.User,ROLES.Student,ROLES.Teacher,ROLES.Programmer,ROLES.Smm,ROLES.Editor,ROLES.Accountant , ROLES.Main_admin]}/>} >
                 <Route path="/platform"  element={<Platform/>} >
                     <Route path="/platform/*" element={<PlatformContent/>}/>
                 </Route>
