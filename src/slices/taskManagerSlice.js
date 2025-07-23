@@ -328,7 +328,7 @@ const TaskManagerSlice = createSlice({
                 state.profileStatus = "loading"
             })
             .addCase(fetchUserDataWithHistory.fulfilled, (state, action) => {
-                state.profile = {...action.payload.info,comments: action.payload.comments}
+                state.profile = {...action.payload.info,comments: action.payload.comments,invitations: action.payload.invitations}
                 state.profileStatus = "success"
             })
             .addCase(fetchUserDataWithHistory.rejected, (state) => {

@@ -37,7 +37,7 @@ const Modal = ({activeModal,children,setActiveModal,link,id="",zIndex , extraCla
             onClick={onClickOutside}
             style={{zIndex}}
         >
-            <div className={`modal`} style={extraClass}>
+            <div className={classNames(`modal`, extraClass)}>
                 {children}
             </div>
             <div
