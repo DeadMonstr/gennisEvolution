@@ -18,6 +18,7 @@ import PlatformCentreInfo from "pages/platformContent/platformCentreInfo/Platfor
 
 
 
+
 const PlatformInvistitsiya =  React.lazy(() => import('./platformInvistitsiya/platformInvistitsiya'));
 
 const PlatformHome =  React.lazy(() => import('./platformHome/platformHome'));
