@@ -11,13 +11,6 @@ import {
     fetchTeachersByLocation
 } from "slices/teachersSlice";
 import {fetchFilters} from "slices/filtersSlice";
-import {
-    deleteStudent,
-    fetchNewStudents,
-    fetchNewStudentsDeleted,
-    setActiveBtn,
-    setChecked
-} from "slices/newStudentsSlice";
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
 import Modal from "components/platform/platformUI/modal";

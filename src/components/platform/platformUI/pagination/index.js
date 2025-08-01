@@ -1,11 +1,11 @@
 import React, {useCallback} from 'react';
 import {usePagination,DOTS} from "hooks/usePagination";
 import classNames from "classnames";
+import cls from "./pagination.module.sass"
+
 
 
 import "./pagination.sass"
-
-
 const Pagination = React.memo(props => {
 
 
@@ -49,7 +49,7 @@ const Pagination = React.memo(props => {
     
     
     
-    if (currentPage === 0 || paginationRange.length < 2) {
+    if (currentPage === 0 || paginationRange?.length < 2) {
         return null;
     }
 
@@ -61,7 +61,7 @@ const Pagination = React.memo(props => {
         onPageChange(currentPage - 1);
     };
 
-    let lastPage = paginationRange[paginationRange.length - 1];
+    let lastPage = paginationRange[paginationRange?.length - 1];
     
     
     
@@ -99,3 +99,31 @@ const Pagination = React.memo(props => {
 })
 
 export default Pagination;
+
+
+
+
+export const ExtraPagination = ({ currentPage, totalCount, pageSize, onPageChange, className = "" }) =>  {
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    if (totalPages === 1) return null;
+
+const pages = [];
+for (let i = 1; i <= totalPages; i++) {
+    pages.push(i);
+}
+
+return (
+    <div className={`pagination ${className}`}>
+        {pages.map(page => (
+            <button
+                key={page}
+                className={page === currentPage ? "active" : ""}
+                onClick={() => onPageChange(page)}
+            >
+                {page}
+            </button>
+        ))}
+    </div>
+);
+};

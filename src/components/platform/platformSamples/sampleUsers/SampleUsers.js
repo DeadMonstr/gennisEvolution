@@ -355,30 +355,32 @@ const SampleUsers = (props) => {
                                     : null
                             }
                         </div>
-                        <main className="section__main">
-                            <UsersTable
-                                fetchUsersStatus={fetchUsersStatus}
-                                funcsSlice={funcsSlice}
-                                activeRowsInTable={activeRowsInTable}
-                                users={currentTableData}
-                                pageName={pageName}
-                                checkedUsers={checkedUsers}
-                                setLinkUser={setLinkUser}
-                                cache={true}
-                            />
-                            <Pagination
-                                className="pagination-bar"
-                                currentPage={currentPage}
-                                totalCount={searchedUsers.length}
-                                pageSize={PageSize}
-                                onPageChange={page => {
-                                    setCurrentPage(page)
-                                    if (funcsSlice.setPage) {
-                                        dispatch(funcsSlice?.setPage({page}))
-                                    }
-                                }}
-                            />
-                        </main>
+
+                            <div style={{height: "100vh" , overflow: "auto"}}>
+                                <UsersTable
+                                    fetchUsersStatus={fetchUsersStatus}
+                                    funcsSlice={funcsSlice}
+                                    activeRowsInTable={activeRowsInTable}
+                                    users={currentTableData}
+                                    pageName={pageName}
+                                    checkedUsers={checkedUsers}
+                                    setLinkUser={setLinkUser}
+                                    cache={true}
+                                />
+                            </div>
+                            {/*<Pagination*/}
+                            {/*    className="pagination-bar"*/}
+                            {/*    currentPage={currentPage}*/}
+                            {/*    totalCount={searchedUsers.length}*/}
+                            {/*    pageSize={PageSize}*/}
+                            {/*    onPageChange={page => {*/}
+                            {/*        setCurrentPage(page)*/}
+                            {/*        if (funcsSlice.setPage) {*/}
+                            {/*            dispatch(funcsSlice?.setPage({page}))*/}
+                            {/*        }*/}
+                            {/*    }}*/}
+                            {/*/>*/}
+
 
                         <footer className="section__footer">
 

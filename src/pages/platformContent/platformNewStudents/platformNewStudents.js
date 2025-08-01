@@ -22,7 +22,7 @@ import PlatformSearch from "components/platform/platformUI/search";
 import FuncBtns from "components/platform/platformUI/funcBtns";
 import Button from "components/platform/platformUI/button";
 import UsersTable from "components/platform/platformUI/tables/usersTable";
-import Pagination from "components/platform/platformUI/pagination";
+import Pagination, {ExtraPagination} from "components/platform/platformUI/pagination";
 import Modals from "components/platform/platformModals";
 import {motion} from "framer-motion";
 
@@ -42,7 +42,7 @@ const PlatformNewStudents = () => {
 
     let {locationId} = useParams()
 
-    const {filteredNewStudents, btns, fetchNewStudentsStatus, newStudents} = useSelector(state => state.newStudents)
+    const {filteredNewStudents, btns, fetchNewStudentsStatus, newStudents , totalCount} = useSelector(state => state.newStudents)
 
     const {filters} = useSelector(state => state.filters)
     const {location, role} = useSelector(state => state.me)
@@ -71,8 +71,10 @@ const PlatformNewStudents = () => {
     const [msg, setMsg] = useState("")
     const [typeMsg, setTypeMsg] = useState("")
     const [activeMessage, setActiveMessage] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1)
+    const pageSize = useMemo(() => 50, [])
 
-
+    console.log(totalCount)
     useEffect(() => {
         if (filteredNewStudents?.length !== 0) {
             setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 60)
@@ -90,11 +92,11 @@ const PlatformNewStudents = () => {
             if (isFilterData) {
                 dispatch(fetchNewFilteredStudents(locationId))
             } else {
-                dispatch(fetchNewStudents(locationId))
+                dispatch(fetchNewStudents({locationId, currentPage, pageSize}))
             }
         }
         dispatch(setSelectedLocation({id: locationId}))
-    }, [locationId, isDeleteData, isFilterData])
+    }, [locationId, isDeleteData, isFilterData , currentPage])
 
 
     const navigate = useNavigate()
@@ -336,6 +338,7 @@ const PlatformNewStudents = () => {
                                             />
                                         </div>
                                     </header>
+
                                     <div className={cls.links}>
 
                                         <Button active={isDeleteData} onClickBtn={() => setIsDeleteData(!isDeleteData)}>
@@ -438,15 +441,37 @@ const PlatformNewStudents = () => {
 
 
                     </Modal>
-                </> : <SampleUsers
-                    locationId={locationId}
-                    fetchUsersStatus={fetchNewStudentsStatus}
-                    funcsSlice={funcsSlice}
-                    activeRowsInTable={activeItems}
-                    users={newStudents}
-                    filters={filters}
-                    btns={btns}
-                />
+                </> :
+
+
+
+                      <div  style={{display: "flex" , flexDirection: "column"}}>
+
+                          <SampleUsers
+                              locationId={locationId}
+                              fetchUsersStatus={fetchNewStudentsStatus}
+                              funcsSlice={funcsSlice}
+                              activeRowsInTable={activeItems}
+                              users={newStudents}
+                              filters={filters}
+                              btns={btns}
+                              pageSize={pageSize}
+                              totalCount={totalCount}
+                              currentPage={currentPage}
+                              setCurrentPage={setCurrentPage}
+
+                          />
+                         <div style={{paddingLeft: "3rem"}}>
+                             <ExtraPagination
+                                 totalCount={totalCount?.total}
+                                 onPageChange={setCurrentPage}
+                                 currentPage={currentPage}
+                                 pageSize={pageSize}
+                             />
+                         </div>
+                      </div>
+
+
             }
             {
                 activeModalName === "delete" && isCheckedPassword ?
@@ -591,6 +616,7 @@ const SubjectData = ({item, activeItems, funcsSlice, mainSearch}) => {
 
 
             </div>
+
             <Pagination
                 className="pagination-bar"
                 currentPage={currentPage}

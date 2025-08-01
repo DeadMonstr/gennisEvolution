@@ -87,6 +87,7 @@ const initialState = {
     fetchNewStudentsStatus: "idle",
     fetchCreateGroupToolsStatus: "idle",
     fetchFilteredStudentsStatus: "idle",
+    totalCount: null
 }
 
 export const fetchNewFilteredStudents = createAsyncThunk(
@@ -100,9 +101,10 @@ export const fetchNewFilteredStudents = createAsyncThunk(
 
 export const fetchNewStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewStudents',
-    async (id) => {
+    async ({locationId, pageSize, currentPage}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}newStudents/${id}`, "GET", null, headers())
+
+        return await request(`${BackUrl}student/newStudents/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}`, "GET", null, headers())
     }
 )
 
@@ -232,6 +234,8 @@ const newStudentsSlice = createSlice({
             })
             .addCase(fetchNewStudents.fulfilled, (state, action) => {
                 state.fetchNewStudentsStatus = 'success';
+                console.log("log" , action.payload)
+                state.totalCount = action.payload?.pagination
                 // let newData = []
                 // for (let i = 0; i < 20; i++) {
                 //     const data = action.payload.newStudents.map(item => {
@@ -243,7 +247,7 @@ const newStudentsSlice = createSlice({
                 state.newStudents = action.payload.newStudents.map(item => {
                     return {...item,checked: false}
                 })
-                console.log(state.newStudents)
+
                 state.checkedUsers = []
             })
             .addCase(fetchNewStudents.rejected, state => {

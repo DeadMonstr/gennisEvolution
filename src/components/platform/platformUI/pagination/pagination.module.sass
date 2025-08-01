@@ -1,0 +1,88 @@
+.pagination
+  width: 100%
+  display: flex
+  justify-content: space-between
+  align-items: center
+  &__info
+    font-family: sans-serif, Montserrat
+    font-size: 20px
+    font-weight: 400
+    line-height: 21px
+    text-underline-position: from-font
+    text-decoration-skip-ink: none
+
+
+
+.pagination_container
+  //width: 100%
+  display: flex
+  justify-content: flex-start
+  align-items: center
+  padding: 1rem
+  //margin-top: 2rem
+  .numbers
+    display: flex
+    align-items: center
+    justify-content: center
+  .arrow
+    border: none !important
+    &:hover
+      border: none !important
+      box-shadow: none !important
+  .pagination_item
+    width: fit-content
+    height: fit-content
+    padding: .5rem 1rem
+    font-size: 1.8rem
+    border-radius: .4rem
+    //border: 1px solid $color-grey-dark
+    margin: 0 1rem
+    display: flex
+    align-items: center
+    justify-content: center
+    cursor: pointer
+    transition: all .3s
+    user-select: none
+
+    &.disabled
+      pointer-events: none
+      color: rgba(98, 98, 98, 0.15)
+      visibility: hidden
+
+    &.dots:hover
+      background-color: transparent
+      cursor: default
+
+    &.selected
+      background-color: #00ABB2
+      color: white
+
+    &.customSelected
+      background-color: #00ABB2
+      color: white
+
+    i
+      font-size: 1.8rem
+      user-select: none
+      color: #212121
+      cursor: pointer
+
+      i
+        color: #a6a6a6
+
+
+@media (max-width: 768px)
+  .pagination_container
+    .pagination_item
+      font-size: 1.5rem
+      i
+        font-size: 1.6rem
+
+@media (max-width: 475px)
+  .pagination_container
+    padding: 1rem
+    .numbers
+      width: 80%
+      overflow-x: scroll
+      justify-content: flex-start
+      padding: 2rem 0
