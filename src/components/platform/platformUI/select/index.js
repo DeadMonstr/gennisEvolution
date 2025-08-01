@@ -134,6 +134,7 @@ const Select = React.memo(({
                     setIsChanged(true)
                 }}
                 value={selectOption}
+
             >
                 {all ? <option value={"all"}>Hammasi</option> : <option value={""} disabled>Tanlang</option>}
                 {renderedOptions}
@@ -143,3 +144,25 @@ const Select = React.memo(({
 });
 
 export default Select;
+
+
+
+export const SelectForm = ({ title, options = [], value, onChangeOption , clazzLabel }) => {
+    return (
+        <label className={classNames(`select-label`, clazzLabel)}>
+
+                <span className="name-field">{title}</span>
+                <select
+                    value={value}
+                    onChange={(e) => onChangeOption(e.target.value)}
+                >
+                    {options.map((item) => (
+                        <option key={item.id} value={item.id}>
+                            {item.name}
+                        </option>
+                    ))}
+                </select>
+
+        </label>
+    );
+};

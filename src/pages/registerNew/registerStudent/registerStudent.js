@@ -6,11 +6,12 @@ import {BackUrl, headers} from "constants/global";
 import {useHttp} from "hooks/http.hook";
 import Input from "components/platform/platformUI/input";
 
-import Select from "components/platform/platformUI/select";
+import Select, {SelectForm} from "components/platform/platformUI/select";
 import classNames from "classnames";
 import Button from "components/platform/platformUI/button";
 import {setMessage} from "slices/messageSlice";
 import {useDispatch, useSelector} from "react-redux";
+import {useNavigate} from "react-router-dom";
 
 export const RegisterStudent = ({
                                     locations,
@@ -28,7 +29,7 @@ export const RegisterStudent = ({
         register,
         formState: {errors},
         handleSubmit,
-        clearErrors,
+
         setError,
         setValue,
         reset
@@ -44,16 +45,14 @@ export const RegisterStudent = ({
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
     const {location} = useSelector(state => state.me)
-
     const [lang, setLang] = useState(1)
-
-
     const dispatch = useDispatch()
-
+    const [selectedSubjectId, setSelectedSubjectId] = useState("all");
     const [selectedLocation, setSelectedLocation] = useState(location)
 
     const [selectedShift, setSelectedShift] = useState(shifts)
-    const [selectedGender, setSelectedGender] = useState(genders)
+
+    const navitagate = useNavigate()
 
     useEffect(() => {
         setSelectedLocation(location)
@@ -108,6 +107,8 @@ export const RegisterStudent = ({
         }
 
 
+
+
         request(`${BackUrl}/register`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 console.log(res)
@@ -116,15 +117,21 @@ export const RegisterStudent = ({
                     type: res.isError ? "error" : "success",
                     active: true
                 }))
-                setSubjects(subjects)
-                setSelectedSubjects([])
-                reset()
 
+                reset()
+                const selectData = subjects.map(item => {
+                    return {
+                        ...item,
+                        disabled: false
+                    }
+                })
+                setSubjects(selectData)
+                setSelectedSubjects([]);
+                setSelectedSubjectId("all")
             })
             .catch(err => {
                 console.log(err)
             })
-
 
     }
 
@@ -229,7 +236,15 @@ export const RegisterStudent = ({
             <Select title={"O'quv markazi joylashuvi"} defaultValue={location} options={locations}
                     onChangeOption={setSelectedLocation}/>
             <Select title={"Ta'lim tili"} options={language} onChangeOption={setLang}/>
-            <Select title={"Fan"} options={subjects} onChangeOption={onChangeSub}/>
+            <SelectForm
+                title={"Fan"}
+                options={[{ id: "all", name: "Tanlang" }, ...subjects]}
+                value={selectedSubjectId}
+                onChangeOption={(val) => {
+                    setSelectedSubjectId(val);
+                    onChangeSub(val);
+                }}
+            />
             {
                 selectedSubjects.length > 0
                     ?

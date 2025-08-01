@@ -6,7 +6,7 @@ import {BackUrl, headers} from "constants/global";
 import {useHttp} from "hooks/http.hook";
 import Input from "components/platform/platformUI/input";
 
-import Select from "components/platform/platformUI/select";
+import Select, {SelectForm} from "components/platform/platformUI/select";
 import classNames from "classnames";
 import Button from "components/platform/platformUI/button";
 import {setMessage} from "slices/messageSlice";
@@ -42,7 +42,7 @@ export const RegisterTeacher = ({
     const [isCheckPass, setIsCheckPass] = useState(false)
     const [password, setPassword] = useState("12345678")
     const {location} = useSelector(state => state.me)
-
+    const [selectedSubjectId, setSelectedSubjectId] = useState("all");
     const [lang, setLang] = useState(1)
 
 
@@ -96,14 +96,21 @@ export const RegisterTeacher = ({
         request(`${BackUrl}/register_teacher`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 console.log(res)
-                setSelectedSubjects([])
-                setSubjects(subjects)
                 reset()
                 dispatch(setMessage({
                     msg: res.isError ? res.message : res.msg,
                     type: res.isError ? "error" : "success",
                     active: true
                 }))
+                const selectData = subjects.map(item => {
+                    return {
+                        ...item,
+                        disabled: false
+                    }
+                })
+                setSubjects(selectData)
+                setSelectedSubjects([]);
+                setSelectedSubjectId("all")
             })
             .catch(err => console.log(err))
 
@@ -201,7 +208,15 @@ export const RegisterTeacher = ({
             <Select title={"O'quv markazi joylashuvi"} defaultValue={selectedLocation} options={locations}
                     onChangeOption={setSelectedLocation}/>
             <Select title={"Ta'lim tili"} options={language} onChangeOption={setLang}/>
-            <Select title={"Fan"} options={subjects} onChangeOption={onChangeSub}/>
+            <SelectForm
+                title={"Fan"}
+                options={[{ id: "all", name: "Tanlang" }, ...subjects]}
+                value={selectedSubjectId}
+                onChangeOption={(val) => {
+                    setSelectedSubjectId(val);
+                    onChangeSub(val);
+                }}
+            />
             {
                 selectedSubjects.length > 0
                     ?

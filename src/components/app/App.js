@@ -16,17 +16,18 @@ import RequireAuth from "components/requireAuth/requireAuth";
 
 import QrCodeRegister from "pages/platformContent/qrCode/qrCodeRegister/qrCodeRegister";
 import {ROLES} from "constants/global";
+import Register from "pages/registerNew/register";
 
 const App = () => {
 
     return (
         <Routes>
-            <Route path="/*"  element={<Website/>} />
+            {/*<Route path="/*"  element={<Website/>} />*/}
 
             <Route path="/login" element={<Login/>} />
-            {/*<Route path="/register_test" element={<Register/>}/>*/}
-
-            {/*<Route path="/register"  element={<FastRegister/>}/>*/}
+            <Route path="/register_test" element={<Register/>}/>
+            {/**/}
+            <Route path="/register"  element={<FastRegister/>}/>
             {/*<Route element={<RequireAuth allowedRules={[ROLES.Admin,ROLES.Director]}/>} >*/}
             {/*    <Route path="registerTeacher/*"  element={<RegisterTeacher/>}/>*/}
             {/*    <Route path="registerEmployee/*"  element={<RegisterEmployee/>}/>*/}
