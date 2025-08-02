@@ -158,6 +158,7 @@ const PlatformTeachers = () => {
                 users={teachers}
                 filters={filters}
                 btns={btns}
+                status={true}
             />
 
 

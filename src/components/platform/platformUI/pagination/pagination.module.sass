@@ -1,88 +1,29 @@
 .pagination
-  width: 100%
   display: flex
-  justify-content: space-between
+  //justify-content: center
+  //align-items: center
   align-items: center
-  &__info
-    font-family: sans-serif, Montserrat
-    font-size: 20px
-    font-weight: 400
-    line-height: 21px
-    text-underline-position: from-font
-    text-decoration-skip-ink: none
+  gap: 8px
+  //margin-top: 24px
+  flex-wrap: wrap
 
+.pageBtn
+  padding: 8px 12px
+  border: 1px solid #ccc
+  border-radius: 6px
+  background-color: white
+  cursor: pointer
+  transition: all 0.2s ease
+  font-size: 14px
 
+  &:hover
+    background-color: #f1f1f1
 
-.pagination_container
-  //width: 100%
-  display: flex
-  justify-content: flex-start
-  align-items: center
-  padding: 1rem
-  //margin-top: 2rem
-  .numbers
-    display: flex
-    align-items: center
-    justify-content: center
-  .arrow
-    border: none !important
-    &:hover
-      border: none !important
-      box-shadow: none !important
-  .pagination_item
-    width: fit-content
-    height: fit-content
-    padding: .5rem 1rem
-    font-size: 1.8rem
-    border-radius: .4rem
-    //border: 1px solid $color-grey-dark
-    margin: 0 1rem
-    display: flex
-    align-items: center
-    justify-content: center
-    cursor: pointer
-    transition: all .3s
-    user-select: none
+.active
+  background-color: #4caf50
+  color: white
+  border-color: #4caf50
 
-    &.disabled
-      pointer-events: none
-      color: rgba(98, 98, 98, 0.15)
-      visibility: hidden
-
-    &.dots:hover
-      background-color: transparent
-      cursor: default
-
-    &.selected
-      background-color: #00ABB2
-      color: white
-
-    &.customSelected
-      background-color: #00ABB2
-      color: white
-
-    i
-      font-size: 1.8rem
-      user-select: none
-      color: #212121
-      cursor: pointer
-
-      i
-        color: #a6a6a6
-
-
-@media (max-width: 768px)
-  .pagination_container
-    .pagination_item
-      font-size: 1.5rem
-      i
-        font-size: 1.6rem
-
-@media (max-width: 475px)
-  .pagination_container
-    padding: 1rem
-    .numbers
-      width: 80%
-      overflow-x: scroll
-      justify-content: flex-start
-      padding: 2rem 0
+.navBtn
+  color: black
+  font-size: 15px

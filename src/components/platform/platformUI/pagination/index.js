@@ -1,11 +1,12 @@
 import React, {useCallback} from 'react';
 import {usePagination,DOTS} from "hooks/usePagination";
 import classNames from "classnames";
-import cls from "./pagination.module.sass"
-
 
 
 import "./pagination.sass"
+import cls from "components/platform/platformUI/pagination/pagination.module.sass";
+
+
 const Pagination = React.memo(props => {
 
 
@@ -61,7 +62,7 @@ const Pagination = React.memo(props => {
         onPageChange(currentPage - 1);
     };
 
-    let lastPage = paginationRange[paginationRange?.length - 1];
+    let lastPage = paginationRange[paginationRange.length - 1];
     
     
     
@@ -97,33 +98,50 @@ const Pagination = React.memo(props => {
         </ul>
     );
 })
-
 export default Pagination;
 
 
-
-
-export const ExtraPagination = ({ currentPage, totalCount, pageSize, onPageChange, className = "" }) =>  {
+export const ExtraPagination = ({
+                                    currentPage,
+                                    totalCount,
+                                    pageSize,
+                                    onPageChange,
+                                    className = "",
+                                }) => {
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    if (totalPages === 1) return null;
+    if (totalPages <= 1) return null;
 
-const pages = [];
-for (let i = 1; i <= totalPages; i++) {
-    pages.push(i);
-}
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+    }
 
-return (
-    <div className={`pagination ${className}`}>
-        {pages.map(page => (
-            <button
-                key={page}
-                className={page === currentPage ? "active" : ""}
-                onClick={() => onPageChange(page)}
-            >
-                {page}
-            </button>
-        ))}
-    </div>
-);
+    return (
+        <div className={`${cls.pagination} ${className}`}>
+
+
+            {currentPage !== 1 &&  <i
+
+                onClick={() => onPageChange(currentPage - 1)} className={`fas fa-arrow-left ${cls.navBtn}`}/>}
+
+            {pages.map((page) => (
+                <button
+                    key={page}
+                    className={`${cls.pageBtn} ${page === currentPage ? cls.active : ""}`}
+                    onClick={() => onPageChange(page)}
+                >
+                    {page}
+                </button>
+            ))}
+
+
+            {currentPage !== totalPages &&  <i
+
+                onClick={() => onPageChange(currentPage + 1)} className={`fas fa-arrow-right ${cls.navBtn}`}/>}
+
+        </div>
+    );
 };
+
+

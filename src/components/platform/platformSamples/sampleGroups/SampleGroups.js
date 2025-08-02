@@ -1,3 +1,4 @@
+
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 
 import Message from "components/platform/platformMessage";
@@ -354,7 +355,8 @@ const SampleGroups = (props) => {
                                 pageSize={PageSize}
                                 onPageChange={page => {
                                     setCurrentPage(page)
-                                    dispatch(funcsSlice?.setPage({page}))
+                                    if (funcsSlice?.setPage)
+                                        dispatch(funcsSlice?.setPage({page}))
                                 }}
                             />
                         </main>

@@ -495,7 +495,7 @@ const StudentPaymentReason = ({userId,setActiveChangeModal}) => {
         }
 
 
-        request(`${BackUrl}debt_reason/${userId}`, "POST", JSON.stringify(data),headers())
+        request(`${BackUrl}student/debt_reason/${userId}`, "POST", JSON.stringify(data),headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

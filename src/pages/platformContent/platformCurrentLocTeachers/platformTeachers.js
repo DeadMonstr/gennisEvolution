@@ -146,6 +146,7 @@ const PlatformTeachers = () => {
                 filters={filters}
                 btns={btns}
                 isTeachers={true}
+                status={true}
 
             />
 

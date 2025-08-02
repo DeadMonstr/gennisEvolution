@@ -54,7 +54,7 @@ export const fetchNewStudentsData = createAsyncThunk(
     'taskManager/fetchNewStudentsData',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}task_new_students_calling/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}student/task_new_students_calling/${id}`, "GET", null, headers())
     }
 )
 
@@ -64,7 +64,7 @@ export const fetchNewStudentsData = createAsyncThunk(
 //     'taskManager/fetchCompletedDebtorsData',
 //     async (id) => {
 //         const {request} = useHttp();
-//         return await request(`${BackUrl}get_completed_tasks/${id}`, "GET", null, headers())
+//         return await request(`${BackUrl}student/get_completed_tasks/${id}`, "GET", null, headers())
 //     }
 // )
 

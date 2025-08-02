@@ -457,7 +457,7 @@ const PlatformTaskManager = () => {
     //     if (value !== "") {
     //         dispatch(fetchingSearch())
     //
-    //         request(`${BackUrl}search_student_in_task/${locationId}`, "POST", JSON.stringify({
+    //         request(`${BackUrl}student/search_student_in_task/${locationId}`, "POST", JSON.stringify({
     //             text: value,
     //             type: activeMenu,
     //             status: isCompleted

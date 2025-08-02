@@ -94,7 +94,7 @@ export const fetchNewFilteredStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewFilteredStudents',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_filtered_students_list/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}student/get_filtered_students_list/${id}`, "GET", null, headers())
     }
 )
 
@@ -110,9 +110,9 @@ export const fetchNewStudents = createAsyncThunk(
 
 export const fetchNewDeletedStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewDeletedStudents',
-    async (id) => {
+    async ({locationId, pageSize, currentPage}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}newStudentsDeleted/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}student/newStudentsDeleted/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}`, "GET", null, headers())
     }
 )
 
@@ -120,7 +120,7 @@ export const fetchNewStudentsDeleted = createAsyncThunk(
     'newStudentsSlice/fetchNewStudentsDeleted',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}new_del_students/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}student/new_del_students/${id}`, "GET", null, headers())
     }
 )
 
@@ -259,7 +259,7 @@ const newStudentsSlice = createSlice({
             })
             .addCase(fetchNewDeletedStudents.fulfilled, (state, action) => {
                 state.fetchNewStudentsStatus = 'success';
-                console.log(action.payload, "deleted")
+                state.totalCount = action.payload?.pagination
                 state.newStudents = action.payload.newStudents.map(item => {
                     return {...item,checked: false}
                 })

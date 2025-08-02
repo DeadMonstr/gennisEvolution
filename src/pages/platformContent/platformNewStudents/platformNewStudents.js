@@ -22,7 +22,7 @@ import PlatformSearch from "components/platform/platformUI/search";
 import FuncBtns from "components/platform/platformUI/funcBtns";
 import Button from "components/platform/platformUI/button";
 import UsersTable from "components/platform/platformUI/tables/usersTable";
-import Pagination, {ExtraPagination} from "components/platform/platformUI/pagination";
+import Pagination from "components/platform/platformUI/pagination";
 import Modals from "components/platform/platformModals";
 import {motion} from "framer-motion";
 
@@ -86,7 +86,7 @@ const PlatformNewStudents = () => {
             if (isFilterData) {
                 dispatch(fetchNewStudentsDeleted(locationId))
             } else {
-                dispatch(fetchNewDeletedStudents(locationId))
+                dispatch(fetchNewDeletedStudents({locationId , currentPage , pageSize}))
             }
         } else {
             if (isFilterData) {
@@ -216,7 +216,7 @@ const PlatformNewStudents = () => {
 
     const returnDeletedStudent = useCallback((data) => {
         if (data === "yes") {
-            request(`${BackUrl}get_back_student/${deleteStId}`, "GET", null, headers())
+            request(`${BackUrl}student/get_back_student/${deleteStId}`, "GET", null, headers())
                 .then(res => {
                     if (res.success) {
                         dispatch(setMessage({
@@ -457,18 +457,21 @@ const PlatformNewStudents = () => {
                               btns={btns}
                               pageSize={pageSize}
                               totalCount={totalCount}
-                              currentPage={currentPage}
                               setCurrentPage={setCurrentPage}
+                              onPageChange={setCurrentPage}
+                              currentPage2={currentPage}
+                              status={false}
+
 
                           />
-                         <div style={{paddingLeft: "3rem"}}>
-                             <ExtraPagination
-                                 totalCount={totalCount?.total}
-                                 onPageChange={setCurrentPage}
-                                 currentPage={currentPage}
-                                 pageSize={pageSize}
-                             />
-                         </div>
+                         {/*<div style={{paddingLeft: "3rem"}}>*/}
+                         {/*    <ExtraPagination*/}
+                         {/*        totalCount={totalCount?.total}*/}
+                         {/*        onPageChange={setCurrentPage}*/}
+                         {/*        currentPage={currentPage}*/}
+                         {/*        pageSize={pageSize}*/}
+                         {/*    />*/}
+                         {/*</div>*/}
                       </div>
 
 

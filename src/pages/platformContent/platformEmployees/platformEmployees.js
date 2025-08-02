@@ -145,6 +145,7 @@ const PlatformEmployees = () => {
                 users={employees}
                 filters={filters}
                 btns={btns}
+                status={true}
             />
             <Modal activeModal={activeCheckPassword} setActiveModal={() => setActiveCheckPassword(false)}>
                 <CheckPassword/>

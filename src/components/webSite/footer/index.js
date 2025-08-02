@@ -98,7 +98,7 @@ const Footer = () => {
             number: data?.locNumber,
             location: data?.locLocation
         }
-        request(`${BackUrl}change_locations/${changeLoc?.id}`, "POST", JSON.stringify(res), headers())
+        request(`${BackUrl}student/change_locations/${changeLoc?.id}`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 setChangeLocStatus(false)
                 setSelectedItem(res?.location)
