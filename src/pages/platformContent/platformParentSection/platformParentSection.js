@@ -63,6 +63,8 @@ const PlatformParentSection = () => {
     const {id} = useParams()
     const navigate = useNavigate()
 
+    console.log(children, 'logggg')
+
     useEffect(() => {
         dispatch(fetchParentData(id))
         dispatch(fetchStudyingStudents(locationId))
@@ -216,36 +218,36 @@ const PlatformParentSection = () => {
             <div  className={cls.card}>
                 <div className={cls.card__info}>
                     <div className={cls.card__info__header}>
-                        <span>Fan: {item.subject}</span>
+                        <span>Fan: {item.user.subject}</span>
                     </div>
                     <div className={cls.card__info__user}>
                         <div className={cls.card__info__user__detail}>
                             <h2 className={cls.card__info__user__detail__key}>Ism:</h2>
                             <h2 className={cls.card__info__user__detail__content}>
-                                {item.name}
+                                {item.user.name}
                             </h2>
                         </div>
                         <div className={cls.card__info__user__detail}>
                             <h2 className={cls.card__info__user__detail__key}>Familiya:</h2>
                             <h2 className={cls.card__info__user__detail__content}>
-                                {item.surname}
+                                {item.user.surname}
                             </h2>
                         </div>
                         <div className={cls.card__info__user__detail}>
                             <h2 className={cls.card__info__user__detail__key}>Balans:</h2>
                             <h2 className={cls.card__info__user__detail__content}>
-                                {item.balance}
+                                {item.user.balance}
                             </h2>
                         </div>
-                        <div className={cls.card__info__user__detail}>
-                            <h2 className={cls.card__info__user__detail__key}>Dars vaqti:</h2>
-                            <h2 className={cls.card__info__user__detail__content}>
-                                {item.lesson_times?.map(item => item.time)}
-                            </h2>
-                        </div>
+                        {/*<div className={cls.card__info__user__detail}>*/}
+                        {/*    <h2 className={cls.card__info__user__detail__key}>Dars vaqti:</h2>*/}
+                        {/*    <h2 className={cls.card__info__user__detail__content}>*/}
+                        {/*        {item.lesson_times?.map(item => item.time)}*/}
+                        {/*    </h2>*/}
+                        {/*</div>*/}
                     </div>
                 </div>
-                <div onClick={() => navigate(`../studyingStudents/${locationId}/profile/${item.user_id}/info`)} style={{background: `url(${cardBg})`}} className={cls.card__userImgBox}>
+                <div onClick={() => navigate(`../studyingStudents/${locationId}/profile/${item.user.id}/info`)} style={{background: `url(${cardBg})`}} className={cls.card__userImgBox}>
                     <div className={cls.card__userImgBox__img}>
                         <img className={cls.card__userImgBox__img__photo} src={userImg} alt=""/>
                     </div>
