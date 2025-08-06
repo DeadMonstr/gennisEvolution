@@ -4,7 +4,7 @@ import classNames from "classnames";
 
 
 import "./pagination.sass"
-import cls from "components/platform/platformUI/pagination/pagination.module.sass";
+import cls from "./pagination.module.sass";
 
 
 const Pagination = React.memo(props => {
@@ -109,22 +109,48 @@ export const ExtraPagination = ({
                                     className = "",
                                 }) => {
     const totalPages = Math.ceil(totalCount / pageSize);
+    const maxVisiblePages = 5;
 
     if (totalPages <= 1) return null;
 
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-    }
+
+
+    const getPageNumbers = () => {
+        let startPage = Math.max(currentPage - Math.floor(maxVisiblePages / 2), 1);
+        let endPage = startPage + maxVisiblePages - 1;
+
+        if (endPage > totalPages) {
+            endPage = totalPages;
+            startPage = Math.max(endPage - maxVisiblePages + 1, 1);
+        }
+
+        const pages = [];
+        for (let i = startPage; i <= endPage; i++) {
+            pages.push(i);
+        }
+        return pages;
+    };
+
+    const pages = getPageNumbers();
 
     return (
         <div className={`${cls.pagination} ${className}`}>
+            {currentPage > 1 && (
+                <>
+                    <i
+                        onClick={() => onPageChange(1)}
+                        className={`fas fa-angle-double-left ${cls.navBtn}`}
+                        title="First"
+                    />
+                    <i
+                        onClick={() => onPageChange(currentPage - 1)}
+                        className={`fas fa-arrow-left ${cls.navBtn}`}
+                        title="Previous"
+                    />
+                </>
+            )}
 
-
-            {currentPage !== 1 &&  <i
-
-                onClick={() => onPageChange(currentPage - 1)} className={`fas fa-arrow-left ${cls.navBtn}`}/>}
-
+            {/* Visible pages */}
             {pages.map((page) => (
                 <button
                     key={page}
@@ -134,14 +160,21 @@ export const ExtraPagination = ({
                     {page}
                 </button>
             ))}
-
-
-            {currentPage !== totalPages &&  <i
-
-                onClick={() => onPageChange(currentPage + 1)} className={`fas fa-arrow-right ${cls.navBtn}`}/>}
-
+            {currentPage < totalPages && (
+                <>
+                    <i
+                        onClick={() => onPageChange(currentPage + 1)}
+                        className={`fas fa-arrow-right ${cls.navBtn}`}
+                        title="Next"
+                    />
+                    <i
+                        onClick={() => onPageChange(totalPages)}
+                        className={`fas fa-angle-double-right ${cls.navBtn}`}
+                        title="Last"
+                    />
+                </>
+            )}
         </div>
     );
 };
-
 

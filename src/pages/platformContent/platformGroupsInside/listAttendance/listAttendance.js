@@ -378,7 +378,7 @@ const SubMakeAttendance = React.memo(({data, groupId }) => {
 
                 console.log("update1")
                 updateStatusStudent({id: student.id, requestType: "loading"})
-                request(`${BackUrl}make_attendance`, "POST", JSON.stringify(data), headers())
+                request(`${BackUrl}teacher/make_attendance`, "POST", JSON.stringify(data), headers())
                     .then(res => {
                         if (res.success) {
                             // removeSuccessStudent(res.student_id)

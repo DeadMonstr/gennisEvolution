@@ -49,7 +49,7 @@ const StudentAttendance = () => {
 
     const onDelete = (id) => {
         dispatch(deleteAtt({name: activeDays,id:id}))
-        request(`${BackUrl}attendance_delete/${id}/${studentId}/${groupId}/${data.main_attendance}`, "GET", null,headers())
+        request(`${BackUrl}teacher/attendance_delete/${id}/${studentId}/${groupId}/${data.main_attendance}`, "GET", null,headers())
     }
 
 

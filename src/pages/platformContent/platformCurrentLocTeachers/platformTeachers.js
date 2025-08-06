@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 
 
 import {useParams} from "react-router-dom";
@@ -23,7 +23,7 @@ const PlatformTeachers = () => {
 
     const {locationId} = useParams()
 
-    const {teachers, btns, fetchTeachersStatus} = useSelector(state => state.teachers)
+    const {teachers, btns, fetchTeachersStatus  ,totalCount} = useSelector(state => state.teachers)
     const {filters} = useSelector(state => state.filters)
     const {isCheckedPassword} = useSelector(state => state.me)
 
@@ -32,6 +32,9 @@ const PlatformTeachers = () => {
     const [activeModalName, setActiveModalName] = useState(false)
     const [deleteStId, setDeleteStId] = useState()
     const [isConfirm, setIsConfirm] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1)
+    const [activeStatus, setActiveStatus] = useState(1)
+    const pageSize = useMemo(() => 50, [])
 
 
     const dispatch = useDispatch()
@@ -39,14 +42,26 @@ const PlatformTeachers = () => {
 
     useEffect(() => {
 
-        dispatch(fetchTeachersByLocation(locationId))
+        dispatch(fetchTeachersByLocation({locationId , pageSize , currentPage}))
         const newData = {
             name: "teachers",
             location: locationId
         }
         dispatch(fetchFilters(newData))
 
-    }, [dispatch, locationId])
+    }, [dispatch, locationId ])
+
+    useEffect(() => {
+        // if (activeStatus){
+        //     setCurrentPage(1)
+        // }
+
+        if (activeStatus === true) {
+            dispatch(fetchDeletedTeachersByLocation({ locationId, pageSize, currentPage }));
+        } else {
+            dispatch(fetchTeachersByLocation({ locationId, currentPage, pageSize }));
+        }
+    } , [currentPage , activeStatus])
 
 
     useEffect(() => {
@@ -93,7 +108,7 @@ const PlatformTeachers = () => {
             typeLocation: "registerStudents",
             user_id: deleteStId
         }
-        request(`${BackUrl}delete_teacher/${deleteStId}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}teacher/delete_teacher/${deleteStId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -119,12 +134,15 @@ const PlatformTeachers = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const getDeleted = (isActive) => {
-        if (isActive) {
-            dispatch(fetchDeletedTeachersByLocation(locationId))
-        } else {
-            dispatch(fetchTeachersByLocation(locationId))
-        }
-    }
+
+        setActiveStatus(isActive)
+        setCurrentPage(1)
+        // if (isActive) {
+        //     dispatch(fetchDeletedTeachersByLocation({ locationId, pageSize, currentPage }));
+        // } else {
+        //     dispatch(fetchTeachersByLocation({ locationId, currentPage, pageSize }));
+        // }
+    };
 
     const funcsSlice = useMemo(() => {
         return {
@@ -146,7 +164,11 @@ const PlatformTeachers = () => {
                 filters={filters}
                 btns={btns}
                 isTeachers={true}
-                status={true}
+                totalCount={totalCount}
+                pageSize={pageSize}
+                status={false}
+                onPageChange={setCurrentPage}
+                currentPage2={currentPage}
 
             />
 

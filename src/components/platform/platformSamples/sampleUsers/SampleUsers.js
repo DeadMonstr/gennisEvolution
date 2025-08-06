@@ -266,7 +266,7 @@ const SampleUsers = (props) => {
         }
     }, [location])
 
-
+    console.log(currentTableData)
     return (
         <>
             <Routes>
@@ -361,16 +361,18 @@ const SampleUsers = (props) => {
                             }
                         </div>
                         <main className="section__main">
-                            <UsersTable
-                                fetchUsersStatus={fetchUsersStatus}
-                                funcsSlice={funcsSlice}
-                                activeRowsInTable={activeRowsInTable}
-                                users={currentTableData}
-                                pageName={pageName}
-                                checkedUsers={checkedUsers}
-                                setLinkUser={setLinkUser}
-                                cache={true}
-                            />
+                            <div style={{height: "58vh" , overflow: "auto"}}>
+                                <UsersTable
+                                    fetchUsersStatus={fetchUsersStatus}
+                                    funcsSlice={funcsSlice}
+                                    activeRowsInTable={activeRowsInTable}
+                                    users={currentTableData}
+                                    pageName={pageName}
+                                    checkedUsers={checkedUsers}
+                                    setLinkUser={setLinkUser}
+                                    cache={true}
+                                />
+                            </div>
                             {status !== true ? totalCount ? <ExtraPagination
                                 totalCount={totalCount?.total}
                                 onPageChange={onPageChange}

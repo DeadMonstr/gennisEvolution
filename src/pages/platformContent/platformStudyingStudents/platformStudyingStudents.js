@@ -80,7 +80,7 @@ const PlatformStudyingStudents = () => {
                pageSize={pageSize}
                status={false}
                onPageChange={setCurrentPage}
-               currentPage={currentPage}
+               currentPage2={currentPage}
            />
 
            {/*<div style={{paddingLeft: "3rem"}}>*/}

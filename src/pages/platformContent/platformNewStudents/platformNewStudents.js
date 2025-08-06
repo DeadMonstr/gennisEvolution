@@ -68,13 +68,17 @@ const PlatformNewStudents = () => {
     const [mainSearch, setMainSearch] = useState("")
 
 
+
+
     const [msg, setMsg] = useState("")
     const [typeMsg, setTypeMsg] = useState("")
     const [activeMessage, setActiveMessage] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const pageSize = useMemo(() => 50, [])
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [isDeleteData, isFilterData])
 
-    console.log(totalCount)
     useEffect(() => {
         if (filteredNewStudents?.length !== 0) {
             setWidth((wrapper.current?.scrollWidth - wrapper.current?.offsetWidth) + 60)
@@ -171,6 +175,7 @@ const PlatformNewStudents = () => {
     const onDelete = (id, type) => {
         setDeleteStId(id)
         setActiveModalName(type)
+
         if (!isCheckedPassword) {
             setActiveCheckPassword(true)
         } else {

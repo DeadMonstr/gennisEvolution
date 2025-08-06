@@ -545,7 +545,7 @@ const CheckedStudents = ({students, setActiveModal, groupId, teacherId}) => {
                 groupId,
             }
             dispatch(requestStudent({id: student.id, requestType: "loading"}))
-            request(`${BackUrl}make_attendance`, "POST", JSON.stringify(data), headers())
+            request(`${BackUrl}teacher/make_attendance`, "POST", JSON.stringify(data), headers())
                 .then(res => {
                     if (res.success) {
                         dispatch(removeCheckedStudent({id: res.student_id}))
