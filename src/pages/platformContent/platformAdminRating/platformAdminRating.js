@@ -445,11 +445,13 @@ const DebtorsRating = () => {
     const list = useSelector(state => state.adminRatingSlice)
     const [data, setData] = useState([])
 
+    console.log(list)
     useEffect(() => {
         if (list) {
             setData(list?.data?.map((item, index) => ({
                 name: item?.location_name,
-                value: item?.debt_students,
+                debtors: item?.debt_students,
+                completed_tasks: item?.task_statistics?.completed_tasks,
                 // value: 1,
                 fill: Object.values(colors)[index]
             })))
@@ -499,6 +501,7 @@ const DebtorsRating = () => {
     //         amt: 2100,
     //     },
     // ];
+    console.log(data)
 
     return (
         <div className={classNames(cls.adminRating__debtors, cls.adminRating__box)}>
@@ -517,12 +520,20 @@ const DebtorsRating = () => {
                 >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value">
+                    <YAxis/>
+                    <Tooltip/>
+
+                    <Bar dataKey="debtors">
                         {
                             data.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.fill} />
+                            ))
+                        }
+                    </Bar>
+                    <Bar dataKey="completed_tasks">
+                        {
+                            data.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.fill}/>
                             ))
                         }
                     </Bar>

@@ -35,7 +35,7 @@ const PlatformTeachersRating = () => {
 
 
     useEffect(() => {
-        request(`${BackUrl}statistics_dates`, "GET", null, headers())
+        request(`${BackUrl}teacher/statistics_dates`, "GET", null, headers())
             .then(res => {
                 setMonths(res.month_list.map(item => ({name: item.month, value: item.date})))
                 setYears(res.years_list.map(item => item.value))
@@ -46,7 +46,7 @@ const PlatformTeachersRating = () => {
 
     useEffect(() => {
         if (year && year !== "all") {
-            request(`${BackUrl}statistics_dates`, "POST", JSON.stringify({type_rating: "attendance", year}), headers())
+            request(`${BackUrl}teacher/statistics_dates`, "POST", JSON.stringify({type_rating: "attendance", year}), headers())
                 .then(res => {
                     setMonths(res.month_list.map(item => ({name: item.month, value: item.date})))
                 })
@@ -104,7 +104,7 @@ const AttendanceStatistics = (props) => {
 
     useEffect(() => {
         if (year) {
-            request(`${BackUrl}teacher_statistics/${locationId}`, "POST", JSON.stringify({
+            request(`${BackUrl}teacher/teacher_statistics/${locationId}`, "POST", JSON.stringify({
                 type_rating: "attendance",
                 year
             }), headers())
@@ -125,7 +125,7 @@ const AttendanceStatistics = (props) => {
 
         if (month) {
 
-            request(`${BackUrl}teacher_statistics/${locationId}`, "POST", JSON.stringify({
+            request(`${BackUrl}teacher/teacher_statistics/${locationId}`, "POST", JSON.stringify({
                 type_rating: "attendance",
                 year: year,
                 month: month === "all" ? null : month
@@ -192,7 +192,7 @@ const ObservationStatistics = (props) => {
 
     useEffect(() => {
         if (year) {
-            request(`${BackUrl}teacher_statistics/${locationId}`, "POST", JSON.stringify({
+            request(`${BackUrl}teacher/teacher_statistics/${locationId}`, "POST", JSON.stringify({
                 type_rating: "observation",
                 year
             }), headers())
@@ -214,7 +214,7 @@ const ObservationStatistics = (props) => {
 
     useEffect(() => {
         if (month) {
-            request(`${BackUrl}teacher_statistics/${locationId}`, "POST", JSON.stringify({
+            request(`${BackUrl}teacher/teacher_statistics/${locationId}`, "POST", JSON.stringify({
                 type_rating: "observation",
                 year: year,
                 month: month === "all" ? null : month
@@ -287,7 +287,7 @@ const DeletedStudentsStatistics = (props) => {
 
     useEffect(() => {
         if (year) {
-            request(`${BackUrl}teacher_statistics/${locationId}`, "POST", JSON.stringify({
+            request(`${BackUrl}teacher/teacher_statistics/${locationId}`, "POST", JSON.stringify({
                 type_rating: "deleted_students",
                 year
             }), headers())
@@ -305,7 +305,7 @@ const DeletedStudentsStatistics = (props) => {
 
     useEffect(() => {
         if (month) {
-            request(`${BackUrl}teacher_statistics/${locationId}`, "POST", JSON.stringify({
+            request(`${BackUrl}teacher/teacher_statistics/${locationId}`, "POST", JSON.stringify({
                 type_rating: "deleted_students",
                 year: year,
                 month: month === "all" ? null : month
@@ -328,7 +328,7 @@ const DeletedStudentsStatistics = (props) => {
         setNameItem(e.dataPoint.name)
         setType("teacher")
 
-        request(`${BackUrl}teacher_statistics_deleted_students/${locationId}`, "POST", JSON.stringify({
+        request(`${BackUrl}teacher/teacher_statistics_deleted_students/${locationId}`, "POST", JSON.stringify({
             reason_name: e.dataPoint.name, year: year, month: month === "all" ? null : month}), headers())
             .then(res => {
                 setSubData(res.teachers_list.map((item, index) => {

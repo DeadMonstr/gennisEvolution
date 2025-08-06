@@ -42,7 +42,7 @@ const PlatformNewStudents = () => {
 
     let {locationId} = useParams()
 
-    const {filteredNewStudents, btns, fetchNewStudentsStatus, newStudents} = useSelector(state => state.newStudents)
+    const {filteredNewStudents, btns, fetchNewStudentsStatus, newStudents , totalCount} = useSelector(state => state.newStudents)
 
     const {filters} = useSelector(state => state.filters)
     const {location, role} = useSelector(state => state.me)
@@ -68,10 +68,16 @@ const PlatformNewStudents = () => {
     const [mainSearch, setMainSearch] = useState("")
 
 
+
+
     const [msg, setMsg] = useState("")
     const [typeMsg, setTypeMsg] = useState("")
     const [activeMessage, setActiveMessage] = useState(false)
-
+    const [currentPage, setCurrentPage] = useState(1)
+    const pageSize = useMemo(() => 50, [])
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [isDeleteData, isFilterData])
 
     useEffect(() => {
         if (filteredNewStudents?.length !== 0) {
@@ -84,17 +90,17 @@ const PlatformNewStudents = () => {
             if (isFilterData) {
                 dispatch(fetchNewStudentsDeleted(locationId))
             } else {
-                dispatch(fetchNewDeletedStudents(locationId))
+                dispatch(fetchNewDeletedStudents({locationId , currentPage , pageSize}))
             }
         } else {
             if (isFilterData) {
                 dispatch(fetchNewFilteredStudents(locationId))
             } else {
-                dispatch(fetchNewStudents(locationId))
+                dispatch(fetchNewStudents({locationId, currentPage, pageSize}))
             }
         }
         dispatch(setSelectedLocation({id: locationId}))
-    }, [locationId, isDeleteData, isFilterData])
+    }, [locationId, isDeleteData, isFilterData , currentPage])
 
 
     const navigate = useNavigate()
@@ -169,6 +175,7 @@ const PlatformNewStudents = () => {
     const onDelete = (id, type) => {
         setDeleteStId(id)
         setActiveModalName(type)
+
         if (!isCheckedPassword) {
             setActiveCheckPassword(true)
         } else {
@@ -214,7 +221,7 @@ const PlatformNewStudents = () => {
 
     const returnDeletedStudent = useCallback((data) => {
         if (data === "yes") {
-            request(`${BackUrl}get_back_student/${deleteStId}`, "GET", null, headers())
+            request(`${BackUrl}student/get_back_student/${deleteStId}`, "GET", null, headers())
                 .then(res => {
                     if (res.success) {
                         dispatch(setMessage({
@@ -336,6 +343,7 @@ const PlatformNewStudents = () => {
                                             />
                                         </div>
                                     </header>
+
                                     <div className={cls.links}>
 
                                         <Button active={isDeleteData} onClickBtn={() => setIsDeleteData(!isDeleteData)}>
@@ -438,15 +446,40 @@ const PlatformNewStudents = () => {
 
 
                     </Modal>
-                </> : <SampleUsers
-                    locationId={locationId}
-                    fetchUsersStatus={fetchNewStudentsStatus}
-                    funcsSlice={funcsSlice}
-                    activeRowsInTable={activeItems}
-                    users={newStudents}
-                    filters={filters}
-                    btns={btns}
-                />
+                </> :
+
+
+
+                      <div  style={{display: "flex" , flexDirection: "column"}}>
+
+                          <SampleUsers
+                              locationId={locationId}
+                              fetchUsersStatus={fetchNewStudentsStatus}
+                              funcsSlice={funcsSlice}
+                              activeRowsInTable={activeItems}
+                              users={newStudents}
+                              filters={filters}
+                              btns={btns}
+                              pageSize={pageSize}
+                              totalCount={totalCount}
+                              setCurrentPage={setCurrentPage}
+                              onPageChange={setCurrentPage}
+                              currentPage2={currentPage}
+                              status={false}
+
+
+                          />
+                         {/*<div style={{paddingLeft: "3rem"}}>*/}
+                         {/*    <ExtraPagination*/}
+                         {/*        totalCount={totalCount?.total}*/}
+                         {/*        onPageChange={setCurrentPage}*/}
+                         {/*        currentPage={currentPage}*/}
+                         {/*        pageSize={pageSize}*/}
+                         {/*    />*/}
+                         {/*</div>*/}
+                      </div>
+
+
             }
             {
                 activeModalName === "delete" && isCheckedPassword ?
@@ -591,6 +624,7 @@ const SubjectData = ({item, activeItems, funcsSlice, mainSearch}) => {
 
 
             </div>
+
             <Pagination
                 className="pagination-bar"
                 currentPage={currentPage}

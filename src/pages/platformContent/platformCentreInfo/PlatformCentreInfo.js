@@ -29,7 +29,7 @@ const PlatformCentreInfo = () => {
 
 
     useEffect(() => {
-        request(`${BackUrl}change_location_info/${locationId}`, "GET", null, headers())
+        request(`${BackUrl}student/change_location_info/${locationId}`, "GET", null, headers())
             .then(res => {
                 setDataInfo(res.data)
                 setValue("campus_name", res.data.campus_name)
@@ -51,7 +51,7 @@ const PlatformCentreInfo = () => {
     const dispatch = useDispatch()
 
     const onSubmit = (data) => {
-        request(`${BackUrl}change_location_info/${locationId}`,"POST",JSON.stringify({...data,location_type: locationType}), headers())
+        request(`${BackUrl}student/change_location_info/${locationId}`,"POST",JSON.stringify({...data,location_type: locationType}), headers())
             .then(res => {
                 dispatch(setMessage({
                     msg: res.msg,

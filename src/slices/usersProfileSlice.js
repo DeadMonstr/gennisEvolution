@@ -116,7 +116,7 @@ export const fetchHistoryData = createAsyncThunk(
     'userProfileSlice/fetchHistoryData',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}student_history2/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}student/student_history2/${id}`,"GET",null,headers())
     }
 )
 

@@ -23,7 +23,7 @@ const ChangeLocTeacher = ({userId}) => {
     const {request} = useHttp()
     const dispatch = useDispatch()
     const onClick = () => {
-        request(`${BackUrl}add_teacher_to_branch/${userId}/${location}`,"GET",null,headers())
+        request(`${BackUrl}teacher/add_teacher_to_branch/${userId}/${location}`,"GET",null,headers())
             // request(`${BackUrl}hello/${userId}`,"GET",null,headers())
             .then(res => {
                 if (res.success) {

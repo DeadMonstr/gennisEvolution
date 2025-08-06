@@ -70,7 +70,7 @@ const Contract = ({userId,accessData}) => {
         }
 
 
-        request(`${BackUrl}create_contract/${userId}`, "POST",JSON.stringify(newData),headers())
+        request(`${BackUrl}student/create_contract/${userId}`, "POST",JSON.stringify(newData),headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -108,7 +108,7 @@ const Contract = ({userId,accessData}) => {
         const headers = {
             "Authorization": "Bearer " + token,
         }
-        request(`${BackUrl}upload_pdf_contract/${userId}`, "POST",data,headers)
+        request(`${BackUrl}student/upload_pdf_contract/${userId}`, "POST",data,headers)
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

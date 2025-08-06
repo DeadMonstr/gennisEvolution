@@ -26,7 +26,7 @@ const PlatformEmployees = () => {
 
     let {locationId} = useParams()
 
-    const {employees,btns,fetchEmployeesStatus} = useSelector(state => state.employees)
+    const {employees,btns,fetchEmployeesStatus , totalCount} = useSelector(state => state.employees)
     const {filters} = useSelector(state => state.filters)
     const {location,role} = useSelector(state => state.me)
     const {isCheckedPassword} = useSelector(state => state.me)
@@ -38,12 +38,27 @@ const PlatformEmployees = () => {
     const [deleteStId, setDeleteStId] = useState()
     const [isConfirm, setIsConfirm] = useState(false)
 
+
+    const [currentPage, setCurrentPage] = useState(1)
+    const pageSize = useMemo(() => 50, [])
+
+    const [active , setActive] = useState(false)
+
+
     const dispatch = useDispatch()
 
 
+    useEffect(() => {
+        if (active === true) {
+            dispatch(fetchDeletedEmployees({locationId , pageSize , currentPage}))
+        } else {
+            dispatch(fetchEmployees({locationId , pageSize , currentPage}))
+        }
+    } , [currentPage , active])
+
     useEffect(()=> {
 
-        dispatch(fetchEmployees(locationId))
+        // dispatch(fetchEmployees({locationId , pageSize , currentPage}))
         const newData = {
             name: "employees",
             location: locationId
@@ -120,12 +135,8 @@ const PlatformEmployees = () => {
     }
 
     const getDeleted = (isActive) => {
-
-        if (isActive) {
-            dispatch(fetchDeletedEmployees(locationId))
-        } else {
-            dispatch(fetchEmployees(locationId))
-        }
+        setActive(isActive)
+        setCurrentPage(1)
     }
 
     const funcsSlice = useMemo(() => {
@@ -145,6 +156,12 @@ const PlatformEmployees = () => {
                 users={employees}
                 filters={filters}
                 btns={btns}
+                totalCount={totalCount}
+                pageSize={pageSize}
+                status={false}
+                onPageChange={setCurrentPage}
+                currentPage2={currentPage}
+
             />
             <Modal activeModal={activeCheckPassword} setActiveModal={() => setActiveCheckPassword(false)}>
                 <CheckPassword/>

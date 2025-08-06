@@ -117,7 +117,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
         }
 
 
-        request(`${BackUrl}change_student_info/${userId}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}student/change_student_info/${userId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

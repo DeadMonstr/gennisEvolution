@@ -31,6 +31,7 @@ export const RegisterWorker = ({
     } = useForm({
         mode: "onBlur"
     })
+    const [selectedSubjectId, setSelectedSubjectId] = useState("all");
 
     const [loading, setLoading] = useState(false)
     const {request} = useHttp()
@@ -103,7 +104,9 @@ export const RegisterWorker = ({
                     type: res.isError ? "error" : "success",
                     active: true
                 }))
+
                 reset()
+
             })
 
     }

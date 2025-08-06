@@ -87,30 +87,32 @@ const initialState = {
     fetchNewStudentsStatus: "idle",
     fetchCreateGroupToolsStatus: "idle",
     fetchFilteredStudentsStatus: "idle",
+    totalCount: null
 }
 
 export const fetchNewFilteredStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewFilteredStudents',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_filtered_students_list/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}student/get_filtered_students_list/${id}`, "GET", null, headers())
     }
 )
 
 
 export const fetchNewStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewStudents',
-    async (id) => {
+    async ({locationId, pageSize, currentPage}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}newStudents/${id}`, "GET", null, headers())
+
+        return await request(`${BackUrl}student/newStudents/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}`, "GET", null, headers())
     }
 )
 
 export const fetchNewDeletedStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewDeletedStudents',
-    async (id) => {
+    async ({locationId, pageSize, currentPage}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}newStudentsDeleted/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}student/newStudentsDeleted/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}`, "GET", null, headers())
     }
 )
 
@@ -118,7 +120,7 @@ export const fetchNewStudentsDeleted = createAsyncThunk(
     'newStudentsSlice/fetchNewStudentsDeleted',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}new_del_students/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}student/new_del_students/${id}`, "GET", null, headers())
     }
 )
 
@@ -232,6 +234,8 @@ const newStudentsSlice = createSlice({
             })
             .addCase(fetchNewStudents.fulfilled, (state, action) => {
                 state.fetchNewStudentsStatus = 'success';
+                console.log("log" , action.payload)
+                state.totalCount = action.payload?.pagination
                 // let newData = []
                 // for (let i = 0; i < 20; i++) {
                 //     const data = action.payload.newStudents.map(item => {
@@ -243,7 +247,7 @@ const newStudentsSlice = createSlice({
                 state.newStudents = action.payload.newStudents.map(item => {
                     return {...item,checked: false}
                 })
-                console.log(state.newStudents)
+
                 state.checkedUsers = []
             })
             .addCase(fetchNewStudents.rejected, state => {
@@ -255,7 +259,7 @@ const newStudentsSlice = createSlice({
             })
             .addCase(fetchNewDeletedStudents.fulfilled, (state, action) => {
                 state.fetchNewStudentsStatus = 'success';
-                console.log(action.payload, "deleted")
+                state.totalCount = action.payload?.pagination
                 state.newStudents = action.payload.newStudents.map(item => {
                     return {...item,checked: false}
                 })

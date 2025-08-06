@@ -68,6 +68,7 @@ const Register = () => {
     }, [data])
     const onChangeSub = (id) => {
         const filteredSubjects = subjects.filter(item => item.id === +id)
+        console.log(id , "id")
         setSubjects(subjects => {
             return subjects.map(item => {
                 if (item.id === +id) {

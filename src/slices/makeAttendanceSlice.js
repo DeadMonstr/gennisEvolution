@@ -106,7 +106,7 @@ export const  fetchGroupStudents = createAsyncThunk(
     'makeAttendance/fetchGroupStudents',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}attendance/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}teacher/attendance/${id}`,"GET",null,headers())
     }
 )
 

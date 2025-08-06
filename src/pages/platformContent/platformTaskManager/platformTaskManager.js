@@ -457,7 +457,7 @@ const PlatformTaskManager = () => {
     //     if (value !== "") {
     //         dispatch(fetchingSearch())
     //
-    //         request(`${BackUrl}search_student_in_task/${locationId}`, "POST", JSON.stringify({
+    //         request(`${BackUrl}student/search_student_in_task/${locationId}`, "POST", JSON.stringify({
     //             text: value,
     //             type: activeMenu,
     //             status: isCompleted
@@ -682,13 +682,13 @@ const PlatformTaskManager = () => {
                                         <div className={cls.wrapperList__number}>
                                             Telefon qilingan :
                                             <span>
-                                                {activeMenu === "newStudents" ? item.day : item.added_date}
+                                                {activeMenu === "newStudents" ? item.day : `${item.added_date} / ${item.to_date}`}
                                             </span>
                                         </div>
-                                        <div className={cls.wrapperList__comment}>
+                                        <div className={cls.wrapperList__number}>
                                             Comment : <span>{item.comment}</span>
                                         </div>
-                                        <div className={cls.wrapperList__smen}>
+                                        <div className={cls.wrapperList__number}>
                                             {item.shift}
                                         </div>
                                     </div>

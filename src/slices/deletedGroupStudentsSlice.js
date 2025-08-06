@@ -36,15 +36,16 @@ const initialState = {
         }
     ],
     fetchDeletedStudentStatus: "idle",
+    totalCount: null
 }
 
 
 export const  fetchDeletedStudent = createAsyncThunk(
     'deletedStudentsSlice/fetchDeletedStudent',
     async (data) => {
-        const {locationId} = data
+        const {locationId , currentPage , pageSize} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}deletedStudents/${locationId}`,"POST",JSON.stringify(data),headers())
+        return await request(`${BackUrl}student/deletedStudents/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}`,"POST",JSON.stringify(data),headers())
     }
 )
 
@@ -80,6 +81,7 @@ const deletedStudentsSlice = createSlice({
             .addCase(fetchDeletedStudent.fulfilled,(state, action) => {
                 state.fetchDeletedStudentStatus = 'success';
                 state.students = action.payload.data
+                state.totalCount = action.payload?.pagination
             })
             .addCase(fetchDeletedStudent.rejected,state => {state.fetchDeletedStudentStatus = 'error'} )
 
