@@ -144,7 +144,7 @@ const BooksProfile = () => {
     const navigate = useNavigate()
     const deleteBookFunc = (data) => {
         dispatch(deleteBook({id: book.id}))
-        request(`${BackUrl}book_inside/${book.id}`, "DELETE", null, headers())
+        request(`${BackUrl}book/book_inside/${book.id}`, "DELETE", null, headers())
             .then(res => {
                 setTypeMsg("success")
                 setActiveMessage(true)
@@ -325,7 +325,7 @@ const ChangeBook = ({setTypeMsg, setMsg, setActiveMessage, book, closeModal}) =>
 
 
 
-        request(`${BackUrl}book_inside/${book.id}`, "POST", formData, {})
+        request(`${BackUrl}book/book_inside/${book.id}`, "POST", formData, {})
             .then(res => {
                 if (res.success) {
 
@@ -376,7 +376,7 @@ const ChangeBook = ({setTypeMsg, setMsg, setActiveMessage, book, closeModal}) =>
     }
 
     const deletePhoto = (id) => {
-        request(`${BackUrl}del_img_book/${book.id}/${id}`, "GET", null, headers())
+        request(`${BackUrl}book/del_img_book/${book.id}/${id}`, "GET", null, headers())
             .then(res => {
                 setTypeMsg("success")
                 setActiveMessage(true)
@@ -494,7 +494,7 @@ const Buying = ({price, id, disableModal}) => {
     const {request} = useHttp()
 
     useEffect(() => {
-        request(`${BackUrl}filter_book/`, "GET", null, headers())
+        request(`${BackUrl}book/filter_book/`, "GET", null, headers())
             .then(res => {
                 if (role === ROLES.Teacher) {
                     setLocations(res.data[0].location_list)
@@ -552,7 +552,7 @@ const Buying = ({price, id, disableModal}) => {
             }
 
 
-            request(`${BackUrl}buy_book`, "POST", JSON.stringify(data), headers())
+            request(`${BackUrl}book/buy_book`, "POST", JSON.stringify(data), headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: res.msg,

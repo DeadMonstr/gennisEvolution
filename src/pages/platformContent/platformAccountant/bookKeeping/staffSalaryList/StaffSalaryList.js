@@ -38,7 +38,7 @@ const StaffSalary = ({data,isDeleted}) => {
         // setActiveChangeModal(false)
         // dispatch(changePaymentType({id: id ,typePayment: value}))
 
-        request(`${BackUrl}update_camp_staff_salary/${id}/${value}`, "POST", null, headers())
+        request(`${BackUrl}account/update_camp_staff_salary/${id}/${value}`, "POST", null, headers())
             .then(res => {
                 console.log(res)
                 dispatch(fetchAccountantBookKeepingStaffSalary({isDeleted}))

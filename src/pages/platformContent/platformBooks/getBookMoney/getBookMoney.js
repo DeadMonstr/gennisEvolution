@@ -36,7 +36,7 @@ const GetBookMoney = () => {
 
 
     const getLocPayments = useCallback((loc) => {
-        request(`${BackUrl}collected_book_payments/${loc}`,"GET",null,headers())
+        request(`${BackUrl}book/collected_book_payments/${loc}`,"GET",null,headers())
             .then(res => {
                 setMonths(res.data.debts)
                 localStorage.setItem("extraData", JSON.stringify({location: loc}))

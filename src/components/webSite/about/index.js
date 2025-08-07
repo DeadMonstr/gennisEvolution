@@ -46,7 +46,7 @@ const About = () => {
 
     const onSubmit = (data) => {
         dispatch(fetchingVideoItems())
-        request(`${BackUrl}add_home_video`, "POST", JSON.stringify(data), headers())
+        request(`${BackUrl}home_page/add_home_video`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 setChangeStatus(false)
                 dispatch(fetchedVideoItems(res.video))

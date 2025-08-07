@@ -115,7 +115,7 @@ const Course = () => {
     const onSubmitReg = (data) => {
         setModalStatus(false)
         setLoading(true)
-        request(`${BackUrl}lead/register_lead`, 'POST', JSON.stringify({...data,subject_id: clickedSubject}))
+        request(`${BackUrl}register_lead`, 'POST', JSON.stringify({...data,subject_id: clickedSubject}))
             .then(res => {
                 setLoading(false)
                 if (res.success) {

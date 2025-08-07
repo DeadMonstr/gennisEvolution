@@ -15,7 +15,7 @@ export const  fetchEmployees = createAsyncThunk(
     async ({locationId , pageSize , currentPage}) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}employees/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}account/employees/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}`,"GET",null,headers())
     }
 )
 
@@ -24,7 +24,7 @@ export const  fetchDeletedEmployees = createAsyncThunk(
     async ({locationId , pageSize , currentPage}) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}employees/${locationId}/deleted${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}account/employees/${locationId}/deleted${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}`,"GET",null,headers())
     }
 )
 

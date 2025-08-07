@@ -132,7 +132,7 @@ const StudentsPayments = ({locationId, path}) => {
     const onDelete = (data) => {
         const {id} = data
         dispatch(deleteAccDataItem({id: id}))
-        request(`${BackUrl}delete_payment/${id}`, "POST", JSON.stringify(data), headers())
+        request(`${BackUrl}account/delete_payment/${id}`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -152,7 +152,7 @@ const StudentsPayments = ({locationId, path}) => {
 
 
     const changePaymentTypeData = (id, value, userId) => {
-        request(`${BackUrl}change_teacher_salary/${id}/${value}/${userId}`, "GET", null, headers())
+        request(`${BackUrl}account/change_teacher_salary/${id}/${value}/${userId}`, "GET", null, headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

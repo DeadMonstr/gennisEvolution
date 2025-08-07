@@ -115,8 +115,9 @@ const EmployeeSalary = ({locationId, path}) => {
 
     const onDelete = (data) => {
         const {id} = data
+        console.log(data)
         dispatch(deleteAccDataItem({id: id}))
-        request(`${BackUrl}delete_payment/${id}`, "POST", JSON.stringify(data), headers())
+        request(`${BackUrl}account/delete_salary_teacher/${id}/${data.userId}`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -136,7 +137,7 @@ const EmployeeSalary = ({locationId, path}) => {
 
 
     const changePaymentTypeData = (id, value, userId) => {
-        request(`${BackUrl}change_teacher_salary/${id}/${value}/${userId}`, "GET", null, headers())
+        request(`${BackUrl}account/change_teacher_salary/${id}/${value}/${userId}`, "GET", null, headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

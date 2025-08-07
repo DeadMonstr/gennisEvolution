@@ -7,7 +7,7 @@ export const fetchBlockTests = createAsyncThunk(
     "blockTestSlice/fetchBlockTests",
     async () => {
         const {request} = useHttp()
-        return await request(`${BackUrl}students_test`, "GET", null, headers())
+        return await request(`${BackUrl}student/students_test`, "GET", null, headers())
     }
 )
 
@@ -16,14 +16,14 @@ export const fetchBlockTestsSchool = createAsyncThunk(
     "blockTestSlice/fetchBlockTestsSchool",
     async () => {
         const {request} = useHttp()
-        return await request(`${BackUrl}schools`, "GET", null, headers())
+        return await request(`${BackUrl}student/schools`, "GET", null, headers())
     }
 )
 export const fetchDefenations = createAsyncThunk(
     "blockTestSlice/fetchDefenations",
     async () => {
         const {request} = useHttp()
-        return await request(`${BackUrl}defenations`, "GET", null, headers())
+        return await request(`${BackUrl}student/defenations`, "GET", null, headers())
     }
 )
 

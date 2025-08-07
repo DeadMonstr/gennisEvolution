@@ -40,7 +40,7 @@ export const fetchAccountantRegisteredStaffs = createAsyncThunk(
     'accountantSlice/fetchAccountantRegisteredStaffs',
     async () => {
         const {request} = useHttp();
-        return await request(`${BackUrl}register_camp_staff`, "GET", null, headers())
+        return await request(`${BackUrl}account/register_camp_staff`, "GET", null, headers())
     }
 )
 
@@ -49,7 +49,7 @@ export const fetchAccountantBookKeepingDividend = createAsyncThunk(
     'accountantSlice/fetchAccountantBookKeepingDividend',
     async (data) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_dividend/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
+        return await request(`${BackUrl}account/get_dividend/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
     }
 )
 
@@ -66,7 +66,7 @@ export const fetchAccountantBookKeepingStaffSalary = createAsyncThunk(
     'accountantSlice/fetchAccountantBookKeepingStaffSalary',
     async (data) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}camp_staff_salaries/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
+        return await request(`${BackUrl}account/camp_staff_salaries/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
     }
 )
 
@@ -75,7 +75,7 @@ export const fetchAccountantBookKeepingOverhead = createAsyncThunk(
     'accountantSlice/fetchAccountantBookKeepingOverhead',
     async (data) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_account_overhead/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
+        return await request(`${BackUrl}account/get_account_overhead/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
     }
 )
 
@@ -85,7 +85,7 @@ export const fetchAccountantBookKeepingCollection = createAsyncThunk(
     async (data) => {
         const {date, activeFilter} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}encashment/`, "POST", JSON.stringify({
+        return await request(`${BackUrl}account/encashment/`, "POST", JSON.stringify({
                 ...date,
                 activeFilter
             }),
@@ -98,7 +98,7 @@ export const fetchAccountantBookKeepingTypesMoney = createAsyncThunk(
     'accountantSlice/fetchAccountantBookKeepingTypesMoney',
     async () => {
         const {request} = useHttp();
-        return await request(`${BackUrl}account_report`, "GET", null, headers())
+        return await request(`${BackUrl}account/account_report`, "GET", null, headers())
     }
 )
 
@@ -108,7 +108,7 @@ export const fetchAccountantStaffSalaryMonths = createAsyncThunk(
     async (data) => {
         const {request} = useHttp();
         const {userId} = data
-        return await request(`${BackUrl}camp_staff/${userId}`, "GET", null, headers())
+        return await request(`${BackUrl}account/camp_staff/${userId}`, "GET", null, headers())
     }
 )
 
@@ -117,7 +117,7 @@ export const fetchAccountantStaffSalaryMonthInside = createAsyncThunk(
     async (data) => {
         const {request} = useHttp();
         const {activeDelete, monthId} = data
-        return await request(`${BackUrl}camp_staff_inside/${monthId}/${activeDelete}/`, "GET", null, headers())
+        return await request(`${BackUrl}account/camp_staff_inside/${monthId}/${activeDelete}/`, "GET", null, headers())
     }
 )
 
@@ -126,7 +126,7 @@ export const fetchAccountantDate = createAsyncThunk(
     async () => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}account_report_datas/`, "GET", null, headers())
+        return await request(`${BackUrl}account/account_report_datas/`, "GET", null, headers())
     }
 )
 
@@ -135,7 +135,7 @@ export const fetchAccountantInvestment = createAsyncThunk(
     async (data) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}get_investments/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
+        return await request(`${BackUrl}account/get_investments/${data.isDeleted}/${data.isArchive}/`, "GET", null, headers())
     }
 )
 const accountantSlice = createSlice({

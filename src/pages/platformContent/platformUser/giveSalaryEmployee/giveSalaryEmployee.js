@@ -35,7 +35,7 @@ const GiveSalaryEmployee = ({userId}) => {
 
 
 
-        request(`${BackUrl}set_salary/${userId}`,"POST", JSON.stringify(data),headers())
+        request(`${BackUrl}account/set_salary/${userId}`,"POST", JSON.stringify(data),headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

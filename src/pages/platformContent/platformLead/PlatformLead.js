@@ -174,7 +174,7 @@ const PlatformLead = () => {
 
     const {request} = useHttp()
     const onComment = (data) => {
-        request(`${BackUrl}lead_crud/${changeLeadData.id}`, "POST",JSON.stringify(data),headers())
+        request(`${BackUrl}lead/lead_crud/${changeLeadData.id}`, "POST",JSON.stringify(data),headers())
             .then(res => {
                 reset()
                 dispatch(onChangedLead({item: res.lead}))
@@ -188,7 +188,7 @@ const PlatformLead = () => {
     }
 
     const onDelete = (data) => {
-        request(`${BackUrl}lead_crud/${changeLeadData.id}`, "DELETE",JSON.stringify(data),headers())
+        request(`${BackUrl}lead/lead_crud/${changeLeadData.id}`, "DELETE",JSON.stringify(data),headers())
             .then(() => {
                 setIsConfirm(false)
                 setDellLead(false)

@@ -44,7 +44,7 @@ const BooksTable = React.memo(({books,activeRowsInTable,funks}) =>  {
 
 
     const confirmAdmin = (id,type) => {
-        request(`${BackUrl}send_campus_money`, "POST",JSON.stringify({order_id:id,admin_confirm: type}),headers())
+        request(`${BackUrl}book/send_campus_money`, "POST",JSON.stringify({order_id:id,admin_confirm: type}),headers())
             .then(res => {
                 dispatch(setMessage({
                     msg: res.msg,
@@ -67,7 +67,7 @@ const BooksTable = React.memo(({books,activeRowsInTable,funks}) =>  {
 
 
     const confirmEditor = (id) => {
-        request(`${BackUrl}order_confirm/${id}`, "GET",null,headers())
+        request(`${BackUrl}book/order_confirm/${id}`, "GET",null,headers())
             .then(res => {
                 dispatch(setMessage({
                     msg: res.msg,

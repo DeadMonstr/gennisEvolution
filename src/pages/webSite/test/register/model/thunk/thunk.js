@@ -17,7 +17,7 @@ export const fetchDataMk = createAsyncThunk(
     async () => {
         const {request} = useHttp()
 
-        return await request(`${BackUrl}schools`, "GET", null, headers())
+        return await request(`${BackUrl}student/schools`, "GET", null, headers())
     }
 )
 
@@ -35,7 +35,7 @@ export const fetchGetHomeInfo = createAsyncThunk(
     "blockTestSlice/fetchGetHomeInfo",
     async () => {
         const {request} = useHttp()
-        return await request(`${BackUrl}get_home_info`, "GET", null, headers())
+        return await request(`${BackUrl}home_page/get_home_info`, "GET", null, headers())
     }
 )
 
@@ -43,6 +43,6 @@ export const fetchDefenations = createAsyncThunk(
     "blockTestSlice/fetchDefenations",
     async () => {
         const {request} = useHttp()
-        return await request(`${BackUrl}defenations`, "GET", null, headers())
+        return await request(`${BackUrl}student/defenations`, "GET", null, headers())
     }
 )

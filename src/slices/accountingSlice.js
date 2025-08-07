@@ -130,7 +130,7 @@ export const fetchAccData = createAsyncThunk(
     async (data) => {
         const {isArchive} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}account_info/${isArchive ? "archive" : ""}`, "POST", JSON.stringify(data), headers())
+        return await request(`${BackUrl}account/account_info/${isArchive ? "archive" : ""}`, "POST", JSON.stringify(data), headers())
     }
 )
 
@@ -139,7 +139,7 @@ export const fetchDeletedAccData = createAsyncThunk(
     async (data) => {
         const {isArchive} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}account_info_deleted/${isArchive ? "archive" : ""}`, "POST", JSON.stringify(data), headers())
+        return await request(`${BackUrl}account/account_info_deleted/${isArchive ? "archive" : ""}`, "POST", JSON.stringify(data), headers())
     }
 )
 
@@ -149,7 +149,7 @@ export const fetchCollection = createAsyncThunk(
     async (data) => {
         const {locationId, date, activeFilter} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}account_details/${locationId}`, "POST", JSON.stringify({
+        return await request(`${BackUrl}account/account_details/${locationId}`, "POST", JSON.stringify({
             ...date,
             activeFilter
         }), headers())
@@ -161,7 +161,7 @@ export const fetchHistoryAccountingPost = createAsyncThunk(
     async (data) => {
         const {locationId, activeFilter, year} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}account_history/${locationId}`, "POST", JSON.stringify({
+        return await request(`${BackUrl}account/account_history/${locationId}`, "POST", JSON.stringify({
             activeFilter,
             year
         }), headers())
@@ -173,7 +173,7 @@ export const fetchHistoryAccountingGet = createAsyncThunk(
     async (data) => {
         const {locationId} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}account_years/${locationId}`, "GET", null, headers())
+        return await request(`${BackUrl}account/account_years/${locationId}`, "GET", null, headers())
     }
 )
 

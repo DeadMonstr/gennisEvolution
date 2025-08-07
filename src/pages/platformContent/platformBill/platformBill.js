@@ -125,7 +125,7 @@ const ModalBill = ({activeModal, setActiveModal}) => {
 
     const onClick = (data) => {
 
-        request(`${BackUrl}create_account`, "POST" , JSON.stringify(data) , headers())
+        request(`${BackUrl}account/create_account`, "POST" , JSON.stringify(data) , headers())
             .then(res => {
                 dispatch(onAddBill({data: res.account, type: data.type_account}))
                 setValue("name", "")

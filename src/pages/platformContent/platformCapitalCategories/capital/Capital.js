@@ -74,7 +74,7 @@ const Capital = () => {
 
     const onDelete = (data) => {
         if (data === "yes") {
-            request(`${BackUrl}add_capital/${locationId}`,"DELETE", JSON.stringify({capital_id:capital.id}), headers())
+            request(`${BackUrl}account/add_capital/${locationId}`,"DELETE", JSON.stringify({capital_id:capital.id}), headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: res.msg,
@@ -97,7 +97,7 @@ const Capital = () => {
         }));
         setLoading(true)
 
-        request(`${BackUrl}add_capital/${locationId}`,"PUT", formData, headersImg())
+        request(`${BackUrl}account/add_capital/${locationId}`,"PUT", formData, headersImg())
             .then(res => {
                 dispatch(onChangeCapitalReducer({capital: res.capital}))
 

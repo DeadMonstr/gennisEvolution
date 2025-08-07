@@ -69,7 +69,7 @@ const TypesMoney = () => {
                 payment_type_id: activeFilter
             }
 
-            request(`${BackUrl}account/account_report_filter/`, "POST", JSON.stringify(data), headers())
+            request(`${BackUrl}account_report_filter/`, "POST", JSON.stringify(data), headers())
                 .then(res => {
                     setData(res.account_reports)
                 })

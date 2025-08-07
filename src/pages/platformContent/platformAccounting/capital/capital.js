@@ -144,7 +144,7 @@ const Capital = ({locationId, path}) => {
         const {id} = data
 
         dispatch(deleteAccDataItem({id:id}))
-        request(`${BackUrl}delete_capital/${id}`, "POST", JSON.stringify(data),headers())
+        request(`${BackUrl}account/delete_capital/${id}`, "POST", JSON.stringify(data),headers())
             .then( res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -172,7 +172,7 @@ const Capital = ({locationId, path}) => {
     const changePaymentTypeData = (id, value, userId) => {
 
 
-        request(`${BackUrl}change_capital/${id}/${value}`,"GET",null,headers())
+        request(`${BackUrl}account/change_capital/${id}/${value}`,"GET",null,headers())
             .then( res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -402,7 +402,7 @@ const CreatCapital = ({locationId, setMsg, setTypeMsg, setActiveMessage, setActi
         }
 
 
-        request(`${BackUrl}add_capital/${locationId}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/add_capital/${locationId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     reset()

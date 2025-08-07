@@ -31,7 +31,7 @@ const WebSite = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        request(`${BackUrl}get_home_info`, "GET", null, headers())
+        request(`${BackUrl}home_page/get_home_info`, "GET", null, headers())
             .then(res => {
                 if (res?.success) {
                     dispatch(fetchedAdvantages(res?.advantages))

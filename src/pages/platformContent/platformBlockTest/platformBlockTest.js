@@ -54,7 +54,7 @@ const PlatformBlockTest = () => {
 
         const query = new URLSearchParams(queryParams).toString();
 
-        request(`${BackUrl}students_test?${query}&location_id=${locationId}`, "GET", null, headers())
+        request(`${BackUrl}student/students_test?${query}&location_id=${locationId}`, "GET", null, headers())
             .then(res => {
                 setFilteredData(res)
 
@@ -172,7 +172,7 @@ export const AddDefination = ({setActive, activeModal}) => {
     const {request} = useHttp()
 
     const onClick = (data) => {
-        request(`${BackUrl}defenations`, "POST", JSON.stringify(data), headers())
+        request(`${BackUrl}student/defenations`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 setActive(false)
                 setValue("name", "")

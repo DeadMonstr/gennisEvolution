@@ -37,7 +37,7 @@ const FastRegister = () => {
         }
 
         setLoading(true)
-        request(`${BackUrl}register_lead`, 'POST', JSON.stringify(res))
+        request(`${BackUrl}lead/register_lead`, 'POST', JSON.stringify(res))
             .then(res => {
                 setLoading(false)
                 if (res.success) {

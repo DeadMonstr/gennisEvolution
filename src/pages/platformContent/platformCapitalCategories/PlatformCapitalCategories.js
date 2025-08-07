@@ -64,7 +64,7 @@ const PlatformCapitalIndex = () => {
         formData.append(`info`, JSON.stringify(data));
 
         setLoading(true)
-        request(`${BackUrl}add_capital_category`, 'POST', formData, headersImg())
+        request(`${BackUrl}account/add_capital_category`, 'POST', formData, headersImg())
             .then(res => {
                 dispatch(onAddCategory({category: res.category}))
                 dispatch(setMessage({

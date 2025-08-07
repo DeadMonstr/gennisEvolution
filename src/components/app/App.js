@@ -22,7 +22,7 @@ const App = () => {
 
     return (
         <Routes>
-            {/*<Route path="/*"  element={<Website/>} />*/}
+            <Route path="/*"  element={<Website/>} />
 
             <Route path="/login" element={<Login/>} />
             <Route path="/register_test" element={<Register/>}/>
@@ -53,10 +53,10 @@ const App = () => {
                 path="/platform/"
                 element={<Navigate to="home" replace />}
             />
-            <Route
-                path="*"
-                element={<Navigate to="login" replace />}
-            />
+            {/*<Route*/}
+            {/*    path="*"*/}
+            {/*    element={<Navigate to="login" replace />}*/}
+            {/*/>*/}
             {/*<Route*/}
             {/*    path="registerTeacher"*/}
             {/*    element={<Navigate to="/registerTeacher/step_1" replace />}*/}

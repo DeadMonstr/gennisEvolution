@@ -61,7 +61,7 @@ const AccountantStaffs = () => {
         }
 
 
-        request(`${BackUrl}register_camp_staff`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/register_camp_staff`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 console.log(res)
                 dispatch(onAddStaff(res.user))
