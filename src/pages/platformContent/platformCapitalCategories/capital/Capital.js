@@ -66,7 +66,7 @@ const Capital = () => {
             setValue2("number", capital.number)
             setValue2("term", capital.term)
             setValue2("price", capital.price)
-            setValue2("payment_type_id", capital?.payment_type.id.toString())
+            setValue2("payment_type_id", capital?.payment_type?.id?.toString())
         }
     },[capital])
 

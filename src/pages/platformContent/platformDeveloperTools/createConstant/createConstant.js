@@ -66,7 +66,7 @@ const CreateConstant = () => {
     const {request} = useHttp()
 
     const postData = () => {
-        request(`${BackUrl}create_constants`,"POST",JSON.stringify(data),headers())
+        request(`${BackUrl}programmers/create_constants`,"POST",JSON.stringify(data),headers())
     }
 
     return (

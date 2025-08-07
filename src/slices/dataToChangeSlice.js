@@ -28,7 +28,7 @@ export const  fetchDataTools = createAsyncThunk(
     'dataToChangeSlice/fetchDataTools',
     async () => {
         const {request} = useHttp();
-        return await request(`${BackUrl}list_tools_info`,"GET",null,headers())
+        return await request(`${BackUrl}programmers/list_tools_info`,"GET",null,headers())
     }
 )
 

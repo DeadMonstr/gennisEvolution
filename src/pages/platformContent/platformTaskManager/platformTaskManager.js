@@ -780,6 +780,7 @@ const Completed = ({progress, progressStatus, style = "black"}) => {
 
 const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
 
+    console.log(arr, "arr")
 
     const filteredItems = useCallback((color) => {
         return arr?.filter(item => {

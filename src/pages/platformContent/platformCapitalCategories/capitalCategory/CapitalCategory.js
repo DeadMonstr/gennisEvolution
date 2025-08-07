@@ -505,7 +505,7 @@ const CapitalCategoryIndex = (props) => {
                                             <h1>Narxi: <span>{item.price}</span></h1>
                                             <h1>Muddat (yil): <span>{item.term}</span></h1>
                                             <h1>Sana: <span>{item.month}-{item.day}</span></h1>
-                                            <h1>To'lov turi: <span>{item.payment_type.name}</span></h1>
+                                            <h1>To'lov turi: <span>{item.payment_type?.name}</span></h1>
                                         </div>
                                     </div>
                                 </Link>
