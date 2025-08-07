@@ -22,7 +22,7 @@ export const  fetchCategory = createAsyncThunk(
     'capitalCategory/fetchCategory',
     async (data) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}account/get_capital_category/${data.id}/${data.locationId}`,"GET",null,headers())
+        return await request(`${BackUrl}get_capital_category/${data.id}/${data.locationId}`,"GET",null,headers())
     }
 )
 

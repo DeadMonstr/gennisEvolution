@@ -109,7 +109,7 @@ export const fetchPaymentOptions = createAsyncThunk(
     'userProfileSlice/fetchPaymentOptions',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_payment/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}account/get_payment/${id}`,"GET",null,headers())
     }
 )
 export const fetchHistoryData = createAsyncThunk(

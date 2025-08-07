@@ -70,7 +70,7 @@ const Home = () => {
         formData.append('text',data.text)
         formData.append('file', changeImage)
 
-        request(`${BackUrl}add_home_design`, "POST", formData, headersImg())
+        request(`${BackUrl}home_page/add_home_design`, "POST", formData, headersImg())
             .then(res => {
                 if (res.success) {
                     setChangeStatus(false)
@@ -87,7 +87,7 @@ const Home = () => {
 
 
         setLoading(true)
-        request(`${BackUrl}register_lead`, 'POST', JSON.stringify(data))
+        request(`${BackUrl}lead/register_lead`, 'POST', JSON.stringify(data))
             .then(res => {
                 setLoading(false)
                 if (res.success) {

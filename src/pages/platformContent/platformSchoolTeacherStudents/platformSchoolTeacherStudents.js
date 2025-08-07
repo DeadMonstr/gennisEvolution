@@ -104,7 +104,7 @@ const CrudStudent = ({info,setActiveModal}) => {
 
 
         if (isChange) {
-            request(`${BackUrl}crud_school_user/${info.id}`, "PUT", JSON.stringify(data), headers())
+            request(`${BackUrl}school/crud_school_user/${info.id}`, "PUT", JSON.stringify(data), headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: "O'qituvchi muvaffaqiyatli o'zgartirildi",
@@ -114,7 +114,7 @@ const CrudStudent = ({info,setActiveModal}) => {
                     dispatch(changeSchoolTeacher(res.user))
                 })
         } else {
-            request(`${BackUrl}crud_school_user/`, "POST", JSON.stringify(data), headers())
+            request(`${BackUrl}school/crud_school_user/`, "POST", JSON.stringify(data), headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: "O'qituvchi muvaffaqiyatli yaratildi",

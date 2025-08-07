@@ -119,10 +119,10 @@ const Advantages = () => {
         }
 
         if (changing) {
-            request(`${BackUrl}change_advantage/${changing}`,"POST",JSON.stringify({name: advantage.title}),headers())
+            request(`${BackUrl}home_page/change_advantage/${changing}`,"POST",JSON.stringify({name: advantage.title}),headers())
                 .then(res => {
                     if (res.id && advantage.img.file) {
-                        request(`${BackUrl}advantage_img/${res.id}`,"POST",data,headers1)
+                        request(`${BackUrl}home_page/advantage_img/${res.id}`,"POST",data,headers1)
                             .then(() => {
                                 request(`${BackUrl}home_advantages`,"GET",null,headers())
                                     .then(res => {
@@ -142,7 +142,7 @@ const Advantages = () => {
             request(`${BackUrl}add_advantages`,"POST",JSON.stringify({name: advantage.title}),headers())
                 .then(res => {
                     if (res.id) {
-                        request(`${BackUrl}advantage_img/${res.id}`,"POST",data,headers1)
+                        request(`${BackUrl}home_page/advantage_img/${res.id}`,"POST",data,headers1)
                             .then(() => {
                                 request(`${BackUrl}home_advantages`,"GET",null,headers())
                                     .then(res => {
@@ -240,7 +240,7 @@ const Comments = () => {
     const { request } = useHttp()
 
     useEffect(() => {
-        request(`${BackUrl}home_comments`,"GET",null,headers())
+        request(`${BackUrl}home_page/home_comments`,"GET",null,headers())
             .then(res => {
                 setComments(res.comments)
             })
@@ -248,7 +248,7 @@ const Comments = () => {
 
     const delComment = (id) => {
         setComments(prev => prev.filter(item => item.id !== id))
-        request(`${BackUrl}delete_comment/${id}`,"GET",null,headers())
+        request(`${BackUrl}home_page/delete_comment/${id}`,"GET",null,headers())
     }
 
 
@@ -307,7 +307,7 @@ const Events = () => {
 
 
     useEffect(() => {
-        request(`${BackUrl}home_news`,"GET",null,headers())
+        request(`${BackUrl}home_page/home_news`,"GET",null,headers())
             .then(res => {
                 setEvents(res.news)
             })
@@ -317,7 +317,7 @@ const Events = () => {
     const delAdvantages = (id) => {
         const newAdvantages = events.filter(item => item.id !== id)
         setEvents(newAdvantages)
-        request(`${BackUrl}delete_news/${id}`,"GET",null,headers())
+        request(`${BackUrl}home_page/delete_news/${id}`,"GET",null,headers())
     }
 
 
@@ -371,12 +371,12 @@ const Events = () => {
 
 
         if (changing) {
-            request(`${BackUrl}change_news/${changing}`,"POST",JSON.stringify(infoData),headers())
+            request(`${BackUrl}home_page/change_news/${changing}`,"POST",JSON.stringify(infoData),headers())
                 .then(res => {
                     if (res.news_id && event.img.file) {
                         request(`${BackUrl}news_img/${res.news_id}`,"POST",data,headersPhoto)
                             .then(() => {
-                                request(`${BackUrl}home_news`,"GET",null,headers())
+                                request(`${BackUrl}home_page/home_news`,"GET",null,headers())
                                     .then(res => {
                                         setEvents(res.news)
                                     })
@@ -384,19 +384,19 @@ const Events = () => {
                     }
                 })
                 .then(() => {
-                    request(`${BackUrl}home_news`,"GET",null,headers())
+                    request(`${BackUrl}home_page/home_news`,"GET",null,headers())
                         .then(res => {
                             setEvents(res.news)
                         })
                 })
             setChanging(null)
         } else {
-            request(`${BackUrl}add_news`,"POST",JSON.stringify(infoData),headers())
+            request(`${BackUrl}home_page/add_news`,"POST",JSON.stringify(infoData),headers())
                 .then(res => {
                     if (res.news_id) {
                         request(`${BackUrl}news_img/${res.news_id}`,"POST",data,headersPhoto)
                             .then(() => {
-                                request(`${BackUrl}home_news`,"GET",null,headers())
+                                request(`${BackUrl}home_page/home_news`,"GET",null,headers())
                                     .then(res => {
                                         console.log("data",res)
                                         setEvents(res.news)
@@ -619,7 +619,7 @@ const Gallery = () => {
 
 
     useEffect(() => {
-        request(`${BackUrl}gallery`,"GET",null,headers())
+        request(`${BackUrl}home_page/gallery`,"GET",null,headers())
             .then(res => {
                 setImages(res.gallery)
             })
@@ -677,7 +677,7 @@ const PopupImg = ({loyautId,images, setImages,setActiveModal}) => {
             "Authorization": "Bearer " + token
         }
 
-        request(`${BackUrl}add_gallery/${selected[0].id}`,"POST",data,headers1)
+        request(`${BackUrl}home_page/add_gallery/${selected[0].id}`,"POST",data,headers1)
             .then((res) => {
                 setActiveModal(false)
                 setImages(res.gallery)

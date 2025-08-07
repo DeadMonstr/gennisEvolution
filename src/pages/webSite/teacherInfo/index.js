@@ -92,7 +92,7 @@ const TeacherInfo = () => {
 
     const onChange = (id) => {
         if (typeof id === "number" && id !== 0)
-            request(`${BackUrl}get_student_in_group/${id}`)
+            request(`${BackUrl}home_page/get_student_in_group/${id}`)
                 .then(res => {
                     console.log(res)
                     dispatch(fetchedStudents(res?.students))

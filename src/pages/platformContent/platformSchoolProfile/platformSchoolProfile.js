@@ -122,7 +122,7 @@ const Info = () => {
 
     const onDelete = (data) => {
         if (data === "yes") {
-            request(`${BackUrl}crud_school/${info.id}`,"DELETE", null, headers())
+            request(`${BackUrl}school/crud_school/${info.id}`,"DELETE", null, headers())
                 .then(res => {
                     setDeleteModal(false)
                     dispatch(setMessage({
@@ -199,7 +199,7 @@ const ChangeSchool = ({info,setActive}) => {
     const {request} = useHttp()
 
     useEffect(() => {
-        request(`${BackUrl}school_details`,"GET",null,headers())
+        request(`${BackUrl}school/school_details`,"GET",null,headers())
             .then(res => {
                 setSchools(res.school_numbers)
                 setRegions(res.regions)
@@ -209,7 +209,7 @@ const ChangeSchool = ({info,setActive}) => {
 
     useEffect(() => {
         if (region) {
-            request(`${BackUrl}school_details/${region}`,"GET",null,headers())
+            request(`${BackUrl}school/school_details/${region}`,"GET",null,headers())
                 .then(res => {
                     setDistricts(res.districts)
                 })
@@ -243,7 +243,7 @@ const ChangeSchool = ({info,setActive}) => {
 
 
 
-        request(`${BackUrl}crud_school/${id}`,"PUT",JSON.stringify(data),headers())
+        request(`${BackUrl}school/crud_school/${id}`,"PUT",JSON.stringify(data),headers())
             .then(res => {
                 dispatch(setMessage({
                     msg: "Maktab muvaffaqiyatli o'zgartirildi",

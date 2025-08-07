@@ -14,7 +14,7 @@ export const  fetchSchools = createAsyncThunk(
     'schoolsSlice/fetchSchools',
     async () => {
         const {request} = useHttp();
-        return await request(`${BackUrl}crud_school`,"GET",null,headers())
+        return await request(`${BackUrl}school/crud_school`,"GET",null,headers())
     }
 )
 

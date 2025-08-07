@@ -36,7 +36,7 @@ export const fetchSchoolInfo = createAsyncThunk(
     async (id) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}crud_school/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}school/crud_school/${id}`, "GET", null, headers())
     }
 )
 // export const  fetchSchoolDirectors = createAsyncThunk(

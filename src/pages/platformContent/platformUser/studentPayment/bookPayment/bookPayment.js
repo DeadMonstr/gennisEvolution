@@ -41,7 +41,7 @@ const BookPayment = () => {
         }
 
 
-        request(`${BackUrl}book_payment/${userId}`,"POST",JSON.stringify(newData),headers())
+        request(`${BackUrl}account/book_payment/${userId}`,"POST",JSON.stringify(newData),headers())
             .then( res => {
 
                 if (res.success) {

@@ -111,7 +111,7 @@ const PlatformEmployees = () => {
             ...data,
             user_id: deleteStId
         }
-        request(`${BackUrl}delete_staff/${deleteStId}`, "DELETE", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/delete_staff/${deleteStId}`, "DELETE", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

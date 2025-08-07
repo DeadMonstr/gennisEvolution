@@ -70,7 +70,7 @@ const MonthAccountingBook = () => {
                 type: changingData.type,
                 ...data
             }
-            request(`${BackUrl}delete_campus_money/${changingData.id}`,"POST",JSON.stringify(newData),headers())
+            request(`${BackUrl}book/delete_campus_money/${changingData.id}`,"POST",JSON.stringify(newData),headers())
                 .then( res => {
                     if (res.success) {
                         dispatch(setMessage({
@@ -96,7 +96,7 @@ const MonthAccountingBook = () => {
 
     const changePaymentTypeData = (id,value) => {
         setActiveChangeModal(false)
-        request(`${BackUrl}change_campus_money2/${id}/${value}`,"GET",null,headers())
+        request(`${BackUrl}book/change_campus_money2/${id}/${value}`,"GET",null,headers())
             .then( res => {
                 if (res.success) {
 
@@ -298,7 +298,7 @@ const PaymentModal = ({monthId, money, setActiveChangeModal}) => {
         const newData = {
             ...data,
         }
-        request(`${BackUrl}campus_money/${monthId}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}book/campus_money/${monthId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

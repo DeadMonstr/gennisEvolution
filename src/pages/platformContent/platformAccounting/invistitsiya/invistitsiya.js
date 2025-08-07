@@ -169,7 +169,7 @@ const Invistitsiya = ({locationId, path}) => {
             payment_type_id: Number(radioSelect),
             // location_id: locationId
         }
-        request(`${BackUrl}investment/${locationId}` , "POST" , JSON.stringify(res) , headers())
+        request(`${BackUrl}account/investment/${locationId}` , "POST" , JSON.stringify(res) , headers())
             .then(res => {
                 console.log(res)
                 dispatch(setMessage({
@@ -246,7 +246,7 @@ const Invistitsiya = ({locationId, path}) => {
         const {id} = data
 
 
-        request(`${BackUrl}delete_investment/${id}`, "DELETE", JSON.stringify(data), headers())
+        request(`${BackUrl}account/delete_investment/${id}`, "DELETE", JSON.stringify(data), headers())
             .then(res => {
                 dispatch(deleteAccDataItem({id: id}))
                     dispatch(setMessage({
@@ -445,7 +445,7 @@ const CreatCapital = ({locationId, setMsg, setTypeMsg, setActiveMessage, setActi
         }
 
 
-        request(`${BackUrl}investment/${locationId}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/investment/${locationId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                     reset()
                     dispatch(setMessage({

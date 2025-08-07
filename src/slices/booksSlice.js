@@ -27,7 +27,7 @@ export const  fetchBooksOverheadData = createAsyncThunk(
     async (data) => {
         const {isArchive} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}book_overhead2/${isArchive ? "archive" : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}book/book_overhead2/${isArchive ? "archive" : ""}`,"GET",null,headers())
     }
 )
 
@@ -35,7 +35,7 @@ export const  fetchBooksAccData = createAsyncThunk(
     'booksSlice/fetchAccData',
     async (data) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}campus_account/${data.type}/${data.id ? data.id: ""}`,"GET",null,headers())
+        return await request(`${BackUrl}book/campus_account/${data.type}/${data.id ? data.id: ""}`,"GET",null,headers())
     }
 )
 
@@ -45,7 +45,7 @@ export const  fetchMonthBooksAcc = createAsyncThunk(
         const {monthId} = data
 
         const {request} = useHttp();
-        return await request(`${BackUrl}campus_account_inside/${monthId}`,"GET",null,headers())
+        return await request(`${BackUrl}book/campus_account_inside/${monthId}`,"GET",null,headers())
     }
 )
 
@@ -56,7 +56,7 @@ export const  fetchDeletedBooksOverheadData = createAsyncThunk(
     async (data) => {
         const {isArchive} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}deleted_book_overhead2/${isArchive ? "archive" : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}book/deleted_book_overhead2/${isArchive ? "archive" : ""}`,"GET",null,headers())
     }
 )
 
@@ -65,7 +65,7 @@ export const  fetchHistoryOverheadBooks = createAsyncThunk(
     'booksSlice/fetchHistoryOverheadBooks',
     async () => {
         const {request} = useHttp();
-        return await request(`${BackUrl}editor_balance_history2`,"GET",null,headers())
+        return await request(`${BackUrl}book/editor_balance_history2`,"GET",null,headers())
     }
 )
 
@@ -74,7 +74,7 @@ export const  fetchBooks = createAsyncThunk(
     async () => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}book`,"GET",null)
+        return await request(`${BackUrl}book/book`,"GET",null)
     }
 )
 export const  fetchBasketBooks = createAsyncThunk(
@@ -82,7 +82,7 @@ export const  fetchBasketBooks = createAsyncThunk(
     async () => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}buy_book`,"GET",null,headers())
+        return await request(`${BackUrl}book/buy_book`,"GET",null,headers())
     }
 )
 
@@ -91,7 +91,7 @@ export const  fetchOrderedBooks = createAsyncThunk(
     async (type) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}filtered_orders_books2/${type ? type : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}book/filtered_orders_books2/${type ? type : ""}`,"GET",null,headers())
     }
 )
 
@@ -101,7 +101,7 @@ export const  fetchDeletedOrdersBooks = createAsyncThunk(
     async () => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}deleted_orders`,"GET",null,headers())
+        return await request(`${BackUrl}book/deleted_orders`,"GET",null,headers())
     }
 )
 
@@ -113,7 +113,7 @@ export const  fetchBook = createAsyncThunk(
 
         const {request} = useHttp();
 
-        return await request(`${BackUrl}book_inside/${id}`,"GET",null)
+        return await request(`${BackUrl}book/book_inside/${id}`,"GET",null)
     }
 )
 

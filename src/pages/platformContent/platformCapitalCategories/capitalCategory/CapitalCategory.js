@@ -95,7 +95,7 @@ const CapitalCategory = () => {
     const navigate = useNavigate()
     const onDelete = (data) => {
         if (data === "yes") {
-            request(`${BackUrl}add_capital_category`, "DELETE", JSON.stringify({category_id: category.id}), headers())
+            request(`${BackUrl}account/add_capital_category`, "DELETE", JSON.stringify({category_id: category.id}), headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: res.msg,
@@ -110,7 +110,7 @@ const CapitalCategory = () => {
 
     const onDeleteCapital = (data) => {
         if (data === "yes") {
-            request(`${BackUrl}add_capital`, "DELETE", JSON.stringify({capital_id: isChangedCapital.id}), headers())
+            request(`${BackUrl}account/add_capital`, "DELETE", JSON.stringify({capital_id: isChangedCapital.id}), headers())
                 .then(res => {
                     setActiveAddCapital(false)
                     setCanDeleteCapital(false)
@@ -134,7 +134,7 @@ const CapitalCategory = () => {
         formData.append(`info`, JSON.stringify({...data, category_id: category.id,}));
         setLoading(true)
 
-        request(`${BackUrl}add_capital_category`, typeModal === "add" ? 'POST' : "PUT", formData, headersImg())
+        request(`${BackUrl}account/add_capital_category`, typeModal === "add" ? 'POST' : "PUT", formData, headersImg())
             .then(res => {
                 if (typeModal === "change") {
                     dispatch(onChangeCategory({category: res.category}))
@@ -166,7 +166,7 @@ const CapitalCategory = () => {
         }));
         setLoading(true)
 
-        request(`${BackUrl}add_capital/${locationId}`, isChangedCapital.id ? "PUT" : "POST", formData, headersImg())
+        request(`${BackUrl}account/add_capital/${locationId}`, isChangedCapital.id ? "PUT" : "POST", formData, headersImg())
             .then(res => {
                 if (isChangedCapital.id) {
                     setIsChangedCapital({})
@@ -406,7 +406,7 @@ const CapitalCategoryIndex = (props) => {
     }, [isDeletedCapital])
 
     const handleDownload = () => {
-        fetch(`${BackUrl}get_capital_numbers`, {
+        fetch(`${BackUrl}account/get_capital_numbers`, {
             headers: headers(),
             body: JSON.stringify({category_id: category.id}),
             method: "POST"
@@ -531,7 +531,7 @@ const CapitalTerm = ({id}) => {
 
     useEffect(() => {
         if (id)
-            request(`${BackUrl}capital_info/${id}`, "GET", null, headers())
+            request(`${BackUrl}account/capital_info/${id}`, "GET", null, headers())
                 .then(res => {
                     setCapitalTerm(res.terms)
                 })

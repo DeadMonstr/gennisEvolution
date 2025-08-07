@@ -8,14 +8,14 @@ export const fetchYear = createAsyncThunk(
     async (branchId) => {
         const {request} = useHttp()
 
-        return await request(`${BackUrl}month_years_calendar` , "GET" , null , headers())
+        return await request(`${BackUrl}account/month_years_calendar` , "GET" , null , headers())
     }
 )
 export const fetchData = createAsyncThunk(
     "otchotSlice/fetchData",
     async ({id , data}) => {
         const {request} = useHttp()
-       return await request(`${BackUrl}debit_credit${id ? `/${id}` : "_account"}`, "POST", JSON.stringify(data), headers())
+       return await request(`${BackUrl}account/debit_credit${id ? `/${id}` : "_account"}`, "POST", JSON.stringify(data), headers())
 
     }
 )

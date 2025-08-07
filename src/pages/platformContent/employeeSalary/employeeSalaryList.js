@@ -38,7 +38,7 @@ const EmployeeSalaryList = () => {
     },[])
 
     useEffect(() => {
-        request(`${BackUrl}salary_info/${userId}`, "GET", null, headers())
+        request(`${BackUrl}account/salary_info/${userId}`, "GET", null, headers())
             .then(res => {
                 setLocations(res.locations)
                 if (res.years.length === 1) {

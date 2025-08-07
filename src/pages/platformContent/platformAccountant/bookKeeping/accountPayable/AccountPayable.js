@@ -226,7 +226,7 @@ const AccountPayable = ({locations, dataPayable}) => {
         // dispatch(changePaymentType({id: id ,typePayment: value}))
 
 
-        request(`${BackUrl}crud_account_payable/${changingData.id}/`, "POST", JSON.stringify({payment_type_id: value}), headers())
+        request(`${BackUrl}account/crud_account_payable/${changingData.id}/`, "POST", JSON.stringify({payment_type_id: value}), headers())
             .then(res => {
                 console.log(res)
                 dispatch(changePaymentTypePayable({id: id, data: res.payment_type}))
@@ -252,7 +252,7 @@ const AccountPayable = ({locations, dataPayable}) => {
         setActiveChangeModal(false)
 
 
-        request(`${BackUrl}delete_account_payable/${changingData.id}/`, "POST", JSON.stringify(data), headers())
+        request(`${BackUrl}account/delete_account_payable/${changingData.id}/`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 dispatch(onDeletePayable({id: changingData.id}))
                 dispatch(fetchAccountantBookKeepingTypesMoney())
@@ -268,7 +268,7 @@ const AccountPayable = ({locations, dataPayable}) => {
     const onSubmit = (data) => {
 
 
-        request(`${BackUrl}add_account_payable`, "POST", JSON.stringify({
+        request(`${BackUrl}account/add_account_payable`, "POST", JSON.stringify({
             ...data,
             location_id: loc,
             account_id: Number(account)

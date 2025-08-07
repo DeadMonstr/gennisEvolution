@@ -45,7 +45,7 @@ const PlatformInvistitsiya = () => {
             calendar_year: year,
             // location_id: locationId
         }
-        request(`${BackUrl}investment/${locationId}` , "POST" , JSON.stringify(res) , headers())
+        request(`${BackUrl}account/investment/${locationId}` , "POST" , JSON.stringify(res) , headers())
             .then(res => {
                 console.log(res)
                 dispatch(setMessage({

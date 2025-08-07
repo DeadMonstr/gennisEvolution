@@ -1,28 +1,27 @@
-// eslint-disable-next-line no-unused-vars
+
 import React, {useEffect, useMemo, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
+import {useLocation} from "react-router-dom";
 import {
     deleteAccDataItem,
     fetchAccData,
     fetchDeletedAccData, onChangeAccountingBtns, onChangeAccountingPage, onChangeFetchedDataType,
 } from "slices/accountingSlice";
 import {fetchFilters} from "slices/filtersSlice";
-import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
-import {useLocation} from "react-router-dom";
+import {useHttp} from "hooks/http.hook";
 import {getUIPageByPath, setPagePosition} from "slices/uiSlice";
 import useFilteredData from "pages/platformContent/platformAccounting/useFilteredData";
 import {setMessage} from "slices/messageSlice";
 import Button from "components/platform/platformUI/button";
-import SampleAccounting from "components/platform/platformSamples/sampleAccaunting/SampleAccounting";
 import AccountingTable from "components/platform/platformUI/tables/accountingTable";
 import Pagination from "components/platform/platformUI/pagination";
 
+const SampleAccounting = React.lazy(() => import("components/platform/platformSamples/sampleAccaunting/SampleAccounting"))
 
+const StudentsDiscount = ({locationId, path}) => {
 
-const StudentsBookPayment = ({locationId, path}) => {
-
-    const {data, fetchAccDataStatus, fetchedDataType, btns} = useSelector(state => state.accounting)
+    const {data, fetchAccDataStatus, fetchedDataType, btns,location} = useSelector(state => state.accounting)
     const [isChangedData, setIsChangedData] = useState(false)
     const [isDeleted, setIsDeleted] = useState(false)
 
@@ -36,36 +35,35 @@ const StudentsBookPayment = ({locationId, path}) => {
     const dispatch = useDispatch()
     const {request} = useHttp()
 
-
-    const [filteredDataOverheads,searchedDataOverheads] = useFilteredData(data.data?.book_overheads, currentPage, PageSize)
-
-    const [filteredDataPayments,searchedDataPayments] = useFilteredData(data.data?.book_payments, currentPage, PageSize)
+    const [filteredData,searchedData] = useFilteredData(data.data, currentPage, PageSize)
 
     useEffect(() => {
-        if (fetchedDataType !== path || !data.data.length) {
+        if (fetchedDataType !== path || !data.data.length || locationId !== location) {
             const data = {
                 locationId,
-                type: "book_payments"
+                type: "discounts"
             }
             dispatch(fetchAccData(data))
             const newData = {
-                name: "accounting_payment",
-                location: locationId
+                name: "discounts",
+                location: locationId,
+                type: ""
             }
             dispatch(fetchFilters(newData))
             dispatch(onChangeFetchedDataType({type: path}))
         }
-    }, [])
+    }, [locationId])
 
-    useEffect(() => {
-        dispatch(onChangeAccountingPage({value: path}))
-    },[])
+
+    // useEffect(() => {
+    //     dispatch(onChangeAccountingPage({value: path}))
+    // },[])
 
 
     useEffect(() => {
         let data = {
             locationId,
-            type: "book_payments"
+            type: "discounts"
         }
         for (let item of btns) {
             if (item.active) {
@@ -92,28 +90,33 @@ const StudentsBookPayment = ({locationId, path}) => {
             dispatch(fetchAccData(data))
         }
     }, [btns, isChangedData])
-
-
     useEffect(() => {
         if (oldPage) {
             setCurrentPage(oldPage)
         }
     },[])
-
-
-    const activeItems = () => {
+    const activeItems = ()=> {
         if (isDeleted) {
             return {
-                price: true,
+                name: true,
+                surname : true,
+                payment: true,
+                datePayment: true,
+                delete : false,
                 date : true,
+                reason: true
             }
         }
         return {
             name: true,
-            price: true,
+            surname : true,
+            payment: true,
+            datePayment: true,
+            delete : true,
             date : true
         }
     }
+
 
 
     const onDelete = (data) => {
@@ -139,7 +142,7 @@ const StudentsBookPayment = ({locationId, path}) => {
 
 
     const changePaymentTypeData = (id, value, userId) => {
-        request(`${BackUrl}account/change_teacher_salary/${id}/${value}/${userId}`, "GET", null, headers())
+        request(`${BackUrl}change_teacher_salary/${id}/${value}/${userId}`, "GET", null, headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -160,10 +163,11 @@ const StudentsBookPayment = ({locationId, path}) => {
 
     const getArchive = (isActive) => {
         const newData = {
-            name: "accounting_payment",
+            name: "debt_students",
             location: locationId,
             type: isActive ? "archive" : ""
         }
+
         if (isActive) {
             dispatch(fetchFilters(newData))
         } else {
@@ -210,8 +214,9 @@ const StudentsBookPayment = ({locationId, path}) => {
 
 
         return newBtns
-    }, [btns])
 
+
+    }, [btns])
 
     const funcsSlice = {
         changePaymentTypeData,
@@ -226,17 +231,13 @@ const StudentsBookPayment = ({locationId, path}) => {
     }
 
 
-    let summa = "price"
+    let summa = "payment"
 
 
-    let sum1 = filteredDataOverheads?.reduce((a, c) => {
+    let sum = filteredData?.reduce((a, c) => {
         return a + c[summa]
     }, 0);
 
-
-    let sum2 = filteredDataPayments?.reduce((a, c) => {
-        return a + c[summa]
-    }, 0);
 
 
     return (
@@ -244,54 +245,25 @@ const StudentsBookPayment = ({locationId, path}) => {
             <SampleAccounting
                 links={links}
             >
-                <div style={{display: "flex",justifyContent:"center", gap: "1rem"}}>
-                    <div style={{width: "50%"}}>
-                        <AccountingTable
-                            sum={sum1}
-                            // cache={true}
-                            typeOfMoney={data.typeOfMoney}
-                            fetchUsersStatus={fetchAccDataStatus}
-                            funcSlice={funcsSlice}
-                            activeRowsInTable={activeItems()}
-                            users={filteredDataOverheads}
-                        />
+                <AccountingTable
+                    sum={sum}
+                    // cache={true}
+                    typeOfMoney={data.typeOfMoney}
+                    fetchUsersStatus={fetchAccDataStatus}
+                    funcSlice={funcsSlice}
+                    activeRowsInTable={activeItems()}
+                    users={filteredData}
+                />
 
 
 
-                        <Pagination
-                            className="pagination-bar"
-                            currentPage={currentPage}
-                            totalCount={searchedDataOverheads?.length || 0}
-                            pageSize={PageSize}
-                            onPageChange={page => onChangedPage(page)}
-                        />
-                    </div>
-                    <div style={{width: "50%"}}>
-                        <AccountingTable
-                            sum={sum2}
-                            // cache={true}
-                            typeOfMoney={data.typeOfMoney}
-                            fetchUsersStatus={fetchAccDataStatus}
-                            funcSlice={funcsSlice}
-                            activeRowsInTable={activeItems()}
-                            users={filteredDataPayments}
-                        />
-
-
-
-                        <Pagination
-                            className="pagination-bar"
-                            currentPage={currentPage}
-                            totalCount={searchedDataPayments?.length || 0}
-                            pageSize={PageSize}
-                            onPageChange={page => onChangedPage(page)}
-                        />
-                    </div>
-
-                </div>
-
-
-
+                <Pagination
+                    className="pagination-bar"
+                    currentPage={currentPage}
+                    totalCount={searchedData.length}
+                    pageSize={PageSize}
+                    onPageChange={page => onChangedPage(page)}
+                />
 
             </SampleAccounting>
         </>
@@ -299,6 +271,4 @@ const StudentsBookPayment = ({locationId, path}) => {
 };
 
 
-
-
-export default StudentsBookPayment;
+export default StudentsDiscount;

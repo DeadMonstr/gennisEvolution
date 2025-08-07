@@ -27,7 +27,7 @@ export const  fetchEmployeeSalaryMonth = createAsyncThunk(
         const {monthId,userId} = data
 
         const {request} = useHttp();
-        return await request(`${BackUrl}account/teacher_salary_inside/${monthId}/${userId}`,"GET",null,headers())
+        return await request(`${BackUrl}teacher_salary_inside/${monthId}/${userId}`,"GET",null,headers())
     }
 )
 

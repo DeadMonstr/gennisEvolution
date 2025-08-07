@@ -38,7 +38,7 @@ const Charity = () => {
         }
 
 
-        request(`${BackUrl}charity/${userId}`,"POST",JSON.stringify(newData),headers())
+        request(`${BackUrl}account/charity/${userId}`,"POST",JSON.stringify(newData),headers())
             .then( res => {
                 if (res.success) {
                     dispatch(setMessage({

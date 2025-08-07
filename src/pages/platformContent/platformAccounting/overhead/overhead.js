@@ -137,7 +137,7 @@ const Overhead = ({locationId, path}) => {
         const {id} = data
 
         dispatch(deleteAccDataItem({id: id}))
-        request(`${BackUrl}delete_overhead/${id}`, "POST", JSON.stringify(data), headers())
+        request(`${BackUrl}account/delete_overhead/${id}`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -166,7 +166,7 @@ const Overhead = ({locationId, path}) => {
     const changePaymentTypeData = (id, value, userId) => {
 
 
-        request(`${BackUrl}change_overhead/${id}/${value}`, "GET", null, headers())
+        request(`${BackUrl}account/change_overhead/${id}/${value}`, "GET", null, headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -406,7 +406,7 @@ const CreatOverhead = ({locationId, setMsg, setTypeMsg, setActiveMessage, setAct
             }
         }
 
-        request(`${BackUrl}add_overhead/${locationId}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/add_overhead/${locationId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     reset()

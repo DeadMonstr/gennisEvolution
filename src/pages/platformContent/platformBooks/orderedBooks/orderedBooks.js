@@ -146,7 +146,7 @@ const OrderedBooks = () => {
 
     const changePaymentTypeTransfer = (id, value) => {
         setActiveChangeModal(false)
-        request(`${BackUrl}change_branch_money/${id}/${value}`, "GET", null, headers())
+        request(`${BackUrl}book/change_branch_money/${id}/${value}`, "GET", null, headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -161,7 +161,7 @@ const OrderedBooks = () => {
 
     const deleteTransfer = (data) => {
 
-        request(`${BackUrl}delete_branch_payment2/${changingData.id}`, "GET", null, headers())
+        request(`${BackUrl}book/delete_branch_payment2/${changingData.id}`, "GET", null, headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -181,7 +181,7 @@ const OrderedBooks = () => {
         const newData = {
             ...data
         }
-        request(`${BackUrl}delete_book_order/${changingData.id}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}book/delete_book_order/${changingData.id}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -352,7 +352,7 @@ const MoneyTransfers = ({setActiveChangeModal, books}) => {
             ...data,
             books: books.filter(item => item.admin_confirm)
         }
-        request(`${BackUrl}send_campus_money`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}book/send_campus_money`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

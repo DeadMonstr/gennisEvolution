@@ -668,7 +668,7 @@ const CreatOverhead = ({locationId, setMsg, setTypeMsg, setActiveMessage, setAct
         }
 
 
-        request(`${BackUrl}add_overhead/${locationId}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/add_overhead/${locationId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     reset()
@@ -834,7 +834,7 @@ const CreatCapital = ({locationId, setMsg, setTypeMsg, setActiveMessage, setActi
         }
 
 
-        request(`${BackUrl}add_capital/${locationId}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/add_capital/${locationId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     reset()
