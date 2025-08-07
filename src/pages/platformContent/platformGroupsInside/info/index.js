@@ -14,7 +14,7 @@ import PercentageTests from "pages/platformContent/platformGroupsInside/info/per
 
 const Info = () => {
 
-    const {data, id, statistics, fetchGroupStatus,percentageTest} = useSelector(state => state.group)
+    const {data, id, statistics, fetchGroupStatus, percentageTest} = useSelector(state => state.group)
     const {role} = useAuth()
     const dispatch = useDispatch()
     const stringCheck = (name, length = 10) => {
@@ -29,7 +29,8 @@ const Info = () => {
     }
 
     useEffect(() => {
-        dispatch(fetchStatistics(id))
+        if (id)
+            dispatch(fetchStatistics(id))
     }, [id])
 
     const navigate = useNavigate()

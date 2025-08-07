@@ -23,7 +23,7 @@ const Index = () => {
 
         let day = date.toLocaleString('en-us', {weekday: 'long'})
 
-        request(`${BackUrl}view_table2/${locationId}/${selectedDay ? selectedDay : day}`,"GET",null,headers())
+        request(`${BackUrl}time_table/view_table2/${locationId}/${selectedDay ? selectedDay : day}`,"GET",null,headers())
             .then(res => {
                 console.log(res)
                 if (days?.length === 0) {

@@ -357,7 +357,7 @@ const PlatformTaskManager = () => {
             dispatch(onDelNewStudents({id: res.id}))
 
 
-            request(`${BackUrl}call_to_new_students`, "POST", JSON.stringify(res), headers())
+            request(`${BackUrl}task_new_students/call_to_new_students`, "POST", JSON.stringify(res), headers())
                 .then(res => {
 
 
@@ -383,7 +383,7 @@ const PlatformTaskManager = () => {
                 ...res
             }
 
-            request(`${BackUrl}call_to_debts`, "POST", JSON.stringify(result), headers())
+            request(`${BackUrl}task_debts/call_to_debts`, "POST", JSON.stringify(result), headers())
                 .then(res => {
 
                     console.log(res)
@@ -397,7 +397,7 @@ const PlatformTaskManager = () => {
 
         } else if (activeMenu === "leads") {
 
-            request(`${BackUrl}task_leads_update/${studentId}`, "POST", JSON.stringify({
+            request(`${BackUrl}task_leads/task_leads_update/${studentId}`, "POST", JSON.stringify({
                 ...res,
                 location_id: locationId
             }), headers())
@@ -433,7 +433,7 @@ const PlatformTaskManager = () => {
             status: studentId?.status,
             ...data
         }
-        request(`${BackUrl}task_leads_delete/${studentId?.id}`, "DELETE", JSON.stringify(res), headers())
+        request(`${BackUrl}task_leads/task_leads_delete/${studentId?.id}`, "DELETE", JSON.stringify(res), headers())
             .then((res) => {
                 setIsConfirm(false)
                 setDellLead(false)

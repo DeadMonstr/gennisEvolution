@@ -64,7 +64,7 @@ const StudentGroupsAttendance = () => {
                 year,
                 month
             }
-            request(`${BackUrl}combined_attendances/${studentId}`, "POST", JSON.stringify(data),headers())
+            request(`${BackUrl}group/combined_attendances/${studentId}`, "POST", JSON.stringify(data),headers())
                 .then(res => {
                     console.log(res)
                     dispatch(setStudentFilteredAttendances(res))

@@ -30,7 +30,7 @@ const BlockUser = ({userId}) => {
     const onClick = () => {
 
 
-        request(`${BackUrl}add_blacklist/${userId}`, "POST", JSON.stringify({reason: reason}), headers())
+        request(`${BackUrl}task_debts/add_blacklist/${userId}`, "POST", JSON.stringify({reason: reason}), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

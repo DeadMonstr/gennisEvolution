@@ -126,7 +126,7 @@ const UserContent = ({userId}) => {
     const {request} = useHttp()
     const getConfirmDelete = (name) => {
         if (name === "yes") {
-            request(`${BackUrl}delete_group/`,"GET",null, headers())
+            request(`${BackUrl}group_change/delete_group/`,"GET",null, headers())
                 .then(res => console.log(res))
         }
         setActiveChangeModal(false)

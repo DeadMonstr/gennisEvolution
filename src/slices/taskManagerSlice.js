@@ -76,7 +76,7 @@ export const fetchDebtorsData = createAsyncThunk(
         const {locationId,date} = data
 
         const {request} = useHttp();
-        return await request(`${BackUrl}student_debts_progress/${locationId}/${date}`, "GET", null, headers())
+        return await request(`${BackUrl}task_debts/student_debts_progress/${locationId}/${date}`, "GET", null, headers())
     }
 )
 
@@ -87,7 +87,7 @@ export const fetchCompletedDebtorsData = createAsyncThunk(
         const {locationId,date} = data
 
         const {request} = useHttp();
-        return await request(`${BackUrl}student_debts_completed/${locationId}/${date}`, "GET", null, headers())
+        return await request(`${BackUrl}task_debts/student_debts_completed/${locationId}/${date}`, "GET", null, headers())
     }
 )
 
@@ -98,7 +98,7 @@ export const fetchNewStudentsTaskData = createAsyncThunk(
         const {locationId,date} = data
         const {request} = useHttp();
 
-        return await request(`${BackUrl}task_new_students/${locationId}/${date}`, "GET", null, headers())
+        return await request(`${BackUrl}task_new_students/task_new_students/${locationId}/${date}`, "GET", null, headers())
     }
 )
 
@@ -108,7 +108,7 @@ export const fetchCompletedNewStudentsTaskData = createAsyncThunk(
         const {locationId,date} = data
         const {request} = useHttp();
 
-        return await request(`${BackUrl}completed_new_students/${locationId}/${date}`, "GET", null, headers())
+        return await request(`${BackUrl}task_new_students/completed_new_students/${locationId}/${date}`, "GET", null, headers())
     }
 )
 
@@ -119,7 +119,7 @@ export const fetchLeadsData = createAsyncThunk(
         const {locationId,date} = data
         const {request} = useHttp();
 
-        return await request(`${BackUrl}task_leads/${locationId}/${date}`, "GET", null, headers())
+        return await request(`${BackUrl}task_leads/task_leads/${locationId}/${date}`, "GET", null, headers())
     }
 )
 
@@ -129,7 +129,7 @@ export const fetchCompletedLeadsData = createAsyncThunk(
         const {locationId,date} = data
         const {request} = useHttp();
 
-        return await request(`${BackUrl}completed_leads/${locationId}/${date}`, "GET", null, headers())
+        return await request(`${BackUrl}task_leads/completed_leads/${locationId}/${date}`, "GET", null, headers())
     }
 )
 
@@ -140,7 +140,7 @@ export const fetchUserDataWithHistory = createAsyncThunk(
         const {id,type} = data
 
         const {request} = useHttp();
-        return await request(`${BackUrl}get_comment/${id}/${type}`, "GET", null, headers())
+        return await request(`${BackUrl}task_debts/get_comment/${id}/${type}`, "GET", null, headers())
     }
 )
 

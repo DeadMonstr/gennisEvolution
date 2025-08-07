@@ -163,7 +163,7 @@ const GroupInfo = ({groupId}) => {
 
     const getConfirmDelete = (name) => {
         if (name === "yes") {
-            request(`${BackUrl}delete_group/${groupId}`, "GET", null, headers())
+            request(`${BackUrl}group_change/delete_group/${groupId}`, "GET", null, headers())
                 .then(res => console.log(res))
         }
         setActiveChangeModal(false)

@@ -21,7 +21,7 @@ export const fetchGroups = createAsyncThunk(
     'groupsSlice/fetchGroups',
     async (loc) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}groups/${loc}`,"GET",null,headers())
+        return await request(`${BackUrl}group/groups/${loc}`,"GET",null,headers())
     }
 )
 
@@ -41,7 +41,7 @@ export const fetchGroupsById = createAsyncThunk(
     'groupsSlice/fetchGroupsById',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}groups_by_id/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}group/groups_by_id/${id}`,"GET",null,headers())
     }
 )
 
@@ -49,7 +49,7 @@ export const fetchGroupsByStudentId = createAsyncThunk(
     'groupsSlice/fetchGroupsByStudentId',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}my_groups/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}group/my_groups/${id}`,"GET",null,headers())
     }
 )
 

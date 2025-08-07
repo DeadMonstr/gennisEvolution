@@ -4,20 +4,20 @@ import "./platformGroupsToUsers.sass"
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchGroupsByStudentId} from "slices/groupsSlice";
-import { BackUrlForDoc} from "constants/global";
+import {BackUrlForDoc} from "constants/global";
 import user_img from "assets/user-interface/user_image.png";
-
 
 
 const PlatformGroupsToUsers = () => {
     const {id} = useSelector(state => state.me)
     const {groups} = useSelector(state => state.groups)
     const dispatch = useDispatch()
-    
-    useEffect(() =>{
-       dispatch(fetchGroupsByStudentId(id))
-    },[dispatch, id])
-    
+
+    useEffect(() => {
+        if (id)
+            dispatch(fetchGroupsByStudentId(id))
+    }, [dispatch, id])
+
 
     const renderGroups = useCallback(() => {
         return groups.map(item => {
@@ -38,7 +38,7 @@ const PlatformGroupsToUsers = () => {
                 </Link>
             )
         })
-    },[groups])
+    }, [groups])
 
     const renderedGroups = renderGroups()
 

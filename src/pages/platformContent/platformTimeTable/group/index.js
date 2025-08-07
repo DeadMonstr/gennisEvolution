@@ -16,7 +16,7 @@ const Index = () => {
     const {request} = useHttp()
 
     useEffect(() => {
-        request(`${BackUrl}group_time_table/${groupId}`,"GET",null,headers())
+        request(`${BackUrl}group/group_time_table/${groupId}`,"GET",null,headers())
             .then(res => {
                 if (res.success) {
                     setData(res)

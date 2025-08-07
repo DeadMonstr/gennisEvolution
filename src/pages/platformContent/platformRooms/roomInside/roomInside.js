@@ -245,7 +245,7 @@ const ChangeInfoRoom = React.memo(({data,setActiveChangeModal,roomId}) => {
 
 
 
-        request(`${BackUrl}edit_room/${data.id}`, "POST",JSON.stringify(newData),headers())
+        request(`${BackUrl}room/edit_room/${data.id}`, "POST",JSON.stringify(newData),headers())
             .then(res => {
                 dispatch(setMessage({
                     msg: res.msg,
@@ -419,7 +419,7 @@ const ChangeRoomPhoto = ({data,setActiveChangeModal,roomId}) => {
     const dispatch = useDispatch()
 
     const deletePhoto = (id) => {
-        request(`${BackUrl}delete_room_img/${id}`, "GET",null,headers())
+        request(`${BackUrl}room/delete_room_img/${id}`, "GET",null,headers())
             .then(res => {
                 dispatch(setMessage({
                     msg: res.msg,
@@ -454,7 +454,7 @@ const ChangeRoomPhoto = ({data,setActiveChangeModal,roomId}) => {
         }
 
 
-        request(`${BackUrl}upload_room_img/${roomId}/change`,"POST",images,headers1)
+        request(`${BackUrl}room/upload_room_img/${roomId}/change`,"POST",images,headers1)
             .then(res => {
                 dispatch(setMessage({
                     msg: res.msg,

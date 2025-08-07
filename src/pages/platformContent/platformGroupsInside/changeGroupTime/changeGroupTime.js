@@ -117,7 +117,7 @@ const ChangeGroupTime = () => {
             lessons
         }
 
-        request(`${BackUrl}check_time_group/${groupId}`, "POST",JSON.stringify(data),headers())
+        request(`${BackUrl}group_change/check_time_group/${groupId}`, "POST",JSON.stringify(data),headers())
             .then(res => {
                 console.log(res)
                 if (res.success) {

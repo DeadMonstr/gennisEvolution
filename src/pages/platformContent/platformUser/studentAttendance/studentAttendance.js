@@ -21,6 +21,7 @@ const StudentAttendance = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
+        console.log("hello")
         const data = {
             studentId,month,groupId,year
         }

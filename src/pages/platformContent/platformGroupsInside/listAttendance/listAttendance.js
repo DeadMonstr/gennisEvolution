@@ -30,8 +30,10 @@ const ListAttendance = () => {
 
 
     useEffect(() => {
-        dispatch(fetchAttendances(groupId))
-        dispatch(fetchGroupDates(groupId))
+        if (groupId) {
+            dispatch(fetchAttendances(groupId))
+            dispatch(fetchGroupDates(groupId))
+        }
     }, [groupId])
 
 
@@ -71,7 +73,7 @@ const ListAttendance = () => {
                 year,
                 month
             }
-            request(`${BackUrl}attendances/${groupId}`, "POST", JSON.stringify(data), headers())
+            request(`${BackUrl}group/attendances/${groupId}`, "POST", JSON.stringify(data), headers())
                 .then(res => {
                     dispatch(setFilteredAttendances({data: res.data.attendance_filter}))
                 })
@@ -166,7 +168,7 @@ const ListAttendance = () => {
 };
 
 
-const SubMakeAttendance = React.memo(({data, groupId }) => {
+const SubMakeAttendance = React.memo(({data, groupId}) => {
 
     const [modalName, setModalName] = useState()
     const [studentId, setStudentId] = useState()
@@ -354,7 +356,7 @@ const SubMakeAttendance = React.memo(({data, groupId }) => {
             return students.map(item => {
                 if (id === item.id) {
                     return {...item, requestType: requestType, requestMsg: requestMsg}
-                    console.log(item , "log")
+                    console.log(item, "log")
                 }
                 return item
             })
@@ -364,7 +366,7 @@ const SubMakeAttendance = React.memo(({data, groupId }) => {
 
     const {request} = useHttp()
 
-    const  onCheckedStudents = (e) => {
+    const onCheckedStudents = (e) => {
 
         e.preventDefault()
         console.log("dasd")

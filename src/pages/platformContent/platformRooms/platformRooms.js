@@ -165,10 +165,10 @@ const RoomsRegister = ({activeModal,setActiveModal,locationId}) => {
             images.append("file", img.images[i].file);
         }
 
-        request(`${BackUrl}create_room/${locationId}`, "POST",JSON.stringify(data),headers())
+        request(`${BackUrl}room/create_room/${locationId}`, "POST",JSON.stringify(data),headers())
             .then(res => {
                 if (res.ok) {
-                    request(`${BackUrl}upload_room_img/${res.id}/new`,"POST",images,headers1)
+                    request(`${BackUrl}room/upload_room_img/${res.id}/new`,"POST",images,headers1)
                 }
             })
             .then(() => {

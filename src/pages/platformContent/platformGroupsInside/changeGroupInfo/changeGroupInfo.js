@@ -96,7 +96,7 @@ const ChangeGroupInfo = () => {
 
 
 
-        request(`${BackUrl}change_group_info/${groupId}`, "POST", JSON.stringify(newData),headers())
+        request(`${BackUrl}group_change/change_group_info/${groupId}`, "POST", JSON.stringify(newData),headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

@@ -69,7 +69,7 @@ export const  fetchAttendances = createAsyncThunk(
     'attendancesSlice/fetchAttendances',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}attendances/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}group/attendances/${id}`,"GET",null,headers())
     }
 )
 
@@ -78,7 +78,7 @@ export const  fetchGroupDates = createAsyncThunk(
     'attendancesSlice/fetchGroupDates',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}group_dates2/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}group/group_dates2/${id}`,"GET",null,headers())
     }
 )
 
@@ -86,7 +86,7 @@ export const  fetchAttendancesStudent = createAsyncThunk(
     'attendancesSlice/fetchAttendancesStudent',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}combined_attendances/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}group/combined_attendances/${id}`,"GET",null,headers())
     }
 )
 
@@ -94,7 +94,7 @@ export const  fetchStudentGroupDates = createAsyncThunk(
     'attendancesSlice/fetchStudentGroupDates',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}student_group_dates2/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}group/student_group_dates2/${id}`,"GET",null,headers())
     }
 )
 
