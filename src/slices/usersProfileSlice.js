@@ -101,7 +101,7 @@ export const fetchUserData = createAsyncThunk(
     async (data) => {
         const {id} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}profile/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}base/profile/${id}`,"GET",null,headers())
     }
 )
 

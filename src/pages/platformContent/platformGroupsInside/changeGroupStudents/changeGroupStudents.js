@@ -39,7 +39,7 @@ const ChangeGroupStudents = () => {
 
     useEffect(() => {
         console.log("route naxxuy")
-        request(`${BackUrl}filtered_groups/${groupId}`, "GET", null, headers())
+        request(`${BackUrl}create_group/filtered_groups/${groupId}`, "GET", null, headers())
             .then(res => {
                 console.log(res,"keldi naxxuy")
                 setGroups(res.groups)
@@ -84,7 +84,7 @@ const ChangeGroupStudents = () => {
             student_id: deleteStId
         }
 
-        request(`${BackUrl}delete_student`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}create_group/delete_student`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

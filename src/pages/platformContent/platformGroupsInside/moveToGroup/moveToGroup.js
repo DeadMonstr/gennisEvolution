@@ -30,7 +30,7 @@ const MoveToGroup = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        request(`${BackUrl}moving_students/${oldGroupId}/${newGroupId}`,"GET",null,headers())
+        request(`${BackUrl}create_group/moving_students/${oldGroupId}/${newGroupId}`,"GET",null,headers())
             .then(res => {
                 if (res.success) {
                     setUsers(res.students)
@@ -246,7 +246,7 @@ const CheckedStudents = React.memo(({users,setUsers,groupId,setActiveModal,oldGr
             reason
         }
 
-        request(`${BackUrl}move_group_time/${oldGroupId}/${newGroupId}`,"POST",JSON.stringify(data),headers())
+        request(`${BackUrl}create_group/move_group_time/${oldGroupId}/${newGroupId}`,"POST",JSON.stringify(data),headers())
             .then(res => {
                 setActiveModal(false)
                 if (res.success) {

@@ -40,7 +40,7 @@ const PlatformAddGroup = () => {
 
         dispatch(fetchFilters(newData))
 
-        request(`${BackUrl}add_group_students2/${groupId}`,"GET",null,headers())
+        request(`${BackUrl}create_group/add_group_students2/${groupId}`,"GET",null,headers())
             .then(res => {
                 if (res.success) {
                     setUsers(res.data)
@@ -290,7 +290,7 @@ const CheckedStudents = React.memo(({users,setUsers,groupId,setActiveModal}) => 
     const onSubmit = (e) => {
         e.preventDefault()
 
-        request(`${BackUrl}add_group_students2/${groupId}`,"POST",JSON.stringify({checkedStudents: users.filter(item => item.checked)}),headers())
+        request(`${BackUrl}create_group/add_group_students2/${groupId}`,"POST",JSON.stringify({checkedStudents: users.filter(item => item.checked)}),headers())
             .then(res => {
                 setActiveModal(false)
                 if (res.success) {

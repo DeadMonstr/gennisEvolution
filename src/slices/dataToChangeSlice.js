@@ -21,7 +21,7 @@ export const  fetchDataToChange = createAsyncThunk(
     'dataToChangeSlice/fetchDataToChange',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}filters/block_information2${id ? `/${id}` : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}base/block_information2${id ? `/${id}` : ""}`,"GET",null,headers())
     }
 )
 export const  fetchDataTools = createAsyncThunk(

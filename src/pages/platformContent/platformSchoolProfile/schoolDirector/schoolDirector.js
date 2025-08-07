@@ -207,7 +207,7 @@ const CrudDirector = ({info,setActiveModal}) => {
 
         if (username !== info?.username) {
             setLoading(true)
-            request(`${BackUrl}check_username`,"POST", JSON.stringify(username))
+            request(`${BackUrl}checks/check_username`,"POST", JSON.stringify(username))
                 .then(res => {
                     setLoading(false)
                     if (res.found) {

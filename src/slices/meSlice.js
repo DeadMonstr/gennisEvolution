@@ -33,7 +33,7 @@ export const  fetchMe = createAsyncThunk(
             "Authorization": "Bearer " + refresh_token,
             'Content-Type': 'application/json'
         }
-        return await request(`${BackUrl}refresh`,"POST",null,headers)
+        return await request(`${BackUrl}base/refresh`,"POST",null,headers)
     }
 )
 
@@ -43,7 +43,7 @@ export const  fetchMyInfo = createAsyncThunk(
 
         const {request} = useHttp();
 
-        return await request(`${BackUrl}my_profile/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}base/my_profile/${id}`,"GET",null,headers())
     }
 )
 
@@ -66,7 +66,7 @@ export const  fetchCheckPassword = createAsyncThunk(
             "Authorization" : "Bearer " + token,
             'Content-Type': 'application/json'
         }
-        return await request(`${BackUrl}check_password`,"POST", JSON.stringify(data),headers)
+        return await request(`${BackUrl}checks/check_password`,"POST", JSON.stringify(data),headers)
     }
 )
 

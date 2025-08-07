@@ -128,7 +128,7 @@ export const fetchCreateGroupTools = createAsyncThunk(
     'newStudentsSlice/fetchCreateGroupTools',
     async () => {
         const {request} = useHttp();
-        return await request(`${BackUrl}create_group_tools`, "GET", null, headers())
+        return await request(`${BackUrl}create_group/create_group_tools`, "GET", null, headers())
     }
 )
 // export const  fetchCreateGroupTools = createAsyncThunk(
@@ -143,7 +143,7 @@ export const fetchFilteredStudents = createAsyncThunk(
     async (data) => {
         const {request} = useHttp();
         const {location} = data
-        return await request(`${BackUrl}get_students/${location}`, "POST", JSON.stringify(data), headers())
+        return await request(`${BackUrl}create_group/get_students/${location}`, "POST", JSON.stringify(data), headers())
     }
 )
 

@@ -63,7 +63,7 @@ const RegisterTeacherStep2 = ({userData}) => {
         }
         setPostDataStatus(true)
 
-        request(`${BackUrl}register_teacher`, "POST", JSON.stringify(newData))
+        request(`${BackUrl}base/register_teacher`, "POST", JSON.stringify(newData))
             .then(res => {
                 if (res.isError) {
                     if (res.isUsername) {

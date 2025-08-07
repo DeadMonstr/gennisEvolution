@@ -82,7 +82,7 @@ const AccountantStaffs = () => {
 
     const checkUsername = (username) => {
         setLoading(true)
-        request(`${BackUrl}check_username`, "POST", JSON.stringify(username))
+        request(`${BackUrl}checks/check_username`, "POST", JSON.stringify(username))
             .then(res => {
                 setLoading(false)
 

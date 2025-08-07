@@ -63,7 +63,7 @@ export const fetchFilters = createAsyncThunk(
         const {name,location,type} = data
         const {request} = useHttp();
 
-        return await request(`${BackUrl}filters/${name}/${location}/${type}`,"GET",null,headers())
+        return await request(`${BackUrl}base/filters/${name}/${location}/${type}`,"GET",null,headers())
     }
 )
 

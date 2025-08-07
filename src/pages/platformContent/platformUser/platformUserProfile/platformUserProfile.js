@@ -436,7 +436,7 @@ const StudentPaymentChange = ({userId,setActiveChangeModal}) => {
             reason
         }
 
-        request(`${BackUrl}extend_att_date/${userId}`, "POST", JSON.stringify(data),headers())
+        request(`${BackUrl}base/extend_att_date/${userId}`, "POST", JSON.stringify(data),headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

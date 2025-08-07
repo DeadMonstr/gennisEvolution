@@ -57,7 +57,7 @@ export const RegisterWorker = ({
     const [selectedGender, setSelectedGender] = useState(genders)
     const checkUsername = (username) => {
         setLoading(true)
-        request(`${BackUrl}check_username`, "POST", JSON.stringify(username))
+        request(`${BackUrl}checks/check_username`, "POST", JSON.stringify(username))
             .then(res => {
                 setLoading(false)
                 if (res.found) {
@@ -97,7 +97,7 @@ export const RegisterWorker = ({
             sex: selectedGender
         }
 
-        request(`${BackUrl}/register_staff`, "POST", JSON.stringify(res), headers())
+        request(`${BackUrl}base/register_staff`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 dispatch(setMessage({
                     msg: res.isError ? res.message : res.msg,

@@ -124,14 +124,14 @@ const Users = ({locationId,setGroupData,groupData}) => {
                 name: "newStudents",
                 location: locationId,
             }
-            dispatch(fetchNewStudents(1))
+            dispatch(fetchNewStudents({locationId}))
             setUsers(students)
         } else if (activeType === "teachers") {
             const newData = {
                 name: "teachers",
                 location: locationId
             }
-            dispatch(fetchTeachersByLocation(1))
+            dispatch(fetchTeachersByLocation({locationId}))
             setUsers(teachers)
             console.log(teachers,'t')
         }
@@ -442,7 +442,7 @@ const Users = ({locationId,setGroupData,groupData}) => {
             lessons
         }
 
-        request(`${BackUrl}get_students/${locationId}`, "POST",JSON.stringify(data),headers())
+        request(`${BackUrl}create_group/get_students/${locationId}`, "POST",JSON.stringify(data),headers())
             .then(res => {
                 if (res.success) {
                     setGroupError(res.data.gr_errors)
@@ -684,7 +684,7 @@ const GroupInfo = React.memo(({groupData,setGroupData,error,setError,setActiveMo
         // dispatch(deleteCheckedStudents({checkedStudents}))
         // dispatch(fetchFilteredStudents(data))
 
-        request(`${BackUrl}create_group_time/${selectedLocation}`, "POST",JSON.stringify(data),headers())
+        request(`${BackUrl}create_group/create_group_time/${selectedLocation}`, "POST",JSON.stringify(data),headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

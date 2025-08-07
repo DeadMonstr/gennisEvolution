@@ -94,7 +94,7 @@ const MoveToGroup = ({setActiveMTG,setTypeMsg,setActiveMessage,setMsg,id}) => {
             reason
         }
 
-        request(`${BackUrl}move_group/${selectedGroup}/${id}`,"POST",JSON.stringify(data),headers())
+        request(`${BackUrl}create_group/move_group/${selectedGroup}/${id}`,"POST",JSON.stringify(data),headers())
             .then((res) => {
                 if (res.success) {
                     setActiveMTG(false)

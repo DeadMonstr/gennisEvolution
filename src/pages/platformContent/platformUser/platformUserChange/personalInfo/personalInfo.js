@@ -141,7 +141,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
     }
 
     const checkUsername = async (username) => {
-        request(`${BackUrl}check_exist_username/${userId}`, "POST", JSON.stringify({username}), headers())
+        request(`${BackUrl}checks/check_exist_username/${userId}`, "POST", JSON.stringify({username}), headers())
             .then(res => {
                 if (res.found) {
                     setError('username', {

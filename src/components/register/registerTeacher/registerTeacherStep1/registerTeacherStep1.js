@@ -53,7 +53,7 @@ const RegisterTeacherStep1 = ({updateUserData,userData}) => {
     }
 
     const checkUsername = async (username) => {
-        request(`${BackUrl}check_username`,"POST", JSON.stringify(username))
+        request(`${BackUrl}checks/check_username`,"POST", JSON.stringify(username))
             .then(res => {
                 if (res.found) {
                     setError('username', {

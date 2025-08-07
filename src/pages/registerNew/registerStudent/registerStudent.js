@@ -60,7 +60,7 @@ export const RegisterStudent = ({
 
     const checkUsername = (username) => {
         setLoading(true)
-        request(`${BackUrl}check_username`, "POST", JSON.stringify(username))
+        request(`${BackUrl}checks/check_username`, "POST", JSON.stringify(username))
             .then(res => {
                 setLoading(false)
                 // if (res.found) {
@@ -109,7 +109,7 @@ export const RegisterStudent = ({
 
 
 
-        request(`${BackUrl}/register`, "POST", JSON.stringify(res), headers())
+        request(`${BackUrl}base/register`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 console.log(res)
                 dispatch(setMessage({

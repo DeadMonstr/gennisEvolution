@@ -14,7 +14,7 @@ export const fetchData = createAsyncThunk(
     'registerSlice/fetchData',
     async () => {
         const {request} = useHttp();
-        return await request(`${BackUrl}register`,"GET",null)
+        return await request(`${BackUrl}base/register`,"GET",null)
     }
 )
 

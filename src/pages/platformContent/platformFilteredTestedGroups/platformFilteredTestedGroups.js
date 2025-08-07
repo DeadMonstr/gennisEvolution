@@ -35,7 +35,7 @@ const PlatformFilteredTestedGroups = () => {
 
     useEffect(() => {
         if (year && month) {
-            request(`${BackUrl}groups_by_test/${locationId}`, "POST", JSON.stringify({year, month}), headers())
+            request(`${BackUrl}group_test/groups_by_test/${locationId}`, "POST", JSON.stringify({year, month}), headers())
                 .then(res => {
                     if (res && res.groups) {
                         setGroups(res.groups || [])
