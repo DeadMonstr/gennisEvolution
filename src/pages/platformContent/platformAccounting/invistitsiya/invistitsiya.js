@@ -97,16 +97,16 @@ const Invistitsiya = ({locationId, path}) => {
         if (data.deleted) {
 
             if (data.archive) {
-                dispatch(fetchDeletedAccData({...data, isArchive: true}))
+                dispatch(fetchDeletedAccData({data, isArchive: true , PageSize , currentPage}))
             } else {
                 getArchive()
-                dispatch(fetchDeletedAccData(data))
+                dispatch(fetchDeletedAccData({data , currentPage , PageSize}))
             }
         } else if (data.archive) {
             getArchive()
-            dispatch(fetchAccData({...data, isArchive: true}))
+            dispatch(fetchAccData({data, isArchive: true , currentPage , PageSize}))
         } else if (isChangedData) {
-            dispatch(fetchAccData(data))
+            dispatch(fetchAccData({data}))
         }
     }, [btns, isChangedData])
 

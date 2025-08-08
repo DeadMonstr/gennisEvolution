@@ -122,24 +122,31 @@ const initialState = {
 
     fetchedDataType: "",
     fetchAccDataStatus: "idle",
+    totalCount: null
 }
 
 
 export const fetchAccData = createAsyncThunk(
     'accountingSlice/fetchAccData',
-    async (data) => {
-        const {isArchive} = data
+    async ({data , isArchive , PageSize , currentPage}) => {
+
         const {request} = useHttp();
-        return await request(`${BackUrl}account/account_info/${isArchive ? "archive" : ""}`, "POST", JSON.stringify(data), headers())
+        return await request(`${BackUrl}account/account_info/${isArchive ? "archive" : ""}${PageSize ? `?offset=${(currentPage - 1) * 50}&limit=${PageSize}` : ""}`, "POST", JSON.stringify(data), headers())
     }
 )
+export const fetchAccData2 = createAsyncThunk(
+    'accountingSlice/fetchAccData2',
+    async ({data , isArchive , PageSize ,  book_overheads}) => {
 
+        const {request} = useHttp();
+        return await request(`${BackUrl}account/account_info/${isArchive ? "archive" : ""}${PageSize ? `?offset=${(book_overheads - 1) * 50}&limit=${PageSize}` : ""}`, "POST", JSON.stringify(data), headers())
+    }
+)
 export const fetchDeletedAccData = createAsyncThunk(
     'accountingSlice/fetchDeletedAccData',
-    async (data) => {
-        const {isArchive} = data
+    async ({data , isArchive , PageSize , currentPage}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}account/account_info_deleted/${isArchive ? "archive" : ""}`, "POST", JSON.stringify(data), headers())
+        return await request(`${BackUrl}account/account_info_deleted/${isArchive ? "archive" : ""}${PageSize ? `?offset=${(currentPage - 1) * 50}&limit=${PageSize}` : ""}`, "POST", JSON.stringify(data), headers())
     }
 )
 
@@ -272,11 +279,29 @@ const accountingSlice = createSlice({
             .addCase(fetchAccData.fulfilled, (state, action) => {
                 state.fetchAccDataStatus = 'success';
                 state.data = action.payload.data;
+                console.log(action.payload , "log")
+                state.totalCount = action.payload?.data?.pagination;
                 state.location = action.payload.location;
             })
             .addCase(fetchAccData.rejected, state => {
                 state.fetchAccDataStatus = 'error'
             })
+
+
+            .addCase(fetchAccData2.pending, state => {
+                state.fetchAccDataStatus = 'loading'
+            })
+            .addCase(fetchAccData2.fulfilled, (state, action) => {
+                state.fetchAccDataStatus = 'success';
+                state.data = action.payload.data;
+                console.log(action.payload , "log")
+                state.totalCount = action.payload?.data?.pagination;
+                state.location = action.payload.location;
+            })
+            .addCase(fetchAccData2.rejected, state => {
+                state.fetchAccDataStatus = 'error'
+            })
+
 
             .addCase(fetchDeletedAccData.pending, state => {
                 state.fetchAccDataStatus = 'loading'
@@ -284,6 +309,7 @@ const accountingSlice = createSlice({
             .addCase(fetchDeletedAccData.fulfilled, (state, action) => {
                 state.fetchAccDataStatus = 'success';
                 state.data = action.payload.data
+                state.totalCount = action.payload?.data?.pagination;
             })
             .addCase(fetchDeletedAccData.rejected, state => {
                 state.fetchAccDataStatus = 'error'

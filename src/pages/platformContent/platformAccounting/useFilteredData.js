@@ -6,30 +6,27 @@ const useFilteredData = (data = [], currentPage, PageSize) => {
     const {filters} = useSelector(state => state.filters)
     const {search} = useSelector(state => state.accounting)
 
-
+    console.log(filters , "filter")
 
     const multiPropsFilter = useMemo(() => {
         const filterKeys = Object.keys(filters);
 
-        if (data.length)
         return data.filter(user => {
-            return filterKeys?.every(key => {
+            return filterKeys.every(key => {
                 if (!filters[key]?.activeFilters?.length) return true;
+
                 if (Array.isArray(user[key])) {
-                    if (Array.isArray(filters[key]?.activeFilters)) {
-                        return user[key].some(keyEle =>
-                            filters[key].activeFilters.some(
-                                keyFil => keyFil.toLowerCase().includes(keyEle.toLowerCase())
-                            )
-                        );
-                    }
                     return user[key].some(keyEle =>
-                        filters[key]?.activeFilters === keyEle
+                        filters[key].activeFilters.some(
+                            keyFil => keyFil.toLowerCase().includes(keyEle.toLowerCase())
+                        )
                     );
                 }
+
                 if (Array.isArray(filters[key]?.activeFilters)) {
-                    return filters[key]?.activeFilters.includes(user[key]);
+                    return filters[key].activeFilters.includes(user[key]);
                 }
+
                 return filters[key]?.activeFilters === user[key];
             });
         });
@@ -37,7 +34,7 @@ const useFilteredData = (data = [], currentPage, PageSize) => {
 
 
     const searchedUsers = useMemo(() => {
-        const filteredHeroes = multiPropsFilter?.slice()
+        const filteredHeroes = data?.slice()
         return filteredHeroes?.filter(item => {
             if (item?.name || item.surname || item.username) {
                 return item?.name?.toLowerCase()?.includes(search?.toLowerCase()) ||
@@ -45,22 +42,21 @@ const useFilteredData = (data = [], currentPage, PageSize) => {
                 item?.username?.toLowerCase()?.includes(search?.toLowerCase())
             } else return true
         })
-    }, [multiPropsFilter, search])
+    }, [data , search])
 
 
 
 
 
-    const memoized = useMemo(() => {
-        const firstPageIndex = (currentPage - 1) * PageSize;
-        const lastPageIndex = firstPageIndex + PageSize;
-        return searchedUsers?.slice(firstPageIndex, lastPageIndex);
-    }, [PageSize, currentPage, searchedUsers])
+    // const memoized = useMemo(() => {
+    //     const firstPageIndex = (currentPage - 1) * PageSize;
+    //     const lastPageIndex = firstPageIndex + PageSize;
+    //     return searchedUsers?.slice(firstPageIndex, lastPageIndex);
+    // }, [PageSize, currentPage, searchedUsers])
 
 
-
-    if (memoized && searchedUsers) {
-        return [memoized, searchedUsers]
+    if (multiPropsFilter) {
+        return [multiPropsFilter]
     }
     return [[],[]]
 

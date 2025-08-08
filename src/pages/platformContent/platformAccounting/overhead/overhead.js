@@ -18,7 +18,7 @@ import useFilteredData from "pages/platformContent/platformAccounting/useFiltere
 import {setMessage} from "slices/messageSlice";
 import Button from "components/platform/platformUI/button";
 import AccountingTable from "components/platform/platformUI/tables/accountingTable";
-import Pagination from "components/platform/platformUI/pagination";
+import Pagination, {ExtraPagination} from "components/platform/platformUI/pagination";
 import {useForm} from "react-hook-form";
 import {fetchDataToChange} from "slices/dataToChangeSlice";
 import Select from "components/platform/platformUI/select";
@@ -30,7 +30,14 @@ const SampleAccounting = React.lazy(() => import("components/platform/platformSa
 
 const Overhead = ({locationId, path}) => {
 
-    const {data, fetchAccDataStatus, fetchedDataType, btns, location} = useSelector(state => state.accounting)
+    const {
+        data,
+        fetchAccDataStatus,
+        fetchedDataType,
+        btns,
+        location,
+        totalCount
+    } = useSelector(state => state.accounting)
     const [isChangedData, setIsChangedData] = useState(false)
     const [isDeleted, setIsDeleted] = useState(false)
 
@@ -44,13 +51,17 @@ const Overhead = ({locationId, path}) => {
 
     const oldPage = useSelector((state) => getUIPageByPath(state, pathname))
     const [currentPage, setCurrentPage] = useState(1);
-    let PageSize = useMemo(() => 30, [])
+    let PageSize = useMemo(() => 50, [])
 
     const dispatch = useDispatch()
     const {request} = useHttp()
 
     const [filteredData, searchedData] = useFilteredData(data.data, currentPage, PageSize)
 
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [isDeleted, locationId, path,]);
     useEffect(() => {
         if (fetchedDataType !== path || !data.data.length || locationId !== location) {
             const data = {
@@ -58,7 +69,12 @@ const Overhead = ({locationId, path}) => {
                 type: "overhead"
             }
 
-            dispatch(fetchAccData(data))
+
+            if (isDeleted) {
+                dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
+            } else {
+                dispatch(fetchAccData({data: data, PageSize, currentPage}));
+            }
             const newData = {
                 name: "accounting_payment",
                 location: locationId
@@ -66,7 +82,7 @@ const Overhead = ({locationId, path}) => {
             dispatch(fetchFilters(newData))
             dispatch(onChangeFetchedDataType({type: path}))
         }
-    }, [locationId])
+    }, [locationId, currentPage])
 
 
     useEffect(() => {
@@ -90,20 +106,25 @@ const Overhead = ({locationId, path}) => {
         }
         setIsDeleted(data.deleted)
 
-        if (data.deleted) {
 
-            if (data.archive) {
-                getArchive()
-                dispatch(fetchDeletedAccData({...data, isArchive: true}))
-            } else {
-                dispatch(fetchDeletedAccData(data))
-            }
-        } else if (data.archive) {
-            getArchive()
-            dispatch(fetchAccData({...data, isArchive: true}))
-        } else if (isChangedData) {
-            dispatch(fetchAccData(data))
+        if (data.deleted) {
+            dispatch(fetchDeletedAccData({
+                data: data,
+                isArchive: !!data.archive,
+                PageSize,
+                currentPage
+            }));
+        } else {
+            dispatch(fetchAccData({
+                data: data,
+                isArchive: !!data.archive,
+                PageSize,
+                currentPage
+            }));
         }
+
+
+        dispatch(onChangeFetchedDataType({type: path}));
     }, [btns, isChangedData])
 
     useEffect(() => {
@@ -149,7 +170,7 @@ const Overhead = ({locationId, path}) => {
                         locationId,
                         type: "overhead"
                     }
-                    dispatch(fetchAccData(data))
+                    dispatch(fetchAccData({data: data, PageSize, currentPage}));
                 } else {
                     dispatch(setMessage({
                         msg: "Serverda hatolik",
@@ -160,7 +181,6 @@ const Overhead = ({locationId, path}) => {
             })
 
     }
-
 
 
     const changePaymentTypeData = (id, value, userId) => {
@@ -287,23 +307,24 @@ const Overhead = ({locationId, path}) => {
             <SampleAccounting
                 links={links}
             >
-                <AccountingTable
-                    sum={sum}
-                    // cache={true}
-                    typeOfMoney={data.typeOfMoney}
-                    fetchUsersStatus={fetchAccDataStatus}
-                    funcSlice={funcsSlice}
-                    activeRowsInTable={activeItems()}
-                    users={filteredData}
-                />
+                <div style={{height: "43vh", overflow: "auto"}}>
+                    <AccountingTable
+                        sum={sum}
+                        // cache={true}
+                        typeOfMoney={data.typeOfMoney}
+                        fetchUsersStatus={fetchAccDataStatus}
+                        funcSlice={funcsSlice}
+                        activeRowsInTable={activeItems()}
+                        users={filteredData}
+                    />
+                </div>
 
-
-                <Pagination
-                    className="pagination-bar"
-                    currentPage={currentPage}
-                    totalCount={searchedData.length}
+                <ExtraPagination
                     pageSize={PageSize}
-                    onPageChange={page => onChangedPage(page)}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                    totalCount={totalCount?.total}
+
                 />
 
 
@@ -316,6 +337,8 @@ const Overhead = ({locationId, path}) => {
                             <CreatOverhead
                                 setActiveChangeModal={setActiveChangeModal}
                                 locationId={locationId}
+                                currentPage={currentPage}
+                                pageSize={PageSize}
                             />
                         </Modal> : null
 
@@ -327,7 +350,15 @@ const Overhead = ({locationId, path}) => {
 };
 
 
-const CreatOverhead = ({locationId, setMsg, setTypeMsg, setActiveMessage, setActiveChangeModal}) => {
+const CreatOverhead = ({
+                           locationId,
+                           setMsg,
+                           setTypeMsg,
+                           setActiveMessage,
+                           setActiveChangeModal,
+                           currentPage,
+                           pageSize
+                       }) => {
     const {
         register,
         formState: {errors},
@@ -420,7 +451,7 @@ const CreatOverhead = ({locationId, setMsg, setTypeMsg, setActiveMessage, setAct
                         locationId,
                         type: "overhead"
                     }
-                    dispatch(fetchAccData(data))
+                    dispatch(fetchAccData({data: data, PageSize: pageSize, currentPage}));
                 } else {
                     dispatch(setMessage({
                         msg: res.msg,
@@ -439,7 +470,7 @@ const CreatOverhead = ({locationId, setMsg, setTypeMsg, setActiveMessage, setAct
         }
     }, [data?.overhead_tools])
 
-    const communal = ["gaz", "svet", "suv", "arenda","boshqa"]
+    const communal = ["gaz", "svet", "suv", "arenda", "boshqa"]
 
     return (
         <div className="overhead">

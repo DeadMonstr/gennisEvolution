@@ -10,7 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useHttp} from "../../../../hooks/http.hook";
 import SampleAccounting from "../../../../components/platform/platformSamples/sampleAccaunting/SampleAccounting";
 import AccountingTable from "../../../../components/platform/platformUI/tables/accountingTable";
-import Pagination from "../../../../components/platform/platformUI/pagination";
+import Pagination, {ExtraPagination} from "../../../../components/platform/platformUI/pagination";
 import {getUIPageByPath, setPagePosition} from "../../../../slices/uiSlice";
 import useFilteredData from "../useFilteredData";
 import {useLocation} from "react-router-dom";
@@ -36,7 +36,7 @@ const modal = {
 const Dividends = ({locationId, path}) => {
 
 
-    const {data, fetchedDataType, btns, location} = useSelector(state => state.accounting)
+    const {data, fetchedDataType, btns, location , totalCount} = useSelector(state => state.accounting)
     const {pathname} = useLocation()
     const oldPage = useSelector((state) => getUIPageByPath(state, pathname))
     const {isCheckedPassword} = useSelector(state => state.me)
@@ -46,7 +46,7 @@ const Dividends = ({locationId, path}) => {
 
 
     const [currentPage, setCurrentPage] = useState(1);
-    let PageSize = useMemo(() => 30, [])
+    let PageSize = useMemo(() => 50, [])
     const dispatch = useDispatch()
     const {request} = useHttp()
 
@@ -66,7 +66,7 @@ const Dividends = ({locationId, path}) => {
                 type: "dividends"
             }
 
-            dispatch(fetchAccData(data))
+            dispatch(fetchAccData({data , currentPage , PageSize}))
             const newData = {
                 name: "dividend",
                 location: locationId
@@ -75,7 +75,7 @@ const Dividends = ({locationId, path}) => {
             dispatch(onChangeFetchedDataType({type: path}))
         }
         dispatch(fetchDataToChange(locationId))
-    }, [locationId])
+    }, [locationId , currentPage])
 
 
 
@@ -103,18 +103,19 @@ const Dividends = ({locationId, path}) => {
         if (data.deleted) {
 
             if (data.archive) {
-                dispatch(fetchDeletedAccData({...data, isArchive: true}))
+                dispatch(fetchDeletedAccData({data, isArchive: true , PageSize , currentPage}))
             } else {
                 getArchive()
-                dispatch(fetchDeletedAccData(data))
+                dispatch(fetchDeletedAccData({data , currentPage , PageSize}))
             }
         } else if (data.archive) {
             getArchive()
-            dispatch(fetchAccData({...data, isArchive: true}))
+            dispatch(fetchAccData({data, isArchive: true , currentPage , PageSize}))
         } else if (isChangedData) {
-            dispatch(fetchAccData(data))
+            dispatch(fetchAccData({data , currentPage , PageSize}))
+
         }
-    }, [btns, isChangedData])
+    }, [btns, isChangedData , currentPage])
 
 
     useEffect(() => {
@@ -258,14 +259,12 @@ const Dividends = ({locationId, path}) => {
                     </tbody>
                 </Table>
 
-                <Pagination
-                    className="pagination-bar"
-                    currentPage={currentPage}
-                    totalCount={searchedData.length}
+                <ExtraPagination
                     pageSize={PageSize}
-                    onPageChange={page => onChangedPage(page)}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                    totalCount={totalCount?.total}
                 />
-
 
 
             </SampleAccounting>

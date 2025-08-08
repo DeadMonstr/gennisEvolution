@@ -1,4 +1,4 @@
-import React, {useRef, useState, UIEvent, useEffect, useCallback} from 'react';
+import React, {useRef, useState, UIEvent, useEffect, useCallback, useMemo} from 'react';
 import {Link, Route, Routes, useLocation, useNavigate, useParams} from "react-router-dom";
 
 import EmployeeSalary from "./employeeSalary/employeeSalary";
@@ -28,6 +28,7 @@ import PlatformUserProfile from "pages/platformContent/platformUser/platformUser
 import {getUIScrollByPath, setScrollPosition} from "slices/uiSlice";
 import useThrottle from "hooks/useThrottle";
 import LocationMoneys from "pages/platformContent/platformAccounting/locationMoneys/locationMoneys";
+import {ExtraPagination} from "components/platform/platformUI/pagination";
 
 
 
@@ -52,6 +53,7 @@ const PlatformAccounting = () => {
 
 
     const setPage = useCallback((e) => {
+        console.log(e)
         dispatch(onChangeAccountingPage({value: e}))
         // dispatch(clearAccData())
         navigate(`./${e}`)
@@ -75,7 +77,8 @@ const PlatformAccounting = () => {
         return () => clearTimeout(timeoutId);
     },[])
 
-
+    const [currentPage, setCurrentPage] = useState(1);
+    let PageSize = useMemo(() => 50, [])
 
 
 
@@ -120,6 +123,14 @@ const PlatformAccounting = () => {
 
                 <Filters filterRef={filterRef} filters={filters} heightOtherFilters={heightOtherFilters}
                          activeOthers={activeOthers}/>
+                <ExtraPagination
+                    pageSize={PageSize}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                    totalCount={12}
+
+
+                />
 
             </header>
 
@@ -139,6 +150,8 @@ const PlatformAccounting = () => {
                 <Route path={"dividends"} element={<Dividends path={"dividends"} locationId={locationId} />}/>
                 {/*<Route path={"debtStudents"} element={<DebtStudents/>}/>*/}
             </Routes>
+
+
         </section>
 
 

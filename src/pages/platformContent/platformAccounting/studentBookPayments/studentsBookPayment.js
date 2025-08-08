@@ -3,7 +3,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {
     deleteAccDataItem,
-    fetchAccData,
+    fetchAccData, fetchAccData2,
     fetchDeletedAccData, onChangeAccountingBtns, onChangeAccountingPage, onChangeFetchedDataType,
 } from "slices/accountingSlice";
 import {fetchFilters} from "slices/filtersSlice";
@@ -16,13 +16,13 @@ import {setMessage} from "slices/messageSlice";
 import Button from "components/platform/platformUI/button";
 import SampleAccounting from "components/platform/platformSamples/sampleAccaunting/SampleAccounting";
 import AccountingTable from "components/platform/platformUI/tables/accountingTable";
-import Pagination from "components/platform/platformUI/pagination";
+import Pagination, {ExtraPagination} from "components/platform/platformUI/pagination";
 
 
 
 const StudentsBookPayment = ({locationId, path}) => {
 
-    const {data, fetchAccDataStatus, fetchedDataType, btns} = useSelector(state => state.accounting)
+    const {data, fetchAccDataStatus, fetchedDataType, btns , totalCount , location} = useSelector(state => state.accounting)
     const [isChangedData, setIsChangedData] = useState(false)
     const [isDeleted, setIsDeleted] = useState(false)
 
@@ -30,8 +30,9 @@ const StudentsBookPayment = ({locationId, path}) => {
 
 
     const oldPage = useSelector((state) => getUIPageByPath(state,pathname))
+    const [book_overheads, setBookOverheads] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    let PageSize = useMemo(() => 30, [])
+    let PageSize = useMemo(() => 50, [])
 
     const dispatch = useDispatch()
     const {request} = useHttp()
@@ -42,56 +43,84 @@ const StudentsBookPayment = ({locationId, path}) => {
     const [filteredDataPayments,searchedDataPayments] = useFilteredData(data.data?.book_payments, currentPage, PageSize)
 
     useEffect(() => {
-        if (fetchedDataType !== path || !data.data.length) {
-            const data = {
+        if (fetchedDataType !== path || !data.data.length || locationId !== location) {
+            const baseData = {
                 locationId,
                 type: "book_payments"
+            };
+
+            if (isDeleted) {
+                dispatch(fetchDeletedAccData({data: baseData, PageSize, currentPage}));
+            } else {
+                dispatch(fetchAccData({data: baseData, PageSize, currentPage}));
+                dispatch(fetchAccData2({data: baseData, PageSize, currentPage}));
             }
-            dispatch(fetchAccData(data))
-            const newData = {
+
+            dispatch(fetchFilters({
                 name: "accounting_payment",
                 location: locationId
-            }
-            dispatch(fetchFilters(newData))
-            dispatch(onChangeFetchedDataType({type: path}))
+            }));
+
+            dispatch(onChangeFetchedDataType({type: path}));
         }
-    }, [])
+    }, [locationId, currentPage, isDeleted]);
 
     useEffect(() => {
         dispatch(onChangeAccountingPage({value: path}))
     },[])
-
+    useEffect(() => {
+        setCurrentPage(1);
+        setBookOverheads(1)
+    }, [isDeleted, locationId, path ,]);
 
     useEffect(() => {
-        let data = {
+        let reqData = {
             locationId,
             type: "book_payments"
-        }
+        };
+
+
         for (let item of btns) {
             if (item.active) {
-                data = {
-                    ...data,
-                    [item.name]: item.active
-                }
+                reqData[item.name] = item.active;
             }
         }
-        setIsDeleted(data.deleted)
 
-        if (data.deleted) {
+        setIsDeleted(!!reqData.deleted);
 
-            if (data.archive) {
-                dispatch(fetchDeletedAccData({...data, isArchive: true}))
-            } else {
-                getArchive()
-                dispatch(fetchDeletedAccData(data))
-            }
-        } else if (data.archive) {
-            getArchive()
-            dispatch(fetchAccData({...data, isArchive: true}))
-        } else if (isChangedData) {
-            dispatch(fetchAccData(data))
+
+        dispatch(fetchFilters({
+            name: "accounting_payment",
+            location: locationId
+        }));
+
+
+        if (reqData.deleted) {
+            dispatch(fetchDeletedAccData({
+                data: reqData,
+                isArchive: !!reqData.archive,
+                PageSize,
+                currentPage
+            }));
+        } else {
+            dispatch(fetchAccData({
+                data: reqData,
+                isArchive: !!reqData.archive,
+                PageSize,
+                currentPage
+            }));
+            dispatch(fetchAccData2({
+                data: reqData,
+                PageSize,
+                book_overheads,
+                isArchive: !!reqData.archive,
+            }));
         }
-    }, [btns, isChangedData])
+
+        dispatch(onChangeFetchedDataType({ type: path }));
+
+    }, [btns, currentPage, book_overheads, locationId, path]);
+
 
 
     useEffect(() => {
@@ -258,12 +287,13 @@ const StudentsBookPayment = ({locationId, path}) => {
 
 
 
-                        <Pagination
-                            className="pagination-bar"
-                            currentPage={currentPage}
-                            totalCount={searchedDataOverheads?.length || 0}
+                        <ExtraPagination
                             pageSize={PageSize}
-                            onPageChange={page => onChangedPage(page)}
+                            currentPage={book_overheads}
+                            onPageChange={setBookOverheads}
+                            totalCount={totalCount?.book_overheads?.total}
+
+
                         />
                     </div>
                     <div style={{width: "50%"}}>
@@ -279,12 +309,13 @@ const StudentsBookPayment = ({locationId, path}) => {
 
 
 
-                        <Pagination
-                            className="pagination-bar"
-                            currentPage={currentPage}
-                            totalCount={searchedDataPayments?.length || 0}
+                        <ExtraPagination
                             pageSize={PageSize}
-                            onPageChange={page => onChangedPage(page)}
+                            currentPage={currentPage}
+                            onPageChange={setCurrentPage}
+                            totalCount={totalCount?.book_payments?.total}
+
+
                         />
                     </div>
 

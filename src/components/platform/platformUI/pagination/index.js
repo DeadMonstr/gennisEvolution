@@ -62,7 +62,7 @@ const Pagination = React.memo(props => {
         onPageChange(currentPage - 1);
     };
 
-    let lastPage = paginationRange[paginationRange.length - 1];
+    let lastPage = paginationRange[paginationRange?.length - 1];
     
     
     
@@ -89,7 +89,7 @@ const Pagination = React.memo(props => {
             <li
                 key={100001}
                 className={classNames('pagination-item arrow', {
-                    disabled: currentPage === lastPage
+                    disabled: lastPage ?  currentPage === lastPage : ""
                 })}
                 onClick={onNext}
             >
@@ -106,17 +106,18 @@ export const ExtraPagination = ({
                                     totalCount,
                                     pageSize,
                                     onPageChange,
+                                    siblingCount = 1,
                                     className = "",
                                 }) => {
     const totalPages = Math.ceil(totalCount / pageSize);
     const maxVisiblePages = 5;
 
-    if (totalPages <= 1) return null;
-
-
-
-    const getPageNumbers = () => {
-        let startPage = Math.max(currentPage - Math.floor(maxVisiblePages / 2), 1);
+    // Hooklarni ishlatishdan oldin return qila olmaymiz
+    const getPageNumbers = useCallback(() => {
+        let startPage = Math.max(
+            currentPage - Math.floor(maxVisiblePages / 2),
+            1
+        );
         let endPage = startPage + maxVisiblePages - 1;
 
         if (endPage > totalPages) {
@@ -129,52 +130,66 @@ export const ExtraPagination = ({
             pages.push(i);
         }
         return pages;
-    };
+    }, [currentPage, maxVisiblePages, totalPages]);
 
     const pages = getPageNumbers();
 
-    return (
-        <div className={`${cls.pagination} ${className}`}>
-            {currentPage > 1 && (
-                <>
-                    <i
-                        onClick={() => onPageChange(1)}
-                        className={`fas fa-angle-double-left ${cls.navBtn}`}
-                        title="First"
-                    />
-                    <i
-                        onClick={() => onPageChange(currentPage - 1)}
-                        className={`fas fa-arrow-left ${cls.navBtn}`}
-                        title="Previous"
-                    />
-                </>
-            )}
+    const renderPageNumbers = useCallback(() => {
+        return pages.map((pageNumber,index) => {
+            if (pageNumber === DOTS) {
+                return <li key={index} className="pagination-item dots">&#8230;</li>;
+            }
 
-            {/* Visible pages */}
-            {pages.map((page) => (
-                <button
-                    key={page}
-                    className={`${cls.pageBtn} ${page === currentPage ? cls.active : ""}`}
-                    onClick={() => onPageChange(page)}
+            return (
+                <li
+                    key={index}
+                    className={classNames('pagination-item', {
+                        selected: pageNumber === currentPage
+                    })}
+                    onClick={() => onPageChange(pageNumber)}
                 >
-                    {page}
-                </button>
-            ))}
-            {currentPage < totalPages && (
-                <>
-                    <i
-                        onClick={() => onPageChange(currentPage + 1)}
-                        className={`fas fa-arrow-right ${cls.navBtn}`}
-                        title="Next"
-                    />
-                    <i
-                        onClick={() => onPageChange(totalPages)}
-                        className={`fas fa-angle-double-right ${cls.navBtn}`}
-                        title="Last"
-                    />
-                </>
-            )}
-        </div>
+                    {pageNumber}
+                </li>
+            );
+        })
+    },[currentPage, onPageChange])
+
+
+    // Hooklardan keyin return qilsak bo‘ladi
+    if (totalPages <= 1) return null;
+    const onNext = () => {
+        onPageChange(currentPage + 1);
+    };
+
+    const onPrevious = () => {
+        onPageChange(currentPage - 1);
+    };
+    return (
+        <ul
+            className={classNames('pagination-container', { [className]: className })}
+        >
+            <li
+                key={10000}
+                className={classNames('pagination-item arrow', {
+                    disabled: currentPage === 1
+                })}
+                onClick={onPrevious}
+            >
+                <i className="fas fa-angle-left" />
+            </li>
+            <div className="numbers">
+                {renderPageNumbers()}
+            </div>
+
+            <li
+                key={100001}
+                className={classNames('pagination-item arrow', {
+                    disabled: totalPages ?  currentPage === totalPages : ""
+                })}
+                onClick={onNext}
+            >
+                <i className="fas fa-angle-right" />
+            </li>
+        </ul>
     );
 };
-

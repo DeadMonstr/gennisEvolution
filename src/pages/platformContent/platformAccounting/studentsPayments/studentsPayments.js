@@ -14,7 +14,7 @@ import {useHttp} from "hooks/http.hook";
 import SampleAccounting from "components/platform/platformSamples/sampleAccaunting/SampleAccounting";
 import useFilteredData from "pages/platformContent/platformAccounting/useFilteredData";
 import AccountingTable from "components/platform/platformUI/tables/accountingTable";
-import Pagination from "components/platform/platformUI/pagination";
+import Pagination, {ExtraPagination} from "components/platform/platformUI/pagination";
 import Button from "components/platform/platformUI/button";
 import {setMessage} from "slices/messageSlice";
 import {getUIPageByPath, setPagePosition} from "slices/uiSlice";
@@ -22,7 +22,7 @@ import {getUIPageByPath, setPagePosition} from "slices/uiSlice";
 
 const StudentsPayments = ({locationId, path}) => {
 
-    const {data, fetchAccDataStatus, fetchedDataType, btns, location} = useSelector(state => state.accounting)
+    const {data, fetchAccDataStatus, fetchedDataType, btns, location , totalCount} = useSelector(state => state.accounting)
     const [isChangedData, setIsChangedData] = useState(false)
     const [isDeleted, setIsDeleted] = useState(false)
 
@@ -31,7 +31,7 @@ const StudentsPayments = ({locationId, path}) => {
 
     const oldPage = useSelector((state) => getUIPageByPath(state,pathname))
     const [currentPage, setCurrentPage] = useState(1);
-    let PageSize = useMemo(() => 30, [])
+    let PageSize = useMemo(() => 50, [])
 
     const dispatch = useDispatch()
     const {request} = useHttp()
@@ -46,56 +46,76 @@ const StudentsPayments = ({locationId, path}) => {
 
 
     useEffect(() => {
-
-        if (fetchedDataType !== path || !data.data.length || locationId !== location  ) {
-            const data = {
+        if (fetchedDataType !== path || !data.data.length || locationId !== location) {
+            const baseData = {
                 locationId,
                 type: "payments"
+            };
+
+            if (isDeleted) {
+                dispatch(fetchDeletedAccData({data: baseData, PageSize, currentPage}));
+            } else {
+                dispatch(fetchAccData({data: baseData, PageSize, currentPage}));
             }
-            dispatch(fetchAccData(data))
-            const newData = {
+
+            dispatch(fetchFilters({
                 name: "accounting_payment",
                 location: locationId
-            }
-            dispatch(fetchFilters(newData))
-            dispatch(onChangeFetchedDataType({type: path}))
+            }));
+
+            dispatch(onChangeFetchedDataType({type: path}));
         }
-    }, [locationId])
+    }, [locationId, currentPage, isDeleted]);
 
 
 
     useEffect(() => {
-        let data = {
+        setCurrentPage(1);
+    }, [isDeleted, locationId, path ,]);
+
+    useEffect(() => {
+
+        let params = {
             locationId,
             type: "payments"
-        }
+        };
+
 
         for (let item of btns) {
             if (item.active) {
-                data = {
-                    ...data,
-                    [item.name]: item.active
-                }
+                params[item.name] = item.active;
             }
         }
-        setIsDeleted(data.deleted)
 
-        if (data.deleted) {
+        setIsDeleted(params.deleted);
 
-            if (data.archive) {
-                dispatch(fetchDeletedAccData({...data, isArchive: true}))
-            } else {
-                getArchive()
-                dispatch(fetchDeletedAccData(data))
-            }
-        } else if (data.archive) {
 
-            getArchive()
-            dispatch(fetchAccData({...data, isArchive: true}))
-        } else if (isChangedData) {
-            dispatch(fetchAccData(data))
+        dispatch(fetchFilters({
+            name: "accounting_payment",
+            location: locationId
+        }));
+
+
+        if (params.deleted) {
+            dispatch(fetchDeletedAccData({
+                data: params,
+                isArchive: !!params.archive,
+                PageSize,
+                currentPage
+            }));
+        } else {
+            dispatch(fetchAccData({
+                data: params,
+                isArchive: !!params.archive,
+                PageSize,
+                currentPage
+            }));
         }
-    }, [btns, isChangedData])
+
+
+        dispatch(onChangeFetchedDataType({ type: path }));
+
+    }, [locationId, currentPage, btns, path]);
 
     useEffect(() => {
         if (oldPage) {
@@ -245,29 +265,39 @@ const StudentsPayments = ({locationId, path}) => {
     let sum = filteredData?.reduce((a, c) => {
         return a + c[summa]
     }, 0);
+    console.log(totalCount  , data, "total")
 
     return (
         <>
             <SampleAccounting
                 links={links}
             >
-                <AccountingTable
-                    sum={sum}
-                    // cache={true}
-                    typeOfMoney={data.typeOfMoney}
-                    fetchUsersStatus={fetchAccDataStatus}
-                    funcSlice={funcsSlice}
-                    activeRowsInTable={activeItems()}
-                    users={filteredData}
-                />
+                <div style={{height: "43vh" , overflow: "auto"}}>
+                    <AccountingTable
+                        sum={sum}
+                        // cache={true}
+                        typeOfMoney={data.typeOfMoney}
+                        fetchUsersStatus={fetchAccDataStatus}
+                        funcSlice={funcsSlice}
+                        activeRowsInTable={activeItems()}
+                        users={filteredData}
+                    />
+                </div>
 
-                <Pagination
-                    className="pagination-bar"
-                    currentPage={currentPage}
-                    totalCount={searchedData.length}
+
+                <ExtraPagination
                     pageSize={PageSize}
-                    onPageChange={page => onChangedPage(page)}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                    totalCount={totalCount?.total}
                 />
+                {/*<Pagination*/}
+                {/*    className="pagination-bar"*/}
+                {/*    currentPage={currentPage}*/}
+                {/*    totalCount={searchedData.length}*/}
+                {/*    pageSize={PageSize}*/}
+                {/*    onPageChange={page => onChangedPage(page)}*/}
+                {/*/>*/}
             </SampleAccounting>
         </>
     )

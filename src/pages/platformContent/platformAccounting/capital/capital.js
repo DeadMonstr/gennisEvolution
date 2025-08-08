@@ -1,5 +1,5 @@
 
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {c, useCallback, useEffect, useMemo, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {useLocation, useParams} from "react-router-dom";
 import {
@@ -19,7 +19,7 @@ import useFilteredData from "pages/platformContent/platformAccounting/useFiltere
 import {setMessage} from "slices/messageSlice";
 import Button from "components/platform/platformUI/button";
 import AccountingTable from "components/platform/platformUI/tables/accountingTable";
-import Pagination from "components/platform/platformUI/pagination";
+import Pagination, {ExtraPagination} from "components/platform/platformUI/pagination";
 import Modal from "components/platform/platformUI/modal";
 import CheckPassword from "components/platform/platformModals/checkPassword/CheckPassword";
 import {useForm} from "react-hook-form";
@@ -35,7 +35,7 @@ const SampleAccounting = React.lazy(() => import("components/platform/platformSa
 
 const Capital = ({locationId, path}) => {
 
-    const {data, fetchAccDataStatus, fetchedDataType, btns,location} = useSelector(state => state.accounting)
+    const {data, fetchAccDataStatus, fetchedDataType, btns,location , totalCount} = useSelector(state => state.accounting)
     const [isChangedData, setIsChangedData] = useState(false)
     const [isDeleted, setIsDeleted] = useState(false)
 
@@ -49,7 +49,7 @@ const Capital = ({locationId, path}) => {
 
     const oldPage = useSelector((state) => getUIPageByPath(state,pathname))
     const [currentPage, setCurrentPage] = useState(1);
-    let PageSize = useMemo(() => 30, [])
+    let PageSize = useMemo(() => 50, [])
 
     const dispatch = useDispatch()
     const {request} = useHttp()
@@ -62,7 +62,11 @@ const Capital = ({locationId, path}) => {
                 locationId,
                 type: "capital"
             }
-            dispatch(fetchAccData(data))
+            if (isDeleted) {
+                dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
+            } else {
+                dispatch(fetchAccData({data: data, PageSize, currentPage}));
+            }
             const newData = {
                 name: "accounting_payment",
                 location: locationId
@@ -70,7 +74,7 @@ const Capital = ({locationId, path}) => {
             dispatch(fetchFilters(newData))
             dispatch(onChangeFetchedDataType({type: path}))
         }
-    }, [])
+    }, [currentPage])
 
 
     useEffect(() => {
@@ -79,36 +83,43 @@ const Capital = ({locationId, path}) => {
 
 
 
+
     useEffect(() => {
-        let data = {
+        setCurrentPage(1);
+    }, [isDeleted, locationId, path ,]);
+    useEffect(() => {
+        let params = {
             locationId,
             type: "capital"
         }
         for (let item of btns) {
             if (item.active) {
-                data = {
-                    ...data,
-                    [item.name]: item.active
-                }
+                params[item.name] = item.active;
             }
         }
+
         setIsDeleted(data.deleted)
 
-        if (data.deleted) {
 
-            if (data.archive) {
-                dispatch(fetchDeletedAccData({...data, isArchive: true}))
-            } else {
-                getArchive()
-                dispatch(fetchDeletedAccData(data))
-            }
-        } else if (data.archive) {
-            getArchive()
-            dispatch(fetchAccData({...data, isArchive: true}))
-        } else if (isChangedData) {
-            dispatch(fetchAccData(data))
+        if (params.deleted) {
+            dispatch(fetchDeletedAccData({
+                data: params,
+                isArchive: !!params.archive,
+                PageSize,
+                currentPage
+            }));
+        } else {
+            dispatch(fetchAccData({
+                data: params,
+                isArchive: !!params.archive,
+                PageSize,
+                currentPage
+            }));
         }
-    }, [btns, isChangedData])
+
+
+        dispatch(onChangeFetchedDataType({ type: path }));
+    }, [btns, isChangedData , currentPage])
 
     useEffect(() => {
         if (oldPage) {
@@ -156,7 +167,7 @@ const Capital = ({locationId, path}) => {
                         locationId,
                         type: "capital"
                     }
-                    dispatch(fetchAccData(data))
+                    dispatch(fetchAccData({data , currentPage , PageSize}))
                 } else {
                     dispatch(setMessage({
                         msg: "Serverda hatolik",
@@ -290,24 +301,24 @@ const Capital = ({locationId, path}) => {
             <SampleAccounting
                 links={links}
             >
-                <AccountingTable
-                    // sum={sum}
-                    // cache={true}
-                    typeOfMoney={data.typeOfMoney}
-                    fetchUsersStatus={fetchAccDataStatus}
-                    funcSlice={funcsSlice}
-                    activeRowsInTable={activeItems()}
-                    users={filteredData}
-                />
+                <div style={{height: "43vh" , overflow: "auto"}}>
+                    <AccountingTable
+                        // sum={sum}
+                        // cache={true}
+                        typeOfMoney={data.typeOfMoney}
+                        fetchUsersStatus={fetchAccDataStatus}
+                        funcSlice={funcsSlice}
+                        activeRowsInTable={activeItems()}
+                        users={filteredData}
+                    />
+                </div>
 
 
-
-                <Pagination
-                    className="pagination-bar"
-                    currentPage={currentPage}
-                    totalCount={searchedData.length}
+                <ExtraPagination
                     pageSize={PageSize}
-                    onPageChange={page => onChangedPage(page)}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                    totalCount={totalCount?.total}
                 />
 
 
@@ -318,6 +329,8 @@ const Capital = ({locationId, path}) => {
                     activeChangeModalName === "capital" && isCheckedPassword ?
                         <Modal activeModal={activeChangeModal} setActiveModal={() => setActiveChangeModal(false)}>
                             <CreatCapital
+                                currentPage={currentPage}
+                                PageSize={PageSize}
                                 setActiveChangeModal={setActiveChangeModal}
                                 locationId={locationId}
                             />
@@ -331,7 +344,7 @@ const Capital = ({locationId, path}) => {
 };
 
 
-const CreatCapital = ({locationId, setMsg, setTypeMsg, setActiveMessage, setActiveChangeModal}) => {
+const CreatCapital = ({locationId, setMsg, setTypeMsg, setActiveMessage, setActiveChangeModal , currentPage , PageSize}) => {
 
     const {
         register,
@@ -416,7 +429,7 @@ const CreatCapital = ({locationId, setMsg, setTypeMsg, setActiveMessage, setActi
                         locationId,
                         type: "capital"
                     }
-                    dispatch(fetchAccData(data))
+                    dispatch(fetchAccData({data , currentPage , PageSize}))
                 } else {
                     dispatch(setMessage({
                         msg: "Serverda hatolik",

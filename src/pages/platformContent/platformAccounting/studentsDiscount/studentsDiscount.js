@@ -15,13 +15,13 @@ import useFilteredData from "pages/platformContent/platformAccounting/useFiltere
 import {setMessage} from "slices/messageSlice";
 import Button from "components/platform/platformUI/button";
 import AccountingTable from "components/platform/platformUI/tables/accountingTable";
-import Pagination from "components/platform/platformUI/pagination";
+import Pagination, {ExtraPagination} from "components/platform/platformUI/pagination";
 
 const SampleAccounting = React.lazy(() => import("components/platform/platformSamples/sampleAccaunting/SampleAccounting"))
 
 const StudentsDiscount = ({locationId, path}) => {
 
-    const {data, fetchAccDataStatus, fetchedDataType, btns,location} = useSelector(state => state.accounting)
+    const {data, fetchAccDataStatus, fetchedDataType, btns,location , totalCount} = useSelector(state => state.accounting)
     const [isChangedData, setIsChangedData] = useState(false)
     const [isDeleted, setIsDeleted] = useState(false)
 
@@ -30,7 +30,7 @@ const StudentsDiscount = ({locationId, path}) => {
 
     const oldPage = useSelector((state) => getUIPageByPath(state,pathname))
     const [currentPage, setCurrentPage] = useState(1);
-    let PageSize = useMemo(() => 30, [])
+    let PageSize = useMemo(() => 50, [])
 
     const dispatch = useDispatch()
     const {request} = useHttp()
@@ -43,7 +43,11 @@ const StudentsDiscount = ({locationId, path}) => {
                 locationId,
                 type: "discounts"
             }
-            dispatch(fetchAccData(data))
+            if (isDeleted) {
+                dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
+            } else {
+                dispatch(fetchAccData({data: data, PageSize, currentPage}));
+            }
             const newData = {
                 name: "discounts",
                 location: locationId,
@@ -52,9 +56,11 @@ const StudentsDiscount = ({locationId, path}) => {
             dispatch(fetchFilters(newData))
             dispatch(onChangeFetchedDataType({type: path}))
         }
-    }, [locationId])
+    }, [locationId , currentPage])
 
-
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [isDeleted, locationId, path ,]);
     // useEffect(() => {
     //     dispatch(onChangeAccountingPage({value: path}))
     // },[])
@@ -76,20 +82,23 @@ const StudentsDiscount = ({locationId, path}) => {
         setIsDeleted(data.deleted)
 
         if (data.deleted) {
-
-            if (data.archive) {
-                dispatch(fetchDeletedAccData({...data, isArchive: true}))
-            } else {
-                getArchive()
-                dispatch(fetchDeletedAccData(data))
-            }
-        } else if (data.archive) {
-            getArchive()
-            dispatch(fetchAccData({...data, isArchive: true}))
-        } else if (isChangedData) {
-            dispatch(fetchAccData(data))
+            dispatch(fetchDeletedAccData({
+                data: data,
+                isArchive: !!data.archive,
+                PageSize,
+                currentPage
+            }));
+        } else {
+            dispatch(fetchAccData({
+                data: data,
+                isArchive: !!data.archive,
+                PageSize,
+                currentPage
+            }));
         }
-    }, [btns, isChangedData])
+
+
+    }, [btns, isChangedData , currentPage])
     useEffect(() => {
         if (oldPage) {
             setCurrentPage(oldPage)
@@ -239,30 +248,32 @@ const StudentsDiscount = ({locationId, path}) => {
     }, 0);
 
 
+    console.log(filteredData)
 
     return (
         <>
             <SampleAccounting
                 links={links}
             >
-                <AccountingTable
-                    sum={sum}
-                    // cache={true}
-                    typeOfMoney={data.typeOfMoney}
-                    fetchUsersStatus={fetchAccDataStatus}
-                    funcSlice={funcsSlice}
-                    activeRowsInTable={activeItems()}
-                    users={filteredData}
-                />
+                <div style={{height: "43vh" , overflow: "auto"}}>
+                    <AccountingTable
+                        sum={sum}
+                        // cache={true}
+                        typeOfMoney={data.typeOfMoney}
+                        fetchUsersStatus={fetchAccDataStatus}
+                        funcSlice={funcsSlice}
+                        activeRowsInTable={activeItems()}
+                        users={filteredData}
+                    />
+                </div>
 
 
 
-                <Pagination
-                    className="pagination-bar"
-                    currentPage={currentPage}
-                    totalCount={searchedData.length}
+                <ExtraPagination
                     pageSize={PageSize}
-                    onPageChange={page => onChangedPage(page)}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                    totalCount={totalCount?.total}
                 />
 
             </SampleAccounting>
