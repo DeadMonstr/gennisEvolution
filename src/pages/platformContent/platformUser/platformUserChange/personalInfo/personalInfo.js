@@ -5,7 +5,7 @@ import {useHttp} from "hooks/http.hook";
 import {useForm} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {BackUrl, DatesList, headers} from "constants/global";
+import {BackUrl, DatesList, headers, ROLES} from "constants/global";
 import Message from "components/platform/platformMessage";
 import {fetchDataToChange} from "slices/dataToChangeSlice";
 import {useAuth} from "hooks/useAuth";
@@ -19,6 +19,7 @@ const PersonalInfo = React.memo(({accessData, userId}) => {
         mode: "onBlur"
     })
     const dispatch = useDispatch()
+
 
 
     return (
@@ -44,6 +45,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
 
     const {type} = useSelector(state => state.message)
 
+    const  user = useSelector(state => state.usersProfile.user)
 
     useEffect(() => {
         setSelectedSubjects([])
@@ -299,7 +301,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
 
 
     const renderedSelectedOptions = renderSubjects()
-
+    console.log(role)
 
     return (
         <form
@@ -516,7 +518,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
                     </label> : null
             }
             {
-                data?.subject ?
+                data?.subject && role !== "a43c33b82" ?
                     <>
 
                         <label htmlFor="subjects">

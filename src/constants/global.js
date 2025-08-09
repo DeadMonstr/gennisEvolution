@@ -8,7 +8,7 @@ export const ClassroomUrl = `http://localhost:3000/`
 // export const ClassroomUrlForDoc = "http://26.253.30.50:5002/"
 //
 export const ClassroomUrlForDoc = "http://26.12.122.72:5002/"
-//
+
 // export const BackUrl = "https://admin.gennis.uz/api/"
 // export const BackUrlForDoc = "https://admin.gennis.uz/"
 
