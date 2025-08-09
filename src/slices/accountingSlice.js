@@ -128,10 +128,10 @@ const initialState = {
 
 export const fetchAccData = createAsyncThunk(
     'accountingSlice/fetchAccData',
-    async ({data , isArchive , PageSize , currentPage}) => {
+    async ({data , isArchive , PageSize , currentPage , search}) => {
 
         const {request} = useHttp();
-        return await request(`${BackUrl}account/account_info/${isArchive ? "archive" : ""}${PageSize ? `?offset=${(currentPage - 1) * 50}&limit=${PageSize}` : ""}`, "POST", JSON.stringify(data), headers())
+        return await request(`${BackUrl}account/account_info/${isArchive ? "archive" : ""}${PageSize ? `?offset=${(currentPage - 1) * 50}&limit=${PageSize}` : ""}${search ? `&search=${search}` : ""}`, "POST", JSON.stringify(data), headers())
     }
 )
 export const fetchAccData2 = createAsyncThunk(
@@ -144,9 +144,9 @@ export const fetchAccData2 = createAsyncThunk(
 )
 export const fetchDeletedAccData = createAsyncThunk(
     'accountingSlice/fetchDeletedAccData',
-    async ({data , isArchive , PageSize , currentPage}) => {
+    async ({data , isArchive , PageSize , currentPage , search}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}account/account_info_deleted/${isArchive ? "archive" : ""}${PageSize ? `?offset=${(currentPage - 1) * 50}&limit=${PageSize}` : ""}`, "POST", JSON.stringify(data), headers())
+        return await request(`${BackUrl}account/account_info_deleted/${isArchive ? "archive" : ""}${PageSize ? `?offset=${(currentPage - 1) * 50}&limit=${PageSize}` : ""}${search ? `&search=${search}` : ""}`, "POST", JSON.stringify(data), headers())
     }
 )
 

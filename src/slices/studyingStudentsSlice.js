@@ -12,10 +12,10 @@ const initialState = {
 
 export const  fetchStudyingStudents = createAsyncThunk(
     'studyingStudentsSlice/fetchStudyingStudents',
-    async ({locationId , currentPage , pageSize}) => {
+    async ({locationId , currentPage , pageSize , search}) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}student/studyingStudents/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}student/studyingStudents/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}`,"GET",null,headers())
     }
 )
 

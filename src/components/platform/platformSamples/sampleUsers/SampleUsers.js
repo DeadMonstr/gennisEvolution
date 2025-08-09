@@ -70,26 +70,27 @@ const SampleUsers = (props) => {
         totalCount ,
         pageSize,
         onPageChange,
-        currentPage2
+        currentPage2,
+        search,
+        setSearch
     } = props
 
-    let PageSize = useMemo(() => 50, [])
+
 
     const filterRef = useRef()
     const sectionRef = useRef({
         scrollTop: 0
     })
     const [dataBtns, setDataBtns] = useState([])
-    const [currentPage, setCurrentPage] = useState(page);
     const [activeOthers, setActiveOthers] = useState(false)
     const [heightOtherFilters, setHeightOtherFilters] = useState(0)
-    const [search, setSearch] = useState("")
+
     const [deletedData, setDeletedData] = useState(false)
 
     const navigate = useNavigate()
     const [filteredData, setFilteredData] = useState(false)
 
-    // const [usersList,setUsersList] = useState()
+
     const [currentScroll, setCurrentScroll] = useState()
 
 
@@ -99,7 +100,7 @@ const SampleUsers = (props) => {
 
     const [linkUser, setLinkUser] = useState(false)
 
-    // filterlangan newStudents
+
     const [active, setActive] = useState(0)
 
     const [width, setWidth] = useState(0)
@@ -137,66 +138,11 @@ const SampleUsers = (props) => {
     }
 
 
-    const multiPropsFilter = useMemo(() => {
-        const filterKeys = Object.keys(filters);
-
-        return users.filter(user => {
-            return filterKeys.every(key => {
-                if (!filters[key]?.activeFilters && filters[key]?.fromTo) {
-                    if (filters[key]?.fromTo.from && filters[key]?.fromTo.to) {
-                        return user[key] >= filters[key].fromTo.from && user[key] <= filters[key]?.fromTo.to
-                    }
-                    return true
-                }
-                if (!filters[key]?.activeFilters?.length) return true;
-                if (Array.isArray(user[key])) {
-                    return Array.isArray(filters[key]?.activeFilters) &&
-                        user[key].some(keyEle =>
-                            typeof keyEle === "string" &&
-                            filters[key].activeFilters.some(
-                                keyFil =>
-                                    typeof keyFil === "string" &&
-                                    keyFil.toLowerCase().includes(keyEle.toLowerCase())
-                            )
-                        );
-                }
 
 
-// Yoki string filtrlashda:
-                if (typeof filters[key]?.activeFilters === "string") {
-                    if (typeof user[key] === "number") {
-                        return +filters[key]?.activeFilters === +user[key];
-                    }
-                    return (user[key] || "").toLowerCase?.() === filters[key]?.activeFilters.toLowerCase?.();
-                }
-                // if (typeof filters[key]?.activeFilters === "string") {
-                //     if (typeof user[key] === "number") {
-                //         return +filters[key]?.activeFilters === +user[key]
-                //     }
-                //     return filters[key]?.activeFilters === user[key]
-                // }
-                return filters[key]?.activeFilters?.includes(user[key]);
-            });
-        });
-    }, [filters, users]);
 
 
-    const searchedUsers = useMemo(() => {
-        const filteredHeroes = multiPropsFilter.slice()
-        setCurrentPage(1)
-        return filteredHeroes?.filter(item =>
-            item.name?.toLowerCase().includes(search.toLowerCase()) ||
-            item.surname?.toLowerCase().includes(search.toLowerCase()) ||
-            item.username?.toLowerCase().includes(search.toLowerCase())
-        )
-    }, [multiPropsFilter, search])
 
-
-    const currentTableData = useMemo(() => {
-        const firstPageIndex = (currentPage - 1) * PageSize;
-        const lastPageIndex = firstPageIndex + PageSize;
-        return searchedUsers.slice(firstPageIndex, lastPageIndex);
-    }, [PageSize, currentPage, searchedUsers]);
 
 
     const clazzBtnFilter = activeOthers ? "funcButtons__btn funcButtons__btn-active" : "funcButtons__btn "
@@ -266,7 +212,7 @@ const SampleUsers = (props) => {
         }
     }, [location])
 
-    console.log(currentTableData)
+
     return (
         <>
             <Routes>
@@ -366,30 +312,19 @@ const SampleUsers = (props) => {
                                     fetchUsersStatus={fetchUsersStatus}
                                     funcsSlice={funcsSlice}
                                     activeRowsInTable={activeRowsInTable}
-                                    users={currentTableData}
+                                    users={users}
                                     pageName={pageName}
                                     checkedUsers={checkedUsers}
                                     setLinkUser={setLinkUser}
                                     cache={true}
                                 />
                             </div>
-                            {status !== true ? totalCount ? <ExtraPagination
+                             <ExtraPagination
                                 totalCount={totalCount?.total}
                                 onPageChange={onPageChange}
                                 currentPage={currentPage2}
                                 pageSize={pageSize}
-                            /> : "" : <Pagination
-                                className="pagination-bar"
-                                currentPage={currentPage}
-                                totalCount={searchedUsers.length}
-                                pageSize={PageSize}
-                                onPageChange={page => {
-                                    setCurrentPage(page)
-                                    if (funcsSlice.setPage) {
-                                        dispatch(funcsSlice?.setPage({page}))
-                                    }
-                                }}
-                            />}
+                            />
                         </main>
 
                         <footer className="section__footer">

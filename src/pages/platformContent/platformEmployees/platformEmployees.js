@@ -43,18 +43,18 @@ const PlatformEmployees = () => {
     const pageSize = useMemo(() => 50, [])
 
     const [active , setActive] = useState(false)
-
+    const [search , setSearch] = useState("")
 
     const dispatch = useDispatch()
 
 
     useEffect(() => {
         if (active === true) {
-            dispatch(fetchDeletedEmployees({locationId , pageSize , currentPage}))
+            dispatch(fetchDeletedEmployees({locationId , pageSize , currentPage , search}))
         } else {
-            dispatch(fetchEmployees({locationId , pageSize , currentPage}))
+            dispatch(fetchEmployees({locationId , pageSize , currentPage  ,search}))
         }
-    } , [currentPage , active])
+    } , [currentPage , active , search])
 
     useEffect(()=> {
 
@@ -161,6 +161,8 @@ const PlatformEmployees = () => {
                 status={false}
                 onPageChange={setCurrentPage}
                 currentPage2={currentPage}
+                setSearch={setSearch}
+                search={search}
 
             />
             <Modal activeModal={activeCheckPassword} setActiveModal={() => setActiveCheckPassword(false)}>

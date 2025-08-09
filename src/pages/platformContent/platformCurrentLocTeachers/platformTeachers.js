@@ -35,6 +35,7 @@ const PlatformTeachers = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [activeStatus, setActiveStatus] = useState(1)
     const pageSize = useMemo(() => 50, [])
+    const [search , setSearch] = useState("")
 
 
     const dispatch = useDispatch()
@@ -42,14 +43,18 @@ const PlatformTeachers = () => {
 
     useEffect(() => {
 
-        dispatch(fetchTeachersByLocation({locationId , pageSize , currentPage}))
+        if (activeStatus === true) {
+            dispatch(fetchDeletedTeachersByLocation({ locationId, pageSize, currentPage , search }));
+        } else {
+            dispatch(fetchTeachersByLocation({ locationId, currentPage, pageSize , search }));
+        }
         const newData = {
             name: "teachers",
             location: locationId
         }
         dispatch(fetchFilters(newData))
 
-    }, [dispatch, locationId ])
+    }, [dispatch, locationId , search])
 
     useEffect(() => {
         // if (activeStatus){
@@ -57,11 +62,11 @@ const PlatformTeachers = () => {
         // }
 
         if (activeStatus === true) {
-            dispatch(fetchDeletedTeachersByLocation({ locationId, pageSize, currentPage }));
+            dispatch(fetchDeletedTeachersByLocation({ locationId, pageSize, currentPage , search }));
         } else {
-            dispatch(fetchTeachersByLocation({ locationId, currentPage, pageSize }));
+            dispatch(fetchTeachersByLocation({ locationId, currentPage, pageSize , search }));
         }
-    } , [currentPage , activeStatus])
+    } , [currentPage , activeStatus , search])
 
 
     useEffect(() => {
@@ -169,6 +174,8 @@ const PlatformTeachers = () => {
                 status={false}
                 onPageChange={setCurrentPage}
                 currentPage2={currentPage}
+                search={search}
+                setSearch={setSearch}
 
             />
 

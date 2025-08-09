@@ -26,10 +26,10 @@ const PlatformStudyingStudents = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const pageSize = useMemo(() => 50, [])
 
-
+    const [search , setSearch] = useState("")
     useEffect(()=> {
 
-        dispatch(fetchStudyingStudents({locationId , pageSize , currentPage}))
+        dispatch(fetchStudyingStudents({locationId , pageSize , currentPage , search}))
         const newData = {
             name: "newStudents",
             location: locationId
@@ -37,7 +37,7 @@ const PlatformStudyingStudents = () => {
         dispatch(fetchFilters(newData))
         dispatch(setSelectedLocation({id:locationId}))
 
-    },[dispatch, locationId , currentPage])
+    },[dispatch, locationId , currentPage , search])
 
     const activeItems = useMemo(()=> {
         return {
@@ -81,6 +81,8 @@ const PlatformStudyingStudents = () => {
                status={false}
                onPageChange={setCurrentPage}
                currentPage2={currentPage}
+               search={search}
+               setSearch={setSearch}
            />
 
            {/*<div style={{paddingLeft: "3rem"}}>*/}

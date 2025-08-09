@@ -36,7 +36,10 @@ const StudentsPayments = ({locationId, path}) => {
     const dispatch = useDispatch()
     const {request} = useHttp()
 
-    const [filteredData,searchedData] = useFilteredData(data.data, currentPage, PageSize)
+    const {search} = useSelector(state => state.accounting)
+
+
+    // const [filteredData,searchedData] = useFilteredData(data.data, currentPage, PageSize)
 
 
     useEffect(() => {
@@ -53,9 +56,9 @@ const StudentsPayments = ({locationId, path}) => {
             };
 
             if (isDeleted) {
-                dispatch(fetchDeletedAccData({data: baseData, PageSize, currentPage}));
+                dispatch(fetchDeletedAccData({data: baseData, PageSize, currentPage , search}));
             } else {
-                dispatch(fetchAccData({data: baseData, PageSize, currentPage}));
+                dispatch(fetchAccData({data: baseData, PageSize, currentPage , search}));
             }
 
             dispatch(fetchFilters({
@@ -65,7 +68,7 @@ const StudentsPayments = ({locationId, path}) => {
 
             dispatch(onChangeFetchedDataType({type: path}));
         }
-    }, [locationId, currentPage, isDeleted]);
+    }, [locationId, currentPage, isDeleted , search]);
 
 
 
@@ -101,14 +104,17 @@ const StudentsPayments = ({locationId, path}) => {
                 data: params,
                 isArchive: !!params.archive,
                 PageSize,
-                currentPage
+                currentPage,
+                search
             }));
         } else {
             dispatch(fetchAccData({
                 data: params,
                 isArchive: !!params.archive,
                 PageSize,
-                currentPage
+                currentPage,
+                search
+
             }));
         }
 
@@ -262,10 +268,10 @@ const StudentsPayments = ({locationId, path}) => {
     let summa = "payment"
 
 
-    let sum = filteredData?.reduce((a, c) => {
+    let sum = data?.data?.reduce((a, c) => {
         return a + c[summa]
     }, 0);
-    console.log(totalCount  , data, "total")
+
 
     return (
         <>
@@ -280,7 +286,7 @@ const StudentsPayments = ({locationId, path}) => {
                         fetchUsersStatus={fetchAccDataStatus}
                         funcSlice={funcsSlice}
                         activeRowsInTable={activeItems()}
-                        users={filteredData}
+                        users={data?.data}
                     />
                 </div>
 

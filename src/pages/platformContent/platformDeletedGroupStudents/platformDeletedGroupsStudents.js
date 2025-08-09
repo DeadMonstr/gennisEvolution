@@ -40,6 +40,7 @@ const PlatformGroupDeletedStudents = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const pageSize = useMemo(() => 50, [])
     const dispatch = useDispatch()
+    const [search , setSearch] = useState("")
 
     // const options = [
     //     {
@@ -86,7 +87,8 @@ const PlatformGroupDeletedStudents = () => {
             const data = {
                 type: activeOption,
                 locationId,
-                currentPage , pageSize
+                currentPage , pageSize,
+                search
             }
             dispatch(fetchDeletedStudent(data))
         } else {
@@ -99,7 +101,7 @@ const PlatformGroupDeletedStudents = () => {
 
         dispatch(setSelectedLocation({id:locationId}))
 
-    },[activeOption,dispatch, locationId , currentPage])
+    },[activeOption,dispatch, locationId , currentPage , search])
 
 
 
@@ -207,6 +209,8 @@ const PlatformGroupDeletedStudents = () => {
                 onPageChange={setCurrentPage}
                 currentPage2={currentPage}
                 pageSize={pageSize}
+                setSearch={setSearch}
+                search={search}
             />
             {/*<div style={{paddingLeft: "3rem"}}>*/}
             {/*    <ExtraPagination*/}

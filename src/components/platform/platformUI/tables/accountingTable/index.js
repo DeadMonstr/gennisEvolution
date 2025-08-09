@@ -40,7 +40,7 @@ const AccountingTable = React.memo(({
     useEffect(() => {
         setUsersList(users)
     }, [users])
-    console.log(users , "users")
+
     useEffect(() => {
         if (isCheckedPassword && activeChangeModalName) {
             setActiveCheckPassword(false)

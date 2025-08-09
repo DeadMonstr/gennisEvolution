@@ -20,17 +20,17 @@ export const  fetchTeachers = createAsyncThunk(
 )
 export const  fetchTeachersByLocation = createAsyncThunk(
     'teachersSlice/fetchTeachersByLocation',
-    async ({locationId , pageSize , currentPage}) => {
+    async ({locationId , pageSize , currentPage , search}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}teacher/get_teachers_location/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}teacher/get_teachers_location/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}`,"GET",null,headers())
     }
 )
 
 export const  fetchDeletedTeachersByLocation = createAsyncThunk(
     'teachersSlice/fetchDeletedTeachersByLocation',
-    async ({locationId , pageSize , currentPage}) => {
+    async ({locationId , pageSize , currentPage , search}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}teacher/get_deletedTeachers_location/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}teacher/get_deletedTeachers_location/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}`,"GET",null,headers())
     }
 )
 

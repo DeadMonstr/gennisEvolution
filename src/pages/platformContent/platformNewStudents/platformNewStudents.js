@@ -66,7 +66,7 @@ const PlatformNewStudents = () => {
     const wrapper = useRef()
 
     const [mainSearch, setMainSearch] = useState("")
-
+    const [search, setSearch] = useState("")
 
 
 
@@ -90,17 +90,17 @@ const PlatformNewStudents = () => {
             if (isFilterData) {
                 dispatch(fetchNewStudentsDeleted(locationId))
             } else {
-                dispatch(fetchNewDeletedStudents({locationId , currentPage , pageSize}))
+                dispatch(fetchNewDeletedStudents({locationId , currentPage , pageSize , search}))
             }
         } else {
             if (isFilterData) {
                 dispatch(fetchNewFilteredStudents(locationId))
             } else {
-                dispatch(fetchNewStudents({locationId, currentPage, pageSize}))
+                dispatch(fetchNewStudents({locationId, currentPage, pageSize , search}))
             }
         }
         dispatch(setSelectedLocation({id: locationId}))
-    }, [locationId, isDeleteData, isFilterData , currentPage])
+    }, [locationId, isDeleteData, isFilterData , currentPage , search])
 
 
     const navigate = useNavigate()
@@ -466,6 +466,8 @@ const PlatformNewStudents = () => {
                               onPageChange={setCurrentPage}
                               currentPage2={currentPage}
                               status={false}
+                              seach={search}
+                              setSearch={setSearch}
 
 
                           />
