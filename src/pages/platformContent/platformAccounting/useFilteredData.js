@@ -11,8 +11,8 @@ const useFilteredData = (data = [], currentPage, PageSize) => {
     const multiPropsFilter = useMemo(() => {
         const filterKeys = Object.keys(filters);
 
-        return data.filter(user => {
-            return filterKeys.every(key => {
+        return data?.filter(user => {
+            return filterKeys?.every(key => {
                 if (!filters[key]?.activeFilters?.length) return true;
 
                 if (Array.isArray(user[key])) {

@@ -11,6 +11,7 @@ import classNames from "classnames";
 import Button from "components/platform/platformUI/button";
 import {setMessage} from "slices/messageSlice";
 import {useDispatch, useSelector} from "react-redux";
+import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 
 export const RegisterWorker = ({
                                    locations,
@@ -96,7 +97,7 @@ export const RegisterWorker = ({
             password_confirm: confirmPassword,
             sex: selectedGender
         }
-
+        setLoading(true)
         request(`${BackUrl}base/register_staff`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 dispatch(setMessage({
@@ -104,7 +105,7 @@ export const RegisterWorker = ({
                     type: res.isError ? "error" : "success",
                     active: true
                 }))
-
+                setLoading(false)
                 reset()
 
             })
@@ -207,7 +208,7 @@ export const RegisterWorker = ({
             {/*<Select title={"Ta'lim vaqti"} defaultValue={selectedShift} options={shifts} onChangeOption={setSelectedShift}/>*/}
             <Select title={"Jinsi"}  options={genders} onChangeOption={setSelectedGender}/>
 
-            <Button type={"submit"} formId={"form"}>Yakunlash</Button>
+            {loading ? <DefaultLoaderSmall/> :  <Button type={"submit"} formId={"form"}>Yakunlash</Button>}
 
         </form>
     );

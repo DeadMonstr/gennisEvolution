@@ -11,6 +11,7 @@ import classNames from "classnames";
 import Button from "components/platform/platformUI/button";
 import {setMessage} from "slices/messageSlice";
 import {useDispatch, useSelector} from "react-redux";
+import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 
 export const RegisterParent = ({
                                     locations,
@@ -86,7 +87,7 @@ export const RegisterParent = ({
             password_confirm: confirmPassword,
             sex: selectedGender
         }
-
+        setLoading(true)
         request(`${BackUrl}parent/crud/`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 dispatch(setMessage({
@@ -95,6 +96,8 @@ export const RegisterParent = ({
                     active: true
                 }))
                 reset()
+                setLoading(false)
+
             })
 
     }
@@ -191,7 +194,7 @@ export const RegisterParent = ({
             <Select title={"O'quv markazi joylashuvi"} defaultValue={selectedLocation} options={locations} onChangeOption={setSelectedLocation}/>
             {/*<Select title={"Ta'lim vaqti"} defaultValue={selectedShift} options={shifts} onChangeOption={setSelectedShift}/>*/}
 
-            <Button type={"submit"} formId={"form"}>Yakunlash</Button>
+            {loading ? <DefaultLoaderSmall/> :  <Button type={"submit"} formId={"form"}>Yakunlash</Button>}
 
         </form>
     );

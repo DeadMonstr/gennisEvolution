@@ -5,6 +5,7 @@ import classNames from "classnames";
 
 import "./pagination.sass"
 import cls from "./pagination.module.sass";
+import Button from "components/platform/platformUI/button";
 
 
 const Pagination = React.memo(props => {
@@ -164,32 +165,41 @@ export const ExtraPagination = ({
     const onPrevious = () => {
         onPageChange(currentPage - 1);
     };
-    return (
-        <ul
-            className={classNames('pagination-container', { [className]: className })}
-        >
-            <li
-                key={10000}
-                className={classNames('pagination-item arrow', {
-                    disabled: currentPage === 1
-                })}
-                onClick={onPrevious}
-            >
-                <i className="fas fa-angle-left" />
-            </li>
-            <div className="numbers">
-                {renderPageNumbers()}
-            </div>
 
-            <li
-                key={100001}
-                className={classNames('pagination-item arrow', {
-                    disabled: totalPages ?  currentPage === totalPages : ""
-                })}
-                onClick={onNext}
+    return (
+        <div style={{display: "flex" , alignItems: "center"}}>
+            <ul
+                className={classNames('pagination-container', { [className]: className })}
             >
-                <i className="fas fa-angle-right" />
-            </li>
-        </ul>
+
+                <li
+                    key={10000}
+                    className={classNames('pagination-item arrow', {
+                        disabled: currentPage === 1
+                    })}
+                    onClick={onPrevious}
+                >
+                    <i className="fas fa-angle-left" />
+                </li>
+                <div className="numbers">
+                    {renderPageNumbers()}
+                </div>
+
+                <li
+                    key={100001}
+                    className={classNames('pagination-item arrow', {
+                        disabled: totalPages ?  currentPage === totalPages : ""
+                    })}
+                    onClick={onNext}
+                >
+                    <i className="fas fa-angle-right" />
+                </li>
+
+            </ul>
+           {/*<div style={{display: "flex" , alignItems: "center" , width: "20%" , justifyContent: "flex-end"}}>*/}
+           {/*    {currentPage > 5 &&  <Button onClickBtn={() => onPageChange(1)}>First Page</Button>}*/}
+           {/*    {currentPage < totalPages && <Button onClickBtn={() => onPageChange(totalPages)}>Last Page</Button>}*/}
+           {/*</div>*/}
+        </div>
     );
 };

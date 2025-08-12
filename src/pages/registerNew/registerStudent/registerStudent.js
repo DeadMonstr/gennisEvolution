@@ -12,6 +12,8 @@ import Button from "components/platform/platformUI/button";
 import {setMessage} from "slices/messageSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
+import DefaultLoader from "components/loader/defaultLoader/DefaultLoader";
+import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 
 export const RegisterStudent = ({
                                     locations,
@@ -52,7 +54,6 @@ export const RegisterStudent = ({
 
     const [selectedShift, setSelectedShift] = useState(shifts)
 
-    const navitagate = useNavigate()
 
     useEffect(() => {
         setSelectedLocation(location)
@@ -106,6 +107,7 @@ export const RegisterStudent = ({
             password_confirm: confirmPassword
         }
 
+        setLoading(true)
 
 
 
@@ -117,7 +119,7 @@ export const RegisterStudent = ({
                     type: res.isError ? "error" : "success",
                     active: true
                 }))
-
+                setLoading(false)
                 reset()
                 const selectData = subjects.map(item => {
                     return {
@@ -272,7 +274,7 @@ export const RegisterStudent = ({
                     onChangeOption={setSelectedShift}/>
             {/*<Select defaultValue={selectedGender} options={genders} onChangeOption={setSelectedGender}/>*/}
 
-            <Button type={"submit"} formId={"form"}>Yakunlash</Button>
+            {loading ? <DefaultLoaderSmall/> :  <Button type={"submit"} formId={"form"}>Yakunlash</Button>}
 
         </form>
     );
