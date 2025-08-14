@@ -20,10 +20,17 @@ import AccountingTable from "components/platform/platformUI/tables/accountingTab
 import Pagination, {ExtraPagination} from "components/platform/platformUI/pagination";
 
 
-
 const EmployeeSalary = ({locationId, path}) => {
 
-    const {data, fetchAccDataStatus, fetchedDataType, btns,oldPage,location , totalCount} = useSelector(state => state.accounting)
+    const {
+        data,
+        fetchAccDataStatus,
+        fetchedDataType,
+        btns,
+        oldPage,
+        location,
+        totalCount
+    } = useSelector(state => state.accounting)
     const [isChangedData, setIsChangedData] = useState(false)
     const [isDeleted, setIsDeleted] = useState(false)
 
@@ -33,34 +40,51 @@ const EmployeeSalary = ({locationId, path}) => {
     const dispatch = useDispatch()
     const {request} = useHttp()
 
-    const [filteredData,searchedData] = useFilteredData(data.data, currentPage, PageSize)
+    // const [filteredData,searchedData] = useFilteredData(data.data, currentPage, PageSize)
+    const {activeFilters} = useSelector(state => state.filters)
 
     useEffect(() => {
+        let params = {
+            locationId,
+            type: "staff_salary"
+        }
+        for (let item of btns) {
+            if (item.active) {
+                params = {
+                    ...params,
+                    [item.name]: item.active
+                }
+            }
+        }
+        const newData = {
+            name: "capital_tools",
+            location: locationId,
+            type: params.archive ? "archive" : ""
+        }
+        dispatch(fetchFilters(newData))
+    }, [btns])
+    useEffect(() => {
         if (fetchedDataType !== path || !data.data.length || locationId !== location) {
-            const data = {
-                locationId,
-                type: "staff_salary"
-            }
-            if (isDeleted) {
-                dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
-            } else {
-                dispatch(fetchAccData({data: data, PageSize, currentPage}));
-            }
-            const newData = {
-                name: "accounting_payment",
-                location: locationId
-            }
-            dispatch(fetchFilters(newData))
+            // const data = {
+            //     locationId,
+            //     type: "staff_salary"
+            // }
+            // if (isDeleted) {
+            //     dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
+            // } else {
+            //     dispatch(fetchAccData({data: data, PageSize, currentPage}));
+            // }
+
             dispatch(onChangeFetchedDataType({type: path}))
         }
-    }, [locationId , currentPage])
+    }, [locationId, currentPage])
 
     useEffect(() => {
         dispatch(onChangeAccountingPage({value: path}))
-    },[])
+    }, [])
     useEffect(() => {
         setCurrentPage(1);
-    }, [isDeleted, locationId, path ,]);
+    }, [isDeleted, locationId, path,]);
 
 
     useEffect(() => {
@@ -76,34 +100,35 @@ const EmployeeSalary = ({locationId, path}) => {
                 }
             }
         }
+
+        const route = "staff_salary/"
+
+
         setIsDeleted(data.deleted)
 
-        if (params.deleted) {
-            dispatch(fetchDeletedAccData({
-                data: params,
-                isArchive: !!params.archive,
-                PageSize,
-                currentPage
-            }));
-        } else {
+
             dispatch(fetchAccData({
                 data: params,
                 isArchive: !!params.archive,
                 PageSize,
-                currentPage
+                currentPage,
+                activeFilters,
+                locationId,
+                route,
+                deleted: params.deleted
             }));
-        }
-
-    }, [btns, isChangedData , currentPage])
 
 
-    const activeItems = ()=> {
+    }, [btns, isChangedData, currentPage, activeFilters])
+
+
+    const activeItems = () => {
         if (isDeleted) {
             return {
                 name: true,
-                surname : true,
+                surname: true,
                 salary: true,
-                date : true,
+                date: true,
                 job: true,
                 typePayment: true,
                 reason: true
@@ -111,15 +136,14 @@ const EmployeeSalary = ({locationId, path}) => {
         }
         return {
             name: true,
-            surname : true,
+            surname: true,
             salary: true,
-            delete : true,
-            date : true,
+            delete: true,
+            date: true,
             job: true,
             typePayment: true
         }
     }
-
 
 
     const onDelete = (data) => {
@@ -167,7 +191,7 @@ const EmployeeSalary = ({locationId, path}) => {
         if (oldPage) {
             setCurrentPage(oldPage)
         }
-    },[])
+    }, [])
 
     const getArchive = (isActive) => {
         const newData = {
@@ -184,11 +208,10 @@ const EmployeeSalary = ({locationId, path}) => {
 
     }
 
-    const setChangedBtns = (id,active) => {
+    const setChangedBtns = (id, active) => {
         if (!active) setIsChangedData(true)
         dispatch(onChangeAccountingBtns({id}))
     }
-
 
 
     const links = useMemo(() => {
@@ -197,24 +220,23 @@ const EmployeeSalary = ({locationId, path}) => {
 
 
         for (let item of btns) {
-            if (item.page && item.page === path ) {
+            if (item.page && item.page === path) {
                 newBtns.push({
                     ...item,
                     elem: Button,
                     props: {
                         active: item.active,
-                        onClickBtn: () => setChangedBtns(item.id,item.active),
+                        onClickBtn: () => setChangedBtns(item.id, item.active),
                         children: item.title
                     }
                 })
-            }
-            else if (!item.page) {
+            } else if (!item.page) {
                 newBtns.push({
                     ...item,
                     elem: Button,
                     props: {
                         active: item.active,
-                        onClickBtn: () => setChangedBtns(item.id,item.active),
+                        onClickBtn: () => setChangedBtns(item.id, item.active),
                         children: item.title
                     }
                 })
@@ -234,11 +256,10 @@ const EmployeeSalary = ({locationId, path}) => {
     }
 
 
-
     let summa = "salary"
 
 
-    let sum = filteredData?.reduce((a, c) => {
+    let sum = data.data?.reduce((a, c) => {
         return a + c[summa]
     }, 0);
 
@@ -248,7 +269,7 @@ const EmployeeSalary = ({locationId, path}) => {
             <SampleAccounting
                 links={links}
             >
-                <div style={{height: "43vh" , overflow: "auto"}}>
+                <div style={{height: "43vh", overflow: "auto"}}>
                     <AccountingTable
                         sum={sum}
                         // cache={true}
@@ -256,7 +277,7 @@ const EmployeeSalary = ({locationId, path}) => {
                         fetchUsersStatus={fetchAccDataStatus}
                         funcSlice={funcsSlice}
                         activeRowsInTable={activeItems()}
-                        users={filteredData}
+                        users={data.data}
                     />
                 </div>
 

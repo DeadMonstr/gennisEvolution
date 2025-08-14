@@ -34,26 +34,22 @@ const StudentsDiscount = ({locationId, path}) => {
 
     const dispatch = useDispatch()
     const {request} = useHttp()
+    const {activeFilters} = useSelector(state => state.filters)
 
-    const [filteredData,searchedData] = useFilteredData(data.data, currentPage, PageSize)
+    // const [filteredData,searchedData] = useFilteredData(data.data, currentPage, PageSize)
 
     useEffect(() => {
         if (fetchedDataType !== path || !data.data.length || locationId !== location) {
-            const data = {
-                locationId,
-                type: "discounts"
-            }
-            if (isDeleted) {
-                dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
-            } else {
-                dispatch(fetchAccData({data: data, PageSize, currentPage}));
-            }
-            const newData = {
-                name: "discounts",
-                location: locationId,
-                type: ""
-            }
-            dispatch(fetchFilters(newData))
+            // const data = {
+            //     locationId,
+            //     type: "discounts"
+            // }
+            // if (isDeleted) {
+            //     dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
+            // } else {
+            //     dispatch(fetchAccData({data: data, PageSize, currentPage}));
+            // }
+
             dispatch(onChangeFetchedDataType({type: path}))
         }
     }, [locationId , currentPage])
@@ -79,26 +75,45 @@ const StudentsDiscount = ({locationId, path}) => {
                 }
             }
         }
+        const newData = {
+            name: "capital_tools",
+            location: locationId,
+            type: data.archive ? "archive" : ""
+        }
+        dispatch(fetchFilters(newData))
+    } , [btns])
+    useEffect(() => {
+        let data = {
+            locationId,
+            type: "discounts"
+        }
+        for (let item of btns) {
+            if (item.active) {
+                data = {
+                    ...data,
+                    [item.name]: item.active
+                }
+            }
+        }
         setIsDeleted(data.deleted)
 
-        if (data.deleted) {
-            dispatch(fetchDeletedAccData({
-                data: data,
-                isArchive: !!data.archive,
-                PageSize,
-                currentPage
-            }));
-        } else {
+
+        const route = "discounts/"
+
             dispatch(fetchAccData({
                 data: data,
                 isArchive: !!data.archive,
                 PageSize,
-                currentPage
+                currentPage,
+                activeFilters,
+                locationId,
+                route,
+                deleted: data.deleted
             }));
-        }
 
 
-    }, [btns, isChangedData , currentPage])
+
+    }, [btns, isChangedData , currentPage , activeFilters])
     useEffect(() => {
         if (oldPage) {
             setCurrentPage(oldPage)
@@ -243,12 +258,12 @@ const StudentsDiscount = ({locationId, path}) => {
     let summa = "payment"
 
 
-    let sum = filteredData?.reduce((a, c) => {
+    let sum = data.data?.reduce((a, c) => {
         return a + c[summa]
     }, 0);
 
 
-    console.log(filteredData)
+
 
     return (
         <>
@@ -263,7 +278,7 @@ const StudentsDiscount = ({locationId, path}) => {
                         fetchUsersStatus={fetchAccDataStatus}
                         funcSlice={funcsSlice}
                         activeRowsInTable={activeItems()}
-                        users={filteredData}
+                        users={data?.data}
                     />
                 </div>
 

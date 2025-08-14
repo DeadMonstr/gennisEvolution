@@ -53,8 +53,9 @@ const Capital = ({locationId, path}) => {
 
     const dispatch = useDispatch()
     const {request} = useHttp()
+    // const [filteredData,searchedData] = useFilteredData(data.data, currentPage, PageSize)
+    const {activeFilters} = useSelector(state => state.filters)
 
-    const [filteredData,searchedData] = useFilteredData(data.data, currentPage, PageSize)
 
     useEffect(() => {
         if (fetchedDataType !== path || !data.data.length || locationId !== location) {
@@ -62,16 +63,12 @@ const Capital = ({locationId, path}) => {
                 locationId,
                 type: "capital"
             }
-            if (isDeleted) {
-                dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
-            } else {
-                dispatch(fetchAccData({data: data, PageSize, currentPage}));
-            }
-            const newData = {
-                name: "accounting_payment",
-                location: locationId
-            }
-            dispatch(fetchFilters(newData))
+            // if (isDeleted) {
+            //     dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
+            // } else {
+            //     dispatch(fetchAccData({data: data, PageSize, currentPage}));
+            // }
+
             dispatch(onChangeFetchedDataType({type: path}))
         }
     }, [currentPage])
@@ -87,6 +84,7 @@ const Capital = ({locationId, path}) => {
     useEffect(() => {
         setCurrentPage(1);
     }, [isDeleted, locationId, path ,]);
+
     useEffect(() => {
         let params = {
             locationId,
@@ -98,28 +96,47 @@ const Capital = ({locationId, path}) => {
             }
         }
 
+        const newData = {
+            name: "capital_tools",
+            location: locationId,
+            type: params.archive ? "archive" : ""
+        }
+        dispatch(fetchFilters(newData))
+    } , [btns])
+
+    useEffect(() => {
+        let params = {
+            locationId,
+            type: "capital"
+        }
+        for (let item of btns) {
+            if (item.active) {
+                params[item.name] = item.active;
+            }
+        }
+
+
+
         setIsDeleted(data.deleted)
 
+        const route = "capital/"
 
-        if (params.deleted) {
-            dispatch(fetchDeletedAccData({
-                data: params,
-                isArchive: !!params.archive,
-                PageSize,
-                currentPage
-            }));
-        } else {
+
             dispatch(fetchAccData({
                 data: params,
                 isArchive: !!params.archive,
                 PageSize,
-                currentPage
+                currentPage,
+                activeFilters,
+                locationId,
+                route,
+                deleted: params.deleted
             }));
-        }
+
 
 
         dispatch(onChangeFetchedDataType({ type: path }));
-    }, [btns, isChangedData , currentPage])
+    }, [btns, isChangedData , currentPage , activeFilters])
 
     useEffect(() => {
         if (oldPage) {
@@ -309,7 +326,7 @@ const Capital = ({locationId, path}) => {
                         fetchUsersStatus={fetchAccDataStatus}
                         funcSlice={funcsSlice}
                         activeRowsInTable={activeItems()}
-                        users={filteredData}
+                        users={data.data}
                     />
                 </div>
 

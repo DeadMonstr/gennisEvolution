@@ -5,8 +5,8 @@ const useFilteredData = (data = [], currentPage, PageSize) => {
 
     const {filters} = useSelector(state => state.filters)
     const {search} = useSelector(state => state.accounting)
+    console.log(filters , "log")
 
-    console.log(filters , "filter")
 
     const multiPropsFilter = useMemo(() => {
         const filterKeys = Object.keys(filters);

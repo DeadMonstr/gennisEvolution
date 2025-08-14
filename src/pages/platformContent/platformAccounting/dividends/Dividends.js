@@ -53,8 +53,7 @@ const Dividends = ({locationId, path}) => {
     const [filteredData, searchedData] = useFilteredData(data.data, currentPage, PageSize)
     const [isDeleted, setIsDeleted] = useState(false)
     const [isChangedData, setIsChangedData] = useState(false)
-    const [radioSelect, setRadioSelect] = useState(null)
-
+    const {activeFilters} = useSelector(state => state.filters)
 
 
 
@@ -83,7 +82,27 @@ const Dividends = ({locationId, path}) => {
     useEffect(() => {
         dispatch(onChangeAccountingPage({value: path}))
     }, [])
+    useEffect(() => {
 
+        let data = {
+            locationId,
+            type: "payments"
+        }
+        for (let item of btns) {
+            if (item.active) {
+                data = {
+                    ...data,
+                    [item.name]: item.active
+                }
+            }
+        }
+        const newData = {
+            name: "capital_tools",
+            location: locationId,
+            type: data.archive ? "archive" : ""
+        }
+        dispatch(fetchFilters(newData))
+    }, [btns])
 
     useEffect(() => {
         let data = {
@@ -100,22 +119,21 @@ const Dividends = ({locationId, path}) => {
         }
         setIsDeleted(data.deleted)
 
-        if (data.deleted) {
+        const route = "dividends/"
 
-            if (data.archive) {
-                dispatch(fetchDeletedAccData({data, isArchive: true , PageSize , currentPage}))
-            } else {
-                getArchive()
-                dispatch(fetchDeletedAccData({data , currentPage , PageSize}))
-            }
-        } else if (data.archive) {
-            getArchive()
-            dispatch(fetchAccData({data, isArchive: true , currentPage , PageSize}))
-        } else if (isChangedData) {
-            dispatch(fetchAccData({data , currentPage , PageSize}))
 
-        }
-    }, [btns, isChangedData , currentPage])
+            dispatch(fetchAccData({
+                data: data,
+                isArchive: !!data.archive,
+                PageSize,
+                currentPage,
+                activeFilters,
+                locationId,
+                route,
+                deleted: data.deleted
+            }));
+
+    }, [btns, isChangedData , currentPage , activeFilters])
 
 
     useEffect(() => {

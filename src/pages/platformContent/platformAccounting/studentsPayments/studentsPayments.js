@@ -22,14 +22,21 @@ import {getUIPageByPath, setPagePosition} from "slices/uiSlice";
 
 const StudentsPayments = ({locationId, path}) => {
 
-    const {data, fetchAccDataStatus, fetchedDataType, btns, location , totalCount} = useSelector(state => state.accounting)
+    const {
+        data,
+        fetchAccDataStatus,
+        fetchedDataType,
+        btns,
+        location,
+        totalCount
+    } = useSelector(state => state.accounting)
     const [isChangedData, setIsChangedData] = useState(false)
     const [isDeleted, setIsDeleted] = useState(false)
 
     const {pathname} = useLocation()
 
 
-    const oldPage = useSelector((state) => getUIPageByPath(state,pathname))
+    const oldPage = useSelector((state) => getUIPageByPath(state, pathname))
     const [currentPage, setCurrentPage] = useState(1);
     let PageSize = useMemo(() => 50, [])
 
@@ -41,11 +48,29 @@ const StudentsPayments = ({locationId, path}) => {
 
     // const [filteredData,searchedData] = useFilteredData(data.data, currentPage, PageSize)
 
-
+    const {activeFilters} = useSelector(state => state.filters)
     useEffect(() => {
         dispatch(onChangeAccountingPage({value: path}))
-    },[])
 
+        let data = {
+            locationId,
+            type: "payments"
+        }
+        for (let item of btns) {
+            if (item.active) {
+                data = {
+                    ...data,
+                    [item.name]: item.active
+                }
+            }
+        }
+
+        dispatch(fetchFilters({
+            name: "capital_tools",
+            location: locationId,
+            type: data.archive ? "archive" : ""
+        }));
+    }, [])
 
 
     useEffect(() => {
@@ -55,26 +80,23 @@ const StudentsPayments = ({locationId, path}) => {
                 type: "payments"
             };
 
-            if (isDeleted) {
-                dispatch(fetchDeletedAccData({data: baseData, PageSize, currentPage , search}));
-            } else {
-                dispatch(fetchAccData({data: baseData, PageSize, currentPage , search}));
-            }
+            // if (isDeleted) {
+            //     dispatch(fetchDeletedAccData({data: baseData, PageSize, currentPage, search}));
+            // } else {
+            //     dispatch(fetchAccData({data: baseData, PageSize, currentPage, search}));
+            // }
 
-            dispatch(fetchFilters({
-                name: "accounting_payment",
-                location: locationId
-            }));
 
             dispatch(onChangeFetchedDataType({type: path}));
         }
-    }, [locationId, currentPage, isDeleted , search]);
-
+    }, [locationId, currentPage, isDeleted, search]);
 
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [isDeleted, locationId, path ,]);
+    }, [isDeleted, locationId, path,]);
+
+
 
     useEffect(() => {
 
@@ -93,41 +115,31 @@ const StudentsPayments = ({locationId, path}) => {
         setIsDeleted(params.deleted);
 
 
-        dispatch(fetchFilters({
-            name: "accounting_payment",
-            location: locationId
+
+
+        const route = "students_payments/"
+
+        dispatch(fetchAccData({
+            data: params,
+            isArchive: !!params.archive,
+            PageSize,
+            currentPage,
+            activeFilters,
+            locationId,
+            route,
+            deleted: params.deleted
         }));
 
 
-        if (params.deleted) {
-            dispatch(fetchDeletedAccData({
-                data: params,
-                isArchive: !!params.archive,
-                PageSize,
-                currentPage,
-                search
-            }));
-        } else {
-            dispatch(fetchAccData({
-                data: params,
-                isArchive: !!params.archive,
-                PageSize,
-                currentPage,
-                search
+        dispatch(onChangeFetchedDataType({type: path}));
 
-            }));
-        }
-
-
-        dispatch(onChangeFetchedDataType({ type: path }));
-
-    }, [locationId, currentPage, btns, path]);
+    }, [locationId, currentPage, btns, path , activeFilters]);
 
     useEffect(() => {
         if (oldPage) {
             setCurrentPage(oldPage)
         }
-    },[])
+    }, [])
 
 
     const activeItems = () => {
@@ -152,7 +164,6 @@ const StudentsPayments = ({locationId, path}) => {
             typePayment: true
         }
     }
-
 
 
     const onDelete = (data) => {
@@ -212,11 +223,10 @@ const StudentsPayments = ({locationId, path}) => {
 
     }
 
-    const setChangedBtns = (id,active) => {
+    const setChangedBtns = (id, active) => {
         if (!active) setIsChangedData(true)
         dispatch(onChangeAccountingBtns({id}))
     }
-
 
 
     const links = useMemo(() => {
@@ -224,24 +234,23 @@ const StudentsPayments = ({locationId, path}) => {
         const newBtns = []
 
         for (let item of btns) {
-            if (item.page && item.page === path ) {
+            if (item.page && item.page === path) {
                 newBtns.push({
                     ...item,
                     elem: Button,
                     props: {
                         active: item.active,
-                        onClickBtn: () => setChangedBtns(item.id,item.active),
+                        onClickBtn: () => setChangedBtns(item.id, item.active),
                         children: item.title
                     }
                 })
-            }
-            else if (!item.page) {
+            } else if (!item.page) {
                 newBtns.push({
                     ...item,
                     elem: Button,
                     props: {
                         active: item.active,
-                        onClickBtn: () => setChangedBtns(item.id,item.active),
+                        onClickBtn: () => setChangedBtns(item.id, item.active),
                         children: item.title
                     }
                 })
@@ -261,7 +270,7 @@ const StudentsPayments = ({locationId, path}) => {
 
     const onChangedPage = (page) => {
         setCurrentPage(page)
-        dispatch(setPagePosition({path:pathname,page: page}))
+        dispatch(setPagePosition({path: pathname, page: page}))
     }
 
 
@@ -278,7 +287,7 @@ const StudentsPayments = ({locationId, path}) => {
             <SampleAccounting
                 links={links}
             >
-                <div style={{height: "43vh" , overflow: "auto"}}>
+                <div style={{height: "43vh", overflow: "auto"}}>
                     <AccountingTable
                         sum={sum}
                         // cache={true}

@@ -24,6 +24,7 @@ import {fetchDataToChange} from "slices/dataToChangeSlice";
 import Select from "components/platform/platformUI/select";
 import Modal from "components/platform/platformUI/modal";
 import CheckPassword from "components/platform/platformModals/checkPassword/CheckPassword";
+import filters from "components/platform/platformUI/filters";
 
 const SampleAccounting = React.lazy(() => import("components/platform/platformSamples/sampleAccaunting/SampleAccounting"))
 
@@ -56,33 +57,31 @@ const Overhead = ({locationId, path}) => {
     const dispatch = useDispatch()
     const {request} = useHttp()
 
-    const [filteredData, searchedData] = useFilteredData(data.data, currentPage, PageSize)
-
+    const {activeFilters} = useSelector(state => state.filters)
 
     useEffect(() => {
         setCurrentPage(1);
     }, [isDeleted, locationId, path,]);
     useEffect(() => {
         if (fetchedDataType !== path || !data.data.length || locationId !== location) {
-            const data = {
-                locationId,
-                type: "overhead"
-            }
 
 
-            if (isDeleted) {
-                dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
-            } else {
-                dispatch(fetchAccData({data: data, PageSize, currentPage}));
-            }
+
+            // if (isDeleted) {
+            //     dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
+            // } else {
+            //     dispatch(fetchAccData({data: data, PageSize, currentPage}));
+            // }
             const newData = {
                 name: "accounting_payment",
-                location: locationId
+                location: locationId,
             }
+
+
             dispatch(fetchFilters(newData))
             dispatch(onChangeFetchedDataType({type: path}))
         }
-    }, [locationId, currentPage])
+    }, [locationId])
 
 
     useEffect(() => {
@@ -91,11 +90,37 @@ const Overhead = ({locationId, path}) => {
 
 
     useEffect(() => {
+
         let data = {
             locationId,
             type: "overhead"
         }
+        for (let item of btns) {
+            if (item.active) {
+                data = {
+                    ...data,
+                    [item.name]: item.active
+                }
+            }
+        }
 
+        const newData = {
+            name: "accounting_payment",
+            location: locationId,
+            type: data.archive ? "archive" : ""
+        }
+        dispatch(fetchFilters(newData))
+    }, [btns])
+
+
+    useEffect(() => {
+
+
+
+        let data = {
+            locationId,
+            type: "overhead"
+        }
         for (let item of btns) {
             if (item.active) {
                 data = {
@@ -106,26 +131,32 @@ const Overhead = ({locationId, path}) => {
         }
         setIsDeleted(data.deleted)
 
+        // const newData = {
+        //     name: "accounting_payment",
+        //     location: locationId,
+        //     type: data.archive ? "archive" : ""
+        // }
+        //
+        //
+        // dispatch(fetchFilters(newData))
 
-        if (data.deleted) {
-            dispatch(fetchDeletedAccData({
-                data: data,
-                isArchive: !!data.archive,
-                PageSize,
-                currentPage
-            }));
-        } else {
+        const route = "overhead/"
+
             dispatch(fetchAccData({
                 data: data,
                 isArchive: !!data.archive,
                 PageSize,
-                currentPage
+                currentPage,
+                activeFilters,
+                locationId,
+                route,
+                deleted: data.deleted
             }));
-        }
+
 
 
         dispatch(onChangeFetchedDataType({type: path}));
-    }, [btns, isChangedData])
+    }, [btns, isChangedData , activeFilters , currentPage])
 
     useEffect(() => {
         if (oldPage) {
@@ -298,10 +329,11 @@ const Overhead = ({locationId, path}) => {
     let summa = "price"
 
 
-    let sum = filteredData?.reduce((a, c) => {
+    let sum = data?.data?.reduce((a, c) => {
         return a + c[summa]
     }, 0);
 
+    console.log(activeFilters)
     return (
         <>
             <SampleAccounting
@@ -315,7 +347,7 @@ const Overhead = ({locationId, path}) => {
                         fetchUsersStatus={fetchAccDataStatus}
                         funcSlice={funcsSlice}
                         activeRowsInTable={activeItems()}
-                        users={filteredData}
+                        users={data?.data}
                     />
                 </div>
 
