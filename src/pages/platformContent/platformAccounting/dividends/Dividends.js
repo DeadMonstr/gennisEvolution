@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {
     changePaymentType,
     deleteAccDataItem,
-    fetchAccData, fetchDeletedAccData, onAddItem, onChangeAccountingBtns, onChangeAccountingPage,
+    fetchAccData, onAddItem, onChangeAccountingBtns, onChangeAccountingPage,
     onChangeFetchedDataType
 } from "../../../../slices/accountingSlice";
 import {fetchFilters} from "../../../../slices/filtersSlice";

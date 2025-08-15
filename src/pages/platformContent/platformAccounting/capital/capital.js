@@ -5,9 +5,8 @@ import {useLocation, useParams} from "react-router-dom";
 import {
     changePaymentType,
     deleteAccDataItem,
-    fetchAccData,
-    fetchDeletedAccData, onChangeAccountingBtns, onChangeAccountingPage, onChangeFetchedDataType,
-    setDisableOption
+    fetchAccData, onChangeAccountingBtns, onChangeAccountingPage, onChangeFetchedDataType,
+
 } from "slices/accountingSlice";
 import {fetchFilters} from "slices/filtersSlice";
 import {deletePayment} from "slices/studentAccountSlice";

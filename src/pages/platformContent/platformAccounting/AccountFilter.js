@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useDispatch} from "react-redux";
 
 import Button from "components/platform/platformUI/button";
@@ -96,35 +96,42 @@ const AccountFilters = React.memo(({activeOthers, heightOtherFilters, filterRef,
 const FilterSubItem = React.memo(({itemBtns, activeFilter, activeBtns,onChangeActiveFilter}) => {
     const dispatch = useDispatch();
 
+    const [activeBtn , setActiveBtn] = useState(null)
+
     const onChangeFilter = (subFilter, activeFilter) => {
+        setActiveBtn(subFilter === activeBtn ? null : subFilter)
         dispatch(setActive({activeFilter: activeFilter, subFilter: subFilter}));
         if (onChangeActiveFilter) {
             onChangeActiveFilter(activeFilter, subFilter);
         }
     };
 
+    console.log(activeBtns , "activeBtns")
+    console.log(activeBtn)
+
     return itemBtns.map((item, index) => {
-        if (Array.isArray(activeBtns)) {
+        // if (Array.isArray(activeBtns)) {
+        //     return (
+        //         <Button
+        //             key={index}
+        //             onClickBtn={() => onChangeFilter(item, activeFilter)}
+        //             active={activeBtns.includes(item)}
+        //         >
+        //             {item}
+        //         </Button>
+        //     )
+        // } else {
+
             return (
                 <Button
                     key={index}
                     onClickBtn={() => onChangeFilter(item, activeFilter)}
-                    active={activeBtns.includes(item)}
+                    active={activeBtn === item}
                 >
                     {item}
                 </Button>
             )
-        } else {
-            return (
-                <Button
-                    key={index}
-                    onClickBtn={() => onChangeFilter(item, activeFilter)}
-                    active={item === activeBtns}
-                >
-                    {item}
-                </Button>
-            )
-        }
+        // }
     });
 });
 

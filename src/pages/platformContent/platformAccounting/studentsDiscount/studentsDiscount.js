@@ -5,7 +5,7 @@ import {useLocation} from "react-router-dom";
 import {
     deleteAccDataItem,
     fetchAccData,
-    fetchDeletedAccData, onChangeAccountingBtns, onChangeAccountingPage, onChangeFetchedDataType,
+     onChangeAccountingBtns, onChangeAccountingPage, onChangeFetchedDataType,
 } from "slices/accountingSlice";
 import {fetchFilters} from "slices/filtersSlice";
 import {BackUrl, headers} from "constants/global";

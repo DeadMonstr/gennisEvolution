@@ -6,8 +6,8 @@ import {
     changePaymentType,
     deleteAccDataItem,
     fetchAccData,
-    fetchDeletedAccData, onChangeAccountingBtns, onChangeAccountingPage, onChangeFetchedDataType,
-    setDisableOption
+     onChangeAccountingBtns, onChangeAccountingPage, onChangeFetchedDataType,
+
 } from "slices/accountingSlice";
 import {fetchFilters} from "slices/filtersSlice";
 import PlatformMessage from "components/platform/platformMessage";
