@@ -86,7 +86,7 @@ const ObserveTeacherLessonIndex = () => {
 
 
     useEffect(() => {
-        request(`${BackUrl}teacher_observe/${groupId}`, "GET", null, headers())
+        request(`${BackUrl}teacher/teacher_observe/${groupId}`, "GET", null, headers())
             .then(res => {
                 if (res.observation_tools.length < 1) {
                     setMonth(res.observation_tools[0].value)
@@ -100,7 +100,7 @@ const ObserveTeacherLessonIndex = () => {
 
 
     useEffect(() => {
-        request(`${BackUrl}observe_info`,"GET",null,headers())
+        request(`${BackUrl}teacher/observe_info`,"GET",null,headers())
             .then(res => {
                 setFields(res.observations.map(item => ({...item,value: "1"})))
                 setOptions(res.options)
@@ -165,7 +165,7 @@ const ObserveTeacherLessonIndex = () => {
         if (month && day) {
 
 
-            request(`${BackUrl}teacher_observe/${groupId}`, "POST", JSON.stringify({list: fields,month,day}),headers())
+            request(`${BackUrl}teacher/teacher_observe/${groupId}`, "POST", JSON.stringify({list: fields,month,day}),headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: res.msg,

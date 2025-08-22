@@ -23,7 +23,6 @@ const App = () => {
     return (
         <Routes>
             {/*<Route path="/*"  element={<Website/>} />*/}
-
             <Route path="/login" element={<Login/>} />
             <Route path="/register_test" element={<Register/>}/>
             {/**/}

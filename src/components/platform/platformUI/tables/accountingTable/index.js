@@ -37,6 +37,8 @@ const AccountingTable = React.memo(({
     const [changingData, setChangingData] = useState({})
     const [isConfirm, setIsConfirm] = useState(false)
 
+
+    console.log(typeOfMoney , "typeOfMoney" ,activeRowsInTable)
     useEffect(() => {
         setUsersList(users)
     }, [users])

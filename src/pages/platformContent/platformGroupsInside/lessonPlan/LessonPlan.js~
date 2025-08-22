@@ -7,7 +7,7 @@ import classNames from "classnames";
 import {BackUrl, BackUrlForDoc, headers} from "constants/global";
 import userImg from "assets/user-interface/user_image.png";
 import {useHttp} from "hooks/http.hook";
-import {useParams} from "react-router";
+import {useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {useAuth} from "hooks/useAuth";
 
@@ -51,7 +51,7 @@ const LessonPlan = ({backBtn}) => {
     useEffect(() => {
         console.log(groupId)
         if (groupId) {
-            request(`${BackUrl}lesson_plan_list/${groupId}`, "GET", null, headers() )
+            request(`${BackUrl}teacher/lesson_plan_list/${groupId}`, "GET", null, headers() )
                 .then(res => {
                     if (res.month_list.length === 1) {
                         setMonth(res.month_list[0])
@@ -70,7 +70,7 @@ const LessonPlan = ({backBtn}) => {
 
     useEffect(() => {
         if (year && month ) {
-            request(`${BackUrl}lesson_plan_list/${groupId}/${year}-${month}`, "GET", null, headers())
+            request(`${BackUrl}teacher/lesson_plan_list/${groupId}/${year}-${month}`, "GET", null, headers())
                 .then(res => {
                     console.log(res)
                     setDays(res.days)
@@ -88,7 +88,7 @@ const LessonPlan = ({backBtn}) => {
         }
 
         if (year && month && day && groupId ) {
-            request(`${BackUrl}get_lesson_plan`,"POST",JSON.stringify(data),headers() )
+            request(`${BackUrl}teacher/get_lesson_plan`,"POST",JSON.stringify(data),headers() )
                 .then(res => {
                     setCanChange(res.status)
                     setValue("homework",res.lesson_plan.homework)
@@ -144,6 +144,8 @@ const LessonPlan = ({backBtn}) => {
 
     const {name,teacher} = data
     const {id: meId} = useAuth()
+
+    console.log(data , meId , "meID")
 
     return (
         <div className={cls.lessonPlan}>

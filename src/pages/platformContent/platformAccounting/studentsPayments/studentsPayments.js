@@ -291,7 +291,7 @@ const StudentsPayments = ({locationId, path}) => {
                     <AccountingTable
                         sum={sum}
                         // cache={true}
-                        typeOfMoney={data.typeOfMoney}
+                        typeOfMoney={"user"}
                         fetchUsersStatus={fetchAccDataStatus}
                         funcSlice={funcsSlice}
                         activeRowsInTable={activeItems()}
