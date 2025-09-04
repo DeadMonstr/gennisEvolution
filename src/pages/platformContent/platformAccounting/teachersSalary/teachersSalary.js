@@ -248,6 +248,7 @@ const TeacherSalary = ({locationId, path}) => {
             <SampleAccounting
                 links={links}
             >
+
                 <div style={{height: "43vh" , overflow: "auto"}}>
                     <AccountingTable
                         sum={sum}
