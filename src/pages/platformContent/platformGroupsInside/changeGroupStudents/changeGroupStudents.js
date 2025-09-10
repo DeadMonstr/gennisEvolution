@@ -38,10 +38,8 @@ const ChangeGroupStudents = () => {
     }, [groupId])
 
     useEffect(() => {
-        console.log("route naxxuy")
         request(`${BackUrl}create_group/filtered_groups/${groupId}`, "GET", null, headers())
             .then(res => {
-                console.log(res,"keldi naxxuy")
                 setGroups(res.groups)
             })
     }, [groupId])

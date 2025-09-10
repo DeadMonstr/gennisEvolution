@@ -86,7 +86,6 @@ const Users = ({locationId,setGroupData,groupData}) => {
     const [groupError,setGroupError] = useState([])
     const {teacherss, btns, fetchTeachersStatus} = useSelector(state => state.teachers)
     const [currentPage, setCurrentPage] = useState(1);
-    console.log(students,'dd')
 
     const {selectedLocation} = useAuth()
 
@@ -133,7 +132,6 @@ const Users = ({locationId,setGroupData,groupData}) => {
             }
             dispatch(fetchTeachersByLocation({locationId}))
             setUsers(teachers)
-            console.log(teachers,'t')
         }
     },[locationId,activeType])
 
@@ -678,7 +676,6 @@ const GroupInfo = React.memo(({groupData,setGroupData,error,setError,setActiveMo
             }
         }
 
-        console.log(data , "data")
 
 
         // dispatch(deleteCheckedStudents({checkedStudents}))

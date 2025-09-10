@@ -217,7 +217,6 @@ const Invistitsiya = ({locationId, path}) => {
 
         for (let item of btns) {
             if (item.page && item.page === path ) {
-                console.log(item.page , "nmame")
                 if (item.name === "investments") {
 
                     newBtns.push({

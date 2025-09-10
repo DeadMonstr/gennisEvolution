@@ -73,7 +73,6 @@ const PlatformParentSection = () => {
             setFilteredStudyingStudents(studyingStudents)
     }, [studyingStudents])
 
-    console.log(data, "da")
 
     useEffect(() => {
         setFilteredStudyingStudents(
