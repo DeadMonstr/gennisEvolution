@@ -424,7 +424,7 @@ const PlatformNewStudents = () => {
                     {/*                         getConfirm={deleteNewStudent} reason={true}/>*/}
                     {/*            </Modal>*/}
                     {/*        </>*/}
-                    {/*        : activeModalName === "returnDeleted" && isCheckedPassword ?*/}
+                    {/*        : activeModalName === "returnDeletedTeacher" && isCheckedPassword ?*/}
                     {/*            <Modal id={"confirm"} zIndex={1001} activeModal={activeModal}*/}
                     {/*                   setActiveModal={() => setActiveModal(false)}>*/}
                     {/*                <Confirm setActive={setActiveModal}*/}
