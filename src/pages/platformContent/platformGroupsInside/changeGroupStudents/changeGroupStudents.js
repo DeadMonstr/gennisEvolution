@@ -16,12 +16,14 @@ import {fetchGroups} from "slices/groupsSlice";
 import BackButton from "../../../../components/platform/platformUI/backButton/backButton";
 import {setMessage} from "slices/messageSlice";
 import ConfimReason from "components/platform/platformModals/confirmReason/confimReason";
+import {fetchTeachers} from "../../../../slices/teachersSlice";
 
 const ChangeGroupStudents = () => {
 
     const {locationId, groupId} = useParams()
 
     const {data} = useSelector(state => state.group)
+    const {teachers} = useSelector(state => state.teachers)
 
     const [deleteStId, setDeleteStId] = useState()
     const [activeModal, setActiveModal] = useState(false)
@@ -34,15 +36,19 @@ const ChangeGroupStudents = () => {
     const {request} = useHttp()
 
     useEffect(() => {
+        dispatch(fetchTeachers({}))
+    }, [])
+
+    useEffect(() => {
         dispatch(fetchGroup(groupId))
     }, [groupId])
 
-    useEffect(() => {
-        request(`${BackUrl}create_group/filtered_groups/${groupId}`, "GET", null, headers())
-            .then(res => {
-                setGroups(res.groups)
-            })
-    }, [groupId])
+    // useEffect(() => {
+    //     request(`${BackUrl}create_group/filtered_groups/${groupId}`, "GET", null, headers())
+    //         .then(res => {
+    //             setGroups(res.groups)
+    //         })
+    // }, [groupId])
 
 
     const activeItems = useMemo(() => {
@@ -73,6 +79,13 @@ const ChangeGroupStudents = () => {
     }
 
     const dispatch = useDispatch()
+
+    const getTeacherGroups = (id) => {
+        request(`${BackUrl}group/groups_by_teacher/${id}`, "GET", null, headers())
+            .then(res => {
+                setGroups(res.info)
+            })
+    }
 
 
     const getConfirm = (data) => {
@@ -167,17 +180,28 @@ const ChangeGroupStudents = () => {
                         <h1>Gruppaga qoshish</h1>
 
                         <Select
-                            name={'groups'}
-                            title={"Groups"}
-                            options={groups}
-                            onChangeOption={setSelectedGroup}
-                            group={true}
+                            name={'teachers'}
+                            title={"Teachers"}
+                            options={teachers}
+                            onChangeOption={getTeacherGroups}
+                            teachers={true}
+                            keyValue={"teacherID"}
                         />
 
+                        {
+                            !!groups.length && <Select
+                                name={'groups'}
+                                title={"Groups"}
+                                options={groups}
+                                onChangeOption={setSelectedGroup}
+                                group={true}
+                            />
+                        }
 
                         <input
                             className="input-submit"
                             type="submit"
+                            disabled={groups.length === 0 || selectedGroup === null}
                         />
                     </form>
                 </div>

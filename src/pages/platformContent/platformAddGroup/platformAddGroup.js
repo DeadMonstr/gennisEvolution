@@ -18,7 +18,6 @@ import {BackUrl, headers} from "constants/global";
 import PlatformMessage from "components/platform/platformMessage";
 import {fetchFilters} from "slices/filtersSlice";
 import {setMessage} from "slices/messageSlice";
-import {fetchTeachers} from "../../../slices/teachersSlice";
 
 const PlatformAddGroup = () => {
 

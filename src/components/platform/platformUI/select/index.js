@@ -94,7 +94,7 @@ const Select = React.memo(({
                     disabled={item.disabled}
                     {...extra}
                     key={index}
-                    value={item.id}
+                    value={value}
                 >
                     {`${item.name}  ${item.surname}`}
                 </option>

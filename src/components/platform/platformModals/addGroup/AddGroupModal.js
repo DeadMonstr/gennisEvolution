@@ -74,7 +74,7 @@ const AddGroupModal = ({btnName, activeModal, setMsg, setTypeMsg, setActiveMessa
     const getTeacherGroups = (id) => {
         request(`${BackUrl}group/groups_by_teacher/${id}`, "GET", null, headers())
             .then(res => {
-                setGroups(res.groups)
+                setGroups(res.info)
             })
     }
 
@@ -218,6 +218,7 @@ const AddGroupModal = ({btnName, activeModal, setMsg, setTypeMsg, setActiveMessa
                         options={teachers}
                         onChangeOption={getTeacherGroups}
                         teachers={true}
+                        keyValue={"teacherID"}
                     />
 
                     <Select
