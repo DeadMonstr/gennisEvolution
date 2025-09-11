@@ -28,19 +28,19 @@ const TeacherSalary = ({locationId, path}) => {
     const dispatch = useDispatch()
     const {request} = useHttp()
 
-    const [filteredData,searchedData] = useFilteredData(data?.data, currentPage, PageSize)
-
+    // const [filteredData,searchedData] = useFilteredData(data?.data, currentPage, PageSize)
+    const {activeFilters} = useSelector(state => state.filters)
     useEffect(() => {
         if (fetchedDataType !== path || !data.data.length || locationId !== location) {
-            const data = {
-                locationId,
-                type: "teacher_salary"
-            }
-            if (isDeleted) {
-                dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
-            } else {
-                dispatch(fetchAccData({data: data, PageSize, currentPage}));
-            }
+            // const data = {
+            //     locationId,
+            //     type: "teacher_salary"
+            // }
+            // if (isDeleted) {
+            //     dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
+            // } else {
+            //     dispatch(fetchAccData({data: data, PageSize, currentPage}));
+            // }
             dispatch(onChangeFetchedDataType({type: path}))
         }
     }, [locationId , currentPage])
@@ -52,6 +52,28 @@ const TeacherSalary = ({locationId, path}) => {
     useEffect(() => {
         setCurrentPage(1);
     }, [isDeleted, locationId, path ,]);
+
+    useEffect(() => {
+        let params = {
+            locationId,
+            type: "teacher_salary"
+        }
+        for (let item of btns) {
+            if (item.active) {
+                params = {
+                    ...params,
+                    [item.name]: item.active
+                }
+            }
+        }
+        const newData = {
+            name: "capital_tools",
+            location: locationId,
+            type: params.archive ? "archive" : ""
+        }
+        dispatch(fetchFilters(newData))
+    }, [btns])
+
     useEffect(() => {
         let params = {
             locationId,
@@ -65,25 +87,23 @@ const TeacherSalary = ({locationId, path}) => {
         }
         setIsDeleted(params.deleted);
 
-        if (params.deleted) {
-            dispatch(fetchDeletedAccData({
-                data: params,
-                isArchive: !!params.archive,
-                PageSize,
-                currentPage
-            }));
-        } else {
+        const route = "teacher_salary/"
+
             dispatch(fetchAccData({
                 data: params,
                 isArchive: !!params.archive,
                 PageSize,
-                currentPage
+                currentPage,
+                activeFilters,
+                locationId,
+                route,
+                deleted: params.deleted
             }));
-        }
+
 
 
         dispatch(onChangeFetchedDataType({ type: path }));
-    }, [btns, isChangedData , currentPage])
+    }, [btns, isChangedData , currentPage , activeFilters])
 
 
     const activeItems = () => {
@@ -218,7 +238,7 @@ const TeacherSalary = ({locationId, path}) => {
     let summa = "salary"
 
 
-    let sum = filteredData?.reduce((a, c) => {
+    let sum = data?.data?.reduce((a, c) => {
         return a + c[summa]
     }, 0);
 
@@ -228,6 +248,7 @@ const TeacherSalary = ({locationId, path}) => {
             <SampleAccounting
                 links={links}
             >
+
                 <div style={{height: "43vh" , overflow: "auto"}}>
                     <AccountingTable
                         sum={sum}
@@ -236,7 +257,7 @@ const TeacherSalary = ({locationId, path}) => {
                         fetchUsersStatus={fetchAccDataStatus}
                         funcSlice={funcsSlice}
                         activeRowsInTable={activeItems()}
-                        users={filteredData}
+                        users={data?.data}
                     />
                 </div>
                 <ExtraPagination

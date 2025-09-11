@@ -41,6 +41,8 @@ const StudentsBookPayment = ({locationId, path}) => {
     const [filteredDataOverheads,searchedDataOverheads] = useFilteredData(data.data?.book_overheads, currentPage, PageSize)
 
     const [filteredDataPayments,searchedDataPayments] = useFilteredData(data.data?.book_payments, currentPage, PageSize)
+    const {activeFilters} = useSelector(state => state.filters)
+
 
     useEffect(() => {
         if (fetchedDataType !== path || !data.data.length || locationId !== location) {
@@ -49,12 +51,12 @@ const StudentsBookPayment = ({locationId, path}) => {
                 type: "book_payments"
             };
 
-            if (isDeleted) {
-                dispatch(fetchDeletedAccData({data: baseData, PageSize, currentPage}));
-            } else {
-                dispatch(fetchAccData({data: baseData, PageSize, currentPage}));
-                dispatch(fetchAccData2({data: baseData, PageSize, currentPage}));
-            }
+            // if (isDeleted) {
+            //     dispatch(fetchDeletedAccData({data: baseData, PageSize, currentPage}));
+            // } else {
+            //     dispatch(fetchAccData({data: baseData, PageSize, currentPage}));
+            //     dispatch(fetchAccData2({data: baseData, PageSize, currentPage}));
+            // }
 
             dispatch(fetchFilters({
                 name: "accounting_payment",
@@ -73,6 +75,27 @@ const StudentsBookPayment = ({locationId, path}) => {
         setBookOverheads(1)
     }, [isDeleted, locationId, path ,]);
 
+
+    useEffect(() => {
+        let reqData = {
+            locationId,
+            type: "book_payments"
+        };
+
+        for (let item of btns) {
+            if (item.active) {
+                reqData[item.name] = item.active;
+            }
+        }
+
+        dispatch(fetchFilters({
+            name: "accounting_payment",
+            location: locationId,
+            type: reqData.archive ? "archive" : ""
+        }));
+
+    } , [btns])
+
     useEffect(() => {
         let reqData = {
             locationId,
@@ -89,37 +112,35 @@ const StudentsBookPayment = ({locationId, path}) => {
         setIsDeleted(!!reqData.deleted);
 
 
-        dispatch(fetchFilters({
-            name: "accounting_payment",
-            location: locationId
-        }));
+
+        const route = "book_payments/"
 
 
-        if (reqData.deleted) {
-            dispatch(fetchDeletedAccData({
-                data: reqData,
-                isArchive: !!reqData.archive,
-                PageSize,
-                currentPage
-            }));
-        } else {
             dispatch(fetchAccData({
                 data: reqData,
                 isArchive: !!reqData.archive,
                 PageSize,
-                currentPage
+                currentPage,
+                activeFilters,
+                locationId,
+                route,
+                deleted: reqData.deleted
             }));
             dispatch(fetchAccData2({
                 data: reqData,
                 PageSize,
                 book_overheads,
                 isArchive: !!reqData.archive,
+                activeFilters,
+                locationId,
+                route,
+               deleted:  reqData.deleted
             }));
-        }
+
 
         dispatch(onChangeFetchedDataType({ type: path }));
 
-    }, [btns, currentPage, book_overheads, locationId, path]);
+    }, [btns, currentPage, book_overheads, locationId, path , activeFilters]);
 
 
 

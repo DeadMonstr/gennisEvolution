@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo} from 'react';
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 
 import Button from "components/platform/platformUI/button";
 
@@ -8,6 +8,8 @@ import "./filters.sass"
 import FilterFromTo from "components/platform/platformUI/filters/filterFromTo";
 import FilterSelect from "components/platform/platformUI/filters/filterSelect";
 import {setActive} from "slices/filtersSlice";
+import {setFilters} from "../../../../slices/currentFilterSlice";
+import {useSearchParams} from "react-router-dom";
 
 const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters}) => {
 
@@ -93,10 +95,15 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
 
 const FilterSubItem = React.memo(({funcsSlice,itemBtns,activeFilter,activeBtns}) => {
 
-
+    const [searchParams, setSearchParams] = useSearchParams();
     const dispatch = useDispatch()
+
+    const {currentFilters} = useSelector(state => state.currentFilterSlice)
+
     const onChangeFilter = (subFilter,activeFilter) => {
         dispatch(setActive({activeFilter : activeFilter, subFilter:subFilter}))
+        dispatch(setFilters({language: subFilter}))
+        setSearchParams({...currentFilters, language: subFilter})
     }
 
 

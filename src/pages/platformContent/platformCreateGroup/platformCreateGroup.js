@@ -13,7 +13,6 @@ import {
 } from "slices/newStudentsSlice";
 
 
-
 import {BackUrl, headers} from "constants/global";
 import UsersTable from "components/platform/platformUI/tables/usersTable";
 import PlatformSearch from "components/platform/platformUI/search";
@@ -29,19 +28,14 @@ import {setMessage} from "slices/messageSlice";
 import {fetchTeachers, fetchTeachersByLocation} from "../../../slices/teachersSlice";
 
 
-
-
-
-
 const PlatformCreateGroup = () => {
 
 
     const {locationId} = useParams()
 
 
-
-    const [activeModal,setActiveModal] = useState(false)
-    const [groupData,setGroupData] = useState({
+    const [activeModal, setActiveModal] = useState(false)
+    const [groupData, setGroupData] = useState({
         teacher: {},
         students: [],
         groupInfo: {},
@@ -49,11 +43,10 @@ const PlatformCreateGroup = () => {
     })
 
 
-
     return (
         <div className="create">
             <div className="create__header">
-                <div className="checkedSt" onClick={()=> setActiveModal(!activeModal)}>
+                <div className="checkedSt" onClick={() => setActiveModal(!activeModal)}>
                     <i className="fas fa-bars"/>
                 </div>
             </div>
@@ -62,7 +55,7 @@ const PlatformCreateGroup = () => {
             </div>
 
             <Modal id={"checkedStudents"} activeModal={activeModal} setActiveModal={() => setActiveModal(false)}>
-                <CheckedStudents  setActiveModal={setActiveModal} groupData={groupData} setGroupData={setGroupData}/>
+                <CheckedStudents setActiveModal={setActiveModal} groupData={groupData} setGroupData={setGroupData}/>
             </Modal>
 
         </div>
@@ -70,35 +63,32 @@ const PlatformCreateGroup = () => {
 };
 
 
-
-
-const Users = ({locationId,setGroupData,groupData}) => {
+const Users = ({locationId, setGroupData, groupData}) => {
 
 
     const {newStudents, fetchFilteredStudentsStatus} = useSelector(state => state.newStudents)
     const {filters} = useSelector(state => state.filters)
 
 
-    const [users,setUsers] = useState([])
-    const [checkedUsers,setCheckedUsers] = useState([])
-    const [students,setStudents] = useState([])
-    const [teachers,setTeachers] = useState([])
-    const [groupError,setGroupError] = useState([])
+    const [users, setUsers] = useState([])
+    const [checkedUsers, setCheckedUsers] = useState([])
+    const [students, setStudents] = useState([])
+    const [teachers, setTeachers] = useState([])
+    const [groupError, setGroupError] = useState([])
     const {teacherss, btns, fetchTeachersStatus} = useSelector(state => state.teachers)
     const [currentPage, setCurrentPage] = useState(1);
-    console.log(students,'dd')
 
     const {selectedLocation} = useAuth()
 
     const filterRef = useRef()
-    const [activeOthers,setActiveOthers] = useState(false)
-    const [pageSize,setPageSize] = useState(50)
-    const [heightOtherFilters,setHeightOtherFilters] = useState(0)
-    const [search,setSearch] = useState("")
-    const [days,setDays] = useState([])
-    const [lessons,setLessons] = useState([
+    const [activeOthers, setActiveOthers] = useState(false)
+    const [pageSize, setPageSize] = useState(50)
+    const [heightOtherFilters, setHeightOtherFilters] = useState(0)
+    const [search, setSearch] = useState("")
+    const [days, setDays] = useState([])
+    const [lessons, setLessons] = useState([
         {
-            id : 1,
+            id: 1,
             selectedDay: null,
             selectedRoom: null,
             startTime: null,
@@ -107,8 +97,8 @@ const Users = ({locationId,setGroupData,groupData}) => {
     ])
 
 
-    const [activeModal,setActiveModal] = useState()
-    const [activeType,setActiveType] = useState("students")
+    const [activeModal, setActiveModal] = useState()
+    const [activeType, setActiveType] = useState("students")
 
     const {dataToChange} = useSelector(state => state.dataToChange)
 
@@ -116,7 +106,7 @@ const Users = ({locationId,setGroupData,groupData}) => {
 
     useEffect(() => {
         dispatch(fetchDataToChange(selectedLocation))
-    },[])
+    }, [])
 
     useEffect(() => {
         if (activeType === "students") {
@@ -133,18 +123,15 @@ const Users = ({locationId,setGroupData,groupData}) => {
             }
             dispatch(fetchTeachersByLocation({locationId}))
             setUsers(teachers)
-            console.log(teachers,'t')
         }
-    },[locationId,activeType])
-
-
+    }, [locationId, activeType])
 
 
     useEffect(() => {
         if (Object.keys(dataToChange).length > 0) {
             setDays(dataToChange.days)
         }
-    },[dataToChange])
+    }, [dataToChange])
 
 
     const multiPropsFilter = useMemo(() => {
@@ -168,7 +155,7 @@ const Users = ({locationId,setGroupData,groupData}) => {
                 return filters[key]?.activeFilters?.includes(user[key]);
             });
         });
-    },[filters,users]) ;
+    }, [filters, users]);
 
 
     const searchedUsers = useMemo(() => {
@@ -178,8 +165,7 @@ const Users = ({locationId,setGroupData,groupData}) => {
             item.surname.toLowerCase().includes(search.toLowerCase()) ||
             item.username.toLowerCase().includes(search.toLowerCase())
         )
-    },[multiPropsFilter,search])
-
+    }, [multiPropsFilter, search])
 
 
     const currentTableData = useMemo(() => {
@@ -189,13 +175,12 @@ const Users = ({locationId,setGroupData,groupData}) => {
     }, [pageSize, currentPage, searchedUsers]);
 
 
-
     const activeItems = useMemo(() => {
         if (activeType === "teachers") {
             return {
                 name: true,
-                surname : true,
-                subjects : true,
+                surname: true,
+                subjects: true,
                 color: true,
                 shift: true,
                 radio: true
@@ -203,93 +188,93 @@ const Users = ({locationId,setGroupData,groupData}) => {
         }
         return {
             name: true,
-            surname : true,
+            surname: true,
             age: true,
             reg_date: true,
             checked: true,
-            comment :true,
-            subjects : true,
+            comment: true,
+            subjects: true,
             color: true,
             shift: true
         }
-    },[activeType])
+    }, [activeType])
 
 
     useEffect(() => {
         const filteredUsers = students.filter(item => item.checked)
         const filteredTeachers = teachers.filter(item => item.radioChecked)
 
+        console.log(filteredUsers, "filteredUsers")
+
         setGroupData(item => {
-            return {...item,students:filteredUsers,teacher:filteredTeachers[0]}
+            return {...item, students: filteredUsers, teacher: filteredTeachers[0]}
         })
-    },[setGroupData, students, teachers])
+    }, [setGroupData, students, teachers])
 
     useEffect(() => {
         const filteredUsers = users.filter(item => item.checked)
         setCheckedUsers(filteredUsers)
-    },[users])
-    
+    }, [users])
+
     useEffect(() => {
         if (groupData.isChanged) {
             setUsers(users => users.map(item => {
                 if (groupData.students.some(st => st.id === item.id)) {
                     return item
                 } else {
-                    return {...item,checked: false}
+                    return {...item, checked: false}
                 }
             }))
             setStudents(users => users.map(item => {
                 if (groupData.students.some(st => st.id === item.id)) {
                     return item
                 } else {
-                    return {...item,checked: false}
+                    return {...item, checked: false}
                 }
             }))
-            setGroupData(data => ({...data,isChanged: false}))
+            setGroupData(data => ({...data, isChanged: false}))
         }
-    },[groupData.isChanged])
+    }, [groupData.isChanged])
 
 
     const setChecked = useCallback((id) => {
         if (activeType === "students") {
             setUsers(users => users.map(item => {
                 if (item.id === id) {
-                    return {...item,checked:!item.checked}
+                    return {...item, checked: !item.checked}
                 }
                 return item
             }))
             setStudents(users => users.map(item => {
                 if (item.id === id) {
-                    return {...item,checked:!item.checked}
+                    return {...item, checked: !item.checked}
                 }
                 return item
             }))
         } else if (activeType === "teachers") {
             setUsers(users => users.map(item => {
                 if (item.id === id) {
-                    return {...item,radioChecked:true}
+                    return {...item, radioChecked: true}
                 }
-                return {...item,radioChecked: false}
+                return {...item, radioChecked: false}
             }))
             setTeachers(users => users.map(item => {
                 if (item.id === id) {
-                    return {...item,radioChecked:true}
+                    return {...item, radioChecked: true}
                 }
-                return {...item,radioChecked: false}
+                return {...item, radioChecked: false}
             }))
         }
-    },[activeType])
-
-
+    }, [activeType])
 
 
     const funcsSlice = useMemo(() => {
         return {
-            setChecked : {func: setChecked,type: "simpleFunc"},
+            setChecked: {func: setChecked, type: "simpleFunc"},
             setActiveBtn,
             setPage
         }
-    },[setChecked])
+    }, [setChecked])
 
 
     const onLoadMore = () => {
@@ -300,50 +285,52 @@ const Users = ({locationId,setGroupData,groupData}) => {
     const renderDays = useCallback(() => {
 
         if (lessons.length > 0 && days.length > 0)
-        return lessons.map((item,index) => {
-            return (
-                <div className="days__item">
-                    <Select
-                        options={days}
-                        onChangeOption={(e) => onSetDay(e,item.id)}
-                        name={`days-${index}`}
-                        title="Kunlar"
-                        defaultValue={item.selectedDay?.id}
-                    />
+            return lessons.map((item, index) => {
+                return (
+                    <div className="days__item">
+                        <Select
+                            options={days}
+                            onChangeOption={(e) => onSetDay(e, item.id)}
+                            name={`days-${index}`}
+                            title="Kunlar"
+                            defaultValue={item.selectedDay?.id}
+                        />
 
-                    <Select
-                        group={true}
-                        name={`rooms-${index}`}
-                        title={`Honalar`}
-                        options={dataToChange?.rooms}
-                        onChangeOption={(e) => onSetRoom(e,item.id)}
-                        defaultValue={item.selectedRoom?.id}
-                    />
+                        <Select
+                            group={true}
+                            name={`rooms-${index}`}
+                            title={`Honalar`}
+                            options={dataToChange?.rooms}
+                            onChangeOption={(e) => onSetRoom(e, item.id)}
+                            defaultValue={item.selectedRoom?.id}
+                        />
 
 
-                    <Input onChange={(e) => onSetStartTime(e,item.id)} defaultValue={item.startTime} name={`start-${index}`} title={"Boshlanish vaqti"} type={"time"} />
-                    <Input onChange={(e) => onSetEndTime(e,item.id)} defaultValue={item.endTime} name={`end-${index}`} title={"Tugash vaqti"} type={"time"} />
+                        <Input onChange={(e) => onSetStartTime(e, item.id)} defaultValue={item.startTime}
+                               name={`start-${index}`} title={"Boshlanish vaqti"} type={"time"}/>
+                        <Input onChange={(e) => onSetEndTime(e, item.id)} defaultValue={item.endTime}
+                               name={`end-${index}`} title={"Tugash vaqti"} type={"time"}/>
 
-                    {/*<label className="time-label" htmlFor="time-label">*/}
-                    {/*    <span className="name-field">Boshlanish vaqti</span>*/}
-                    {/*    <input onChange={(e) => onSetStartTime(e,item.id)} value={startTime} className="input-fields" type="time"/>*/}
-                    {/*</label>*/}
+                        {/*<label className="time-label" htmlFor="time-label">*/}
+                        {/*    <span className="name-field">Boshlanish vaqti</span>*/}
+                        {/*    <input onChange={(e) => onSetStartTime(e,item.id)} value={startTime} className="input-fields" type="time"/>*/}
+                        {/*</label>*/}
 
-                    {/*<label className="time-label" htmlFor="time-label">*/}
-                    {/*    <span className="name-field">Tugash vaqti</span>*/}
-                    {/*    <input onChange={(e) => onSetEndTime(e,item.id)} value={endTime} className="input-fields" type="time"/>*/}
-                    {/*</label>*/}
+                        {/*<label className="time-label" htmlFor="time-label">*/}
+                        {/*    <span className="name-field">Tugash vaqti</span>*/}
+                        {/*    <input onChange={(e) => onSetEndTime(e,item.id)} value={endTime} className="input-fields" type="time"/>*/}
+                        {/*</label>*/}
 
-                    {
-                        index !== 0 ?
-                            <div className="days__item-del" onClick={() => delLesson(item.id)}>
-                                <i className="fas fa-minus"/>
-                            </div> : null
-                    }
-                </div>
-            )
-        })
-    },[lessons,days])
+                        {
+                            index !== 0 ?
+                                <div className="days__item-del" onClick={() => delLesson(item.id)}>
+                                    <i className="fas fa-minus"/>
+                                </div> : null
+                        }
+                    </div>
+                )
+            })
+    }, [lessons, days])
 
     const delLesson = (id) => {
 
@@ -353,7 +340,7 @@ const Users = ({locationId,setGroupData,groupData}) => {
             setDays(days => {
                 return days.map(item => {
                     if (item.name === lesson[0].selectedDay.name) {
-                        return {...item,disabled: false, isActive: null}
+                        return {...item, disabled: false, isActive: null}
                     }
                     return item
                 })
@@ -364,19 +351,19 @@ const Users = ({locationId,setGroupData,groupData}) => {
         setLessons(lessons => lessons.filter(item => item.id !== id))
     }
 
-    const onSetDay = (day,id) => {
+    const onSetDay = (day, id) => {
 
         if (day !== "Fan tanla") {
             const filteredDays = days.filter(item => item.id === +day)
             setDays(days => {
                 return days.map(item => {
                     if (item.id === +day && !item.isActive) {
-                        return {...item,disabled: true, isActive: id}
+                        return {...item, disabled: true, isActive: id}
                     }
                     if (item?.isActive !== id) {
                         return item
                     }
-                    return  {...item,disabled: false,isActive: null}
+                    return {...item, disabled: false, isActive: null}
                 })
             })
 
@@ -391,7 +378,7 @@ const Users = ({locationId,setGroupData,groupData}) => {
         }
     }
 
-    const onSetRoom = (roomId,id) => {
+    const onSetRoom = (roomId, id) => {
         const filteredRoom = dataToChange.rooms.filter(item => item.id === +roomId)
         setLessons(lessons => {
             return lessons.map(item => {
@@ -403,7 +390,7 @@ const Users = ({locationId,setGroupData,groupData}) => {
         })
     }
 
-    const onSetStartTime = (value,id) => {
+    const onSetStartTime = (value, id) => {
         setLessons(lessons => {
             return lessons.map(item => {
                 if (item.id === id) {
@@ -414,7 +401,7 @@ const Users = ({locationId,setGroupData,groupData}) => {
         })
     }
 
-    const onSetEndTime = (value,id) => {
+    const onSetEndTime = (value, id) => {
         setLessons(lessons => {
             return lessons.map(item => {
                 if (item.id === id) {
@@ -426,14 +413,19 @@ const Users = ({locationId,setGroupData,groupData}) => {
     }
 
     const onAddBtn = () => {
-        const lastElem = lessons.filter((item,index) => index === lessons.length-1)
+        const lastElem = lessons.filter((item, index) => index === lessons.length - 1)
 
-        setLessons([...lessons,{id:lastElem[0].id + 1,selectedDay: null,selectedRoom: null,startTime: null,endTime: null}])
+        setLessons([...lessons, {
+            id: lastElem[0].id + 1,
+            selectedDay: null,
+            selectedRoom: null,
+            startTime: null,
+            endTime: null
+        }])
 
     }
 
     const {request} = useHttp()
-
 
 
     const onSubmit = (e) => {
@@ -442,7 +434,7 @@ const Users = ({locationId,setGroupData,groupData}) => {
             lessons
         }
 
-        request(`${BackUrl}create_group/get_students/${locationId}`, "POST",JSON.stringify(data),headers())
+        request(`${BackUrl}create_group/get_students/${locationId}`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 if (res.success) {
                     setGroupError(res.data.gr_errors)
@@ -456,7 +448,7 @@ const Users = ({locationId,setGroupData,groupData}) => {
 
                     setLessons(lessons => {
                         return lessons.map(item => {
-                            return {...item,isChecked: true}
+                            return {...item, isChecked: true}
                         })
                     })
                     setActiveModal(false)
@@ -493,7 +485,8 @@ const Users = ({locationId,setGroupData,groupData}) => {
                     </Button>
 
                 </div>
-                <Filters key={3} filterRef={filterRef} filters={filters} heightOtherFilters={heightOtherFilters} activeOthers={activeOthers}/>
+                <Filters key={3} filterRef={filterRef} filters={filters} heightOtherFilters={heightOtherFilters}
+                         activeOthers={activeOthers}/>
             </header>
 
             <div className="links">
@@ -510,7 +503,7 @@ const Users = ({locationId,setGroupData,groupData}) => {
             </div>
             <main className="section__main">
                 {
-                    !users.length ?  <h1 className="error">O'quvchilar yoq</h1>  :
+                    !users.length ? <h1 className="error">O'quvchilar yoq</h1> :
                         <UsersTable
                             fetchUsersStatus={fetchFilteredStudentsStatus}
                             funcsSlice={funcsSlice}
@@ -523,16 +516,16 @@ const Users = ({locationId,setGroupData,groupData}) => {
                 {
                     searchedUsers.length > pageSize ?
                         <div className="loadMore">
-                            <Button onClickBtn={onLoadMore}><i className="fas fa-plus" /></Button>
+                            <Button onClickBtn={onLoadMore}><i className="fas fa-plus"/></Button>
                         </div> : null
                 }
             </main>
             <Modal activeModal={activeModal} setActiveModal={() => {
                 if (lessons.every(item => item.isChecked)) setActiveModal(false)
-            }} >
+            }}>
                 <div className="changeTime">
                     <form action="" onSubmit={onSubmit}>
-                        <div className="days" >
+                        <div className="days">
                             <div className="days__wrapper">
                                 {renderDays()}
                             </div>
@@ -543,7 +536,7 @@ const Users = ({locationId,setGroupData,groupData}) => {
                                     </div> : null
                             }
                         </div>
-                        <input disabled={isSubmit}   type="submit" value="Tekshirmoq" className="input-submit"/>
+                        <input disabled={isSubmit} type="submit" value="Tekshirmoq" className="input-submit"/>
                     </form>
                 </div>
             </Modal>
@@ -552,16 +545,16 @@ const Users = ({locationId,setGroupData,groupData}) => {
 }
 
 
-const CheckedStudents = ({groupData,setGroupData,setActiveModal}) => {
-    const [error,setError] = useState(false)
+const CheckedStudents = ({groupData, setGroupData, setActiveModal}) => {
+    const [error, setError] = useState(false)
 
-    const renderCheckedStudents = useCallback( () => {
+    const renderCheckedStudents = useCallback(() => {
         if (groupData?.students?.length !== 0) {
             return groupData?.students?.map(st => {
                 return (
                     <div
                         key={st}
-                        className={classNames("checkedStudents__item",{
+                        className={classNames("checkedStudents__item", {
                             isShift: st.color === "green" && st.subjects?.includes(groupData?.subject),
                         })}
                     >
@@ -575,7 +568,7 @@ const CheckedStudents = ({groupData,setGroupData,setActiveModal}) => {
                             />
                         </div>
                         <span className="error">
-                            { !st.subjects?.includes(groupData?.subject) ? "Tanlangan fan student faniga tog'ri kelmaydi" : null}
+                            {!st.subjects?.includes(groupData?.subject) ? "Tanlangan fan student faniga tog'ri kelmaydi" : null}
                         </span>
                     </div>
                 )
@@ -587,19 +580,19 @@ const CheckedStudents = ({groupData,setGroupData,setActiveModal}) => {
                 </h1>
             )
         }
-    },[groupData?.students, groupData?.subject])
+    }, [groupData?.students, groupData?.subject])
 
     useEffect(() => {
         setError(!groupData?.students?.every(item => item.subjects.some(sub => sub === groupData?.subject) && item.color === "green"))
 
-    },[groupData?.students, groupData?.subject])
+    }, [groupData?.students, groupData?.subject])
 
 
     const renderedCheckedSt = renderCheckedStudents()
 
     const onChecked = (id) => {
         setGroupData(data => {
-            return {...data, students: data.students.filter(item => item.id !== id),isChanged: true}
+            return {...data, students: data.students.filter(item => item.id !== id), isChanged: true}
         })
     }
 
@@ -627,28 +620,28 @@ const CheckedStudents = ({groupData,setGroupData,setActiveModal}) => {
 }
 
 
-const GroupInfo = React.memo(({groupData,setGroupData,error,setError,setActiveModal}) => {
+const GroupInfo = React.memo(({groupData, setGroupData, error, setError, setActiveModal}) => {
 
     const {createGroupTools} = useSelector(state => state.newStudents)
 
-    const [subject,setSubject] = useState()
+    const [subject, setSubject] = useState()
 
-    const [selectedTypeCourse,setSelectedTypeCourse] = useState(null)
-    const [nameGroup,setNameGroup] = useState(null)
-    const [priceCourse,setPriceCourse] = useState(null)
-    const [teacherDolya,setTeacherDolya] = useState(null)
+    const [selectedTypeCourse, setSelectedTypeCourse] = useState(null)
+    const [nameGroup, setNameGroup] = useState(null)
+    const [priceCourse, setPriceCourse] = useState(null)
+    const [teacherDolya, setTeacherDolya] = useState(null)
     // const [attendanceDays,setAttendanceDays] = useState(null)
 
-    const [errorMsg,setErrorMsg] = useState("")
+    const [errorMsg, setErrorMsg] = useState("")
 
-    const [innerError,setInnerError] = useState(false)
+    const [innerError, setInnerError] = useState(false)
 
     const {selectedLocation} = useAuth()
     const dispatch = useDispatch()
 
-    useEffect(()=> {
+    useEffect(() => {
         dispatch(fetchCreateGroupTools(selectedLocation))
-    },[dispatch, selectedLocation])
+    }, [dispatch, selectedLocation])
 
     // useEffect(() => {
     //     if (groupData) {
@@ -663,28 +656,26 @@ const GroupInfo = React.memo(({groupData,setGroupData,error,setError,setActiveMo
 
     const {request} = useHttp()
 
-    const onSubmit =  (e) => {
+    const onSubmit = (e) => {
 
         e.preventDefault()
 
         const data = {
             ...groupData,
             groupInfo: {
-                groupName : nameGroup,
-                groupPrice : priceCourse,
+                groupName: nameGroup,
+                groupPrice: priceCourse,
                 subject,
                 typeCourse: selectedTypeCourse,
                 teacherDolya
             }
         }
 
-        console.log(data , "data")
-
 
         // dispatch(deleteCheckedStudents({checkedStudents}))
         // dispatch(fetchFilteredStudents(data))
 
-        request(`${BackUrl}create_group/create_group_time/${selectedLocation}`, "POST",JSON.stringify(data),headers())
+        request(`${BackUrl}create_group/create_group_time/${selectedLocation}`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -708,10 +699,10 @@ const GroupInfo = React.memo(({groupData,setGroupData,error,setError,setActiveMo
     useEffect(() => {
         if (subject) {
             setGroupData(item => {
-                return {...item,subject}
+                return {...item, subject}
             })
         }
-    },[setGroupData, subject])
+    }, [setGroupData, subject])
 
 
     useEffect(() => {
@@ -719,7 +710,7 @@ const GroupInfo = React.memo(({groupData,setGroupData,error,setError,setActiveMo
             setInnerError(!groupData?.teacher?.subjects.includes(subject))
             setErrorMsg("O'qituvchining fani tanlangan fanga tog'ri kelmaydi")
             dispatch(setMessage({
-                msg:"O'qituvchining fani tanlangan fanga tog'ri kelmaydi",
+                msg: "O'qituvchining fani tanlangan fanga tog'ri kelmaydi",
                 type: "error",
                 active: !groupData?.teacher?.subjects.includes(subject)
             }))
@@ -727,8 +718,7 @@ const GroupInfo = React.memo(({groupData,setGroupData,error,setError,setActiveMo
             setErrorMsg("O'qituvchi tanlanmagan")
             setInnerError(true)
         }
-    },[groupData,  setError, subject])
-
+    }, [groupData, setError, subject])
 
 
     return (
@@ -747,7 +737,6 @@ const GroupInfo = React.memo(({groupData,setGroupData,error,setError,setActiveMo
                 {/*</label>*/}
 
 
-
                 <Select
                     keyValue={"name"}
                     defaultValue={subject}
@@ -757,7 +746,7 @@ const GroupInfo = React.memo(({groupData,setGroupData,error,setError,setActiveMo
                     onChangeOption={(e) => {
                         setSubject(e)
                         setGroupData(item => {
-                            return {...item,subject: e}
+                            return {...item, subject: e}
                         })
                     }}
                 />
@@ -834,9 +823,6 @@ const GroupInfo = React.memo(({groupData,setGroupData,error,setError,setActiveMo
         </div>
     )
 })
-
-
-
 
 
 export default PlatformCreateGroup;

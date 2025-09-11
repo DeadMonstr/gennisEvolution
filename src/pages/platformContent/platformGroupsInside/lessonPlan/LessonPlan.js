@@ -51,7 +51,7 @@ const LessonPlan = ({backBtn}) => {
     useEffect(() => {
         console.log(groupId)
         if (groupId) {
-            request(`${BackUrl}lesson_plan_list/${groupId}`, "GET", null, headers() )
+            request(`${BackUrl}teacher/lesson_plan_list/${groupId}`, "GET", null, headers() )
                 .then(res => {
                     if (res.month_list.length === 1) {
                         setMonth(res.month_list[0])
@@ -70,7 +70,7 @@ const LessonPlan = ({backBtn}) => {
 
     useEffect(() => {
         if (year && month ) {
-            request(`${BackUrl}lesson_plan_list/${groupId}/${year}-${month}`, "GET", null, headers())
+            request(`${BackUrl}teacher/lesson_plan_list/${groupId}/${year}-${month}`, "GET", null, headers())
                 .then(res => {
                     console.log(res)
                     setDays(res.days)
@@ -88,7 +88,7 @@ const LessonPlan = ({backBtn}) => {
         }
 
         if (year && month && day && groupId ) {
-            request(`${BackUrl}get_lesson_plan`,"POST",JSON.stringify(data),headers() )
+            request(`${BackUrl}teacher/get_lesson_plan`,"POST",JSON.stringify(data),headers() )
                 .then(res => {
                     setCanChange(res.status)
                     setValue("homework",res.lesson_plan.homework)

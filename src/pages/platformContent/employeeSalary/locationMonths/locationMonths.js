@@ -191,7 +191,6 @@ const PaymentModal = ({monthId,salary,setActiveChangeModal,userId}) => {
     const [day, setDay] = useState(null)
     const [month, setMonth] = useState(null)
 
-    console.log(dataToChange)
 
     const {
         register,

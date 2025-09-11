@@ -51,7 +51,9 @@ const initialState = {
         //     }
         // }
     },
-    fetchFiltersStatus: "idle"
+
+    activeFilters: {},
+    fetchFiltersStatus: "idle",
 }
 
 
@@ -76,7 +78,6 @@ const newStudentsSlice = createSlice({
         resetState: () => initialState,
         setActive: (state,action) => {
             const filterKeys = Object.keys(state.filters)
-            // eslint-disable-next-line array-callback-return
             filterKeys.map(keys => {
                 if (keys === action.payload.activeFilter) {
                     if (state.filters[keys].typeChange === "once") {
@@ -108,7 +109,6 @@ const newStudentsSlice = createSlice({
         },
         setSelectOption: (state,action) => {
             const filterKeys = Object.keys(state.filters)
-            // eslint-disable-next-line array-callback-return
             filterKeys.map(keys => {
                 if (keys === action.payload.activeFilter) {
                     let newFilter
@@ -123,7 +123,6 @@ const newStudentsSlice = createSlice({
         },
         setFromToFilter: (state,action) => {
             const filterKeys = Object.keys(state.filters)
-            // eslint-disable-next-line array-callback-return
             filterKeys.map(keys => {
                 if (keys === action.payload.activeFilter) {
                     const newFilter = {...state.filters[keys],fromTo: action.payload.fromTo }
@@ -131,6 +130,20 @@ const newStudentsSlice = createSlice({
                 }
             })
         },
+        setActiveFilter: (state, action) => {
+            const { key, value } = action.payload;
+            if (state.activeFilters[key] === value) {
+                const updated = { ...state.activeFilters };
+                delete updated[key];
+                state.activeFilters = updated;
+            }
+            else {
+                state.activeFilters = {
+                    ...state.activeFilters,
+                    [key]: value
+                };
+            }
+        }
     },
     extraReducers: builder => {
         builder
@@ -138,9 +151,6 @@ const newStudentsSlice = createSlice({
             .addCase(fetchFilters.fulfilled,(state, action) => {
                 state.fetchFiltersStatus = 'success';
                 state.filters = action.payload.filters
-                console.log(action.payload , "log3213")
-
-
             })
             .addCase(fetchFilters.rejected,state => {state.fetchFiltersStatus = 'error'} )
 
@@ -154,5 +164,11 @@ const {actions,reducer} = newStudentsSlice;
 
 export default reducer
 
-export const {resetState,setActive,setFromToFilter,setSelectOption} = actions
+export const {
+    resetState,
+    setActive,
+    setFromToFilter,
+    setSelectOption,
+    setActiveFilter
+} = actions
 

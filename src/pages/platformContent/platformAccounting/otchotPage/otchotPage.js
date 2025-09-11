@@ -30,7 +30,6 @@ const OtchotPage = () => {
 
     useEffect(() => {
         if (current_year && current_month) {
-            console.log(current_month,current_year, "hasjhdbvajsd ")
             setYear(current_year)
             setMonth(current_month)
         }

@@ -168,7 +168,6 @@ const InvesmentAccount = ({locations}) => {
                 dispatch(onAddInvesment(res.investment))
                 dispatch(fetchAccountantBookKeepingTypesMoney())
 
-                console.log(res.investment)
                 setAdd(false)
             })
     }
