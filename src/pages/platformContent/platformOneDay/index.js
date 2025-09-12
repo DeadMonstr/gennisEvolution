@@ -72,15 +72,19 @@ const PlatformOneDay = () => {
                         comment: "Izoh"
                     };
                 } else if (key.includes("salaries")) {
-                    columns = ["amount", "date", "reason"];
+                    columns = ["name", "surname", "amount", "date", "reason"];
                     headers = {
+                        name: "Ism",
+                        surname: "Familiya",
                         amount: "Miqdori",
                         date: "Sana",
                         reason: "Sabab"
                     };
                 } else if (key.includes("payments")) {
-                    columns = ["amount", "date", "type_name"];
+                    columns = ["name", "surname", "amount", "date", "type_name"];
                     headers = {
+                        name: "Ism",
+                        surname: "Familiya",
                         amount: "Miqdori",
                         date: "Sana",
                         type_name: "Turi"
@@ -94,16 +98,19 @@ const PlatformOneDay = () => {
                         status: "Holati"
                     };
                 } else if (key.includes("overheads")) {
-                    columns = ["amount", "date"];
+                    columns = ["item_name", "amount", "date"];
                     headers = {
+                        item_name: "Nomi",
                         amount: "Miqdori",
                         date: "Sana"
                     };
                 } else if (key.includes("group")) {
-                    columns = ["name", "students"];
+                    columns = ["name", "students", "teacher_name", "teacher_surname"];
                     headers = {
                         name: "Nomi",
-                        students: "O'quvchilar"
+                        students: "O'quvchilar",
+                        teacher_name: "O'qituvchi Ismi",
+                        teacher_surname: "O'qituvchi Familiyasi",
                     };
                 } else {
                     columns = Object.keys(value.items[0] || {}).filter(
