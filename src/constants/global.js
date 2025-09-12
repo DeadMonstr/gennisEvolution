@@ -264,6 +264,14 @@ export const requireMenuItems = (id) => {
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
         },
         {
+            to : "oneDay",
+            name : "Kunlik hisob",
+            classIcon: "fa-chart-line",
+            location: true,
+            children: true,
+            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer , ROLES.Accountant , ROLES.Main_admin]
+        },
+        {
             to : "accounting",
             name : "Buxgalteriya hisobi",
             classIcon: "fa-file-invoice-dollar",
