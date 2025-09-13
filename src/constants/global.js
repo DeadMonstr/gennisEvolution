@@ -10,7 +10,7 @@ export const ClassroomUrl = `https://classroom.gennis.uz"/`
 
 // export const BackUrl = "https://admin.gennis.uz/api/"
 // export const BackUrlForDoc = "https://admin.gennis.uz/"
-//
+
 export const BackUrl = "/api/"
 export const BackUrlForDoc = "/"
 export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
