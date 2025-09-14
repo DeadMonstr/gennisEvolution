@@ -101,18 +101,18 @@ export const fetchNewFilteredStudents = createAsyncThunk(
 
 export const fetchNewStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewStudents',
-    async ({locationId, pageSize, currentPage , search}) => {
+    async ({locationId, pageSize, currentPage , search , currentFilters}) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}student/newStudents/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}`, "GET", null, headers())
+        return await request(`${BackUrl}student/newStudents/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.language ? `&language=${currentFilters.language}` : ""}${currentFilters.age ? `&age=${currentFilters.age}` : ""}`, "GET", null, headers())
     }
 )
 
 export const fetchNewDeletedStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewDeletedStudents',
-    async ({locationId, pageSize, currentPage , search}) => {
+    async ({locationId, pageSize, currentPage , search  ,currentFilters}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}student/newStudentsDeleted/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}`, "GET", null, headers())
+        return await request(`${BackUrl}student/newStudentsDeleted/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.language ? `&language=${currentFilters.language}` : ""}${currentFilters.age ? `&age=${currentFilters.age}` : ""}`, "GET", null, headers())
     }
 )
 

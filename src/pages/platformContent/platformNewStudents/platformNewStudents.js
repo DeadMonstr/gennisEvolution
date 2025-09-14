@@ -84,6 +84,8 @@ const PlatformNewStudents = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const pageSize = useMemo(() => 50, [])
 
+
+
     useEffect(() => {
         const newData = {
             name: "newStudents",
@@ -107,17 +109,17 @@ const PlatformNewStudents = () => {
             if (isFilterData) {
                 dispatch(fetchNewStudentsDeleted(locationId))
             } else {
-                dispatch(fetchNewDeletedStudents({locationId, currentPage, pageSize, search}))
+                dispatch(fetchNewDeletedStudents({locationId, currentPage, pageSize, search  ,currentFilters}))
             }
         } else {
             if (isFilterData) {
                 dispatch(fetchNewFilteredStudents(locationId))
             } else {
-                dispatch(fetchNewStudents({locationId, currentPage, pageSize, search}))
+                dispatch(fetchNewStudents({locationId, currentPage, pageSize, search , currentFilters}))
             }
         }
         dispatch(setSelectedLocation({id: locationId}))
-    }, [locationId, isDeleteData, isFilterData, currentPage, search])
+    }, [locationId, isDeleteData, isFilterData, currentPage, search , currentFilters])
 
 
     const navigate = useNavigate()

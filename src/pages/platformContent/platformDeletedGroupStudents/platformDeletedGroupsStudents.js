@@ -27,11 +27,12 @@ const PlatformGroupDeletedStudents = () => {
     let {locationId} = useParams()
 
     const {students,btns,fetchDeletedStudentStatus , totalCount} = useSelector(state => state.deletedGroupStudents)
-    const {filters} = useSelector(state => state.filters)
+    const {filters , activeFilters} = useSelector(state => state.filters)
+
     const {location,role} = useSelector(state => state.me)
     const {isCheckedPassword} = useSelector(state => state.me)
     const {dataToChange} = useSelector(state => state.dataToChange)
-
+    const {currentFilters} = useSelector(state => state.currentFilterSlice)
 
     const [activeCheckPassword,setActiveCheckPassword] = useState(false)
     const [activeModal,setActiveModal] = useState(false)
@@ -90,18 +91,18 @@ const PlatformGroupDeletedStudents = () => {
                 currentPage , pageSize,
                 search
             }
-            dispatch(fetchDeletedStudent(data))
+            dispatch(fetchDeletedStudent({data , activeFilters}))
         } else {
             const data = {
                 type: "O'qituvchi yoqmadi",
                 locationId,currentPage , pageSize
             }
-            dispatch(fetchDeletedStudent(data))
+            dispatch(fetchDeletedStudent({data , activeFilters}))
         }
 
         dispatch(setSelectedLocation({id:locationId}))
 
-    },[activeOption,dispatch, locationId , currentPage , search])
+    },[activeOption,dispatch, locationId , currentPage , search , activeFilters])
 
 
 

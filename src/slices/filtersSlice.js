@@ -107,19 +107,38 @@ const newStudentsSlice = createSlice({
                 }
             })
         },
-        setSelectOption: (state,action) => {
-            const filterKeys = Object.keys(state.filters)
-            filterKeys.map(keys => {
-                if (keys === action.payload.activeFilter) {
-                    let newFilter
-                    if (state.filters[keys].activeFilters.includes(action.payload.selectedOption) || action.payload.selectedOption === "all") {
-                        newFilter = {...state.filters[keys],activeFilters:[]}
-                    } else {
-                        newFilter = {...state.filters[keys], activeFilters: action.payload.selectedOption }
-                    }
-                    state.filters = {...state.filters,[keys] : newFilter}
-                }
-            })
+        setSelectOption: (state, action) => {
+            const { activeFilter, selectedOption } = action.payload;
+            const current = state.activeFilters[activeFilter];
+
+            let newValue;
+
+            if (
+                selectedOption === "all" ||
+                (Array.isArray(current) && current.includes(selectedOption)) ||
+                current === selectedOption
+            ) {
+                newValue = null; // "all" bo‘lsa yoki shu filter qayta bosilsa -> olib tashlaymiz
+            } else {
+                newValue = selectedOption; // oddiy qiymatni qo‘yamiz
+            }
+
+            // umumiy activeFilters obyektini yangilash
+            const updated = { ...state.activeFilters };
+            if (newValue) {
+                updated[activeFilter] = newValue;
+            } else {
+                delete updated[activeFilter]; // "all" bo‘lsa qo‘shmaymiz
+            }
+            state.activeFilters = updated;
+
+            // filters[activeFilter] ichida ham yangilash
+            if (state.filters[activeFilter]) {
+                state.filters[activeFilter] = {
+                    ...state.filters[activeFilter],
+                    activeFilters: newValue ? newValue : [],
+                };
+            }
         },
         setFromToFilter: (state,action) => {
             const filterKeys = Object.keys(state.filters)
