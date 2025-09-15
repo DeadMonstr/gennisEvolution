@@ -3,7 +3,7 @@ import "./platformHeader.sass"
 
 import logo from "assets/logo/Logo.png"
 import {useAuth} from "hooks/useAuth";
-import { BackUrlForDoc} from "constants/global";
+import {BackUrlForDoc} from "constants/global";
 import img from "assets/user-interface/user_image.png";
 import {useSelector} from "react-redux";
 

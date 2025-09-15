@@ -25,6 +25,8 @@ import ChangeLocStudent from "./changeLocStudent/changeLocStudent";
 import BackButton from "../../../../components/platform/platformUI/backButton/backButton";
 import MakeObserver
     from "pages/platformContent/platformUser/platformUserChange/makeObserver/makeObserver";
+import ReturnDeletedTeacher
+    from "pages/platformContent/platformUser/platformUserChange/returnDeletedTeacher/returnDeletedTeacher";
 
 
 const PlatformUserChange = () => {
@@ -210,6 +212,20 @@ const PlatformUserChange = () => {
                             :
                             null
                     }
+                    {
+                        // eslint-disable-next-line no-mixed-operators
+                        user.deleted && (role === ROLES.Admin || role === ROLES.Director) ?
+                            <div
+                                onClick={() => setActiveRoute("returnDeleted")}
+                                className={classNames("changeInfo__btns-item",{
+                                    active: activeRoute === "returnDeleted"
+                                })}
+                            >
+                                Foydalanuvchini qaytarish
+                            </div>
+                            :
+                            null
+                    }
                 </div>
 
 
@@ -225,6 +241,7 @@ const PlatformUserChange = () => {
                             : activeRoute === "changeLocTeacher" ? <ChangeLocTeacher userRole={userRole} userId={userId}/>
                             : activeRoute === "changeLocStudent" ? <ChangeLocStudent userRole={userRole} userId={userId}/>
                             : activeRoute === "makeObserver" ? <MakeObserver userRole={userRole} userId={userId}/>
+                            : activeRoute === "returnDeleted" ? <ReturnDeletedTeacher userRole={userRole} userId={userId}/>
                             : null
                     }
                 </div>

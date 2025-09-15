@@ -42,10 +42,10 @@ const initialState = {
 
 export const  fetchDeletedStudent = createAsyncThunk(
     'deletedStudentsSlice/fetchDeletedStudent',
-    async (data) => {
+    async ({data , activeFilters}) => {
         const {locationId , currentPage , pageSize , search} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}student/deletedStudents/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}`,"POST",JSON.stringify(data),headers())
+        return await request(`${BackUrl}student/deletedStudents/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${activeFilters.group ? `&group=${activeFilters.group}` : ""}${activeFilters.teacher ? `&teacher=${activeFilters.teacher}` : ""}`,"POST",JSON.stringify(data),headers())
     }
 )
 

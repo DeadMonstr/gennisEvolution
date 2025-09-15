@@ -593,7 +593,7 @@ export default SampleUsers;
 //     checked: false,
 //     comment: true,
 //     subjects: false,
-//     returnDeleted: false,
+//     returnDeletedTeacher: false,
 //     delete: true,
 //     deletedDate: false,
 //     reason: false
@@ -607,7 +607,7 @@ export default SampleUsers;
 //     checked: false,
 //     comment: false,
 //     subjects: false,
-//     returnDeleted: false,
+//     returnDeletedTeacher: false,
 //     delete: false,
 //     deletedDate: false,
 //     reason: false

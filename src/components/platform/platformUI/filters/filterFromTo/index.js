@@ -24,20 +24,14 @@ const FilterFromTo = ({funcsSlice, activeFilter}) => {
 
 
     const onSubmit = (e) => {
-        e.preventDefault()
+        e.preventDefault();
+        const fromTo = { from, to };
+        const age = { age: `${from || ""}-${to || ""}` };
 
-        console.log(true)
-
-        const fromTo = {
-            from, to
-        }
-        const age = {age: `${from}-${to}`}
-
-        dispatch(setFromToFilter({activeFilter: activeFilter, fromTo: fromTo}))
-        dispatch(setFilters(age))
-        setSearchParams({...currentFilters, ...age})
-    }
-
+        dispatch(setFromToFilter({ activeFilter, fromTo }));
+        dispatch(setFilters(age));
+        setSearchParams({ ...currentFilters, ...age });
+    };
     return (
         <form className="fromToForm" onSubmit={onSubmit}>
             <div>

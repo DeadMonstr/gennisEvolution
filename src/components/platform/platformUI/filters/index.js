@@ -21,6 +21,7 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
 
     const styleOtherFilters = activeOthers ? style : null
 
+
     const renderFilters = useCallback(() => {
         const filtersKeys = Object.keys(filters)
 
@@ -40,7 +41,7 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
                 )
             }
             else if (filters[key].type === "btn") {
-
+                console.log(filters[key].activeFilters, "filters[key].activeFilters")
                 return (
                     <div data-key={index} key={index} className="otherFilters__item">
                         <h2>{filters[key].title}:</h2>
@@ -100,12 +101,33 @@ const FilterSubItem = React.memo(({funcsSlice,itemBtns,activeFilter,activeBtns})
 
     const {currentFilters} = useSelector(state => state.currentFilterSlice)
 
-    const onChangeFilter = (subFilter,activeFilter) => {
-        dispatch(setActive({activeFilter : activeFilter, subFilter:subFilter}))
-        dispatch(setFilters({language: subFilter}))
-        setSearchParams({...currentFilters, language: subFilter})
-    }
+    const onChangeFilter = (subFilter, activeFilter) => {
+        let newValue;
 
+
+        if (Array.isArray(activeBtns)) {
+            if (activeBtns.includes(subFilter)) {
+
+                newValue = activeBtns.filter(item => item !== subFilter);
+            } else {
+
+                newValue = [...activeBtns, subFilter];
+            }
+        } else {
+
+            if (activeBtns === subFilter) {
+
+                newValue = null;
+            } else {
+
+                newValue = subFilter;
+            }
+        }
+
+        dispatch(setActive({ activeFilter, subFilter: newValue }));
+        dispatch(setFilters({ [activeFilter]: newValue })); // language qotib qolmasin
+        setSearchParams({ ...currentFilters, [activeFilter]: newValue || "" });
+    };
 
     return itemBtns.map( (item,index) => {
 

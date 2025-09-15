@@ -50,7 +50,6 @@ export const ROLES = {
     Smm: "a21b00q41",
     Editor: "n41c88z45",
     Accountant: "ak47a76m69",
-    Main_admin: "a21b32c43"
 }
 
 
@@ -68,13 +67,13 @@ export const requireMenuItems = (id) => {
             classIcon: "fa-tasks",
             location: true,
             children: true,
-            roles: [ROLES.Admin,ROLES.Director , ROLES.Main_admin]
+            roles: [ROLES.Admin,ROLES.Director]
         },
         {
             to: "adminRating",
             name: "Admin rating",
             classIcon: "fa-chart-bar",
-            roles: [ROLES.Director,ROLES.Admin , ROLES.Main_admin]
+            roles: [ROLES.Director,ROLES.Admin]
         },
         // {
         //     to : "blockTest",
@@ -180,14 +179,6 @@ export const requireMenuItems = (id) => {
             children: true,
 
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
-        {
-            to: `parentsList`,
-            name: "Ota-onalar ro'yxati",
-            classIcon: "fa-user-friends",
-            location: true,
-            children: true,
-            roles: [ROLES.Director,ROLES.Programmer, ROLES.Accountant , ROLES.Admin]
         },
         {
             to : "groups",
@@ -314,7 +305,7 @@ export const requireMenuItems = (id) => {
             //         iconClazz : "fa-map-marker-alt"
             //     }
             // ],
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer , ROLES.Accountant , ROLES.Main_admin]
+            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer , ROLES.Accountant]
         },
         {
             to : "books",
@@ -441,7 +432,14 @@ export const requireMenuItems = (id) => {
         //     classIcon: "fa-dollar-sign",
         //     roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
         // },
-
+        {
+            to: `parentsList`,
+            name: "Ota-onalar ro'yxati",
+            classIcon: "fa-users",
+            location: true,
+            children: true,
+            roles: [ROLES.Director,ROLES.Programmer, ROLES.Accountant , ROLES.Admin]
+        }
     ]
 }
 

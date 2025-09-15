@@ -26,6 +26,16 @@ export const  fetchTeachersByLocation = createAsyncThunk(
     }
 )
 
+export const  fetchTeachersByLocationWithoutPagination = createAsyncThunk(
+    'teachersSlice/fetchTeachersByLocationWithoutPagination',
+    async ({locationId }) => {
+        const {request} = useHttp();
+        return await request(`${BackUrl}teacher/get_teachers_group/${locationId}`,"GET",null,headers())
+    }
+)
+
+
+
 export const  fetchDeletedTeachersByLocation = createAsyncThunk(
     'teachersSlice/fetchDeletedTeachersByLocation',
     async ({locationId , pageSize , currentPage , search}) => {
@@ -62,6 +72,14 @@ const teachersSlice = createSlice({
                 state.totalCount = action.payload?.pagination
             })
             .addCase(fetchTeachersByLocation.rejected,state => {state.fetchTeachersStatus = 'error'} )
+
+            .addCase(fetchTeachersByLocationWithoutPagination.pending,state => {state.fetchTeachersStatus = 'loading'} )
+            .addCase(fetchTeachersByLocationWithoutPagination.fulfilled,(state, action) => {
+                state.fetchTeachersStatus = 'success';
+                state.teachers = action.payload.teachers
+
+            })
+            .addCase(fetchTeachersByLocationWithoutPagination.rejected,state => {state.fetchTeachersStatus = 'error'} )
 
 
             .addCase(fetchDeletedTeachersByLocation.pending,state => {state.fetchTeachersStatus = 'loading'} )

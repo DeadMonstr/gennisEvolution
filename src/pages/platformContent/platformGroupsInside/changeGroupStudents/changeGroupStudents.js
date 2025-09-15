@@ -16,11 +16,11 @@ import {fetchGroups} from "slices/groupsSlice";
 import BackButton from "../../../../components/platform/platformUI/backButton/backButton";
 import {setMessage} from "slices/messageSlice";
 import ConfimReason from "components/platform/platformModals/confirmReason/confimReason";
-import {fetchTeachers} from "../../../../slices/teachersSlice";
+import {fetchTeachers, fetchTeachersByLocationWithoutPagination} from "../../../../slices/teachersSlice";
 
 const ChangeGroupStudents = () => {
 
-    const {locationId, groupId} = useParams()
+    const { groupId} = useParams()
 
     const {data} = useSelector(state => state.group)
     const {teachers} = useSelector(state => state.teachers)
@@ -35,8 +35,11 @@ const ChangeGroupStudents = () => {
 
     const {request} = useHttp()
 
+    const locationId = localStorage.getItem("selectedLocation")
+
+
     useEffect(() => {
-        dispatch(fetchTeachers({}))
+        dispatch(fetchTeachersByLocationWithoutPagination({locationId}))
     }, [])
 
     useEffect(() => {

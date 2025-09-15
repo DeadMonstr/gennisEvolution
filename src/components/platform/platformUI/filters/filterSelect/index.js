@@ -25,6 +25,7 @@ const FilterSelect = React.memo(({options,activeFilter,name,onChangeActiveFilter
 
     return (
         <div>
+
             <Select all={true} onChangeOption={onChangeOption} options={options} name={"select-filter"} title={name}/>
         </div>
     );

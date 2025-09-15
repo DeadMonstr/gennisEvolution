@@ -18,9 +18,13 @@ import classNames from "classnames";
 import {BackUrl, headers} from "constants/global";
 import PlatformMessage from "components/platform/platformMessage";
 import {useNavigate} from "react-router-dom";
-import {fetchTeachers} from "../../../../slices/teachersSlice";
+import {
+    fetchTeachers,
+    fetchTeachersByLocation,
+    fetchTeachersByLocationWithoutPagination
+} from "../../../../slices/teachersSlice";
 
-const AddGroupModal = ({btnName, activeModal, setMsg, setTypeMsg, setActiveMessage, locationId}) => {
+const AddGroupModal = ({btnName, activeModal, setMsg, setTypeMsg, setActiveMessage}) => {
 
     // const {groups} = useSelector(state => state.groups)
     const {createGroupTools, checkedUsers} = useSelector(state => state.newStudents)
@@ -30,18 +34,15 @@ const AddGroupModal = ({btnName, activeModal, setMsg, setTypeMsg, setActiveMessa
 
     const dispatch = useDispatch()
 
+    const locationId = localStorage.getItem("selectedLocation")
+
     useEffect(() => {
         dispatch(fetchGroups(locationId))
         dispatch(fetchCreateGroupTools())
+        dispatch(fetchTeachersByLocationWithoutPagination({locationId}))
     }, [dispatch, locationId])
 
-    useEffect(() => {
-        dispatch(fetchTeachers({}))
-        // request(`${BackUrl}create_group/filtered_groups2/${locationId}`, "GET", null, headers())
-        //     .then(res => {
-        //         setGroups(res.groups)
-        //     })
-    }, [])
+
 
     const [subject, setSubject] = useState(null)
     const [filteredGroups, setFilteredGroups] = useState([])

@@ -19,17 +19,17 @@ const PlatformStudyingStudents = () => {
     let {locationId} = useParams()
 
     const {studyingStudents,btns,fetchStudyingStudentsStatus , totalCount} = useSelector(state => state.studyingStudents)
-    const {filters} = useSelector(state => state.filters)
+    const {filters } = useSelector(state => state.filters)
     const {location,role} = useSelector(state => state.me)
-
+    const {currentFilters} = useSelector(state => state.currentFilterSlice)
     const dispatch = useDispatch()
     const [currentPage, setCurrentPage] = useState(1)
     const pageSize = useMemo(() => 50, [])
-
+    console.log(currentFilters , "activeFilters")
     const [search , setSearch] = useState("")
     useEffect(()=> {
 
-        dispatch(fetchStudyingStudents({locationId , pageSize , currentPage , search}))
+        dispatch(fetchStudyingStudents({locationId , pageSize , currentPage , search , currentFilters}))
         const newData = {
             name: "newStudents",
             location: locationId
@@ -37,7 +37,7 @@ const PlatformStudyingStudents = () => {
         dispatch(fetchFilters(newData))
         dispatch(setSelectedLocation({id:locationId}))
 
-    },[dispatch, locationId , currentPage , search])
+    },[dispatch, locationId , currentPage , search , currentFilters])
 
     const activeItems = useMemo(()=> {
         return {
