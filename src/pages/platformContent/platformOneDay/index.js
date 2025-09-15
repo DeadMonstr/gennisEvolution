@@ -26,6 +26,11 @@ const PlatformOneDay = () => {
             const last = JSON.parse(lastDate)
             setFromDate(last.fromDate)
             setToDate(last.toDate)
+        } else {
+            const date = new Date()
+            const getFullDate = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+            setFromDate(getFullDate)
+            setToDate(getFullDate)
         }
     }, [lastDate])
 
