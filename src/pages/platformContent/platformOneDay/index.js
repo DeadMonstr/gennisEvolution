@@ -183,7 +183,6 @@ const PlatformOneDay = () => {
         });
     };
 
-
     return (
         <div className={cls.oneDay}>
             <div className={cls.oneDay__header}>
