@@ -4,8 +4,9 @@ import classNames from "classnames";
 
 import Table from "components/platform/platformUI/table";
 import Input from "components/platform/platformUI/input";
+import Select from "components/platform/platformUI/select";
 import DefaultLoader from "components/loader/defaultLoader/DefaultLoader";
-import {BackUrl} from "constants/global";
+import {BackUrl, headers} from "constants/global";
 import {useHttp} from "hooks/http.hook";
 
 import cls from "./style.module.sass";
@@ -21,6 +22,9 @@ const PlatformOneDay = () => {
     const [date, setDate] = useState({})
     const [loading, setLoading] = useState(false)
 
+    const [paymentTypes, setPaymentTypes] = useState([])
+    const [selectedType, setSelectedType] = useState(null)
+
     useEffect(() => {
         if (lastDate) {
             const last = JSON.parse(lastDate)
@@ -28,7 +32,7 @@ const PlatformOneDay = () => {
             setToDate(last.toDate)
         } else {
             const date = new Date()
-            const getFullDate = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+            const getFullDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
             setFromDate(getFullDate)
             setToDate(getFullDate)
         }
@@ -37,14 +41,24 @@ const PlatformOneDay = () => {
     useEffect(() => {
         if (locationId && fromDate && toDate) {
             setLoading(true)
-            request(`${BackUrl}account/statistics?location_id=${locationId}&from_date=${fromDate}&to_date=${toDate}`)
+            request(`${BackUrl}account/statistics?location_id=${locationId}&from_date=${fromDate}&to_date=${toDate}${selectedType && selectedType !== "all" ? `&payment_type_name=${selectedType}` : ""}`)
                 .then(res => {
                     setDate(res)
                     setLoading(false)
                 })
             localStorage.setItem("from_toData", JSON.stringify({fromDate, toDate}))
         }
-    }, [locationId, fromDate, toDate])
+    }, [locationId, fromDate, toDate, selectedType])
+
+    useEffect(() => {
+        if (locationId) {
+            request(`${BackUrl}base/block_information2/${locationId}`, "GET", null, headers())
+                .then(res => {
+                    // console.log(res)
+                    setPaymentTypes(res?.data?.payment_types)
+                })
+        }
+    }, [locationId])
 
     const render = () => {
         const sectionTitles = {
@@ -188,6 +202,13 @@ const PlatformOneDay = () => {
             <div className={cls.oneDay__header}>
                 <h1>Hisob</h1>
                 <div className={cls.date}>
+                    <Select
+                        clazzLabel={cls.date__select}
+                        options={[{name: "all"}, ...paymentTypes]}
+                        keyValue={"name"}
+                        onChangeOption={setSelectedType}
+                        title={"To'lov turi"}
+                    />
                     <Input
                         title={"From"}
                         type={"date"}
