@@ -2,14 +2,14 @@ import {useMemo} from "react";
 // export const ClassroomUrl = `https://classroom.gennis.uz"/`
 //
 
-export const BackUrlForDoc = `http://26.12.122.72:5002/`
-export const BackUrl = `${BackUrlForDoc}api/`
+// export const BackUrlForDoc = `http://26.12.122.72:5002/`
+// export const BackUrl = `${BackUrlForDoc}api/`
 
 export const ClassroomUrl = `http://localhost:3000/`
 export const ClassroomUrlForDoc = "http://26.12.122.72:5001/"
 
-// export const BackUrl = "https://admin.gennis.uz/api/"
-// export const BackUrlForDoc = "https://admin.gennis.uz/"
+export const BackUrl = "https://admin.gennis.uz/api/"
+export const BackUrlForDoc = "https://admin.gennis.uz/"
 
 
 
@@ -91,7 +91,7 @@ export const requireMenuItems = (id) => {
         // },
         {
             to : "newRegister",
-            name: "Yangi Registratsiya",
+            name: "Registratsiya",
             classIcon: "fa-edit",
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
         },
@@ -120,6 +120,15 @@ export const requireMenuItems = (id) => {
             children: true,
             roles: [ROLES.Teacher]
         },
+        {
+            to : "users",
+            name: "Userla",
+            classIcon: "fa fa-users",
+            location: true,
+            children: true,
+            roles: [ROLES.Admin,ROLES.Director , ROLES.Programmer]
+        },
+
         // {
         //     to : "/registerTeacher",
         //     name: "O'qituvchi Registrarsiyasi",
