@@ -352,7 +352,7 @@ const PlatformNewStudents = () => {
                         <>
                             <Routes>
                                 <Route path="list" element={
-                                    <section className={cls.section} onScroll={scrollEvent} ref={sectionRef}>
+                                    <section style={{paddingTop: 0}} className={cls.section} onScroll={scrollEvent} ref={sectionRef}>
                                         <header className={cls.section__header}>
                                             <div key={1}>
                                                 <PlatformSearch search={mainSearch} setSearch={setMainSearch}/>

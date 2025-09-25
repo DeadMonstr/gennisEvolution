@@ -5,17 +5,17 @@ import {useMemo} from "react";
 // export const BackUrlForDoc = `http://26.12.122.72:5002/`
 // export const BackUrl = `${BackUrlForDoc}api/`
 
-export const ClassroomUrl = `http://localhost:3000/`
-export const ClassroomUrlForDoc = "http://26.12.122.72:5001/"
+// export const ClassroomUrl = `http://localhost:3000/`
+// export const ClassroomUrlForDoc = "http://26.12.122.72:5001/"
+//
+// export const BackUrl = "https://admin.gennis.uz/api/"
+// export const BackUrlForDoc = "https://admin.gennis.uz/"
 
-export const BackUrl = "https://admin.gennis.uz/api/"
-export const BackUrlForDoc = "https://admin.gennis.uz/"
 
 
-
-// export const BackUrl = "/api/"
-// export const BackUrlForDoc = "/"
-// export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
+export const BackUrl = "/api/"
+export const BackUrlForDoc = "/"
+export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
 
 export const headers = () => {
     const token = sessionStorage.getItem("token")
@@ -62,19 +62,19 @@ export const requireMenuItems = (id) => {
             roles: [ROLES.Admin,ROLES.User,ROLES.Director,ROLES.Programmer,ROLES.Teacher,ROLES.Student,ROLES.Editor,ROLES.Smm,ROLES.Accountant]
         },
         {
-            to : "taskManager",
+            to : "adminItem",
             name: "Task Manager",
             classIcon: "fa-tasks",
             location: true,
             children: true,
             roles: [ROLES.Admin,ROLES.Director]
         },
-        {
-            to: "adminRating",
-            name: "Admin rating",
-            classIcon: "fa-chart-bar",
-            roles: [ROLES.Director,ROLES.Admin]
-        },
+        // {
+        //     to: "adminRating",
+        //     name: "Admin rating",
+        //     classIcon: "fa-chart-bar",
+        //     roles: [ROLES.Director,ROLES.Admin]
+        // },
         // {
         //     to : "blockTest",
         //     name: "Block test",
@@ -121,14 +121,22 @@ export const requireMenuItems = (id) => {
             roles: [ROLES.Teacher]
         },
         {
-            to : "users",
-            name: "Userla",
+            to : "students",
+            name: "Studenlar",
             classIcon: "fa fa-users",
             location: true,
             children: true,
             roles: [ROLES.Admin,ROLES.Director , ROLES.Programmer]
         },
 
+        {
+            to : "users",
+            name: "Userlar",
+            classIcon: "fa fa-users",
+            location: true,
+            children: true,
+            roles: [ROLES.Admin,ROLES.Director , ROLES.Programmer]
+        },
         // {
         //     to : "/registerTeacher",
         //     name: "O'qituvchi Registrarsiyasi",
@@ -164,31 +172,31 @@ export const requireMenuItems = (id) => {
             children: true,
             roles: [ROLES.Admin,ROLES.Director]
         },
-        {
-            to : "newStudents",
-            name : "Yangi oq'uvchilar",
-            classIcon: "fa-user",
-            location: true,
-            children: true,
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
-        {
-            to : "deletedGroupStudent",
-            name : "Ochirilgan oq'uvchilar",
-            classIcon: "fa-user-alt-slash",
-            location: true,
-            children: true,
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
-        {
-            to : "studyingStudents",
-            name : "O'qityotgan oq'uvchilar",
-            classIcon: "fa-user-graduate",
-            location: true,
-            children: true,
-
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
+        // {
+        //     to : "newStudents",
+        //     name : "Yangi oq'uvchilar",
+        //     classIcon: "fa-user",
+        //     location: true,
+        //     children: true,
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        // },
+        // {
+        //     to : "deletedGroupStudent",
+        //     name : "Ochirilgan oq'uvchilar",
+        //     classIcon: "fa-user-alt-slash",
+        //     location: true,
+        //     children: true,
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        // },
+        // {
+        //     to : "studyingStudents",
+        //     name : "O'qityotgan oq'uvchilar",
+        //     classIcon: "fa-user-graduate",
+        //     location: true,
+        //     children: true,
+        //
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        // },
         {
             to : "groups",
             name : "Guruhlar",
@@ -198,40 +206,40 @@ export const requireMenuItems = (id) => {
 
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
         },
-        {
-            to : "teachers",
-            name : "O'qituvchilar",
-            classIcon: "fa-user-tie",
-            location: true,
-            children: true,
-            // children : [
-            //     {
-            //         childId : 1,
-            //         to : "1",
-            //         childName: "Xo'jakent",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 2,
-            //         to : "2",
-            //         childName: "Gazalkent",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 3,
-            //         to : "3",
-            //         childName: "Chirchiq",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 4,
-            //         to : "4",
-            //         childName: "Sergeli",
-            //         iconClazz : "fa-map-marker-alt"
-            //     }
-            // ],
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
+        // {
+        //     to : "teachers",
+        //     name : "O'qituvchilar",
+        //     classIcon: "fa-user-tie",
+        //     location: true,
+        //     children: true,
+        //     // children : [
+        //     //     {
+        //     //         childId : 1,
+        //     //         to : "1",
+        //     //         childName: "Xo'jakent",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 2,
+        //     //         to : "2",
+        //     //         childName: "Gazalkent",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 3,
+        //     //         to : "3",
+        //     //         childName: "Chirchiq",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 4,
+        //     //         to : "4",
+        //     //         childName: "Sergeli",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     }
+        //     // ],
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        // },
         // {
         //
         //     to : "teachers",
@@ -239,41 +247,41 @@ export const requireMenuItems = (id) => {
         //     classIcon: "fa-user-tie",
         //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
         // },
-        {
-
-            to : "employees",
-            location: true,
-            name : "Ishchilar",
-            classIcon: "fa-id-badge",
-            children: true,
-            // children : [
-            //     {
-            //         childId : 1,
-            //         to : "1",
-            //         childName: "Xo'jakent",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 2,
-            //         to : "2",
-            //         childName: "Gazalkent",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 3,
-            //         to : "3",
-            //         childName: "Chirchiq",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 4,
-            //         to : "4",
-            //         childName: "Sergeli",
-            //         iconClazz : "fa-map-marker-alt"
-            //     }
-            // ],
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
+        // {
+        //
+        //     to : "employees",
+        //     location: true,
+        //     name : "Ishchilar",
+        //     classIcon: "fa-id-badge",
+        //     children: true,
+        //     // children : [
+        //     //     {
+        //     //         childId : 1,
+        //     //         to : "1",
+        //     //         childName: "Xo'jakent",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 2,
+        //     //         to : "2",
+        //     //         childName: "Gazalkent",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 3,
+        //     //         to : "3",
+        //     //         childName: "Chirchiq",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 4,
+        //     //         to : "4",
+        //     //         childName: "Sergeli",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     }
+        //     // ],
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        // },
         {
             to : "oneDay",
             name : "Kunlik hisob",
@@ -316,46 +324,46 @@ export const requireMenuItems = (id) => {
             // ],
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer , ROLES.Accountant]
         },
-        {
-            to : "books",
-            name : "Kitoblar",
-            classIcon: "fa-book",
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Editor,ROLES.Teacher,ROLES.Student]
-        },
-        {
-            to : "rooms",
-            name : "Honalar",
-            classIcon: "fa-door-closed",
-            location: true,
-            children: true,
-            // children : [
-            //     {
-            //         childId : 1,
-            //         to : "1",
-            //         childName: "Xo'jakent",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 2,
-            //         to : "2",
-            //         childName: "Gazalkent",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 3,
-            //         to : "3",
-            //         childName: "Chirchiq",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 4,
-            //         to : "4",
-            //         childName: "Sergeli",
-            //         iconClazz : "fa-map-marker-alt"
-            //     }
-            // ],
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
+        // {
+        //     to : "books",
+        //     name : "Kitoblar",
+        //     classIcon: "fa-book",
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Editor,ROLES.Teacher,ROLES.Student]
+        // },
+        // {
+        //     to : "rooms",
+        //     name : "Honalar",
+        //     classIcon: "fa-door-closed",
+        //     location: true,
+        //     children: true,
+        //     // children : [
+        //     //     {
+        //     //         childId : 1,
+        //     //         to : "1",
+        //     //         childName: "Xo'jakent",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 2,
+        //     //         to : "2",
+        //     //         childName: "Gazalkent",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 3,
+        //     //         to : "3",
+        //     //         childName: "Chirchiq",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 4,
+        //     //         to : "4",
+        //     //         childName: "Sergeli",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     }
+        //     // ],
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        // },
         // {
         //     to : "survey",
         //     name : "So'rovnoma",
@@ -417,12 +425,12 @@ export const requireMenuItems = (id) => {
             children: true,
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Accountant]
         },
-        {
-            to : "staffs",
-            name : "Staffs",
-            classIcon: "fa-users",
-            roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
-        },
+        // {
+        //     to : "staffs",
+        //     name : "Staffs",
+        //     classIcon: "fa-users",
+        //     roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
+        // },
         {
             to : "bookKeeping",
             name : "Dividend",
@@ -441,14 +449,14 @@ export const requireMenuItems = (id) => {
         //     classIcon: "fa-dollar-sign",
         //     roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
         // },
-        {
-            to: `parentsList`,
-            name: "Ota-onalar ro'yxati",
-            classIcon: "fa-users",
-            location: true,
-            children: true,
-            roles: [ROLES.Director,ROLES.Programmer, ROLES.Accountant , ROLES.Admin]
-        }
+        // {
+        //     to: `parentsList`,
+        //     name: "Ota-onalar ro'yxati",
+        //     classIcon: "fa-users",
+        //     location: true,
+        //     children: true,
+        //     roles: [ROLES.Director,ROLES.Programmer, ROLES.Accountant , ROLES.Admin]
+        // }
     ]
 }
 

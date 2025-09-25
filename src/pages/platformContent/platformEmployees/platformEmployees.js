@@ -54,7 +54,8 @@ const PlatformEmployees = () => {
         } else {
             dispatch(fetchEmployees({locationId , pageSize , currentPage  ,search}))
         }
-    } , [currentPage , active , search])
+    } , [currentPage , active , search , locationId])
+
 
     useEffect(()=> {
 

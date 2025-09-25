@@ -6,12 +6,27 @@ const initialState = {
     groups: [],
     btns: [
         {
+            id: 1,
+            type: "link",
+            link: "rooms",
+            title: "Rooms",
+            location: true
+        },
+        {
             id: 2,
             type: "link",
             link: "timeTable",
             title: "Time Table",
             location: true
         },
+        {
+            id: 3,
+            type: "link",
+            link: "books",
+            title: "Books",
+            // location: true
+        },
+
     ],
     fetchGroupsStatus: "idle",
 }
