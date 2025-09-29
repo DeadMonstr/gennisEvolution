@@ -1,11 +1,9 @@
-import React, {useState} from 'react';
-import PlatformEmployees from "pages/platformContent/platformEmployees/platformEmployees";
-import PlatformTeachers from "pages/platformContent/platformCurrentLocTeachers/platformTeachers";
-import PlatformParentsList from "pages/platformContent/platformParentsList/platformParentsList";
-import cls from "./platformAdminItem.module.sass";
-import Radio from "components/platform/platformUI/radio/radio";
+import React, { useState, useEffect } from 'react';
 import PlatformTaskManager from "pages/platformContent/platformTaskManager/platformTaskManager";
 import PlatformAdminRating from "pages/platformContent/platformAdminRating/platformAdminRating";
+import cls from "./platformAdminItem.module.sass";
+import Radio from "components/platform/platformUI/radio/radio";
+
 const studentsPage = [
     {
         name: "taskManager",
@@ -13,42 +11,49 @@ const studentsPage = [
     },
     {
         name: "adminRanking",
-        label: "Admin ranting"
+        label: "Admin ranking"
     },
-]
-const PlatformAdminItem = () => {
+];
 
-    const [selectRadio , setSelectRadio] = useState(studentsPage[0].name)
+const PlatformAdminItem = () => {
+    // 🔑 localStorage dan oxirgi tanlovni olish
+    const savedRadio = localStorage.getItem("platformAdminRadio");
+
+    const [selectRadio, setSelectRadio] = useState(savedRadio || studentsPage[0].name);
+
+    // 🔑 har safar o‘zgarganda localStorage ga yozib qo‘yish
+    useEffect(() => {
+        localStorage.setItem("platformAdminRadio", selectRadio);
+    }, [selectRadio]);
 
     const renderPage = () => {
         switch (selectRadio) {
-            case "taskManager" :
-                return   <PlatformTaskManager/>
+            case "taskManager":
+                return <PlatformTaskManager />;
             case "adminRanking":
-                return <PlatformAdminRating/>
+                return <PlatformAdminRating />;
+            default:
+                return null;
         }
-    }
-
+    };
 
     return (
         <>
             <div className={cls.filters}>
                 {studentsPage.map(item => (
-                    <div className={cls.filters__item}>
+                    <div key={item.name} className={cls.filters__item}>
                         <Radio
                             onChange={setSelectRadio}
                             checked={selectRadio === item.name}
-                            name="studentsRadio"   // 🔑 hammasi bitta guruhda
-                            value={item.name}      // 🔑 qaysi radio bosilgani
+                            name="studentsRadio"
+                            value={item.name}
                         >
                             {item.label}
                         </Radio>
-
                     </div>
                 ))}
             </div>
             {renderPage()}
-
         </>
     );
 };

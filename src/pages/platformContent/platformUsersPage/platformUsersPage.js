@@ -1,66 +1,65 @@
-import PlatformNewStudents from "pages/platformContent/platformNewStudents/platformNewStudents";
-
+import {useEffect, useState} from "react";
 import cls from "./platformUsersPage.module.sass"
 import Radio from "components/platform/platformUI/radio/radio";
-import {useState} from "react";
-import PlatformStudyingStudents from "pages/platformContent/platformStudyingStudents/platformStudyingStudents";
-import PlatformDeletedGroupsStudents
-    from "pages/platformContent/platformDeletedGroupStudents/platformDeletedGroupsStudents";
 import PlatformEmployees from "pages/platformContent/platformEmployees/platformEmployees";
 import PlatformTeachers from "pages/platformContent/platformCurrentLocTeachers/platformTeachers";
 import PlatformParentsList from "pages/platformContent/platformParentsList/platformParentsList";
 
 const studentsPage = [
     {
-        name: "workers",
-        label: "Ishchilar"
-    },
-    {
         name: "teachers",
         label: "O'qituvchilar"
+    },
+    {
+        name: "workers",
+        label: "Ishchilar"
     },
     {
         name: "parents",
         label: "Ota-onalar"
     },
-
 ]
 
 const PlatformUsersPage = () => {
+    const [selectRadio , setSelectRadio] = useState(
+        localStorage.getItem("selectedUserTab") || studentsPage[0].name
+    );
 
-    const [selectRadio , setSelectRadio] = useState(studentsPage[0].name)
+    // Tanlangan radio o'zgarsa localStorage ga yozamiz
+    useEffect(() => {
+        localStorage.setItem("selectedUserTab", selectRadio);
+    }, [selectRadio]);
 
     const renderPage = () => {
         switch (selectRadio) {
             case "workers" :
-                return   <PlatformEmployees/>
+                return <PlatformEmployees/>
             case "teachers":
                 return <PlatformTeachers/>
             case "parents" :
                 return <PlatformParentsList/>
+            default:
+                return null;
         }
     }
 
-    console.log(renderPage())
     return (
         <>
             <div className={cls.filters}>
                 {studentsPage.map(item => (
-                    <div className={cls.filters__item}>
+                    <div className={cls.filters__item} key={item.name}>
                         <Radio
                             onChange={setSelectRadio}
                             checked={selectRadio === item.name}
-                            name="studentsRadio"   // 🔑 hammasi bitta guruhda
-                            value={item.name}      // 🔑 qaysi radio bosilgani
+                            name="studentsRadio"
+                            value={item.name}
                         >
                             {item.label}
                         </Radio>
-
                     </div>
                 ))}
             </div>
             {renderPage()}
-
         </>
     );
 };

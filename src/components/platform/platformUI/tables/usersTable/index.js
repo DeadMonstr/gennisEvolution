@@ -36,7 +36,7 @@ const UsersTable = React.memo(({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const LinkToUser = (e,id) => {
         if (cache) {
-            navigate(`../profile/${id}`);
+            navigate(`../../profile/${id}`);
         } else {
             if (!blockLink) {
                 const isDelete = e.target.classList.contains("delete") || e.target.classList.contains("fa-times");

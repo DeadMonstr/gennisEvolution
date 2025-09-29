@@ -1,63 +1,67 @@
+import { useState, useEffect } from "react";
 import PlatformNewStudents from "pages/platformContent/platformNewStudents/platformNewStudents";
-
-import cls from "./platformStudents.module.sass"
-import Radio from "components/platform/platformUI/radio/radio";
-import {useState} from "react";
 import PlatformStudyingStudents from "pages/platformContent/platformStudyingStudents/platformStudyingStudents";
-import PlatformDeletedGroupsStudents
-    from "pages/platformContent/platformDeletedGroupStudents/platformDeletedGroupsStudents";
+import PlatformDeletedGroupsStudents from "pages/platformContent/platformDeletedGroupStudents/platformDeletedGroupsStudents";
+
+import cls from "./platformStudents.module.sass";
+import Radio from "components/platform/platformUI/radio/radio";
 
 const studentsPage = [
     {
         name: "newStudents",
-        label: "New students"
+        label: "New students",
     },
     {
         name: "studyingStudents",
-        label: "Studying students"
+        label: "Studying students",
     },
     {
         name: "deletedStudents",
-        label: "Deleted students"
+        label: "Deleted students",
     },
-
-]
+];
 
 const PlatformStudentsPage = () => {
+    // 🔑 localStorage dan oxirgi tanlovni olish
+    const savedRadio = localStorage.getItem("platformStudentsRadio");
 
-    const [selectRadio , setSelectRadio] = useState(studentsPage[0].name)
+    const [selectRadio, setSelectRadio] = useState(savedRadio || studentsPage[0].name);
+
+    // 🔑 Tanlov o‘zgarganda localStorage ga yozib qo‘yish
+    useEffect(() => {
+        localStorage.setItem("platformStudentsRadio", selectRadio);
+    }, [selectRadio]);
 
     const renderPage = () => {
         switch (selectRadio) {
-            case "newStudents" :
-                return   <PlatformNewStudents/>
+            case "newStudents":
+                return <PlatformNewStudents />;
             case "studyingStudents":
-                return <PlatformStudyingStudents/>
-            case "deletedStudents" :
-                return <PlatformDeletedGroupsStudents/>
+                return <PlatformStudyingStudents />;
+            case "deletedStudents":
+                return <PlatformDeletedGroupsStudents />;
+            default:
+                return null;
         }
-    }
+    };
 
-    console.log(renderPage())
     return (
         <>
             <div className={cls.filters}>
-                {studentsPage.map(item => (
-                    <div className={cls.filters__item}>
+                {studentsPage.map((item) => (
+                    <div key={item.name} className={cls.filters__item}>
                         <Radio
                             onChange={setSelectRadio}
                             checked={selectRadio === item.name}
-                            name="studentsRadio"   // 🔑 hammasi bitta guruhda
-                            value={item.name}      // 🔑 qaysi radio bosilgani
+                            name="studentsRadio"
+                            value={item.name}
                         >
                             {item.label}
                         </Radio>
-
                     </div>
                 ))}
             </div>
             {renderPage()}
-
         </>
     );
 };
