@@ -1,67 +1,72 @@
-import { useState, useEffect } from "react";
 import PlatformNewStudents from "pages/platformContent/platformNewStudents/platformNewStudents";
-import PlatformStudyingStudents from "pages/platformContent/platformStudyingStudents/platformStudyingStudents";
-import PlatformDeletedGroupsStudents from "pages/platformContent/platformDeletedGroupStudents/platformDeletedGroupsStudents";
 
-import cls from "./platformStudents.module.sass";
+// import "./platformStudents.sass"
 import Radio from "components/platform/platformUI/radio/radio";
+import {useEffect, useState} from "react";
+import PlatformStudyingStudents from "pages/platformContent/platformStudyingStudents/platformStudyingStudents";
+import PlatformDeletedGroupsStudents
+    from "pages/platformContent/platformDeletedGroupStudents/platformDeletedGroupsStudents";
+import {useLocation} from "react-router-dom";
+import cls from "pages/platformContent/platformUsersPage/platformUsersPage.module.sass";
 
 const studentsPage = [
     {
         name: "newStudents",
-        label: "New students",
+        label: "New students"
     },
     {
         name: "studyingStudents",
-        label: "Studying students",
+        label: "Studying students"
     },
     {
         name: "deletedStudents",
-        label: "Deleted students",
+        label: "Deleted students"
     },
-];
+
+]
 
 const PlatformStudentsPage = () => {
-    // 🔑 localStorage dan oxirgi tanlovni olish
-    const savedRadio = localStorage.getItem("platformStudentsRadio");
+    const location = useLocation(); // 👈
 
-    const [selectRadio, setSelectRadio] = useState(savedRadio || studentsPage[0].name);
+    const [selectRadio, setSelectRadio] = useState(
+        localStorage.getItem("selectedStudentTab") || studentsPage[0].name
+    );
 
-    // 🔑 Tanlov o‘zgarganda localStorage ga yozib qo‘yish
+
     useEffect(() => {
-        localStorage.setItem("platformStudentsRadio", selectRadio);
+        localStorage.setItem("selectedStudentTab", selectRadio);
     }, [selectRadio]);
-
     const renderPage = () => {
         switch (selectRadio) {
-            case "newStudents":
-                return <PlatformNewStudents />;
+            case "newStudents" :
+                return   <PlatformNewStudents/>
             case "studyingStudents":
-                return <PlatformStudyingStudents />;
-            case "deletedStudents":
-                return <PlatformDeletedGroupsStudents />;
-            default:
-                return null;
+                return <PlatformStudyingStudents/>
+            case "deletedStudents" :
+                return <PlatformDeletedGroupsStudents/>
         }
-    };
-
+    }
+    const isProfilePage = location.pathname.includes("profile");
     return (
         <>
-            <div className={cls.filters}>
-                {studentsPage.map((item) => (
-                    <div key={item.name} className={cls.filters__item}>
-                        <Radio
-                            onChange={setSelectRadio}
-                            checked={selectRadio === item.name}
-                            name="studentsRadio"
-                            value={item.name}
-                        >
-                            {item.label}
-                        </Radio>
-                    </div>
-                ))}
-            </div>
+            {!isProfilePage && (
+                <div className={cls.filters}>
+                    {studentsPage.map((item) => (
+                        <div className={cls.filters__item} key={item.name}>
+                            <Radio
+                                onChange={setSelectRadio}
+                                checked={selectRadio === item.name}
+                                name="studentsRadio"
+                                value={item.name}
+                            >
+                                {item.label}
+                            </Radio>
+                        </div>
+                    ))}
+                </div>
+            )}
             {renderPage()}
+
         </>
     );
 };
