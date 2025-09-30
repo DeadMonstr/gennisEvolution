@@ -37,6 +37,7 @@ const PlatformEmployees = () => {
     const [activeModalName, setActiveModalName] = useState(false)
     const [deleteStId, setDeleteStId] = useState()
     const [isConfirm, setIsConfirm] = useState(false)
+    const {currentFilters} = useSelector(state => state.currentFilterSlice)
 
 
     const [currentPage, setCurrentPage] = useState(1)
@@ -50,11 +51,11 @@ const PlatformEmployees = () => {
 
     useEffect(() => {
         if (active === true) {
-            dispatch(fetchDeletedEmployees({locationId , pageSize , currentPage , search}))
+            dispatch(fetchDeletedEmployees({locationId , pageSize , currentPage , search , currentFilters}))
         } else {
-            dispatch(fetchEmployees({locationId , pageSize , currentPage  ,search}))
+            dispatch(fetchEmployees({locationId , pageSize , currentPage  ,search , currentFilters}))
         }
-    } , [currentPage , active , search , locationId])
+    } , [currentPage , active , search , locationId  ,currentFilters])
 
 
     useEffect(()=> {

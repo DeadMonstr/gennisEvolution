@@ -76,36 +76,43 @@ const newStudentsSlice = createSlice({
     initialState,
     reducers: {
         resetState: () => initialState,
-        setActive: (state,action) => {
-            const filterKeys = Object.keys(state.filters)
+        setActive: (state, action) => {
+            const filterKeys = Object.keys(state.filters);
             filterKeys.map(keys => {
                 if (keys === action.payload.activeFilter) {
+                    // agar faqat 1tasi tanlansin desa
                     if (state.filters[keys].typeChange === "once") {
-                        let newFilter
+                        let newFilter;
                         if (state.filters[keys].activeFilters === action.payload.subFilter) {
-                            newFilter = {...state.filters[keys],activeFilters:[]}
+                            // qaytadan bosilsa tozalaymiz
+                            newFilter = { ...state.filters[keys], activeFilters: [] };
                         } else {
-                            newFilter = {...state.filters[keys],activeFilters: action.payload.subFilter }
+                            // faqat 1tasi yoziladi
+                            newFilter = { ...state.filters[keys], activeFilters: action.payload.subFilter };
                         }
-                        state.filters = {...state.filters,[keys]: newFilter}
+                        state.filters = { ...state.filters, [keys]: newFilter };
                     }
+
+                    // agar bir nechta tanlansin desa
                     if (state.filters[keys].typeChange === "multiple") {
-                        let newFilter
+                        let newFilter;
                         if (state.filters[keys].activeFilters.includes(action.payload.subFilter)) {
+                            // agar tanlangan bo‘lsa → o‘chiramiz
                             newFilter = {
                                 ...state.filters[keys],
                                 activeFilters: state.filters[keys].activeFilters.filter(item => item !== action.payload.subFilter)
-                            }
+                            };
                         } else {
+                            // yangisini qo‘shamiz
                             newFilter = {
                                 ...state.filters[keys],
-                                activeFilters: [...state.filters[keys].activeFilters,action.payload.subFilter]
-                            }
+                                activeFilters: [...state.filters[keys].activeFilters, action.payload.subFilter]
+                            };
                         }
-                        state.filters = {...state.filters,[keys] : newFilter}
+                        state.filters = { ...state.filters, [keys]: newFilter };
                     }
                 }
-            })
+            });
         },
         setSelectOption: (state, action) => {
             const { activeFilter, selectedOption } = action.payload;

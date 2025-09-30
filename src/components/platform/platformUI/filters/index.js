@@ -101,31 +101,18 @@ const FilterSubItem = React.memo(({funcsSlice,itemBtns,activeFilter,activeBtns})
 
     const {currentFilters} = useSelector(state => state.currentFilterSlice)
 
+    const activeBtn = currentFilters[activeFilter] || null; // redux’dan olamiz
+
     const onChangeFilter = (subFilter, activeFilter) => {
         let newValue;
 
-
-        if (Array.isArray(activeBtns)) {
-            if (activeBtns.includes(subFilter)) {
-
-                newValue = activeBtns.filter(item => item !== subFilter);
-            } else {
-
-                newValue = [...activeBtns, subFilter];
-            }
+        if (activeBtn === subFilter) {
+            newValue = null; // qayta bosilsa o‘chadi
         } else {
-
-            if (activeBtns === subFilter) {
-
-                newValue = null;
-            } else {
-
-                newValue = subFilter;
-            }
+            newValue = subFilter;
         }
 
-        dispatch(setActive({ activeFilter, subFilter: newValue }));
-        dispatch(setFilters({ [activeFilter]: newValue })); // language qotib qolmasin
+        dispatch(setFilters({ [activeFilter]: newValue }));
         setSearchParams({ ...currentFilters, [activeFilter]: newValue || "" });
     };
 
@@ -136,11 +123,12 @@ const FilterSubItem = React.memo(({funcsSlice,itemBtns,activeFilter,activeBtns})
             return (
                 <Button
                     key={index}
-                    onClickBtn={() => onChangeFilter(item,activeFilter)}
-                    active={activeBtns.includes(item)}
+                    onClickBtn={() => onChangeFilter(item, activeFilter)}
+                    active={item === activeBtn} // faqat redux’dagi active ishlaydi
                 >
                     {item}
                 </Button>
+
 
             )
         } else {

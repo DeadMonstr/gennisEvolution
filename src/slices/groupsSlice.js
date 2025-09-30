@@ -34,9 +34,9 @@ const initialState = {
 
 export const fetchGroups = createAsyncThunk(
     'groupsSlice/fetchGroups',
-    async (loc) => {
+    async ({locationId , currentFilters}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}group/groups/${loc}`,"GET",null,headers())
+        return await request(`${BackUrl}group/groups/${locationId}${currentFilters.subjects ? `?subject=${currentFilters.subjects}` : ""}${currentFilters.languages ? `&language=${currentFilters.languages}` : ""}${currentFilters.status ? `&status=${currentFilters.status}` : ""}`,"GET",null,headers())
     }
 )
 
