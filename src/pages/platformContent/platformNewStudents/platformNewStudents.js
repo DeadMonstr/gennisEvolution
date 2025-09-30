@@ -43,6 +43,10 @@ const PlatformNewStudents = () => {
 
     let {locationId} = useParams()
 
+    useEffect(() => {
+        localStorage.removeItem("pageSettings");
+    }, []);
+
     const {
         filteredNewStudents,
         btns,
@@ -62,10 +66,10 @@ const PlatformNewStudents = () => {
     const [deleteStId, setDeleteStId] = useState()
     const [currentScroll, setCurrentScroll] = useState()
 
-    console.log(currentFilters, "currentFilters")
 
     const [isDeleteData, setIsDeleteData] = useState(false)
     const [isFilterData, setIsFilterData] = useState(false)
+    const [isRefreshed, setIsRefreshed] = useState(false)
     const dispatch = useDispatch()
 
     const [activeSubject, setActiveSubject] = useState(false);
@@ -83,7 +87,6 @@ const PlatformNewStudents = () => {
     const [activeMessage, setActiveMessage] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const pageSize = useMemo(() => 50, [])
-
 
 
     useEffect(() => {
@@ -105,21 +108,75 @@ const PlatformNewStudents = () => {
     }, [filteredNewStudents?.length,])
 
     useEffect(() => {
+
+        const oldData = JSON.parse(localStorage.getItem("pageSettings"))
+
+        if (!oldData) {
+            setIsRefreshed(true)
+            localStorage.setItem("pageSettings", JSON.stringify({
+                locationId,
+                isDeleteData,
+                isFilterData,
+                currentPage,
+                search,
+                currentFilters
+            }))
+            return;
+        }
+
+        const {
+            locationId: oldLocationId,
+            isDeleteData: oldIsDeleteData,
+            isFilterData: oldIsFilterData,
+            currentPage: oldCurrentPage,
+            search: oldSearch,
+            currentFilters: oldCurrentFilters
+        } = oldData
+
+
+        const condition = locationId !== oldLocationId && isDeleteData !== oldIsDeleteData && isFilterData !== oldIsFilterData && currentPage !== oldCurrentPage && search !== oldSearch
+
+        const keysNewFilter = Object.keys(currentFilters)
+        const keysOldFilter = Object.keys(oldCurrentFilters)
+
+
+        const isFilterChanged = keysNewFilter.length !== keysOldFilter.length ? true : keysNewFilter.some(key => currentFilters[key] !== oldCurrentFilters[key])
+
+
+        if (condition || isFilterChanged) {
+            setIsRefreshed(true)
+            localStorage.setItem("pageSettings", JSON.stringify({
+                locationId,
+                isDeleteData,
+                isFilterData,
+                currentPage,
+                search,
+                currentFilters
+            }))
+        }
+
+    }, [locationId, isDeleteData, isFilterData, currentPage, search, currentFilters])
+
+
+    useEffect(() => {
+        if (!isRefreshed) return;
+
+
         if (isDeleteData) {
             if (isFilterData) {
                 dispatch(fetchNewStudentsDeleted(locationId))
             } else {
-                dispatch(fetchNewDeletedStudents({locationId, currentPage, pageSize, search  ,currentFilters}))
+                dispatch(fetchNewDeletedStudents({locationId, currentPage, pageSize, search, currentFilters}))
             }
         } else {
             if (isFilterData) {
                 dispatch(fetchNewFilteredStudents(locationId))
             } else {
-                dispatch(fetchNewStudents({locationId, currentPage, pageSize, search , currentFilters}))
+                dispatch(fetchNewStudents({locationId, currentPage, pageSize, search, currentFilters}))
             }
         }
         dispatch(setSelectedLocation({id: locationId}))
-    }, [locationId, isDeleteData, isFilterData, currentPage, search , currentFilters])
+    }, [isRefreshed, locationId, isDeleteData, isFilterData, currentPage, pageSize, search, currentFilters])
 
 
     const navigate = useNavigate()
@@ -344,7 +401,6 @@ const PlatformNewStudents = () => {
     }, [filteredNewStudents, mainSearch])
 
 
-
     return (
         <>
             {
@@ -352,7 +408,8 @@ const PlatformNewStudents = () => {
                         <>
                             <Routes>
                                 <Route path="list" element={
-                                    <section style={{paddingTop: 0}} className={cls.section} onScroll={scrollEvent} ref={sectionRef}>
+                                    <section style={{paddingTop: 0}} className={cls.section} onScroll={scrollEvent}
+                                             ref={sectionRef}>
                                         <header className={cls.section__header}>
                                             <div key={1}>
                                                 <PlatformSearch search={mainSearch} setSearch={setMainSearch}/>
@@ -418,7 +475,8 @@ const PlatformNewStudents = () => {
                                     </section>
 
 
-                                }/>
+                                }
+                                />
 
                                 <Route path="profile/:userId/*" element={<PlatformUserProfile/>}/>
 
