@@ -41,7 +41,6 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
                 )
             }
             else if (filters[key].type === "btn") {
-                console.log(filters[key].activeFilters, "filters[key].activeFilters")
                 return (
                     <div data-key={index} key={index} className="otherFilters__item">
                         <h2>{filters[key].title}:</h2>
