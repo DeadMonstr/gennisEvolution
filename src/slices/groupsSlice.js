@@ -36,8 +36,32 @@ export const fetchGroups = createAsyncThunk(
     'groupsSlice/fetchGroups',
     async ({locationId , currentFilters}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}group/groups/${locationId}${currentFilters.subjects ? `?subject=${currentFilters.subjects}` : ""}${currentFilters.languages ? `&language=${currentFilters.languages}` : ""}${currentFilters.status ? `&status=${currentFilters.status}` : ""}`,"GET",null,headers())
-    }
+        const queryParams = [];
+
+        if (currentFilters.subjects) {
+            queryParams.push(`subject=${currentFilters.subjects}`);
+        }
+        if (currentFilters.languages) {
+            queryParams.push(`language=${currentFilters.languages}`);
+        }
+        if (currentFilters.status) {
+            queryParams.push(`status=${currentFilters.status}`);
+        }
+        if (currentFilters.teacherName) {
+            queryParams.push(`teacher=${currentFilters.teacherName}`);
+        }
+        if (currentFilters.typeOfCourse) {
+            queryParams.push(`typeOfCourse=${currentFilters.typeOfCourse}`);
+        }
+
+        const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
+
+        return await request(
+            `${BackUrl}group/groups/${locationId}${queryString}`,
+            "GET",
+            null,
+            headers()
+        );    }
 )
 
 

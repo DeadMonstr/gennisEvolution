@@ -15,7 +15,7 @@ export const  fetchEmployees = createAsyncThunk(
     async ({locationId , pageSize , currentPage , search ,currentFilters}) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}account/employees/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.job ? `&job=${currentFilters.job}` : ""}${currentFilters.subjects ? `&subject=${currentFilters.subjects}` : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}account/employees/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.job ? `&job=${currentFilters.job}` : ""}${currentFilters.language ? `&language=${currentFilters.language}` : ""}`,"GET",null,headers())
     }
 )
 
@@ -24,7 +24,7 @@ export const  fetchDeletedEmployees = createAsyncThunk(
     async ({locationId , pageSize , currentPage , search , currentFilters}) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}account/employees/${locationId}/deleted${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.job ? `&job=${currentFilters.job}` : ""}${currentFilters.subjects ? `&subject=${currentFilters.subjects}` : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}account/employees/${locationId}/deleted${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.job ? `&job=${currentFilters.job}` : ""}${currentFilters.language ? `&language=${currentFilters.language}` : ""}`,"GET",null,headers())
     }
 )
 

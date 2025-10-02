@@ -44,6 +44,7 @@ const ObservedTeacherLessons = () => {
 
     const {request} = useHttp()
 
+    console.log(groupData)
 
     useEffect(() => {
         if (groupId) {

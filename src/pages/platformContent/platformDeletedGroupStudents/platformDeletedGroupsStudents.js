@@ -124,7 +124,7 @@ const PlatformGroupDeletedStudents = () => {
 
 
     const activeItems = useMemo(() => {
-        if (activeOption === "Boshqa") {
+        if (activeOption === "Hammasi") {
             return {
                 name: true,
                 surname : true,

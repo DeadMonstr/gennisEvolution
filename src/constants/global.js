@@ -2,9 +2,9 @@ import {useMemo} from "react";
 // export const ClassroomUrl = `https://classroom.gennis.uz"/`
 //
 
-// export const BackUrlForDoc = `http://26.12.122.72:5002/`
-// export const BackUrl = `${BackUrlForDoc}api/`
-
+export const BackUrlForDoc = `http://26.12.122.72:5002/`
+export const BackUrl = `${BackUrlForDoc}api/`
+//
 // export const ClassroomUrl = `http://localhost:3000/`
 // export const ClassroomUrlForDoc = "http://26.12.122.72:5001/"
 //
@@ -13,8 +13,8 @@ import {useMemo} from "react";
 //
 
 
-export const BackUrl = "/api/"
-export const BackUrlForDoc = "/"
+// export const BackUrl = "/api/"
+// export const BackUrlForDoc = "/"
 export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
 
 export const headers = () => {
