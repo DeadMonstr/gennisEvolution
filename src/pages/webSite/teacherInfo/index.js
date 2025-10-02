@@ -25,7 +25,7 @@ import certificat from "assets/dd20db0879a5d44f9368a 3.png"
 
 const TeacherInfo = () => {
     useEffect(() => {
-        request(`${BackUrl}get_teacher_data/${id}`)
+        request(`${BackUrl}teacher/get_teacher_data/${id}`)
             .then(res => {
                 console.log(res, "res")
                 const result = {
@@ -69,7 +69,7 @@ const TeacherInfo = () => {
         }
         // formData.append("res", JSON.stringify(res))
         // formData.append("img", image)
-        // request(`${BackUrl}change_teacher_data`, "POST", formData, {"Authorization": "Bearer " + token})
+        // request(`${BackUrl}teacher/change_teacher_data`, "POST", formData, {"Authorization": "Bearer " + token})
         //     .then(res => dispatch(changeTeacher(res?.data)))
         //     .catch(err => console.log(err))
         // formData.delete("res")
@@ -83,7 +83,7 @@ const TeacherInfo = () => {
         }
         formData.append("res", JSON.stringify(res))
         formData.append("img", image)
-        request(`${BackUrl}add_student_certificate`, "POST", formData, {"Authorization": "Bearer " + token})
+        request(`${BackUrl}teacher/add_student_certificate`, "POST", formData, {"Authorization": "Bearer " + token})
             .then(res => console.log(res))
             .catch(err => console.log(err))
         formData.delete("res")
@@ -92,7 +92,7 @@ const TeacherInfo = () => {
 
     const onChange = (id) => {
         if (typeof id === "number" && id !== 0)
-            request(`${BackUrl}get_student_in_group/${id}`)
+            request(`${BackUrl}home_page/get_student_in_group/${id}`)
                 .then(res => {
                     console.log(res)
                     dispatch(fetchedStudents(res?.students))

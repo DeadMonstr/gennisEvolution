@@ -51,7 +51,9 @@ const initialState = {
         //     }
         // }
     },
-    fetchFiltersStatus: "idle"
+
+    activeFilters: {},
+    fetchFiltersStatus: "idle",
 }
 
 
@@ -63,7 +65,7 @@ export const fetchFilters = createAsyncThunk(
         const {name,location,type} = data
         const {request} = useHttp();
 
-        return await request(`${BackUrl}filters/${name}/${location}/${type}`,"GET",null,headers())
+        return await request(`${BackUrl}base/filters/${name}/${location}/${type}`,"GET",null,headers())
     }
 )
 
@@ -74,56 +76,79 @@ const newStudentsSlice = createSlice({
     initialState,
     reducers: {
         resetState: () => initialState,
-        setActive: (state,action) => {
-            const filterKeys = Object.keys(state.filters)
-            // eslint-disable-next-line array-callback-return
+        setActive: (state, action) => {
+            const filterKeys = Object.keys(state.filters);
             filterKeys.map(keys => {
                 if (keys === action.payload.activeFilter) {
+                    // agar faqat 1tasi tanlansin desa
                     if (state.filters[keys].typeChange === "once") {
-                        let newFilter
+                        let newFilter;
                         if (state.filters[keys].activeFilters === action.payload.subFilter) {
-                            newFilter = {...state.filters[keys],activeFilters:[]}
+                            // qaytadan bosilsa tozalaymiz
+                            newFilter = { ...state.filters[keys], activeFilters: [] };
                         } else {
-                            newFilter = {...state.filters[keys],activeFilters: action.payload.subFilter }
+                            // faqat 1tasi yoziladi
+                            newFilter = { ...state.filters[keys], activeFilters: action.payload.subFilter };
                         }
-                        state.filters = {...state.filters,[keys]: newFilter}
+                        state.filters = { ...state.filters, [keys]: newFilter };
                     }
+
+                    // agar bir nechta tanlansin desa
                     if (state.filters[keys].typeChange === "multiple") {
-                        let newFilter
+                        let newFilter;
                         if (state.filters[keys].activeFilters.includes(action.payload.subFilter)) {
+                            // agar tanlangan bo‘lsa → o‘chiramiz
                             newFilter = {
                                 ...state.filters[keys],
                                 activeFilters: state.filters[keys].activeFilters.filter(item => item !== action.payload.subFilter)
-                            }
+                            };
                         } else {
+                            // yangisini qo‘shamiz
                             newFilter = {
                                 ...state.filters[keys],
-                                activeFilters: [...state.filters[keys].activeFilters,action.payload.subFilter]
-                            }
+                                activeFilters: [...state.filters[keys].activeFilters, action.payload.subFilter]
+                            };
                         }
-                        state.filters = {...state.filters,[keys] : newFilter}
+                        state.filters = { ...state.filters, [keys]: newFilter };
                     }
                 }
-            })
+            });
         },
-        setSelectOption: (state,action) => {
-            const filterKeys = Object.keys(state.filters)
-            // eslint-disable-next-line array-callback-return
-            filterKeys.map(keys => {
-                if (keys === action.payload.activeFilter) {
-                    let newFilter
-                    if (state.filters[keys].activeFilters.includes(action.payload.selectedOption) || action.payload.selectedOption === "all") {
-                        newFilter = {...state.filters[keys],activeFilters:[]}
-                    } else {
-                        newFilter = {...state.filters[keys], activeFilters: action.payload.selectedOption }
-                    }
-                    state.filters = {...state.filters,[keys] : newFilter}
-                }
-            })
+        setSelectOption: (state, action) => {
+            const { activeFilter, selectedOption } = action.payload;
+            const current = state.activeFilters[activeFilter];
+
+            let newValue;
+
+            if (
+                selectedOption === "all" ||
+                (Array.isArray(current) && current.includes(selectedOption)) ||
+                current === selectedOption
+            ) {
+                newValue = null; // "all" bo‘lsa yoki shu filter qayta bosilsa -> olib tashlaymiz
+            } else {
+                newValue = selectedOption; // oddiy qiymatni qo‘yamiz
+            }
+
+            // umumiy activeFilters obyektini yangilash
+            const updated = { ...state.activeFilters };
+            if (newValue) {
+                updated[activeFilter] = newValue;
+            } else {
+                delete updated[activeFilter]; // "all" bo‘lsa qo‘shmaymiz
+            }
+            state.activeFilters = updated;
+
+            // filters[activeFilter] ichida ham yangilash
+            if (state.filters[activeFilter]) {
+                state.filters[activeFilter] = {
+                    ...state.filters[activeFilter],
+                    activeFilters: newValue ? newValue : [],
+                };
+            }
         },
         setFromToFilter: (state,action) => {
             const filterKeys = Object.keys(state.filters)
-            // eslint-disable-next-line array-callback-return
             filterKeys.map(keys => {
                 if (keys === action.payload.activeFilter) {
                     const newFilter = {...state.filters[keys],fromTo: action.payload.fromTo }
@@ -131,6 +156,30 @@ const newStudentsSlice = createSlice({
                 }
             })
         },
+        setDateFilter: (state, action) => {
+            const { activeFilter, fromTo } = action.payload;
+
+            if (state.filters[activeFilter]) {
+                state.filters[activeFilter] = {
+                    ...state.filters[activeFilter],
+                    fromTo
+                };
+            }
+        },
+        setActiveFilter: (state, action) => {
+            const { key, value } = action.payload;
+            if (state.activeFilters[key] === value) {
+                const updated = { ...state.activeFilters };
+                delete updated[key];
+                state.activeFilters = updated;
+            }
+            else {
+                state.activeFilters = {
+                    ...state.activeFilters,
+                    [key]: value
+                };
+            }
+        }
     },
     extraReducers: builder => {
         builder
@@ -138,9 +187,6 @@ const newStudentsSlice = createSlice({
             .addCase(fetchFilters.fulfilled,(state, action) => {
                 state.fetchFiltersStatus = 'success';
                 state.filters = action.payload.filters
-                console.log(action.payload , "log3213")
-
-
             })
             .addCase(fetchFilters.rejected,state => {state.fetchFiltersStatus = 'error'} )
 
@@ -154,5 +200,12 @@ const {actions,reducer} = newStudentsSlice;
 
 export default reducer
 
-export const {resetState,setActive,setFromToFilter,setSelectOption} = actions
+export const {
+    resetState,
+    setActive,
+    setFromToFilter,
+    setSelectOption,
+    setActiveFilter,
+    setDateFilter
+} = actions
 

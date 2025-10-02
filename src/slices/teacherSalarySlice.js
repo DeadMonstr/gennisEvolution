@@ -16,7 +16,7 @@ export const  fetchEmployeeSalary = createAsyncThunk(
     async (data) => {
         const {request} = useHttp();
         const {userId,locationId} = data
-        return await request(`${BackUrl}teacher_salary/${userId}/${locationId}`,"GET",null,headers())
+        return await request(`${BackUrl}account/teacher_salary/${userId}/${locationId}`,"GET",null,headers())
     }
 )
 
@@ -27,7 +27,7 @@ export const  fetchEmployeeSalaryMonth = createAsyncThunk(
         const {monthId,userId} = data
 
         const {request} = useHttp();
-        return await request(`${BackUrl}teacher_salary_inside/${monthId}/${userId}`,"GET",null,headers())
+        return await request(`${BackUrl}account/teacher_salary_inside/${monthId}/${userId}`,"GET",null,headers())
     }
 )
 
@@ -38,7 +38,7 @@ export const fetchDeletedEmployeeSalaryMonth = createAsyncThunk(
 
         console.log("id", userId)
         const {request} = useHttp();
-        return await request(`${BackUrl}teacher_salary_deleted_inside/${monthId}/${userId}`,"GET",null,headers())
+        return await request(`${BackUrl}account/teacher_salary_deleted_inside/${monthId}/${userId}`,"GET",null,headers())
     }
 )
 

@@ -133,7 +133,7 @@ const InvesmentAccount = ({locations}) => {
 
         dispatch(onDeleteInvesment(changingData?.id))
 
-        request(`${BackUrl}delete_investment/${changingData?.id}/`, "DELETE", JSON.stringify(data), headers())
+        request(`${BackUrl}account/delete_investment/${changingData?.id}/`, "DELETE", JSON.stringify(data), headers())
             .then(res => {
                 dispatch(fetchAccountantBookKeepingTypesMoney())
 
@@ -163,12 +163,11 @@ const InvesmentAccount = ({locations}) => {
             ...data,
         }
 
-        request(`${BackUrl}investment/${loc ? `${loc}/` : ""}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/investment/${loc ? `${loc}/` : ""}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 dispatch(onAddInvesment(res.investment))
                 dispatch(fetchAccountantBookKeepingTypesMoney())
 
-                console.log(res.investment)
                 setAdd(false)
             })
     }

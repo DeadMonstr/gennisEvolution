@@ -76,7 +76,7 @@ const PlatformBillProfile = () => {
 
 
     const onClickDelete = () => {
-        request(`${BackUrl}delete_account/${id}/`, "DELETE", null, headers())
+        request(`${BackUrl}account/delete_account/${id}/`, "DELETE", null, headers())
             .then(res => {
                 dispatch(onDeleteBill(id))
                 setValue("name", "")
@@ -90,7 +90,7 @@ const PlatformBillProfile = () => {
     }
 
     const onEdit = (data) => {
-        request(`${BackUrl}crud_account/${id}/`, "POST", JSON.stringify(data), headers())
+        request(`${BackUrl}account/crud_account/${id}/`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 dispatch(onEditBill({id: id, data: res.account}))
                 setValue("name", "")
@@ -231,7 +231,7 @@ export const AccountPayableBill = ({years, locations}) => {
 
 
         if (changingData.side === "left") {
-            request(`${BackUrl}${typeProfile === "receivable" ? "delete_account_payable" : "delete_history"}/${changingData.item.id}/`, "DELETE", JSON.stringify(data), headers())
+            request(`${BackUrl}${typeProfile === "receivable" ? "account/delete_account_payable" : "account/delete_history"}/${changingData.item.id}/`, "DELETE", JSON.stringify(data), headers())
                 .then(res => {
                     dispatch(onDeleteTableData({id: changingData.item.id,side: "left"}))
                     dispatch(fetchAccountDatas(id))
@@ -243,7 +243,7 @@ export const AccountPayableBill = ({years, locations}) => {
                     console.log(err)
                 })
         } else {
-            request(`${BackUrl}${typeProfile === "receivable" ? "delete_history" : "delete_account_payable"}/${changingData.item.id}/`, "DELETE", JSON.stringify(data), headers())
+            request(`${BackUrl}${typeProfile === "receivable" ? "account/delete_history" : "account/delete_account_payable"}/${changingData.item.id}/`, "DELETE", JSON.stringify(data), headers())
                 .then(res => {
                     dispatch(onDeleteTableData(({id: changingData.item.id, side: "right"})))
                     dispatch(fetchAccountDatas(id))
@@ -265,7 +265,7 @@ export const AccountPayableBill = ({years, locations}) => {
     const ChangePayment = (id) => {
 
         if (changingData.side === "left") {
-            request(`${BackUrl}${typeProfile === "receivable" ? "crud_account_payable" : "crud_history"}/${changingData.item.id}/`, "POST", JSON.stringify({payment_type_id: Number(id)}), headers())
+            request(`${BackUrl}${typeProfile === "receivable" ? "account/crud_account_payable" : "account/crud_history"}/${changingData.item.id}/`, "POST", JSON.stringify({payment_type_id: Number(id)}), headers())
                 .then(res => {
                     setActiveChangeModal(false)
                     dispatch(onChangePayablePayment({id: changingData.item.id, data: res.payment_type, side: "left"}))
@@ -274,7 +274,7 @@ export const AccountPayableBill = ({years, locations}) => {
                     console.log(err)
                 })
         } else {
-            request(`${BackUrl}${typeProfile === "receivable" ? "crud_history" : "crud_account_payable"}/${changingData.item.id}/`, "POST", JSON.stringify({payment_type_id: Number(id)}), headers())
+            request(`${BackUrl}${typeProfile === "receivable" ? "account/crud_history" : "account/crud_account_payable"}/${changingData.item.id}/`, "POST", JSON.stringify({payment_type_id: Number(id)}), headers())
                 .then(res => {
                     setActiveChangeModal(false)
                     dispatch(onChangePayablePayment({id: changingData.item.id, data: res.history, side: "right"}))
@@ -388,7 +388,7 @@ const Left = ({setChangingData,setActiveDeleteModal,setActiveChangeModal}) => {
 
     const onSubmitDb = (data) => {
 
-        request(`${BackUrl}${typeProfile === "receivable" ? "add_account_payable" : "create_payable_history"}`, "POST", JSON.stringify({
+        request(`${BackUrl}${typeProfile === "receivable" ? "account/add_account_payable" : "account/create_payable_history"}`, "POST", JSON.stringify({
             ...data,
             account_id: id,
             status: data.status === "true"
@@ -533,7 +533,7 @@ const Right = ({setChangingData,setActiveDeleteModal,setActiveChangeModal}) => {
 
 
     const onSubmitKr = (data) => {
-        request(`${BackUrl}${typeProfile === "receivable" ? "create_payable_history" : "add_account_payable"}`, "POST", JSON.stringify({
+        request(`${BackUrl}${typeProfile === "receivable" ? "account/create_payable_history" : "account/add_account_payable"}`, "POST", JSON.stringify({
             ...data,
             account_id: id,
             status: data.status === "true"

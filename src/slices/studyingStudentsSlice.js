@@ -5,16 +5,17 @@ import {BackUrl, headers} from "constants/global";
 const initialState = {
     studyingStudents: [],
     btns: [],
-    fetchStudyingStudentsStatus: "idle"
+    fetchStudyingStudentsStatus: "idle",
+    totalCount: null
 }
 
 
 export const  fetchStudyingStudents = createAsyncThunk(
     'studyingStudentsSlice/fetchStudyingStudents',
-    async (id) => {
+    async ({locationId , currentPage , pageSize , search , currentFilters}) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}studyingStudents/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}student/studyingStudents/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.language ? `&language=${currentFilters.language}` : ""}${currentFilters.age ? `&age=${currentFilters.age}` : ""}`,"GET",null,headers())
     }
 )
 
@@ -42,6 +43,7 @@ const studyingStudentsSlice = createSlice({
             .addCase(fetchStudyingStudents.fulfilled,(state, action) => {
                 state.fetchStudyingStudentsStatus = 'success';
                 state.studyingStudents = action.payload.studyingStudents
+                state.totalCount = action.payload?.pagination
             })
             .addCase(fetchStudyingStudents.rejected,state => {state.fetchStudyingStudentsStatus = 'error'} )
 

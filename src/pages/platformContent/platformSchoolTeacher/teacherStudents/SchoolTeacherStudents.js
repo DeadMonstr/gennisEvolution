@@ -57,7 +57,7 @@ const SchoolTeacherStudents = () => {
 
     const onDelete = (data) => {
         if (data === "yes") {
-            request(`${BackUrl}crud_student_school/${changingData.id}`,"DELETE", null, headers())
+            request(`${BackUrl}school/crud_student_school/${changingData.id}`,"DELETE", null, headers())
                 .then(res => {
                     dispatch(deleteStudent(changingData.id))
                     setActiveDelete(false)
@@ -173,7 +173,7 @@ const AddModal = ({info,setActive}) => {
 
 
         if (isChange) {
-            request(`${BackUrl}crud_student_school/${info.id}`, "PUT", JSON.stringify(data), headers())
+            request(`${BackUrl}school/crud_student_school/${info.id}`, "PUT", JSON.stringify(data), headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: "O'quvchi muvaffaqiyatli o'zgartirildi",
@@ -183,7 +183,7 @@ const AddModal = ({info,setActive}) => {
                     dispatch(changeStudent(res.user))
                 })
         } else {
-            request(`${BackUrl}crud_student_school/`, "POST", JSON.stringify(data), headers())
+            request(`${BackUrl}school/crud_student_school/`, "POST", JSON.stringify(data), headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: "O'quvchi muvaffaqiyatli yaratildi",

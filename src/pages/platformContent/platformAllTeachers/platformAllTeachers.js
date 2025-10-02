@@ -11,13 +11,6 @@ import {
     fetchTeachersByLocation
 } from "slices/teachersSlice";
 import {fetchFilters} from "slices/filtersSlice";
-import {
-    deleteStudent,
-    fetchNewStudents,
-    fetchNewStudentsDeleted,
-    setActiveBtn,
-    setChecked
-} from "slices/newStudentsSlice";
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
 import Modal from "components/platform/platformUI/modal";
@@ -35,7 +28,7 @@ const PlatformTeachers = () => {
 
     const {locationId} = useParams()
 
-    const {teachers, btns, fetchTeachersStatus} = useSelector(state => state.teachers)
+    const {teachers, btns, fetchTeachersStatus , totalCount2} = useSelector(state => state.teachers)
     const {filters} = useSelector(state => state.filters)
     const {isCheckedPassword} = useSelector(state => state.me)
 
@@ -45,14 +38,15 @@ const PlatformTeachers = () => {
     const [activeModalName, setActiveModalName] = useState(false)
     const [deleteStId, setDeleteStId] = useState()
     const [isConfirm, setIsConfirm] = useState(false)
-
+    const pageSize = useMemo(() => 50, [])
+    const [currentPage, setCurrentPage] = useState(1)
 
     const dispatch = useDispatch()
 
 
     useEffect(() => {
 
-        dispatch(fetchTeachers())
+        dispatch(fetchTeachers({currentPage , pageSize}))
 
         const newData = {
             name: "teachers",
@@ -60,7 +54,7 @@ const PlatformTeachers = () => {
         }
         dispatch(fetchFilters(newData))
 
-    }, [dispatch, locationId])
+    }, [dispatch, locationId , currentPage])
 
 
     useEffect(() => {
@@ -107,7 +101,7 @@ const PlatformTeachers = () => {
             typeLocation: "registerStudents",
             user_id: deleteStId
         }
-        request(`${BackUrl}delete_teacher/${deleteStId}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}teacher/delete_teacher/${deleteStId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -165,6 +159,11 @@ const PlatformTeachers = () => {
                 users={teachers}
                 filters={filters}
                 btns={btns}
+                totalCount={totalCount2}
+                pageSize={pageSize}
+                status={false}
+                onPageChange={setCurrentPage}
+                currentPage2={currentPage}
             />
 
 
@@ -190,7 +189,7 @@ const PlatformTeachers = () => {
                                         setIsConfirm(false)
                                     }}
                                 >
-                                    <ConfimReason  getConfirm={getConfirm} reason={true}/>
+                                    <ConfimReason getConfirm={getConfirm} reason={true}/>
                                 </Modal> : null
                         }
                     </>

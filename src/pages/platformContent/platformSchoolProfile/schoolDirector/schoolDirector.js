@@ -53,7 +53,7 @@ export const SchoolDirector = () => {
 
     const onDelete = (data) => {
         if (data === "yes") {
-            request(`${BackUrl}crud_school_user/${changingData.id}`,"DELETE", null, headers())
+            request(`${BackUrl}school/crud_school_user/${changingData.id}`,"DELETE", null, headers())
                 .then(() => {
                     dispatch(deleteSchoolDirector())
                 })
@@ -177,7 +177,7 @@ const CrudDirector = ({info,setActiveModal}) => {
 
 
         if (isChange) {
-            request(`${BackUrl}crud_school_user/${info.id}`,"PUT",JSON.stringify(data),headers())
+            request(`${BackUrl}school/crud_school_user/${info.id}`,"PUT",JSON.stringify(data),headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: "Director muvaffaqiyatli o'zgartirildi",
@@ -187,7 +187,7 @@ const CrudDirector = ({info,setActiveModal}) => {
                     dispatch(changeSchoolDirector(res.user))
                 })
         } else {
-            request(`${BackUrl}crud_school_user/`,"POST",JSON.stringify(data),headers())
+            request(`${BackUrl}school/crud_school_user/`,"POST",JSON.stringify(data),headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: "Director muvaffaqiyatli yaratildi",
@@ -207,7 +207,7 @@ const CrudDirector = ({info,setActiveModal}) => {
 
         if (username !== info?.username) {
             setLoading(true)
-            request(`${BackUrl}check_username`,"POST", JSON.stringify(username))
+            request(`${BackUrl}checks/check_username`,"POST", JSON.stringify(username))
                 .then(res => {
                     setLoading(false)
                     if (res.found) {

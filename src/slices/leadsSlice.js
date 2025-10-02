@@ -15,7 +15,7 @@ export const  fetchLeads = createAsyncThunk(
     'leadsSlice/fetchLeads',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_leads_location/news/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}lead/get_leads_location/news/${id}`,"GET",null,headers())
     }
 )
 
@@ -24,7 +24,7 @@ export const  fetchDeletedLeads = createAsyncThunk(
     async (id) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}get_leads_location/deleted/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}lead/get_leads_location/deleted/${id}`,"GET",null,headers())
     }
 )
 
@@ -33,7 +33,7 @@ export const  fetchLeadsCallList = createAsyncThunk(
     async (id) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}lead_crud/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}lead/lead_crud/${id}`,"GET",null,headers())
     }
 )
 

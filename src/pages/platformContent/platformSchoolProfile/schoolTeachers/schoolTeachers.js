@@ -68,7 +68,7 @@ export const SchoolTeachers = () => {
 
     const onDelete = (data) => {
         if (data === "yes") {
-            request(`${BackUrl}crud_school_user/${changingData.id}`,"DELETE", null, headers())
+            request(`${BackUrl}school/crud_school_user/${changingData.id}`,"DELETE", null, headers())
                 .then(res => {
                     dispatch(deleteSchoolTeacher(changingData.id))
                     setActiveDelete(false)
@@ -208,7 +208,7 @@ const CrudTeachers = ({info,setActiveModal}) => {
 
 
         if (isChange) {
-            request(`${BackUrl}crud_school_user/${info.id}`,"PUT",JSON.stringify(data),headers())
+            request(`${BackUrl}school/crud_school_user/${info.id}`,"PUT",JSON.stringify(data),headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: "O'qituvchi muvaffaqiyatli o'zgartirildi",
@@ -218,7 +218,7 @@ const CrudTeachers = ({info,setActiveModal}) => {
                     dispatch(changeSchoolTeacher(res.user))
                 })
         } else {
-            request(`${BackUrl}crud_school_user/`,"POST",JSON.stringify(data),headers())
+            request(`${BackUrl}school/crud_school_user/`,"POST",JSON.stringify(data),headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: "O'qituvchi muvaffaqiyatli yaratildi",
@@ -239,7 +239,7 @@ const CrudTeachers = ({info,setActiveModal}) => {
 
         if (username !== info?.username) {
             setLoading(true)
-            request(`${BackUrl}check_username`,"POST", JSON.stringify(username))
+            request(`${BackUrl}checks/check_username`,"POST", JSON.stringify(username))
                 .then(res => {
                     setLoading(false)
                     if (res.found) {

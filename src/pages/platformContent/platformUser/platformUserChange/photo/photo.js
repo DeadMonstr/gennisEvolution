@@ -47,7 +47,7 @@ const Photo = () => {
         const headers = {
             "Authorization": "Bearer " + token,
         }
-        request(`${BackUrl}update_photo_profile/${userId}`, "POST",data,headers)
+        request(`${BackUrl}student/update_photo_profile/${userId}`, "POST",data,headers)
             .then(res => {
                 if (res.success) {
                     navigate(-1)

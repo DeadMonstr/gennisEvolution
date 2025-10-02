@@ -22,7 +22,7 @@ export const  fetchCategory = createAsyncThunk(
     'capitalCategory/fetchCategory',
     async (data) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_capital_category/${data.id}/${data.locationId}`,"GET",null,headers())
+        return await request(`${BackUrl}account/get_capital_category/${data.id}/${data.locationId}`,"GET",null,headers())
     }
 )
 
@@ -30,7 +30,7 @@ export const  fetchCategories = createAsyncThunk(
     'capitalCategory/fetchCategories',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_capital_categories/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}account/get_capital_categories/${id}`,"GET",null,headers())
     }
 )
 
@@ -38,7 +38,7 @@ export const  fetchCategoryDeletedCapitals = createAsyncThunk(
     'capitalCategory/fetchCategoryDeletedCapitals',
     async (data) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}deleted_capitals/${data.id}/${data.locationId}`,"GET",null,headers())
+        return await request(`${BackUrl}account/deleted_capitals/${data.id}/${data.locationId}`,"GET",null,headers())
     }
 )
 
@@ -47,7 +47,7 @@ export const  fetchCapital = createAsyncThunk(
     'capitalCategory/fetchCapital',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}capital_info/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}account/capital_info/${id}`,"GET",null,headers())
     }
 )
 

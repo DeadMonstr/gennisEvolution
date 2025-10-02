@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
+import {useSelector} from "react-redux";
 
 const initialState = {
     newStudents: [
@@ -87,30 +88,32 @@ const initialState = {
     fetchNewStudentsStatus: "idle",
     fetchCreateGroupToolsStatus: "idle",
     fetchFilteredStudentsStatus: "idle",
+    totalCount: null
 }
 
 export const fetchNewFilteredStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewFilteredStudents',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_filtered_students_list/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}student/get_filtered_students_list/${id}`, "GET", null, headers())
     }
 )
 
 
 export const fetchNewStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewStudents',
-    async (id) => {
+    async ({locationId, pageSize, currentPage , search , currentFilters}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}newStudents/${id}`, "GET", null, headers())
+
+        return await request(`${BackUrl}student/newStudents/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.language ? `&language=${currentFilters.language}` : ""}${currentFilters.age ? `&age=${currentFilters.age}` : ""}`, "GET", null, headers())
     }
 )
 
 export const fetchNewDeletedStudents = createAsyncThunk(
     'newStudentsSlice/fetchNewDeletedStudents',
-    async (id) => {
+    async ({locationId, pageSize, currentPage , search  ,currentFilters}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}newStudentsDeleted/${id}`, "GET", null, headers())
+        return await request(`${BackUrl}student/newStudentsDeleted/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.language ? `&language=${currentFilters.language}` : ""}${currentFilters.age ? `&age=${currentFilters.age}` : ""}`, "GET", null, headers())
     }
 )
 
@@ -118,7 +121,8 @@ export const fetchNewStudentsDeleted = createAsyncThunk(
     'newStudentsSlice/fetchNewStudentsDeleted',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}new_del_students/${id}`, "GET", null, headers())
+
+        return await request(`${BackUrl}student/new_del_students/${id}`, "GET", null, headers())
     }
 )
 
@@ -126,7 +130,7 @@ export const fetchCreateGroupTools = createAsyncThunk(
     'newStudentsSlice/fetchCreateGroupTools',
     async () => {
         const {request} = useHttp();
-        return await request(`${BackUrl}create_group_tools`, "GET", null, headers())
+        return await request(`${BackUrl}create_group/create_group_tools`, "GET", null, headers())
     }
 )
 // export const  fetchCreateGroupTools = createAsyncThunk(
@@ -141,7 +145,7 @@ export const fetchFilteredStudents = createAsyncThunk(
     async (data) => {
         const {request} = useHttp();
         const {location} = data
-        return await request(`${BackUrl}get_students/${location}`, "POST", JSON.stringify(data), headers())
+        return await request(`${BackUrl}create_group/get_students/${location}`, "POST", JSON.stringify(data), headers())
     }
 )
 
@@ -232,6 +236,8 @@ const newStudentsSlice = createSlice({
             })
             .addCase(fetchNewStudents.fulfilled, (state, action) => {
                 state.fetchNewStudentsStatus = 'success';
+                console.log("log" , action.payload)
+                state.totalCount = action.payload?.pagination
                 // let newData = []
                 // for (let i = 0; i < 20; i++) {
                 //     const data = action.payload.newStudents.map(item => {
@@ -243,7 +249,7 @@ const newStudentsSlice = createSlice({
                 state.newStudents = action.payload.newStudents.map(item => {
                     return {...item,checked: false}
                 })
-                console.log(state.newStudents)
+
                 state.checkedUsers = []
             })
             .addCase(fetchNewStudents.rejected, state => {
@@ -255,7 +261,7 @@ const newStudentsSlice = createSlice({
             })
             .addCase(fetchNewDeletedStudents.fulfilled, (state, action) => {
                 state.fetchNewStudentsStatus = 'success';
-                console.log(action.payload, "deleted")
+                state.totalCount = action.payload?.pagination
                 state.newStudents = action.payload.newStudents.map(item => {
                     return {...item,checked: false}
                 })

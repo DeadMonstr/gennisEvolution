@@ -70,6 +70,7 @@ const PlatformAdmins = () => {
             users={admins}
             filters={filters}
             btns={btns}
+            status={true}
         />
     );
 };

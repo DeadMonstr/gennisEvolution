@@ -85,7 +85,7 @@ export const Register = () => {
             defenation_id: Number(def )
 
         }
-        request(`${BackUrl}students_test`, "POST", JSON.stringify(res), headers())
+        request(`${BackUrl}student/students_test`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 setValue("name", "")
                 setValue("surname", "")

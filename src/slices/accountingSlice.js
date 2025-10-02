@@ -45,11 +45,11 @@ const pages = [
         name: "Kapital xarajatlari",
         disabled: false
     },
-    // {
-    //     value: "investments",
-    //     name: "Invistitsiya",
-    //     disabled: false
-    // },
+    {
+        value: "investments",
+        name: "Invistitsiya",
+        disabled: false
+    },
     {
         value: "dividends",
         name: "Dividends",
@@ -122,24 +122,40 @@ const initialState = {
 
     fetchedDataType: "",
     fetchAccDataStatus: "idle",
+    totalCount: null
 }
 
 
+const renderQuery = ({PageSize , currentPage , search , activeFilters , locationId}) => {
+    return `${PageSize ? `?offset=${(currentPage - 1) * 50}&limit=${PageSize}` : ""}${locationId ? `&locationId=${locationId}` : ""}${search ? `&search=${search}` : ""}${activeFilters.teacher ? `&teacherId=${activeFilters.teacher}` : ""}${activeFilters.moneyType ? `&color=${activeFilters.moneyType}` : ""}${activeFilters.status ? `&groupStatus=${activeFilters.status}` : ""}${activeFilters?.name ? `&overheadType=${activeFilters.name}` : ""}${activeFilters.typePayment ? `&paymentType=${activeFilters?.typePayment}` : ""}${activeFilters?.day ==="all" || activeFilters.day === undefined ? "" : `&day=${activeFilters?.day}` }${activeFilters?.year !== "all" && activeFilters.year !== undefined ? `&year=${activeFilters?.year}` : ""}${activeFilters?.month !== "all" && activeFilters.month !== undefined ? `&month=${activeFilters?.month}` : ""}`
+}
+
+
+
+const renderQuery2 = ({PageSize , book_overheads , search , activeFilters , locationId}) => {
+    return `${PageSize ? `?offset=${(book_overheads - 1) * 50}&limit=${PageSize}` : ""}${locationId ? `&locationId=${locationId}` : ""}${search ? `&search=${search}` : ""}${activeFilters.teacher ? `&teacherId=${activeFilters.teacher}` : ""}${activeFilters.moneyType ? `&color=${activeFilters.moneyType}` : ""}${activeFilters.status ? `&groupStatus=${activeFilters.status}` : ""}${activeFilters?.name ? `&overheadType=${activeFilters.name}` : ""}${activeFilters.typePayment ? `&paymentType=${activeFilters?.typePayment}` : ""}${activeFilters?.day ==="all" || activeFilters.day === undefined ? "" : `&day=${activeFilters?.day}` }${activeFilters?.year !== "all" && activeFilters.year !== undefined ? `&year=${activeFilters?.year}` : ""}${activeFilters?.month !== "all" && activeFilters.month !== undefined ? `&month=${activeFilters?.month}` : ""}`
+}
+
 export const fetchAccData = createAsyncThunk(
     'accountingSlice/fetchAccData',
-    async (data) => {
-        const {isArchive} = data
+    async ({data , isArchive , PageSize , currentPage , search , activeFilters , locationId , route , deleted}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}account_info/${isArchive ? "archive" : ""}`, "POST", JSON.stringify(data), headers())
+        return await request(`${BackUrl}account/account_info/${route}${renderQuery({PageSize , currentPage , search , activeFilters , locationId})}${isArchive ? "&typeFilter=archive/" : ""}${deleted ? `&deleted=${deleted}` : ""}`, locationId ? "GET" : "POST", locationId ? null : JSON.stringify(data), headers())
     }
 )
+export const fetchAccData2 = createAsyncThunk(
+    'accountingSlice/fetchAccData2',
+    async ({data , isArchive , PageSize ,  book_overheads , activeFilters , search  , route , locationId , deleted}) => {
 
+        const {request} = useHttp();
+        return await request(`${BackUrl}account/account_info/${route}${renderQuery2({PageSize , book_overheads , search , activeFilters , locationId})}${isArchive ? "&typeFilter=archive/" : ""}${deleted ? `&deleted=${deleted}` : ""}`, locationId ? "GET" : "POST", locationId ? null : JSON.stringify(data), headers())
+    }
+)
 export const fetchDeletedAccData = createAsyncThunk(
     'accountingSlice/fetchDeletedAccData',
-    async (data) => {
-        const {isArchive} = data
+    async ({data , isArchive , PageSize , currentPage , search , activeFilters , route}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}account_info_deleted/${isArchive ? "archive" : ""}`, "POST", JSON.stringify(data), headers())
+        return await request(`${BackUrl}account/account_info_deleted/${isArchive ? "archive" : ""}${renderQuery({PageSize , currentPage , search , activeFilters})}`, "POST", JSON.stringify(data), headers())
     }
 )
 
@@ -149,7 +165,7 @@ export const fetchCollection = createAsyncThunk(
     async (data) => {
         const {locationId, date, activeFilter} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}account_details/${locationId}`, "POST", JSON.stringify({
+        return await request(`${BackUrl}account/account_details/${locationId}`, "POST", JSON.stringify({
             ...date,
             activeFilter
         }), headers())
@@ -161,7 +177,7 @@ export const fetchHistoryAccountingPost = createAsyncThunk(
     async (data) => {
         const {locationId, activeFilter, year} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}account_history/${locationId}`, "POST", JSON.stringify({
+        return await request(`${BackUrl}account/account_history/${locationId}`, "POST", JSON.stringify({
             activeFilter,
             year
         }), headers())
@@ -173,7 +189,7 @@ export const fetchHistoryAccountingGet = createAsyncThunk(
     async (data) => {
         const {locationId} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}account_years/${locationId}`, "GET", null, headers())
+        return await request(`${BackUrl}account/account_years/${locationId}`, "GET", null, headers())
     }
 )
 
@@ -272,11 +288,29 @@ const accountingSlice = createSlice({
             .addCase(fetchAccData.fulfilled, (state, action) => {
                 state.fetchAccDataStatus = 'success';
                 state.data = action.payload.data;
+                console.log(action.payload , "log")
+                state.totalCount = action.payload?.data?.pagination;
                 state.location = action.payload.location;
             })
             .addCase(fetchAccData.rejected, state => {
                 state.fetchAccDataStatus = 'error'
             })
+
+
+            .addCase(fetchAccData2.pending, state => {
+                state.fetchAccDataStatus = 'loading'
+            })
+            .addCase(fetchAccData2.fulfilled, (state, action) => {
+                state.fetchAccDataStatus = 'success';
+                state.data = action.payload.data;
+                console.log(action.payload , "log")
+                state.totalCount = action.payload?.data?.pagination;
+                state.location = action.payload.location;
+            })
+            .addCase(fetchAccData2.rejected, state => {
+                state.fetchAccDataStatus = 'error'
+            })
+
 
             .addCase(fetchDeletedAccData.pending, state => {
                 state.fetchAccDataStatus = 'loading'
@@ -284,6 +318,7 @@ const accountingSlice = createSlice({
             .addCase(fetchDeletedAccData.fulfilled, (state, action) => {
                 state.fetchAccDataStatus = 'success';
                 state.data = action.payload.data
+                state.totalCount = action.payload?.data?.pagination;
             })
             .addCase(fetchDeletedAccData.rejected, state => {
                 state.fetchAccDataStatus = 'error'

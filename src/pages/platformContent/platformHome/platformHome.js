@@ -123,7 +123,7 @@ const Comments = () => {
 
 
     const onDoubleClick = (commentId) => {
-        request(`${BackUrl}like_comment/${id}/${commentId}`,"GET",null,headers())
+        request(`${BackUrl}home_page/like_comment/${id}/${commentId}`,"GET",null,headers())
             .then(res => {
                 const newComments = res.comments.map(item => ({...item,onLike : item.likes_info.some(user => user.user_id === id )}))
                 const sortedByLike = newComments.sort((a, b) => b.likes - a.likes)
@@ -174,7 +174,7 @@ const Comments = () => {
 
 
     useEffect(() => {
-        request(`${BackUrl}home_comments`,"GET",null,headers())
+        request(`${BackUrl}home_page/home_comments`,"GET",null,headers())
             .then(res => {
                 const newComments = res.comments.map(item => ({...item,onLike : item.likes_info.some(user => user.user_id === id )}))
                 const sortedByLike = newComments.sort((a, b) => b.likes - a.likes)
@@ -189,7 +189,7 @@ const Comments = () => {
             comment: data.comment,
             id
         }
-        request(`${BackUrl}add_comment`,"POST",JSON.stringify(newData),headers())
+        request(`${BackUrl}home_page/add_comment`,"POST",JSON.stringify(newData),headers())
             .then(res => {
                 const newComments = res.comments.map(item => ({...item,onLike : item.likes_info.some(user => user.user_id === id )}))
                 const sortedByLike = newComments.sort((a, b) => b.likes - a.likes)

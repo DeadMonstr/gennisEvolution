@@ -57,7 +57,7 @@ const MonthBookMoney = () => {
 
 
         dispatch(fetchDataToChange())
-        request(`${BackUrl}collected_by_month/${id}`, "GET", null, headers())
+        request(`${BackUrl}book/collected_by_month/${id}`, "GET", null, headers())
             .then(res => {
                 setMonthMoneys(res.data.debt)
             })
@@ -66,7 +66,7 @@ const MonthBookMoney = () => {
 
     const changePaymentTypeTransfer = (id, value) => {
         setActiveChangeModal(false)
-        request(`${BackUrl}change_collected_money2/${id}/${value}`, "GET", null, headers())
+        request(`${BackUrl}book/change_collected_money2/${id}/${value}`, "GET", null, headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -206,7 +206,7 @@ const GetMoney = ({setActiveChangeModal, order}) => {
             // books: books.filter(item => item.admin_confirm)
         }
 
-        request(`${BackUrl}get_center_money/${order.id}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}book/get_center_money/${order.id}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

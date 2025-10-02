@@ -25,7 +25,7 @@ const ChangeLocStudent = () => {
     const {request} = useHttp()
 
     const onChange = (id) => {
-        request(`${BackUrl}change_location/${user.id}/${id}`,"GET",null,headers())
+        request(`${BackUrl}student/change_location/${user.id}/${id}`,"GET",null,headers())
         setSelectedLoc(id)
     }
     return (

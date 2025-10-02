@@ -40,7 +40,7 @@ const ChangeGroupTeacher = () => {
     const {request} = useHttp()
 
     useEffect(() => {
-        request(`${BackUrl}check_teacher_time/${groupId}`,"GET",null,headers())
+        request(`${BackUrl}group_change/check_teacher_time/${groupId}`,"GET",null,headers())
             .then(res => {
                 console.log(res)
                 if (res.success) {
@@ -56,7 +56,7 @@ const ChangeGroupTeacher = () => {
 
         const teacherId= users.filter(item => item.radioChecked)[0].id
 
-        request(`${BackUrl}add_teacher_group/${teacherId}/${groupId}`,"GET",null,headers())
+        request(`${BackUrl}group_change/add_teacher_group/${teacherId}/${groupId}`,"GET",null,headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

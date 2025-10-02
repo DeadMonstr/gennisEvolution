@@ -79,7 +79,7 @@ const Footer = () => {
         console.log(res)
         formData.append("res", JSON.stringify(res))
         formData.append("img", changeImage)
-        request(`${BackUrl}change_link`, "POST", formData, {"Authorization": "Bearer " + token})
+        request(`${BackUrl}home_page/change_link`, "POST", formData, {"Authorization": "Bearer " + token})
             .then(res => {
                 setChangeStatus(false)
                 dispatch(changeHrefs(res?.link))
@@ -98,7 +98,7 @@ const Footer = () => {
             number: data?.locNumber,
             location: data?.locLocation
         }
-        request(`${BackUrl}change_locations/${changeLoc?.id}`, "POST", JSON.stringify(res), headers())
+        request(`${BackUrl}home_page/change_locations/${changeLoc?.id}`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 setChangeLocStatus(false)
                 setSelectedItem(res?.location)
@@ -226,7 +226,7 @@ const Footer = () => {
 
     const onSubmitReg = (data) => {
         setLoading(true)
-        request(`${BackUrl}register_lead`, 'POST', JSON.stringify(data))
+        request(`${BackUrl}lead/register_lead`, 'POST', JSON.stringify(data))
             .then(res => {
                 setLoading(false)
                 if (res.success) {

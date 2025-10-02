@@ -4,6 +4,8 @@ import classNames from "classnames";
 
 
 import "./pagination.sass"
+import cls from "./pagination.module.sass";
+import Button from "components/platform/platformUI/button";
 
 
 const Pagination = React.memo(props => {
@@ -49,7 +51,7 @@ const Pagination = React.memo(props => {
     
     
     
-    if (currentPage === 0 || paginationRange.length < 2) {
+    if (currentPage === 0 || paginationRange?.length < 2) {
         return null;
     }
 
@@ -61,7 +63,7 @@ const Pagination = React.memo(props => {
         onPageChange(currentPage - 1);
     };
 
-    let lastPage = paginationRange[paginationRange.length - 1];
+    let lastPage = paginationRange[paginationRange?.length - 1];
     
     
     
@@ -88,7 +90,7 @@ const Pagination = React.memo(props => {
             <li
                 key={100001}
                 className={classNames('pagination-item arrow', {
-                    disabled: currentPage === lastPage
+                    disabled: lastPage ?  currentPage === lastPage : ""
                 })}
                 onClick={onNext}
             >
@@ -97,5 +99,107 @@ const Pagination = React.memo(props => {
         </ul>
     );
 })
-
 export default Pagination;
+
+
+export const ExtraPagination = ({
+                                    currentPage,
+                                    totalCount,
+                                    pageSize,
+                                    onPageChange,
+                                    siblingCount = 1,
+                                    className = "",
+                                }) => {
+    const totalPages = Math.ceil(totalCount / pageSize);
+    const maxVisiblePages = 5;
+
+    // Hooklarni ishlatishdan oldin return qila olmaymiz
+    const getPageNumbers = useCallback(() => {
+        let startPage = Math.max(
+            currentPage - Math.floor(maxVisiblePages / 2),
+            1
+        );
+        let endPage = startPage + maxVisiblePages - 1;
+
+        if (endPage > totalPages) {
+            endPage = totalPages;
+            startPage = Math.max(endPage - maxVisiblePages + 1, 1);
+        }
+
+        const pages = [];
+        for (let i = startPage; i <= endPage; i++) {
+            pages.push(i);
+        }
+        return pages;
+    }, [currentPage, maxVisiblePages, totalPages]);
+
+    const pages = getPageNumbers();
+
+    const renderPageNumbers = useCallback(() => {
+        return pages.map((pageNumber,index) => {
+            if (pageNumber === DOTS) {
+                return <li key={index} className="pagination-item dots">&#8230;</li>;
+            }
+
+            return (
+                <li
+                    key={index}
+                    className={classNames('pagination-item', {
+                        selected: pageNumber === currentPage
+                    })}
+                    onClick={() => onPageChange(pageNumber)}
+                >
+                    {pageNumber}
+                </li>
+            );
+        })
+    },[currentPage, onPageChange])
+
+
+    // Hooklardan keyin return qilsak bo‘ladi
+    if (totalPages <= 1) return null;
+    const onNext = () => {
+        onPageChange(currentPage + 1);
+    };
+
+    const onPrevious = () => {
+        onPageChange(currentPage - 1);
+    };
+
+    return (
+        <div style={{display: "flex" , alignItems: "center"}}>
+            <ul
+                className={classNames('pagination-container', { [className]: className })}
+            >
+
+                <li
+                    key={10000}
+                    className={classNames('pagination-item arrow', {
+                        disabled: currentPage === 1
+                    })}
+                    onClick={onPrevious}
+                >
+                    <i className="fas fa-angle-left" />
+                </li>
+                <div className="numbers">
+                    {renderPageNumbers()}
+                </div>
+
+                <li
+                    key={100001}
+                    className={classNames('pagination-item arrow', {
+                        disabled: totalPages ?  currentPage === totalPages : ""
+                    })}
+                    onClick={onNext}
+                >
+                    <i className="fas fa-angle-right" />
+                </li>
+
+            </ul>
+           {/*<div style={{display: "flex" , alignItems: "center" , width: "20%" , justifyContent: "flex-end"}}>*/}
+           {/*    {currentPage > 5 &&  <Button onClickBtn={() => onPageChange(1)}>First Page</Button>}*/}
+           {/*    {currentPage < totalPages && <Button onClickBtn={() => onPageChange(totalPages)}>Last Page</Button>}*/}
+           {/*</div>*/}
+        </div>
+    );
+};

@@ -17,7 +17,7 @@ export const  fetchStudentAccData = createAsyncThunk(
     async (data) => {
         const {request} = useHttp();
         const {month,studentId,groupId,year} = data
-        return await request(`${BackUrl}student_attendances/${studentId}/${groupId}/${year}-${month}`,"GET",null,headers())
+        return await request(`${BackUrl}group/student_attendances/${studentId}/${groupId}/${year}-${month}`,"GET",null,headers())
     }
 )
 

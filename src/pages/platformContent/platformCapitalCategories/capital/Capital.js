@@ -66,7 +66,7 @@ const Capital = () => {
             setValue2("number", capital.number)
             setValue2("term", capital.term)
             setValue2("price", capital.price)
-            setValue2("payment_type_id", capital?.payment_type.id.toString())
+            setValue2("payment_type_id", capital?.payment_type?.id?.toString())
         }
     },[capital])
 
@@ -74,7 +74,7 @@ const Capital = () => {
 
     const onDelete = (data) => {
         if (data === "yes") {
-            request(`${BackUrl}add_capital/${locationId}`,"DELETE", JSON.stringify({capital_id:capital.id}), headers())
+            request(`${BackUrl}account/add_capital/${locationId}`,"DELETE", JSON.stringify({capital_id:capital.id}), headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: res.msg,
@@ -97,7 +97,7 @@ const Capital = () => {
         }));
         setLoading(true)
 
-        request(`${BackUrl}add_capital/${locationId}`,"PUT", formData, headersImg())
+        request(`${BackUrl}account/add_capital/${locationId}`,"PUT", formData, headersImg())
             .then(res => {
                 dispatch(onChangeCapitalReducer({capital: res.capital}))
 

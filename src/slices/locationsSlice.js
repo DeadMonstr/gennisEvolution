@@ -16,7 +16,7 @@ export const fetchLocations = createAsyncThunk(
     async () => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}locations`,"GET",null)
+        return await request(`${BackUrl}base/locations`,"GET",null)
     }
 )
 

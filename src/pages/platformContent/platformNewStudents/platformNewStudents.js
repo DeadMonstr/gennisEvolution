@@ -34,6 +34,7 @@ import cls from "./platformNewStudents.module.sass"
 import Input from "components/platform/platformUI/input";
 import Search from "components/platform/platformUI/search";
 import classNames from "classnames";
+import {fetchFilters} from "../../../slices/filtersSlice";
 
 const SampleUsers = React.lazy(() => import("components/platform/platformSamples/sampleUsers/SampleUsers"))
 
@@ -42,9 +43,20 @@ const PlatformNewStudents = () => {
 
     let {locationId} = useParams()
 
-    const {filteredNewStudents, btns, fetchNewStudentsStatus, newStudents} = useSelector(state => state.newStudents)
+    useEffect(() => {
+        localStorage.removeItem("pageSettings");
+    }, []);
 
-    const {filters} = useSelector(state => state.filters)
+    const {
+        filteredNewStudents,
+        btns,
+        fetchNewStudentsStatus,
+        newStudents,
+        totalCount
+    } = useSelector(state => state.newStudents)
+
+    const {filters, activeFilters} = useSelector(state => state.filters)
+    const {currentFilters} = useSelector(state => state.currentFilterSlice)
     const {location, role} = useSelector(state => state.me)
     const {isCheckedPassword} = useSelector(state => state.me)
 
@@ -57,6 +69,7 @@ const PlatformNewStudents = () => {
 
     const [isDeleteData, setIsDeleteData] = useState(false)
     const [isFilterData, setIsFilterData] = useState(false)
+    const [isRefreshed, setIsRefreshed] = useState(false)
     const dispatch = useDispatch()
 
     const [activeSubject, setActiveSubject] = useState(false);
@@ -66,12 +79,27 @@ const PlatformNewStudents = () => {
     const wrapper = useRef()
 
     const [mainSearch, setMainSearch] = useState("")
+    const [search, setSearch] = useState("")
 
 
     const [msg, setMsg] = useState("")
     const [typeMsg, setTypeMsg] = useState("")
     const [activeMessage, setActiveMessage] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1)
+    const pageSize = useMemo(() => 50, [])
 
+
+    useEffect(() => {
+        const newData = {
+            name: "newStudents",
+            location: locationId
+        }
+        dispatch(fetchFilters(newData))
+    }, [locationId])
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [isDeleteData, isFilterData])
 
     useEffect(() => {
         if (filteredNewStudents?.length !== 0) {
@@ -80,21 +108,75 @@ const PlatformNewStudents = () => {
     }, [filteredNewStudents?.length,])
 
     useEffect(() => {
+
+        const oldData = JSON.parse(localStorage.getItem("pageSettings"))
+
+        if (!oldData) {
+            setIsRefreshed(true)
+            localStorage.setItem("pageSettings", JSON.stringify({
+                locationId,
+                isDeleteData,
+                isFilterData,
+                currentPage,
+                search,
+                currentFilters
+            }))
+            return;
+        }
+
+        const {
+            locationId: oldLocationId,
+            isDeleteData: oldIsDeleteData,
+            isFilterData: oldIsFilterData,
+            currentPage: oldCurrentPage,
+            search: oldSearch,
+            currentFilters: oldCurrentFilters
+        } = oldData
+
+
+        const condition = locationId !== oldLocationId && isDeleteData !== oldIsDeleteData && isFilterData !== oldIsFilterData && currentPage !== oldCurrentPage && search !== oldSearch
+
+        const keysNewFilter = Object.keys(currentFilters)
+        const keysOldFilter = Object.keys(oldCurrentFilters)
+
+
+        const isFilterChanged = keysNewFilter.length !== keysOldFilter.length ? true : keysNewFilter.some(key => currentFilters[key] !== oldCurrentFilters[key])
+
+
+        if (condition || isFilterChanged) {
+            setIsRefreshed(true)
+            localStorage.setItem("pageSettings", JSON.stringify({
+                locationId,
+                isDeleteData,
+                isFilterData,
+                currentPage,
+                search,
+                currentFilters
+            }))
+        }
+
+    }, [locationId, isDeleteData, isFilterData, currentPage, search, currentFilters])
+
+
+    useEffect(() => {
+        if (!isRefreshed) return;
+
+
         if (isDeleteData) {
             if (isFilterData) {
                 dispatch(fetchNewStudentsDeleted(locationId))
             } else {
-                dispatch(fetchNewDeletedStudents(locationId))
+                dispatch(fetchNewDeletedStudents({locationId, currentPage, pageSize, search, currentFilters}))
             }
         } else {
             if (isFilterData) {
                 dispatch(fetchNewFilteredStudents(locationId))
             } else {
-                dispatch(fetchNewStudents(locationId))
+                dispatch(fetchNewStudents({locationId, currentPage, pageSize, search, currentFilters}))
             }
         }
         dispatch(setSelectedLocation({id: locationId}))
-    }, [locationId, isDeleteData, isFilterData])
+    }, [isRefreshed, locationId, isDeleteData, isFilterData, currentPage, pageSize, search, currentFilters])
 
 
     const navigate = useNavigate()
@@ -169,6 +251,7 @@ const PlatformNewStudents = () => {
     const onDelete = (id, type) => {
         setDeleteStId(id)
         setActiveModalName(type)
+
         if (!isCheckedPassword) {
             setActiveCheckPassword(true)
         } else {
@@ -185,7 +268,7 @@ const PlatformNewStudents = () => {
                 typeLocation: "registerStudents",
                 student_id: deleteStId
             }
-            request(`${BackUrl}delete_student`, "POST", JSON.stringify(newData), headers())
+            request(`${BackUrl}create_group/delete_student`, "POST", JSON.stringify(newData), headers())
                 .then(res => {
                     if (res.success) {
                         dispatch(setMessage({
@@ -214,7 +297,7 @@ const PlatformNewStudents = () => {
 
     const returnDeletedStudent = useCallback((data) => {
         if (data === "yes") {
-            request(`${BackUrl}get_back_student/${deleteStId}`, "GET", null, headers())
+            request(`${BackUrl}student/get_back_student/${deleteStId}`, "GET", null, headers())
                 .then(res => {
                     if (res.success) {
                         dispatch(setMessage({
@@ -233,8 +316,8 @@ const PlatformNewStudents = () => {
                     }
                 })
             activeSubjectData ?
-            dispatch(deleteStudent({id: deleteStId, idSubject: activeSubjectData?.id})) :
-            dispatch(deleteNewStudentSlice({id: deleteStId}))
+                dispatch(deleteStudent({id: deleteStId, idSubject: activeSubjectData?.id})) :
+                dispatch(deleteNewStudentSlice({id: deleteStId}))
             setActiveModal(false)
         } else {
             setActiveModal(false)
@@ -322,131 +405,160 @@ const PlatformNewStudents = () => {
         <>
             {
                 isFilterData ? <>
-                    <>
-                        <Routes>
-                            <Route path="list" element={
-                                <section className={cls.section} onScroll={scrollEvent} ref={sectionRef}>
-                                    <header className={cls.section__header}>
-                                        <div key={1}>
-                                            <PlatformSearch search={mainSearch} setSearch={setMainSearch}/>
-                                            <FuncBtns
-                                                locationId={locationId}
-                                                funcsSlice={funcsSlice}
-                                                dataBtns={btns}
-                                            />
+                        <>
+                            <Routes>
+                                <Route path="list" element={
+                                    <section style={{paddingTop: 0}} className={cls.section} onScroll={scrollEvent}
+                                             ref={sectionRef}>
+                                        <header className={cls.section__header}>
+                                            <div key={1}>
+                                                <PlatformSearch search={mainSearch} setSearch={setMainSearch}/>
+                                                <FuncBtns
+                                                    locationId={locationId}
+                                                    funcsSlice={funcsSlice}
+                                                    dataBtns={btns}
+                                                />
+                                            </div>
+                                        </header>
+
+                                        <div className={cls.links}>
+
+                                            <Button active={isDeleteData} onClickBtn={() => setIsDeleteData(!isDeleteData)}>
+                                                O'chirilgan
+                                            </Button>
+
+                                            <Button active={isFilterData} onClickBtn={() => setIsFilterData(!isFilterData)}>
+                                                Filterlangan
+                                            </Button>
+
                                         </div>
-                                    </header>
-                                    <div className={cls.links}>
-
-                                        <Button active={isDeleteData} onClickBtn={() => setIsDeleteData(!isDeleteData)}>
-                                            O'chirilgan
-                                        </Button>
-
-                                        <Button active={isFilterData} onClickBtn={() => setIsFilterData(!isFilterData)}>
-                                            Filterlangan
-                                        </Button>
-
-                                    </div>
-                                    <main className={classNames(cls.section__main, cls.filtered)}>
-                                        <motion.div
-                                            className={cls.scroll}
-                                            id="scroll"
-                                            ref={wrapper}
-                                        >
+                                        <main className={classNames(cls.section__main, cls.filtered)}>
                                             <motion.div
-                                                className={cls.scroll__inner}
-                                                id="scroll__inner"
-                                                drag={"x"}
-                                                dragConstraints={{left: -width, right: 0}}
+                                                className={cls.scroll}
+                                                id="scroll"
+                                                ref={wrapper}
                                             >
-                                                {
-                                                    searchedFilteredUsers?.map((item, i) => {
-                                                        if (!item.students.length) return null
+                                                <motion.div
+                                                    className={cls.scroll__inner}
+                                                    id="scroll__inner"
+                                                    drag={"x"}
+                                                    dragConstraints={{left: -width, right: 0}}
+                                                >
+                                                    {
+                                                        searchedFilteredUsers?.map((item, i) => {
+                                                            if (!item.students.length) return null
 
-                                                        return <FilteredBox
-                                                            activeItems={activeItems}
-                                                            index={i}
-                                                            item={item}
-                                                            noActiveItems={noActiveItems}
-                                                            funscSlice={funcsSlice}
-                                                            handleItemClick={handleItemClick}
-                                                        />
-                                                    })
-                                                }
+                                                            return <FilteredBox
+                                                                activeItems={activeItems}
+                                                                index={i}
+                                                                item={item}
+                                                                noActiveItems={noActiveItems}
+                                                                funscSlice={funcsSlice}
+                                                                handleItemClick={handleItemClick}
+                                                            />
+                                                        })
+                                                    }
+                                                </motion.div>
                                             </motion.div>
-                                        </motion.div>
-                                    </main>
+                                        </main>
 
-                                    <footer className={cls.section__footer}>
+                                        <footer className={cls.section__footer}>
 
-                                        <Modals
-                                            locationId={locationId}
-                                            btns={btns}
-                                            setMsg={setMsg}
-                                            setTypeMsg={setTypeMsg}
-                                            setActiveMessage={setActiveMessage}
-                                        />
-                                    </footer>
-                                </section>
-
-
-                            }/>
-
-                            <Route path="profile/:userId/*" element={<PlatformUserProfile/>}/>
-
-                            <Route path="/" element={
-                                <Navigate to="list"/>
-                            }
-                            />
-                        </Routes>
-
-                    </>
+                                            <Modals
+                                                locationId={locationId}
+                                                btns={btns}
+                                                setMsg={setMsg}
+                                                setTypeMsg={setTypeMsg}
+                                                setActiveMessage={setActiveMessage}
+                                            />
+                                        </footer>
+                                    </section>
 
 
-                    <Modal zIndex={1000} activeModal={activeCheckPassword}
-                           setActiveModal={() => setActiveCheckPassword(false)}>
-                        <CheckPassword/>
-                    </Modal>
-                    {/*{*/}
-                    {/*    activeModalName === "delete" && isCheckedPassword ?*/}
-                    {/*        <>*/}
-                    {/*            <Modal id={"confirm"} zIndex={1001} activeModal={activeModal}*/}
-                    {/*                   setActiveModal={() => setActiveModal(false)}>*/}
-                    {/*                <Confirm setActive={setActiveModal} text={"Oq'uvchini uchirishni hohlaysizmi?"}*/}
-                    {/*                         getConfirm={deleteNewStudent} reason={true}/>*/}
-                    {/*            </Modal>*/}
-                    {/*        </>*/}
-                    {/*        : activeModalName === "returnDeleted" && isCheckedPassword ?*/}
-                    {/*            <Modal id={"confirm"} zIndex={1001} activeModal={activeModal}*/}
-                    {/*                   setActiveModal={() => setActiveModal(false)}>*/}
-                    {/*                <Confirm setActive={setActiveModal}*/}
-                    {/*                         text={"Uchirilgan o'quvchini qaytarishni hohlaysizmi"}*/}
-                    {/*                         getConfirm={returnDeletedStudent}/>*/}
-                    {/*            </Modal>*/}
-                    {/*            : null*/}
-                    {/*}*/}
+                                }
+                                />
+
+                                <Route path="profile/:userId/*" element={<PlatformUserProfile/>}/>
+
+                                <Route path="/" element={
+                                    <Navigate to="list"/>
+                                }
+                                />
+                            </Routes>
+
+                        </>
 
 
-                    <Modal id={"subjectData"} zIndex={1000} activeModal={activeSubject}
-                           setActiveModal={setActiveSubject}>
-                        {activeSubjectData && <SubjectData
+                        <Modal zIndex={1000} activeModal={activeCheckPassword}
+                               setActiveModal={() => setActiveCheckPassword(false)}>
+                            <CheckPassword/>
+                        </Modal>
+                        {/*{*/}
+                        {/*    activeModalName === "delete" && isCheckedPassword ?*/}
+                        {/*        <>*/}
+                        {/*            <Modal id={"confirm"} zIndex={1001} activeModal={activeModal}*/}
+                        {/*                   setActiveModal={() => setActiveModal(false)}>*/}
+                        {/*                <Confirm setActive={setActiveModal} text={"Oq'uvchini uchirishni hohlaysizmi?"}*/}
+                        {/*                         getConfirm={deleteNewStudent} reason={true}/>*/}
+                        {/*            </Modal>*/}
+                        {/*        </>*/}
+                        {/*        : activeModalName === "returnDeleted" && isCheckedPassword ?*/}
+                        {/*            <Modal id={"confirm"} zIndex={1001} activeModal={activeModal}*/}
+                        {/*                   setActiveModal={() => setActiveModal(false)}>*/}
+                        {/*                <Confirm setActive={setActiveModal}*/}
+                        {/*                         text={"Uchirilgan o'quvchini qaytarishni hohlaysizmi"}*/}
+                        {/*                         getConfirm={returnDeletedStudent}/>*/}
+                        {/*            </Modal>*/}
+                        {/*            : null*/}
+                        {/*}*/}
+
+
+                        <Modal id={"subjectData"} zIndex={1000} activeModal={activeSubject}
+                               setActiveModal={setActiveSubject}>
+                            {activeSubjectData && <SubjectData
+                                funcsSlice={funcsSlice}
+                                item={activeSubjectData}
+                                activeItems={activeItems}
+                                mainSearch={mainSearch}
+                            />}
+
+
+                        </Modal>
+                    </> :
+
+
+                    <div style={{display: "flex", flexDirection: "column"}}>
+
+                        <SampleUsers
+                            locationId={locationId}
+                            fetchUsersStatus={fetchNewStudentsStatus}
                             funcsSlice={funcsSlice}
-                            item={activeSubjectData}
-                            activeItems={activeItems}
-                            mainSearch={mainSearch}
-                        />}
+                            activeRowsInTable={activeItems}
+                            users={newStudents}
+                            filters={filters}
+                            btns={btns}
+                            pageSize={pageSize}
+                            totalCount={totalCount}
+                            setCurrentPage={setCurrentPage}
+                            onPageChange={setCurrentPage}
+                            currentPage2={currentPage}
+                            status={false}
+                            seach={search}
+                            setSearch={setSearch}
 
 
-                    </Modal>
-                </> : <SampleUsers
-                    locationId={locationId}
-                    fetchUsersStatus={fetchNewStudentsStatus}
-                    funcsSlice={funcsSlice}
-                    activeRowsInTable={activeItems}
-                    users={newStudents}
-                    filters={filters}
-                    btns={btns}
-                />
+                        />
+                        {/*<div style={{paddingLeft: "3rem"}}>*/}
+                        {/*    <ExtraPagination*/}
+                        {/*        totalCount={totalCount?.total}*/}
+                        {/*        onPageChange={setCurrentPage}*/}
+                        {/*        currentPage={currentPage}*/}
+                        {/*        pageSize={pageSize}*/}
+                        {/*    />*/}
+                        {/*</div>*/}
+                    </div>
+
+
             }
             {
                 activeModalName === "delete" && isCheckedPassword ?
@@ -591,6 +703,7 @@ const SubjectData = ({item, activeItems, funcsSlice, mainSearch}) => {
 
 
             </div>
+
             <Pagination
                 className="pagination-bar"
                 currentPage={currentPage}

@@ -1,4 +1,3 @@
-
 import React, {useEffect, useMemo, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {
@@ -11,34 +10,76 @@ import {fetchFilters} from "slices/filtersSlice";
 
 import {useHttp} from "hooks/http.hook";
 import SampleAccounting from "components/platform/platformSamples/sampleAccaunting/SampleAccounting";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {getUIPageByPath, setPagePosition} from "slices/uiSlice";
 import useFilteredData from "pages/platformContent/platformAccounting/useFilteredData";
 import Button from "components/platform/platformUI/button";
 import AccountingTable from "components/platform/platformUI/tables/accountingTable";
-import Pagination from "components/platform/platformUI/pagination";
-
-
+import Pagination, {ExtraPagination} from "components/platform/platformUI/pagination";
+import Modal from "components/platform/platformUI/modal";
+import CheckPassword from "components/platform/platformModals/checkPassword/CheckPassword";
+import Confirm from "components/platform/platformModals/confirm/confirm";
+import ConfimReason from "components/platform/platformModals/confirmReason/confimReason";
+import Select from "components/platform/platformUI/select";
+import DefaultLoader from "components/loader/defaultLoader/DefaultLoader";
 
 
 const DebtStudents = ({locationId, path}) => {
 
-    const {data, fetchAccDataStatus, fetchedDataType, btns,location} = useSelector(state => state.accounting)
+    const {
+        data,
+        fetchAccDataStatus,
+        fetchedDataType,
+        btns,
+        location,
+        totalCount
+    } = useSelector(state => state.accounting)
     const [isChangedData, setIsChangedData] = useState(false)
     const [isDeleted, setIsDeleted] = useState(false)
 
     const {pathname} = useLocation()
+    const {search} = useSelector(state => state.accounting)
 
 
-    const oldPage = useSelector((state) => getUIPageByPath(state,pathname))
+    const oldPage = useSelector((state) => getUIPageByPath(state, pathname))
     const [currentPage, setCurrentPage] = useState(1);
-    let PageSize = useMemo(() => 30, [])
+    let PageSize = useMemo(() => 50, [])
 
+    // const [selected, setSelected] = useState([]);
 
     const dispatch = useDispatch()
     const {request} = useHttp()
+    const navigate = useNavigate()
+    const {activeFilters} = useSelector(state => state.filters)
+    // console.log(selected)
+    // useEffect(() => {
+    //
+    //
+    //     Object.keys(filters).forEach(key => {
+    //         const f = filters[key];
+    //         let value;
+    //
+    //         if (Array.isArray(f.activeFilters)) {
+    //             value = [...f.activeFilters];
+    //         }
+    //         else {
+    //             value = f.activeFilters ?? null;
+    //         }
+    //
+    //         setSelected(selected => ({...selected, [key]: value}));
+    //     });
+    //
+    //
+    // }, [filters])
 
-    const [filteredData,searchedData] = useFilteredData(data.data, currentPage, PageSize)
+    useEffect(() => {
+        const newData = {
+            name: "debt_students",
+            location: locationId,
+            type: ""
+        }
+        dispatch(fetchFilters(newData))
+    }, [btns])
 
     useEffect(() => {
         if (fetchedDataType !== path || !data.data.length || locationId !== location) {
@@ -46,18 +87,23 @@ const DebtStudents = ({locationId, path}) => {
                 locationId,
                 type: "debts"
             }
-            console.log("fetched",data)
-            dispatch(fetchAccData(data))
-            const newData = {
-                name: "debt_students",
-                location: locationId
-            }
-            dispatch(fetchFilters(newData))
+
+            // if (isDeleted) {
+            //     dispatch(fetchDeletedAccData({data: data, PageSize, currentPage, activeFilters, locationId}));
+            // } else {
+            //     dispatch(fetchAccData({data: data, PageSize, currentPage, activeFilters, locationId}));
+            // }
+
+
             dispatch(onChangeFetchedDataType({type: path}))
         }
-    }, [locationId])
+    }, [locationId, currentPage, activeFilters])
 
-    console.log(data.data)
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [isDeleted,]);
+
 
     useEffect(() => {
         let data = {
@@ -74,39 +120,46 @@ const DebtStudents = ({locationId, path}) => {
         }
         setIsDeleted(data.deleted)
 
-        if (data.deleted) {
+        const route = "debts/"
 
-            if (data.archive) {
-                dispatch(fetchDeletedAccData({...data, isArchive: true}))
-            } else {
-                getArchive()
-                dispatch(fetchDeletedAccData(data))
-            }
-        } else if (data.archive) {
-            getArchive()
-            dispatch(fetchAccData({...data, isArchive: true}))
-        } else if (isChangedData) {
-            dispatch(fetchAccData(data))
+        if (data.deleted) {
+            dispatch(fetchDeletedAccData({
+                data: data,
+                isArchive: !!data.archive,
+                PageSize,
+                currentPage,
+                activeFilters,
+                locationId,
+                route
+            }));
+        } else {
+            dispatch(fetchAccData({
+                data: data,
+                isArchive: !!data.archive,
+                PageSize,
+                currentPage,
+                activeFilters,
+                locationId,
+                route
+            }));
         }
-    }, [btns, isChangedData])
+    }, [btns, isChangedData, currentPage, activeFilters])
 
     useEffect(() => {
         if (oldPage) {
             setCurrentPage(oldPage)
         }
-    },[])
+    }, [])
     const activeItems = () => {
         return {
             name: true,
-            surname : true,
+            surname: true,
             phone: true,
             debts: true,
             reason: true
             // deleteDebt: true
         }
     }
-
-
 
 
     const getArchive = (isActive) => {
@@ -124,11 +177,10 @@ const DebtStudents = ({locationId, path}) => {
 
     }
 
-    const setChangedBtns = (id,active) => {
+    const setChangedBtns = (id, active) => {
         if (!active) setIsChangedData(true)
         dispatch(onChangeAccountingBtns({id}))
     }
-
 
 
     const links = useMemo(() => {
@@ -137,24 +189,23 @@ const DebtStudents = ({locationId, path}) => {
 
 
         for (let item of btns) {
-            if (item.page && item.page === path ) {
+            if (item.page && item.page === path) {
                 newBtns.push({
                     ...item,
                     elem: Button,
                     props: {
                         active: item.active,
-                        onClickBtn: () => setChangedBtns(item.id,item.active),
+                        onClickBtn: () => setChangedBtns(item.id, item.active),
                         children: item.title
                     }
                 })
-            }
-            else if (!item.page) {
+            } else if (!item.page) {
                 newBtns.push({
                     ...item,
                     elem: Button,
                     props: {
                         active: item.active,
-                        onClickBtn: () => setChangedBtns(item.id,item.active),
+                        onClickBtn: () => setChangedBtns(item.id, item.active),
                         children: item.title
                     }
                 })
@@ -171,45 +222,163 @@ const DebtStudents = ({locationId, path}) => {
     }
     useEffect(() => {
         dispatch(onChangeAccountingPage({value: path}))
-    },[])
+    }, [])
 
     const onChangedPage = (page) => {
         setCurrentPage(page)
-        dispatch(setPagePosition({path:pathname,page: page}))
+        dispatch(setPagePosition({path: pathname, page: page}))
     }
 
     let summa = "balance"
 
 
-    let sum = filteredData?.reduce((a, c) => {
+    let sum = data.data?.reduce((a, c) => {
         return a + c[summa]
     }, 0);
 
 
+    const searchedUsers = useMemo(() => {
+        const filteredHeroes = data?.data?.slice()
+        return filteredHeroes?.filter(item => {
+            if (item?.name || item.surname || item.username) {
+                return item?.name?.toLowerCase()?.includes(search?.toLowerCase()) ||
+                    item?.surname?.toLowerCase()?.includes(search?.toLowerCase()) ||
+                    item?.username?.toLowerCase()?.includes(search?.toLowerCase())
+            } else return true
+        })
+    }, [data.data, search])
+    if (fetchAccDataStatus === "loading") {
+        return <DefaultLoader/>
+    } else if (fetchAccDataStatus === "error") {
+        console.log('error')
+    }
 
+    console.log(data.data)
+
+    const LinkToUser = (e, id) => {
+        navigate(`../../profile/${id}`)
+        // if (true) {
+        //     if (
+        //         e.target.type !== "checkbox" &&
+        //         !e.target.classList.contains("delete") &&
+        //         !e.target.classList.contains("fa-times") &&
+        //         !e.target.classList.contains("typePayment")
+        //     ) {
+        //         navigate(`../profile/${id}`)
+        //     }
+        // } else {
+        //     if (
+        //         e.target.type !== "checkbox" &&
+        //         !e.target.classList.contains("delete") &&
+        //         !e.target.classList.contains("fa-times") &&
+        //         !e.target.classList.contains("typePayment")
+        //     ) {
+        //         navigate(`../../profile/${id}`)
+        //     }
+        // }
+    }
     return (
         <>
             <SampleAccounting
                 links={links}
             >
-                <AccountingTable
-                    sum={sum}
-                    // cache={true}
-                    typeOfMoney={data.typeOfMoney}
-                    fetchUsersStatus={fetchAccDataStatus}
-                    funcSlice={funcsSlice}
-                    activeRowsInTable={activeItems()}
-                    users={filteredData}
-                />
+                <div style={{height: "43vh", overflow: "auto"}}>
+                    {/*<AccountingTable*/}
+                    {/*    // sum={sum}*/}
+                    {/*    // cache={true}*/}
+                    {/*    // typeOfMoney={data.typeOfMoney}*/}
+                    {/*    // fetchUsersStatus={fetchAccDataStatus}*/}
+                    {/*    // funcSlice={funcsSlice}*/}
+                    {/*    // activeRowsInTable={activeItems()}*/}
+                    {/*    // users={data?.data}*/}
+                    {/*/>*/}
+
+                    <div className="tableBox">
+                        <table>
+                            <caption>
+                                {sum?.toLocaleString()}
+                            </caption>
+                            <thead>
+
+                            <tr>
+                                <th/>
+                                <th>Ism</th>
+                                <th>Familiya</th>
+                                <th>Sabab</th>
+                                <th>Tel</th>
+                                <th>Qarz</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {data.data.map((item , i ) => (
+                                <tr key={i} onClick={e => LinkToUser(e,  item.id)}>
+                                    <td>{i + 1}</td>
+                                    <td>{item.name}</td>
+                                    <td>{item.surname}</td>
+                                    <td>{item.reason}</td>
+                                    <td>{item.phone}</td>
+                                    <td>
+                                   <span
+                                       className={`money ${item.moneyType}`}
+                                   >
+                                        {item.balance}
+                                    </span>
+
+                                    </td>
+                                </tr>
+                            ))}
+
+                            </tbody>
+                        </table>
 
 
+                        {/*<Modal activeModal={activeCheckPassword} setActiveModal={() => setActiveCheckPassword(false)}>*/}
+                        {/*    <CheckPassword/>*/}
+                        {/*</Modal>*/}
+                        {/*{*/}
+                        {/*    activeChangeModalName === "deletePayment" && isCheckedPassword ?*/}
+                        {/*        <>*/}
+                        {/*            <Modal activeModal={activeChangeModal} setActiveModal={() => setActiveChangeModal(false)}>*/}
+                        {/*                <Confirm setActive={setActiveChangeModal} text={changingData.msg}*/}
+                        {/*                         getConfirm={setIsConfirm}/>*/}
+                        {/*            </Modal>*/}
+                        {/*            {*/}
+                        {/*                isConfirm === "yes" ?*/}
+                        {/*                    <Modal*/}
+                        {/*                        activeModal={activeChangeModal}*/}
+                        {/*                        setActiveModal={() => {*/}
+                        {/*                            setActiveChangeModal(false)*/}
+                        {/*                            setIsConfirm("")*/}
+                        {/*                        }}*/}
+                        {/*                    >*/}
+                        {/*                        <ConfimReason getConfirm={getConfirmDelete} reason={true}/>*/}
+                        {/*                    </Modal> : null*/}
+                        {/*            }*/}
+                        {/*        </>*/}
+                        {/*        : activeChangeModalName === "changeTypePayment" && isCheckedPassword ?*/}
+                        {/*            <Modal activeModal={activeChangeModal} setActiveModal={() => setActiveChangeModal(false)}>*/}
+                        {/*                <div className="changeTypePayment">*/}
+                        {/*                    <Select*/}
+                        {/*                        options={options}*/}
+                        {/*                        name={""}*/}
+                        {/*                        title={"Payment turi"}*/}
+                        {/*                        onChangeOption={changePayment}*/}
+                        {/*                        id={changingData.id}*/}
+                        {/*                        defaultValue={changingData.typePayment}*/}
+                        {/*                    />*/}
+                        {/*                </div>*/}
+                        {/*            </Modal> : null*/}
+                        {/*}*/}
+                    </div>
 
-                <Pagination
-                    className="pagination-bar"
-                    currentPage={currentPage}
-                    totalCount={searchedData.length}
+
+                </div>
+
+                <ExtraPagination
                     pageSize={PageSize}
-                    onPageChange={page => onChangedPage(page)}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                    totalCount={totalCount?.total}
                 />
 
             </SampleAccounting>

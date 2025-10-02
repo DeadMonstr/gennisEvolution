@@ -17,7 +17,7 @@ const Index = () => {
     const {request} = useHttp()
 
     useEffect(() => {
-        request(`${BackUrl}user_time_table/${userId}/${selectedLocation}`,"GET",null,headers())
+        request(`${BackUrl}base/user_time_table/${userId}/${selectedLocation}`,"GET",null,headers())
             .then(res => {
                 if (res.success) {
                     setData(res)

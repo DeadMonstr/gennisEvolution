@@ -59,7 +59,7 @@ export const  fetchGroup = createAsyncThunk(
     'groupSlice/fetchGroup',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}group_profile/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}group/group_profile/${id}`,"GET",null,headers())
     }
 )
 
@@ -67,7 +67,7 @@ export const  fetchStatistics = createAsyncThunk(
     'groupSlice/fetchStatistics',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}group_statistics/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}group/group_statistics/${id}`,"GET",null,headers())
     }
 )
 

@@ -116,7 +116,7 @@ const Dividend = ({data, locations}) => {
         // setActiveChangeModal(false)
         // dispatch(changePaymentType({id: id ,typePayment: value}))
 
-        request(`${BackUrl}crud_dividend/${changingData.id}`, "POST", JSON.stringify({payment_type_id: value}), headers())
+        request(`${BackUrl}account/crud_dividend/${changingData.id}`, "POST", JSON.stringify({payment_type_id: value}), headers())
             .then(res => {
                 console.log(res)
                 dispatch(changePaymentTypeDividend({id: id, payment_type: res.payment_type}))
@@ -139,7 +139,7 @@ const Dividend = ({data, locations}) => {
         setActiveChangeModal(false)
 
 
-        request(`${BackUrl}delete_dividend/${changingData.id}`, "POST", JSON.stringify(data), headers())
+        request(`${BackUrl}account/delete_dividend/${changingData.id}`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 dispatch(onDeleteDividend({id: changingData.id}))
                 dispatch(fetchAccountantBookKeepingTypesMoney())
@@ -172,7 +172,7 @@ const Dividend = ({data, locations}) => {
             locations: loc,
         }
 
-        request(`${BackUrl}take_dividend`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/take_dividend`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 console.log(res)
                 dispatch(onAddDevidend(res.dividend))

@@ -1,4 +1,4 @@
-import React, {useRef, useState, UIEvent, useEffect, useCallback} from 'react';
+import React, {useRef, useState, UIEvent, useEffect, useCallback, useMemo} from 'react';
 import {Link, Route, Routes, useLocation, useNavigate, useParams} from "react-router-dom";
 
 import EmployeeSalary from "./employeeSalary/employeeSalary";
@@ -28,6 +28,8 @@ import PlatformUserProfile from "pages/platformContent/platformUser/platformUser
 import {getUIScrollByPath, setScrollPosition} from "slices/uiSlice";
 import useThrottle from "hooks/useThrottle";
 import LocationMoneys from "pages/platformContent/platformAccounting/locationMoneys/locationMoneys";
+import {ExtraPagination} from "components/platform/platformUI/pagination";
+import AccountFilters from "pages/platformContent/platformAccounting/AccountFilter";
 
 
 
@@ -62,25 +64,24 @@ const PlatformAccounting = () => {
         dispatch(onChangeAccountingSearch({value: e}))
     }
 
+    //
+    // const onScroll = useThrottle((e) => {
+    //     dispatch(setScrollPosition({path: location.pathname,position: e.target.scrollTop}))
+    // },300)
 
-    const onScroll = useThrottle((e) => {
-        dispatch(setScrollPosition({path: location.pathname,position: e.target.scrollTop}))
-    },300)
+    //
+    // useEffect(() => {
+    //     const timeoutId = setTimeout(() => {
+    //         wrapperRef.current.scrollTop = scrollPosition
+    //     }, 500);
+    //     return () => clearTimeout(timeoutId);
+    // },[])
 
-
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            wrapperRef.current.scrollTop = scrollPosition
-        }, 500);
-        return () => clearTimeout(timeoutId);
-    },[])
-
-
-
-
+    const [currentPage, setCurrentPage] = useState(1);
+    let PageSize = useMemo(() => 50, [])
 
     return (
-        <section className={"section"} onScroll={onScroll} ref={wrapperRef}>
+        <section className={"section"}  ref={wrapperRef}>
             <header className="section__header">
                 <div>
                     <PlatformSearch search={search} setSearch={setSearch}/>
@@ -118,8 +119,16 @@ const PlatformAccounting = () => {
                     <LocationMoneys locationId={locationId}/>
                 </div>
 
-                <Filters filterRef={filterRef} filters={filters} heightOtherFilters={heightOtherFilters}
+                <AccountFilters filterRef={filterRef} filters={filters} heightOtherFilters={heightOtherFilters}
                          activeOthers={activeOthers}/>
+                {/*<ExtraPagination*/}
+                {/*    pageSize={PageSize}*/}
+                {/*    currentPage={currentPage}*/}
+                {/*    onPageChange={setCurrentPage}*/}
+                {/*    totalCount={12}*/}
+
+
+                {/*/>*/}
 
             </header>
 
@@ -139,6 +148,8 @@ const PlatformAccounting = () => {
                 <Route path={"dividends"} element={<Dividends path={"dividends"} locationId={locationId} />}/>
                 {/*<Route path={"debtStudents"} element={<DebtStudents/>}/>*/}
             </Routes>
+
+
         </section>
 
 

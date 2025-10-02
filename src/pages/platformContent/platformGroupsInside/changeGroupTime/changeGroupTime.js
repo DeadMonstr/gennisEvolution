@@ -61,7 +61,7 @@ const ChangeGroupTime = () => {
                         const filteredRoom = dataToChange?.rooms.filter(item => item.name === day.room)
                         const filteredDay= dataToChange?.days.filter(item => item.name ===day.day)
 
-                        onSetDay(filteredDay[0].name,index+1)
+                        onSetDay(filteredDay[0]?.name,index+1)
                         return {
                             id: index+1,
                             selectedDay: filteredDay[0],
@@ -117,7 +117,7 @@ const ChangeGroupTime = () => {
             lessons
         }
 
-        request(`${BackUrl}check_time_group/${groupId}`, "POST",JSON.stringify(data),headers())
+        request(`${BackUrl}group_change/check_time_group/${groupId}`, "POST",JSON.stringify(data),headers())
             .then(res => {
                 console.log(res)
                 if (res.success) {
@@ -141,7 +141,7 @@ const ChangeGroupTime = () => {
         }
 
 
-        request(`${BackUrl}change_time_group/${groupId}`, "POST",JSON.stringify(data),headers())
+        request(`${BackUrl}group_change/change_time_group/${groupId}`, "POST",JSON.stringify(data),headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -373,7 +373,7 @@ const ChangeGroupTime = () => {
         const lesson = lessons.filter(item => item.id === id)
 
 
-        request(`${BackUrl}delete_time_table/${timeId}`, "GET",null,headers())
+        request(`${BackUrl}group_change/delete_time_table/${timeId}`, "GET",null,headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

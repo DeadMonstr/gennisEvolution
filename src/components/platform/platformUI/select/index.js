@@ -94,7 +94,7 @@ const Select = React.memo(({
                     disabled={item.disabled}
                     {...extra}
                     key={index}
-                    value={item.id}
+                    value={value}
                 >
                     {`${item.name}  ${item.surname}`}
                 </option>
@@ -157,7 +157,7 @@ export const SelectForm = ({ title, options = [], value, onChangeOption , clazzL
                     onChange={(e) => onChangeOption(e.target.value)}
                 >
                     {options.map((item) => (
-                        <option key={item.id} value={item.id}>
+                        <option disabled={item?.disabled} key={item.id} value={item.id}>
                             {item.name}
                         </option>
                     ))}

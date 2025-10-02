@@ -5,7 +5,7 @@ import PlatformSearch from "components/platform/platformUI/search";
 import FuncBtns from "components/platform/platformUI/funcBtns";
 import Filters from "components/platform/platformUI/filters";
 import UsersTable from "components/platform/platformUI/tables/usersTable";
-import Pagination from "components/platform/platformUI/pagination";
+import Pagination, {ExtraPagination} from "components/platform/platformUI/pagination";
 import Modals from "components/platform/platformModals";
 import Button from "components/platform/platformUI/button";
 import Message from "components/platform/platformMessage";
@@ -15,6 +15,7 @@ import {useDispatch} from "react-redux";
 import PlatformUserProfile from "pages/platformContent/platformUser/platformUserProfile/platformUserProfile";
 import Select from "components/platform/platformUI/select";
 import {motion} from "framer-motion";
+import {useScrollCache} from "../../../../hooks/useScroll";
 
 const activeFilteredItems = {
     name: true,
@@ -65,26 +66,32 @@ const SampleUsers = (props) => {
         options,
         isChangePage,
         selectedOption,
-        filteredNewStudents
+        filteredNewStudents,
+        status,
+        totalCount ,
+        pageSize,
+        onPageChange,
+        currentPage2,
+        search,
+        setSearch
     } = props
 
-    let PageSize = useMemo(() => 50, [])
+
 
     const filterRef = useRef()
     const sectionRef = useRef({
         scrollTop: 0
     })
     const [dataBtns, setDataBtns] = useState([])
-    const [currentPage, setCurrentPage] = useState(page);
     const [activeOthers, setActiveOthers] = useState(false)
     const [heightOtherFilters, setHeightOtherFilters] = useState(0)
-    const [search, setSearch] = useState("")
+
     const [deletedData, setDeletedData] = useState(false)
 
     const navigate = useNavigate()
     const [filteredData, setFilteredData] = useState(false)
 
-    // const [usersList,setUsersList] = useState()
+
     const [currentScroll, setCurrentScroll] = useState()
 
 
@@ -94,7 +101,7 @@ const SampleUsers = (props) => {
 
     const [linkUser, setLinkUser] = useState(false)
 
-    // filterlangan newStudents
+
     const [active, setActive] = useState(0)
 
     const [width, setWidth] = useState(0)
@@ -129,69 +136,15 @@ const SampleUsers = (props) => {
 
     const scrollEvent = (e) => {
         setCurrentScroll(e.target.scrollTop)
+        console.log("ueraasdasdas")
     }
 
 
-    const multiPropsFilter = useMemo(() => {
-        const filterKeys = Object.keys(filters);
-
-        return users.filter(user => {
-            return filterKeys.every(key => {
-                if (!filters[key]?.activeFilters && filters[key]?.fromTo) {
-                    if (filters[key]?.fromTo.from && filters[key]?.fromTo.to) {
-                        return user[key] >= filters[key].fromTo.from && user[key] <= filters[key]?.fromTo.to
-                    }
-                    return true
-                }
-                if (!filters[key]?.activeFilters?.length) return true;
-                if (Array.isArray(user[key])) {
-                    return Array.isArray(filters[key]?.activeFilters) &&
-                        user[key].some(keyEle =>
-                            typeof keyEle === "string" &&
-                            filters[key].activeFilters.some(
-                                keyFil =>
-                                    typeof keyFil === "string" &&
-                                    keyFil.toLowerCase().includes(keyEle.toLowerCase())
-                            )
-                        );
-                }
 
 
-// Yoki string filtrlashda:
-                if (typeof filters[key]?.activeFilters === "string") {
-                    if (typeof user[key] === "number") {
-                        return +filters[key]?.activeFilters === +user[key];
-                    }
-                    return (user[key] || "").toLowerCase?.() === filters[key]?.activeFilters.toLowerCase?.();
-                }
-                // if (typeof filters[key]?.activeFilters === "string") {
-                //     if (typeof user[key] === "number") {
-                //         return +filters[key]?.activeFilters === +user[key]
-                //     }
-                //     return filters[key]?.activeFilters === user[key]
-                // }
-                return filters[key]?.activeFilters?.includes(user[key]);
-            });
-        });
-    }, [filters, users]);
 
 
-    const searchedUsers = useMemo(() => {
-        const filteredHeroes = multiPropsFilter.slice()
-        setCurrentPage(1)
-        return filteredHeroes?.filter(item =>
-            item.name?.toLowerCase().includes(search.toLowerCase()) ||
-            item.surname?.toLowerCase().includes(search.toLowerCase()) ||
-            item.username?.toLowerCase().includes(search.toLowerCase())
-        )
-    }, [multiPropsFilter, search])
 
-
-    const currentTableData = useMemo(() => {
-        const firstPageIndex = (currentPage - 1) * PageSize;
-        const lastPageIndex = firstPageIndex + PageSize;
-        return searchedUsers.slice(firstPageIndex, lastPageIndex);
-    }, [PageSize, currentPage, searchedUsers]);
 
 
     const clazzBtnFilter = activeOthers ? "funcButtons__btn funcButtons__btn-active" : "funcButtons__btn "
@@ -242,7 +195,6 @@ const SampleUsers = (props) => {
     // }
 
     const [currentLocation, setCurrentLocation] = useState(false)
-
     const location = useLocation()
 
     useEffect(() => {
@@ -252,16 +204,18 @@ const SampleUsers = (props) => {
     }, [location])
 
     useEffect(() => {
-        if (location !== currentLocation) {
+        // if (location !== currentLocation) {
             setTimeout(() => {
                 if (sectionRef.current?.scrollTop) {
                     sectionRef.current.scrollTop = currentScroll
                 }
             }, 500)
-        }
+        // }
     }, [location])
 
 
+    const refScroll = React.useRef(null);
+    useScrollCache("chat-scroll", refScroll.current || undefined);
     return (
         <>
             <Routes>
@@ -326,6 +280,7 @@ const SampleUsers = (props) => {
 
                             <Filters key={3} filterRef={filterRef} filters={filters}
                                      heightOtherFilters={heightOtherFilters} activeOthers={activeOthers}/>
+
                         </header>
                         <div className="links">
                             {
@@ -356,27 +311,23 @@ const SampleUsers = (props) => {
                             }
                         </div>
                         <main className="section__main">
-                            <UsersTable
-                                fetchUsersStatus={fetchUsersStatus}
-                                funcsSlice={funcsSlice}
-                                activeRowsInTable={activeRowsInTable}
-                                users={currentTableData}
-                                pageName={pageName}
-                                checkedUsers={checkedUsers}
-                                setLinkUser={setLinkUser}
-                                cache={true}
-                            />
-                            <Pagination
-                                className="pagination-bar"
-                                currentPage={currentPage}
-                                totalCount={searchedUsers.length}
-                                pageSize={PageSize}
-                                onPageChange={page => {
-                                    setCurrentPage(page)
-                                    if (funcsSlice.setPage) {
-                                        dispatch(funcsSlice?.setPage({page}))
-                                    }
-                                }}
+                            <div style={{height: "52vh" , overflow: "auto"}} ref={refScroll}>
+                                <UsersTable
+                                    fetchUsersStatus={fetchUsersStatus}
+                                    funcsSlice={funcsSlice}
+                                    activeRowsInTable={activeRowsInTable}
+                                    users={users}
+                                    pageName={pageName}
+                                    checkedUsers={checkedUsers}
+                                    setLinkUser={setLinkUser}
+                                    cache={true}
+                                />
+                            </div>
+                             <ExtraPagination
+                                totalCount={totalCount?.total}
+                                onPageChange={onPageChange}
+                                currentPage={currentPage2}
+                                pageSize={pageSize}
                             />
                         </main>
 

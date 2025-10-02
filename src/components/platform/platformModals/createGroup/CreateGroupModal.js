@@ -136,7 +136,7 @@ const CreateGroupModal = memo( ({btnName,activeModal,setMsg,setTypeMsg,setActive
 
         dispatch(deleteCheckedStudents({checkedStudents}))
         
-        request(`${BackUrl}create_group`,"POST",JSON.stringify(data),headers())
+        request(`${BackUrl}create_group/create_group`,"POST",JSON.stringify(data),headers())
             .then( () => {
                 changeActive(btnName)
                 dispatch(deleteCheckedStudents({checkedStudents}))

@@ -1,3 +1,4 @@
+
 import SampleGroups from "components/platform/platformSamples/sampleGroups/SampleGroups";
 import React, {useEffect, useMemo} from 'react';
 
@@ -22,9 +23,11 @@ const PlatformGroupsToAdmins = () => {
     const {location,role} = useSelector(state => state.me)
 
     const dispatch = useDispatch()
+    const {currentFilters} = useSelector(state => state.currentFilterSlice)
 
+    console.log(currentFilters ,"currentFilters")
     useEffect(()=> {
-        dispatch(fetchGroups(locationId))
+        dispatch(fetchGroups({locationId  , currentFilters}))
         dispatch(fetchDataToChange())
         const newData = {
             name: "groups",
@@ -32,7 +35,7 @@ const PlatformGroupsToAdmins = () => {
         }
         dispatch(fetchFilters(newData))
         dispatch(setSelectedLocation({id:locationId}))
-    },[dispatch, locationId])
+    },[dispatch, locationId , currentFilters])
 
 
     const navigate = useNavigate()

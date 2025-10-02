@@ -66,14 +66,14 @@ const Advantages = () => {
             text: data.advantageText
         }
 
-        request(`${BackUrl}change_advantage/${changedItem?.id}`, "POST", JSON.stringify(res), headers())
+        request(`${BackUrl}home_page/change_advantage/${changedItem?.id}`, "POST", JSON.stringify(res), headers())
             .then(res => {
                 setChangeStatus(false)
                 dispatch(changeAdvantages(res?.advantage))
             })
             .catch(err => console.log(err))
         // formData.append("file", changeImage)
-        // request(`${BackUrl}advantage_img/${changedItem?.id}`, "POST", formData, {"Authorization": "Bearer " + token})
+        // request(`${BackUrl}home_page/advantage_img/${changedItem?.id}`, "POST", formData, {"Authorization": "Bearer " + token})
         //     .then(res => {
         //         setChangeStatus(false)
         //

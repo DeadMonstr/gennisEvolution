@@ -16,12 +16,14 @@ import {fetchGroups} from "slices/groupsSlice";
 import BackButton from "../../../../components/platform/platformUI/backButton/backButton";
 import {setMessage} from "slices/messageSlice";
 import ConfimReason from "components/platform/platformModals/confirmReason/confimReason";
+import {fetchTeachers, fetchTeachersByLocationWithoutPagination} from "../../../../slices/teachersSlice";
 
 const ChangeGroupStudents = () => {
 
-    const {locationId, groupId} = useParams()
+    const { groupId} = useParams()
 
     const {data} = useSelector(state => state.group)
+    const {teachers} = useSelector(state => state.teachers)
 
     const [deleteStId, setDeleteStId] = useState()
     const [activeModal, setActiveModal] = useState(false)
@@ -33,18 +35,23 @@ const ChangeGroupStudents = () => {
 
     const {request} = useHttp()
 
+    const locationId = localStorage.getItem("selectedLocation")
+
+
+    useEffect(() => {
+        dispatch(fetchTeachersByLocationWithoutPagination({locationId}))
+    }, [])
+
     useEffect(() => {
         dispatch(fetchGroup(groupId))
     }, [groupId])
 
-    useEffect(() => {
-        console.log("route naxxuy")
-        request(`${BackUrl}filtered_groups/${groupId}`, "GET", null, headers())
-            .then(res => {
-                console.log(res,"keldi naxxuy")
-                setGroups(res.groups)
-            })
-    }, [groupId])
+    // useEffect(() => {
+    //     request(`${BackUrl}create_group/filtered_groups/${groupId}`, "GET", null, headers())
+    //         .then(res => {
+    //             setGroups(res.groups)
+    //         })
+    // }, [groupId])
 
 
     const activeItems = useMemo(() => {
@@ -76,6 +83,13 @@ const ChangeGroupStudents = () => {
 
     const dispatch = useDispatch()
 
+    const getTeacherGroups = (id) => {
+        request(`${BackUrl}group/groups_by_teacher/${id}`, "GET", null, headers())
+            .then(res => {
+                setGroups(res.info)
+            })
+    }
+
 
     const getConfirm = (data) => {
         const newData = {
@@ -84,7 +98,7 @@ const ChangeGroupStudents = () => {
             student_id: deleteStId
         }
 
-        request(`${BackUrl}delete_student`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}create_group/delete_student`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -169,17 +183,28 @@ const ChangeGroupStudents = () => {
                         <h1>Gruppaga qoshish</h1>
 
                         <Select
-                            name={'groups'}
-                            title={"Groups"}
-                            options={groups}
-                            onChangeOption={setSelectedGroup}
-                            group={true}
+                            name={'teachers'}
+                            title={"Teachers"}
+                            options={teachers}
+                            onChangeOption={getTeacherGroups}
+                            teachers={true}
+                            keyValue={"teacherID"}
                         />
 
+                        {
+                            !!groups.length && <Select
+                                name={'groups'}
+                                title={"Groups"}
+                                options={groups}
+                                onChangeOption={setSelectedGroup}
+                                group={true}
+                            />
+                        }
 
                         <input
                             className="input-submit"
                             type="submit"
+                            disabled={groups.length === 0 || selectedGroup === null}
                         />
                     </form>
                 </div>

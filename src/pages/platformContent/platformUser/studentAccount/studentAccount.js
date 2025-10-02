@@ -53,7 +53,7 @@ const StudentAccount = () => {
     const onDelete = (data) => {
         dispatch(deletePayment({data}))
         const {id} = data
-        request(`${BackUrl}delete_payment/${id}`, "POST", JSON.stringify(data),headers())
+        request(`${BackUrl}account/delete_payment/${id}`, "POST", JSON.stringify(data),headers())
             .then( res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -73,7 +73,7 @@ const StudentAccount = () => {
     }
 
     const changePaymentTypeData = (id,value) => {
-        request(`${BackUrl}change_teacher_salary/${id}/${value}/${studentId}`,"GET",null,headers())
+        request(`${BackUrl}account/change_teacher_salary/${id}/${value}/${studentId}`,"GET",null,headers())
             .then( res => {
                 if (res.success) {
                     dispatch(setMessage({

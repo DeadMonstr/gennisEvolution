@@ -18,6 +18,7 @@ import Select from "components/platform/platformUI/select";
 import {setSelectedLocation} from "slices/meSlice";
 import {useAuth} from "hooks/useAuth";
 
+
 const SampleUsers = React.lazy(() => import("components/platform/platformSamples/sampleUsers/SampleUsers") )
 
 
@@ -25,19 +26,22 @@ const PlatformGroupDeletedStudents = () => {
 
     let {locationId} = useParams()
 
-    const {students,btns,fetchDeletedStudentStatus} = useSelector(state => state.deletedGroupStudents)
-    const {filters} = useSelector(state => state.filters)
+    const {students,btns,fetchDeletedStudentStatus , totalCount} = useSelector(state => state.deletedGroupStudents)
+    const {filters , activeFilters} = useSelector(state => state.filters)
+
     const {location,role} = useSelector(state => state.me)
     const {isCheckedPassword} = useSelector(state => state.me)
     const {dataToChange} = useSelector(state => state.dataToChange)
-
+    const {currentFilters} = useSelector(state => state.currentFilterSlice)
 
     const [activeCheckPassword,setActiveCheckPassword] = useState(false)
     const [activeModal,setActiveModal] = useState(false)
     const [deleteStId,setDeleteStId] = useState()
     const [activeOption,setActiveOption] = useState("Hammasi")
-
+    const [currentPage, setCurrentPage] = useState(1)
+    const pageSize = useMemo(() => 50, [])
     const dispatch = useDispatch()
+    const [search , setSearch] = useState("")
 
     // const options = [
     //     {
@@ -79,24 +83,27 @@ const PlatformGroupDeletedStudents = () => {
         dispatch(fetchDataToChange())
     },[])
 
+    console.log(currentFilters , "activeFilters")
     useEffect(()=> {
         if (activeOption) {
             const data = {
                 type: activeOption,
-                locationId
+                locationId,
+                currentPage , pageSize,
+                search
             }
-            dispatch(fetchDeletedStudent(data))
+            dispatch(fetchDeletedStudent({data , activeFilters , currentFilters}))
         } else {
             const data = {
                 type: "O'qituvchi yoqmadi",
-                locationId
+                locationId,currentPage , pageSize
             }
-            dispatch(fetchDeletedStudent(data))
+            dispatch(fetchDeletedStudent({data , activeFilters , currentFilters}))
         }
 
         dispatch(setSelectedLocation({id:locationId}))
 
-    },[activeOption,dispatch, locationId])
+    },[activeOption,dispatch, locationId , currentPage , search , activeFilters , currentFilters])
 
 
 
@@ -118,7 +125,7 @@ const PlatformGroupDeletedStudents = () => {
 
 
     const activeItems = useMemo(() => {
-        if (activeOption === "Boshqa") {
+        if (activeOption === "Hammasi") {
             return {
                 name: true,
                 surname : true,
@@ -199,8 +206,22 @@ const PlatformGroupDeletedStudents = () => {
                 isChangePage={true}
                 options={dataToChange?.group_reasons}
                 selectedOption={activeOption}
+                status={false}
+                totalCount={totalCount}
+                onPageChange={setCurrentPage}
+                currentPage2={currentPage}
+                pageSize={pageSize}
+                setSearch={setSearch}
+                search={search}
             />
-
+            {/*<div style={{paddingLeft: "3rem"}}>*/}
+            {/*    <ExtraPagination*/}
+            {/*        totalCount={totalCount?.total}*/}
+            {/*        onPageChange={setCurrentPage}*/}
+            {/*        currentPage={currentPage}*/}
+            {/*        pageSize={pageSize}*/}
+            {/*    />*/}
+            {/*</div>*/}
 
             <Modal activeModal={activeCheckPassword} setActiveModal={() => setActiveCheckPassword(false)}>
                 <CheckPassword/>

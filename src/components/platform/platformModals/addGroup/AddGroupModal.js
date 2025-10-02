@@ -1,4 +1,3 @@
-
 import Modal from "components/platform/platformUI/modal";
 import Select from "components/platform/platformUI/select";
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
@@ -19,33 +18,37 @@ import classNames from "classnames";
 import {BackUrl, headers} from "constants/global";
 import PlatformMessage from "components/platform/platformMessage";
 import {useNavigate} from "react-router-dom";
+import {
+    fetchTeachers,
+    fetchTeachersByLocation,
+    fetchTeachersByLocationWithoutPagination
+} from "../../../../slices/teachersSlice";
 
-const AddGroupModal = ({btnName,activeModal,setMsg,setTypeMsg,setActiveMessage,locationId}) => {
+const AddGroupModal = ({btnName, activeModal, setMsg, setTypeMsg, setActiveMessage}) => {
 
     // const {groups} = useSelector(state => state.groups)
-    const {createGroupTools,checkedUsers} = useSelector(state => state.newStudents)
+    const {createGroupTools, checkedUsers} = useSelector(state => state.newStudents)
+    const {teachers} = useSelector(state => state.teachers)
 
-   const [groups,setGroups] = useState([])
+    const [groups, setGroups] = useState([])
 
     const dispatch = useDispatch()
+
+    const locationId = localStorage.getItem("selectedLocation")
 
     useEffect(() => {
         dispatch(fetchGroups(locationId))
         dispatch(fetchCreateGroupTools())
-    },[dispatch, locationId])
+        dispatch(fetchTeachersByLocationWithoutPagination({locationId}))
+    }, [dispatch, locationId])
 
-    useEffect(() => {
-        request(`${BackUrl}filtered_groups2/${locationId}`,"GET",null,headers())
-            .then(res => {
-                setGroups(res.groups)
-            })
-    },[locationId])
 
-    const [subject,setSubject] = useState(null)
-    const [filteredGroups,setFilteredGroups] = useState([])
-    const [checkedStudents,setCheckedStudents] = useState()
-    const [selectedGroup,setSelectedGroup] = useState(null)
-    const [isSubmit,setIsSubmit] = useState(false)
+
+    const [subject, setSubject] = useState(null)
+    const [filteredGroups, setFilteredGroups] = useState([])
+    const [checkedStudents, setCheckedStudents] = useState()
+    const [selectedGroup, setSelectedGroup] = useState(null)
+    const [isSubmit, setIsSubmit] = useState(false)
 
     useEffect(() => {
         if (subject) {
@@ -55,11 +58,11 @@ const AddGroupModal = ({btnName,activeModal,setMsg,setTypeMsg,setActiveMessage,l
         }
 
 
-    },[subject, groups])
+    }, [subject, groups])
 
     useEffect(() => {
         setCheckedStudents(checkedUsers)
-    },[checkedUsers])
+    }, [checkedUsers])
 
 
     const onChecked = (id) => {
@@ -69,16 +72,22 @@ const AddGroupModal = ({btnName,activeModal,setMsg,setTypeMsg,setActiveMessage,l
         dispatch(setActiveAllBtn())
     }
 
+    const getTeacherGroups = (id) => {
+        request(`${BackUrl}group/groups_by_teacher/${id}`, "GET", null, headers())
+            .then(res => {
+                setGroups(res.info)
+            })
+    }
 
 
-    const renderCheckedStudents = useCallback( () => {
+    const renderCheckedStudents = useCallback(() => {
         if (checkedStudents?.length !== 0) {
             return checkedStudents?.map(st => {
 
                 return (
                     <div
-                        className={classNames("CheckedStudent",{
-                            selectedSubject: st.subjects.some( item =>  item.toLowerCase() === subject?.toLowerCase())
+                        className={classNames("CheckedStudent", {
+                            selectedSubject: st.subjects.some(item => item.toLowerCase() === subject?.toLowerCase())
                         })}
                     >
                         <h2>{st.name}</h2>
@@ -99,7 +108,7 @@ const AddGroupModal = ({btnName,activeModal,setMsg,setTypeMsg,setActiveMessage,l
             )
         }
 
-    },[checkedStudents, subject])
+    }, [checkedStudents, subject])
 
 
     const {request} = useHttp()
@@ -131,21 +140,21 @@ const AddGroupModal = ({btnName,activeModal,setMsg,setTypeMsg,setActiveMessage,l
     // }
 
     const navigate = useNavigate()
-    const onSubmit =  (e) => {
+    const onSubmit = (e) => {
         e.preventDefault()
         navigate(`../../addGroup/${locationId}/${selectedGroup}`)
 
     }
 
     const changeActive = (name) => {
-        dispatch(setActiveBtn({name:name}))
+        dispatch(setActiveBtn({name: name}))
     }
 
     useEffect(() => {
         if (subject && checkedStudents?.length) {
             // eslint-disable-next-line array-callback-return
-            const isTrueEvery = checkedStudents.every( item => {
-                return item.subjects.some( item =>  item.toLowerCase() === subject?.toLowerCase())
+            const isTrueEvery = checkedStudents.every(item => {
+                return item.subjects.some(item => item.toLowerCase() === subject?.toLowerCase())
             })
 
             if (isTrueEvery) {
@@ -158,7 +167,7 @@ const AddGroupModal = ({btnName,activeModal,setMsg,setTypeMsg,setActiveMessage,l
                 setTypeMsg("error")
             }
         }
-    },[checkedStudents, setActiveMessage, setMsg, setTypeMsg, subject])
+    }, [checkedStudents, setActiveMessage, setMsg, setTypeMsg, subject])
 
 
     const renderedCheckedSt = renderCheckedStudents()
@@ -205,12 +214,22 @@ const AddGroupModal = ({btnName,activeModal,setMsg,setTypeMsg,setActiveMessage,l
                     <h1>Gruppaga qoshish</h1>
 
                     <Select
+                        name={'teachers'}
+                        title={"Teachers"}
+                        options={teachers}
+                        onChangeOption={getTeacherGroups}
+                        teachers={true}
+                        keyValue={"teacherID"}
+                    />
+
+                    <Select
                         name={'groups'}
                         title={"Groups"}
                         options={filteredGroups}
                         onChangeOption={setSelectedGroup}
                         group={true}
                     />
+
 
 
                     <input

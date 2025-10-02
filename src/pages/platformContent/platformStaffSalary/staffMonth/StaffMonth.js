@@ -62,7 +62,7 @@ const StaffMonth = () => {
     const deleteSalary = (data) => {
         const {id} = changingData
 
-        request(`${BackUrl}delete_camp_staff_salary/${id}`, "DELETE", JSON.stringify(data),headers())
+        request(`${BackUrl}account/delete_camp_staff_salary/${id}`, "DELETE", JSON.stringify(data),headers())
             .then(res => {
                 if (res.success) {
                     const data = {
@@ -80,7 +80,7 @@ const StaffMonth = () => {
     const changePaymentTypeData = (id, value) => {
 
 
-        request(`${BackUrl}update_camp_staff_salary/${id}/${value}`, "POST", null, headers())
+        request(`${BackUrl}account/update_camp_staff_salary/${id}/${value}`, "POST", null, headers())
             .then(res => {
                 if (res.success) {
                     const data = {
@@ -300,7 +300,7 @@ const PaymentModal = ({monthId, salary, setActiveChangeModal, userId}) => {
         }
 
 
-        request(`${BackUrl}/camp_staff_salary/${monthId}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/camp_staff_salary/${monthId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     reset()

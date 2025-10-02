@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {
     changePaymentType,
     deleteAccDataItem,
-    fetchAccData, fetchDeletedAccData, onAddItem, onChangeAccountingBtns, onChangeAccountingPage,
+    fetchAccData, onAddItem, onChangeAccountingBtns, onChangeAccountingPage,
     onChangeFetchedDataType
 } from "../../../../slices/accountingSlice";
 import {fetchFilters} from "../../../../slices/filtersSlice";
@@ -10,7 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useHttp} from "../../../../hooks/http.hook";
 import SampleAccounting from "../../../../components/platform/platformSamples/sampleAccaunting/SampleAccounting";
 import AccountingTable from "../../../../components/platform/platformUI/tables/accountingTable";
-import Pagination from "../../../../components/platform/platformUI/pagination";
+import Pagination, {ExtraPagination} from "../../../../components/platform/platformUI/pagination";
 import {getUIPageByPath, setPagePosition} from "../../../../slices/uiSlice";
 import useFilteredData from "../useFilteredData";
 import {useLocation} from "react-router-dom";
@@ -33,7 +33,7 @@ const modal = {
 }
 
 const Invistitsiya = ({locationId, path}) => {
-    const {data, fetchAccDataStatus, fetchedDataType, btns, location} = useSelector(state => state.accounting)
+    const {data, fetchAccDataStatus, fetchedDataType, btns, location ,totalCount} = useSelector(state => state.accounting)
     const {pathname} = useLocation()
     const oldPage = useSelector((state) => getUIPageByPath(state, pathname))
     const {isCheckedPassword} = useSelector(state => state.me)
@@ -50,31 +50,41 @@ const Invistitsiya = ({locationId, path}) => {
     const [radioSelect, setRadioSelect] = useState(null)
     const {dataToChange} = useSelector(state => state.dataToChange)
 
-
+    const {activeFilters} = useSelector(state => state.filters)
 
     const {register , handleSubmit , setValue } = useForm()
 
 
     useEffect(() => {
         if (fetchedDataType !== path || !data.data.length || locationId !== location) {
-            const data = {
-                locationId,
-                type: "investments"
-            }
-
-            dispatch(fetchAccData(data))
-            const newData = {
-                name: "accounting_payment",
-                location: locationId
-            }
-            dispatch(fetchFilters(newData))
+            // dispatch(fetchAccData(data))
             dispatch(onChangeFetchedDataType({type: path}))
         }
         dispatch(fetchDataToChange(locationId))
     }, [locationId])
 
 
+    useEffect(() => {
+        let data = {
+            locationId,
+            type: "investments"
+        }
+        for (let item of btns) {
+            if (item.active) {
+                data = {
+                    ...data,
+                    [item.name]: item.active
+                }
+            }
+        }
 
+        const newData = {
+            name: "capital_tools",
+            location: locationId,
+            type: data.archive ? "archive" : ""
+        }
+        dispatch(fetchFilters(newData))
+    }, [btns])
 
     useEffect(() => {
         dispatch(onChangeAccountingPage({value: path}))
@@ -94,21 +104,20 @@ const Invistitsiya = ({locationId, path}) => {
         }
         setIsDeleted(data.deleted)
 
-        if (data.deleted) {
+        const route = "investments/"
 
-            if (data.archive) {
-                dispatch(fetchDeletedAccData({...data, isArchive: true}))
-            } else {
-                getArchive()
-                dispatch(fetchDeletedAccData(data))
-            }
-        } else if (data.archive) {
-            getArchive()
-            dispatch(fetchAccData({...data, isArchive: true}))
-        } else if (isChangedData) {
-            dispatch(fetchAccData(data))
-        }
-    }, [btns, isChangedData])
+
+        dispatch(fetchAccData({
+            data: data,
+            isArchive: !!data.archive,
+            PageSize,
+            currentPage,
+            activeFilters,
+            locationId,
+            route,
+            deleted: data.deleted
+        }));
+    }, [btns, isChangedData , activeFilters , currentPage])
 
 
     useEffect(() => {
@@ -169,7 +178,7 @@ const Invistitsiya = ({locationId, path}) => {
             payment_type_id: Number(radioSelect),
             // location_id: locationId
         }
-        request(`${BackUrl}investment/${locationId}` , "POST" , JSON.stringify(res) , headers())
+        request(`${BackUrl}account/investment/${locationId}` , "POST" , JSON.stringify(res) , headers())
             .then(res => {
                 console.log(res)
                 dispatch(setMessage({
@@ -208,7 +217,6 @@ const Invistitsiya = ({locationId, path}) => {
 
         for (let item of btns) {
             if (item.page && item.page === path ) {
-                console.log(item.page , "nmame")
                 if (item.name === "investments") {
 
                     newBtns.push({
@@ -246,7 +254,7 @@ const Invistitsiya = ({locationId, path}) => {
         const {id} = data
 
 
-        request(`${BackUrl}delete_investment/${id}`, "DELETE", JSON.stringify(data), headers())
+        request(`${BackUrl}account/delete_investment/${id}`, "DELETE", JSON.stringify(data), headers())
             .then(res => {
                 dispatch(deleteAccDataItem({id: id}))
                     dispatch(setMessage({
@@ -337,21 +345,27 @@ const Invistitsiya = ({locationId, path}) => {
                 <AccountingTable
                     sum={sum}
                     // cache={true}
-                    typeOfMoney={data.typeOfMoney}
+                    typeOfMoney={data?.typeOfMoney}
                     fetchUsersStatus={fetchAccDataStatus}
                     funcSlice={funcsSlice}
                     activeRowsInTable={activeItems()}
                     users={filteredData}
                 />
 
-                <Pagination
-                    className="pagination-bar"
-                    currentPage={currentPage}
-                    totalCount={searchedData.length}
-                    pageSize={PageSize}
-                    onPageChange={page => onChangedPage(page)}
-                />
+                {/*<Pagination*/}
+                {/*    className="pagination-bar"*/}
+                {/*    currentPage={currentPage}*/}
+                {/*    totalCount={searchedData.length}*/}
+                {/*    pageSize={PageSize}*/}
+                {/*    onPageChange={page => onChangedPage(page)}*/}
+                {/*/>*/}
 
+                <ExtraPagination
+                    pageSize={PageSize}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                    totalCount={totalCount?.total}
+                />
                 <Modal activeModal={activeCheckPassword} setActiveModal={() => setActiveCheckPassword(false)}>
                     <CheckPassword/>
                 </Modal>
@@ -445,7 +459,7 @@ const CreatCapital = ({locationId, setMsg, setTypeMsg, setActiveMessage, setActi
         }
 
 
-        request(`${BackUrl}investment/${locationId}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/investment/${locationId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                     reset()
                     dispatch(setMessage({

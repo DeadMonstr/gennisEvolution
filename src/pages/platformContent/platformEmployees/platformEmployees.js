@@ -26,7 +26,7 @@ const PlatformEmployees = () => {
 
     let {locationId} = useParams()
 
-    const {employees,btns,fetchEmployeesStatus} = useSelector(state => state.employees)
+    const {employees,btns,fetchEmployeesStatus , totalCount} = useSelector(state => state.employees)
     const {filters} = useSelector(state => state.filters)
     const {location,role} = useSelector(state => state.me)
     const {isCheckedPassword} = useSelector(state => state.me)
@@ -37,13 +37,30 @@ const PlatformEmployees = () => {
     const [activeModalName, setActiveModalName] = useState(false)
     const [deleteStId, setDeleteStId] = useState()
     const [isConfirm, setIsConfirm] = useState(false)
+    const {currentFilters} = useSelector(state => state.currentFilterSlice)
+
+
+    const [currentPage, setCurrentPage] = useState(1)
+    const pageSize = useMemo(() => 50, [])
+
+    const [active , setActive] = useState(false)
+    const [search , setSearch] = useState("")
 
     const dispatch = useDispatch()
 
 
+    useEffect(() => {
+        if (active === true) {
+            dispatch(fetchDeletedEmployees({locationId , pageSize , currentPage , search , currentFilters}))
+        } else {
+            dispatch(fetchEmployees({locationId , pageSize , currentPage  ,search , currentFilters}))
+        }
+    } , [currentPage , active , search , locationId  ,currentFilters])
+
+
     useEffect(()=> {
 
-        dispatch(fetchEmployees(locationId))
+        // dispatch(fetchEmployees({locationId , pageSize , currentPage}))
         const newData = {
             name: "employees",
             location: locationId
@@ -96,7 +113,7 @@ const PlatformEmployees = () => {
             ...data,
             user_id: deleteStId
         }
-        request(`${BackUrl}delete_staff/${deleteStId}`, "DELETE", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/delete_staff/${deleteStId}`, "DELETE", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -120,12 +137,8 @@ const PlatformEmployees = () => {
     }
 
     const getDeleted = (isActive) => {
-
-        if (isActive) {
-            dispatch(fetchDeletedEmployees(locationId))
-        } else {
-            dispatch(fetchEmployees(locationId))
-        }
+        setActive(isActive)
+        setCurrentPage(1)
     }
 
     const funcsSlice = useMemo(() => {
@@ -145,6 +158,14 @@ const PlatformEmployees = () => {
                 users={employees}
                 filters={filters}
                 btns={btns}
+                totalCount={totalCount}
+                pageSize={pageSize}
+                status={false}
+                onPageChange={setCurrentPage}
+                currentPage2={currentPage}
+                setSearch={setSearch}
+                search={search}
+
             />
             <Modal activeModal={activeCheckPassword} setActiveModal={() => setActiveCheckPassword(false)}>
                 <CheckPassword/>

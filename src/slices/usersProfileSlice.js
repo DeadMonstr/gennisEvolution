@@ -101,7 +101,7 @@ export const fetchUserData = createAsyncThunk(
     async (data) => {
         const {id} = data
         const {request} = useHttp();
-        return await request(`${BackUrl}profile/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}base/profile/${id}`,"GET",null,headers())
     }
 )
 
@@ -109,14 +109,14 @@ export const fetchPaymentOptions = createAsyncThunk(
     'userProfileSlice/fetchPaymentOptions',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_payment/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}account/get_payment/${id}`,"GET",null,headers())
     }
 )
 export const fetchHistoryData = createAsyncThunk(
     'userProfileSlice/fetchHistoryData',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}student_history2/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}student/student_history2/${id}`,"GET",null,headers())
     }
 )
 

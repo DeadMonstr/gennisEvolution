@@ -126,7 +126,7 @@ const UserContent = ({userId}) => {
     const {request} = useHttp()
     const getConfirmDelete = (name) => {
         if (name === "yes") {
-            request(`${BackUrl}delete_group/`,"GET",null, headers())
+            request(`${BackUrl}group_change/delete_group/`,"GET",null, headers())
                 .then(res => console.log(res))
         }
         setActiveChangeModal(false)
@@ -436,7 +436,7 @@ const StudentPaymentChange = ({userId,setActiveChangeModal}) => {
             reason
         }
 
-        request(`${BackUrl}extend_att_date/${userId}`, "POST", JSON.stringify(data),headers())
+        request(`${BackUrl}base/extend_att_date/${userId}`, "POST", JSON.stringify(data),headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -495,7 +495,7 @@ const StudentPaymentReason = ({userId,setActiveChangeModal}) => {
         }
 
 
-        request(`${BackUrl}debt_reason/${userId}`, "POST", JSON.stringify(data),headers())
+        request(`${BackUrl}student/debt_reason/${userId}`, "POST", JSON.stringify(data),headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({

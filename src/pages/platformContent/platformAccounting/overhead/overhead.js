@@ -18,19 +18,27 @@ import useFilteredData from "pages/platformContent/platformAccounting/useFiltere
 import {setMessage} from "slices/messageSlice";
 import Button from "components/platform/platformUI/button";
 import AccountingTable from "components/platform/platformUI/tables/accountingTable";
-import Pagination from "components/platform/platformUI/pagination";
+import Pagination, {ExtraPagination} from "components/platform/platformUI/pagination";
 import {useForm} from "react-hook-form";
 import {fetchDataToChange} from "slices/dataToChangeSlice";
 import Select from "components/platform/platformUI/select";
 import Modal from "components/platform/platformUI/modal";
 import CheckPassword from "components/platform/platformModals/checkPassword/CheckPassword";
+import filters from "components/platform/platformUI/filters";
 
 const SampleAccounting = React.lazy(() => import("components/platform/platformSamples/sampleAccaunting/SampleAccounting"))
 
 
 const Overhead = ({locationId, path}) => {
 
-    const {data, fetchAccDataStatus, fetchedDataType, btns, location} = useSelector(state => state.accounting)
+    const {
+        data,
+        fetchAccDataStatus,
+        fetchedDataType,
+        btns,
+        location,
+        totalCount
+    } = useSelector(state => state.accounting)
     const [isChangedData, setIsChangedData] = useState(false)
     const [isDeleted, setIsDeleted] = useState(false)
 
@@ -44,25 +52,32 @@ const Overhead = ({locationId, path}) => {
 
     const oldPage = useSelector((state) => getUIPageByPath(state, pathname))
     const [currentPage, setCurrentPage] = useState(1);
-    let PageSize = useMemo(() => 30, [])
+    let PageSize = useMemo(() => 50, [])
 
     const dispatch = useDispatch()
     const {request} = useHttp()
 
-    const [filteredData, searchedData] = useFilteredData(data.data, currentPage, PageSize)
+    const {activeFilters} = useSelector(state => state.filters)
 
     useEffect(() => {
+        setCurrentPage(1);
+    }, [isDeleted, locationId, path,]);
+    useEffect(() => {
         if (fetchedDataType !== path || !data.data.length || locationId !== location) {
-            const data = {
-                locationId,
-                type: "overhead"
-            }
 
-            dispatch(fetchAccData(data))
+
+
+            // if (isDeleted) {
+            //     dispatch(fetchDeletedAccData({data: data, PageSize, currentPage}));
+            // } else {
+            //     dispatch(fetchAccData({data: data, PageSize, currentPage}));
+            // }
             const newData = {
                 name: "accounting_payment",
-                location: locationId
+                location: locationId,
             }
+
+
             dispatch(fetchFilters(newData))
             dispatch(onChangeFetchedDataType({type: path}))
         }
@@ -75,11 +90,37 @@ const Overhead = ({locationId, path}) => {
 
 
     useEffect(() => {
+
         let data = {
             locationId,
             type: "overhead"
         }
+        for (let item of btns) {
+            if (item.active) {
+                data = {
+                    ...data,
+                    [item.name]: item.active
+                }
+            }
+        }
 
+        const newData = {
+            name: "accounting_payment",
+            location: locationId,
+            type: data.archive ? "archive" : ""
+        }
+        dispatch(fetchFilters(newData))
+    }, [btns])
+
+
+    useEffect(() => {
+
+
+
+        let data = {
+            locationId,
+            type: "overhead"
+        }
         for (let item of btns) {
             if (item.active) {
                 data = {
@@ -90,21 +131,32 @@ const Overhead = ({locationId, path}) => {
         }
         setIsDeleted(data.deleted)
 
-        if (data.deleted) {
+        // const newData = {
+        //     name: "accounting_payment",
+        //     location: locationId,
+        //     type: data.archive ? "archive" : ""
+        // }
+        //
+        //
+        // dispatch(fetchFilters(newData))
 
-            if (data.archive) {
-                getArchive()
-                dispatch(fetchDeletedAccData({...data, isArchive: true}))
-            } else {
-                dispatch(fetchDeletedAccData(data))
-            }
-        } else if (data.archive) {
-            getArchive()
-            dispatch(fetchAccData({...data, isArchive: true}))
-        } else if (isChangedData) {
-            dispatch(fetchAccData(data))
-        }
-    }, [btns, isChangedData])
+        const route = "overhead/"
+
+            dispatch(fetchAccData({
+                data: data,
+                isArchive: !!data.archive,
+                PageSize,
+                currentPage,
+                activeFilters,
+                locationId,
+                route,
+                deleted: data.deleted
+            }));
+
+
+
+        dispatch(onChangeFetchedDataType({type: path}));
+    }, [btns, isChangedData , activeFilters , currentPage])
 
     useEffect(() => {
         if (oldPage) {
@@ -137,7 +189,7 @@ const Overhead = ({locationId, path}) => {
         const {id} = data
 
         dispatch(deleteAccDataItem({id: id}))
-        request(`${BackUrl}delete_overhead/${id}`, "POST", JSON.stringify(data), headers())
+        request(`${BackUrl}account/delete_overhead/${id}`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -149,7 +201,7 @@ const Overhead = ({locationId, path}) => {
                         locationId,
                         type: "overhead"
                     }
-                    dispatch(fetchAccData(data))
+                    dispatch(fetchAccData({data: data, PageSize, currentPage}));
                 } else {
                     dispatch(setMessage({
                         msg: "Serverda hatolik",
@@ -162,11 +214,10 @@ const Overhead = ({locationId, path}) => {
     }
 
 
-
     const changePaymentTypeData = (id, value, userId) => {
 
 
-        request(`${BackUrl}change_overhead/${id}/${value}`, "GET", null, headers())
+        request(`${BackUrl}account/change_overhead/${id}/${value}`, "GET", null, headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -278,32 +329,34 @@ const Overhead = ({locationId, path}) => {
     let summa = "price"
 
 
-    let sum = filteredData?.reduce((a, c) => {
+    let sum = data?.data?.reduce((a, c) => {
         return a + c[summa]
     }, 0);
 
+    console.log(activeFilters)
     return (
         <>
             <SampleAccounting
                 links={links}
             >
-                <AccountingTable
-                    sum={sum}
-                    // cache={true}
-                    typeOfMoney={data.typeOfMoney}
-                    fetchUsersStatus={fetchAccDataStatus}
-                    funcSlice={funcsSlice}
-                    activeRowsInTable={activeItems()}
-                    users={filteredData}
-                />
+                <div style={{height: "43vh", overflow: "auto"}}>
+                    <AccountingTable
+                        sum={sum}
+                        // cache={true}
+                        typeOfMoney={data.typeOfMoney}
+                        fetchUsersStatus={fetchAccDataStatus}
+                        funcSlice={funcsSlice}
+                        activeRowsInTable={activeItems()}
+                        users={data?.data}
+                    />
+                </div>
 
-
-                <Pagination
-                    className="pagination-bar"
-                    currentPage={currentPage}
-                    totalCount={searchedData.length}
+                <ExtraPagination
                     pageSize={PageSize}
-                    onPageChange={page => onChangedPage(page)}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                    totalCount={totalCount?.total}
+
                 />
 
 
@@ -316,6 +369,8 @@ const Overhead = ({locationId, path}) => {
                             <CreatOverhead
                                 setActiveChangeModal={setActiveChangeModal}
                                 locationId={locationId}
+                                currentPage={currentPage}
+                                pageSize={PageSize}
                             />
                         </Modal> : null
 
@@ -327,7 +382,15 @@ const Overhead = ({locationId, path}) => {
 };
 
 
-const CreatOverhead = ({locationId, setMsg, setTypeMsg, setActiveMessage, setActiveChangeModal}) => {
+const CreatOverhead = ({
+                           locationId,
+                           setMsg,
+                           setTypeMsg,
+                           setActiveMessage,
+                           setActiveChangeModal,
+                           currentPage,
+                           pageSize
+                       }) => {
     const {
         register,
         formState: {errors},
@@ -406,7 +469,7 @@ const CreatOverhead = ({locationId, setMsg, setTypeMsg, setActiveMessage, setAct
             }
         }
 
-        request(`${BackUrl}add_overhead/${locationId}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/add_overhead/${locationId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 if (res.success) {
                     reset()
@@ -420,7 +483,7 @@ const CreatOverhead = ({locationId, setMsg, setTypeMsg, setActiveMessage, setAct
                         locationId,
                         type: "overhead"
                     }
-                    dispatch(fetchAccData(data))
+                    dispatch(fetchAccData({data: data, PageSize: pageSize, currentPage}));
                 } else {
                     dispatch(setMessage({
                         msg: res.msg,
@@ -439,7 +502,7 @@ const CreatOverhead = ({locationId, setMsg, setTypeMsg, setActiveMessage, setAct
         }
     }, [data?.overhead_tools])
 
-    const communal = ["gaz", "svet", "suv", "arenda","boshqa"]
+    const communal = ["gaz", "svet", "suv", "arenda", "boshqa"]
 
     return (
         <div className="overhead">

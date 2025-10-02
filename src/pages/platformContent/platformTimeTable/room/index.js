@@ -21,7 +21,7 @@ const Index = () => {
 
 
     useEffect(() => {
-        request(`${BackUrl}room_time_table/${roomId}`,"GET",null,headers())
+        request(`${BackUrl}room/room_time_table/${roomId}`,"GET",null,headers())
             .then(res => {
                 if (days?.length === 0) {
                     setDays(res.week_days)

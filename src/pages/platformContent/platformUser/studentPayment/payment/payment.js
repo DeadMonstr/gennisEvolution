@@ -49,7 +49,7 @@ const Payment = () => {
         }
 
 
-        request(`${BackUrl}get_payment/${userId}`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/get_payment/${userId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
 
 

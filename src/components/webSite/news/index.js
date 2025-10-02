@@ -114,14 +114,14 @@ const News = () => {
         formData.append('res', JSON.stringify(res))
 
         if (addStatus) {
-            request(`${BackUrl}add_news`, "POST", formData, {"Authorization": "Bearer " + token})
+            request(`${BackUrl}home_page/add_news`, "POST", formData, {"Authorization": "Bearer " + token})
                 .then(res => {
                     dispatch(addNew(res?.new))
                     setAddStatus(!res.success)
                 })
                 .catch((err => console.log(err)))
         } else if (changeStatus) {
-            request(`${BackUrl}change_news/${changeItem.id}`, "PUT", formData, {"Authorization": "Bearer " + token})
+            request(`${BackUrl}home_page/change_news/${changeItem.id}`, "PUT", formData, {"Authorization": "Bearer " + token})
                 .then(res => {
                     dispatch(changeNew(res.news))
                     setChangeStatus(!res.success)

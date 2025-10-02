@@ -114,7 +114,7 @@ const OverheadAccount = ({data, locations}) => {
         // setActiveChangeModal(false)
         // dispatch(changePaymentType({id: id ,typePayment: value}))
 
-        request(`${BackUrl}change_account_overhead/${id}/${value}`, "POST", null, headers())
+        request(`${BackUrl}account/change_account_overhead/${id}/${value}`, "POST", null, headers())
             .then(res => {
                 dispatch(changePaymentTypeOverhead({id: id,data: res.data}))
                 dispatch(fetchAccountantBookKeepingTypesMoney())
@@ -130,7 +130,7 @@ const OverheadAccount = ({data, locations}) => {
         setActiveChangeModal(false)
 
 
-        request(`${BackUrl}delete_account_overhead/${changingData.id}`, "DELETE", JSON.stringify(data), headers())
+        request(`${BackUrl}account/delete_account_overhead/${changingData.id}`, "DELETE", JSON.stringify(data), headers())
             .then(res => {
                 dispatch(onDeleteOverhead({id: changingData.id}))
                 dispatch(fetchAccountantBookKeepingTypesMoney())
@@ -160,7 +160,7 @@ const OverheadAccount = ({data, locations}) => {
             ...data,
         }
 
-        request(`${BackUrl}/account/overhead`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/account/overhead`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 dispatch(onAddOverhead(res.data))
                 dispatch(fetchAccountantBookKeepingTypesMoney())

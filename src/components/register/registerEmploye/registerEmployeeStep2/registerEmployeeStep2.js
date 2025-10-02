@@ -67,7 +67,7 @@ const RegisterEmployeeStep2 = ({updateUserData,userData}) => {
             selectedJobs
         }
         setPostDataStatus(true)
-        request(`${BackUrl}register_staff`, "POST", JSON.stringify(newData))
+        request(`${BackUrl}base/register_staff`, "POST", JSON.stringify(newData))
             .then(res => {
                 if (res.isError) {
                     if (res.isUsername) {

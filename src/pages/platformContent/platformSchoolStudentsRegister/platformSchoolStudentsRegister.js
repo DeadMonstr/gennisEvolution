@@ -47,7 +47,7 @@ const PlatformSchoolStudentsRegister = () => {
     const {request} = useHttp()
 
     useEffect(() => {
-        request(`${BackUrl}school_students/${id}`,"GET",null,headers())
+        request(`${BackUrl}school/school_students/${id}`,"GET",null,headers())
             .then(data => {
                 setStudents(data.school_users)
             })
@@ -166,7 +166,7 @@ const CrudStudent = ({info,setActiveModal}) => {
 
 
         if (isChange) {
-            request(`${BackUrl}crud_school_user/${info.id}`, "PUT", JSON.stringify(data), headers())
+            request(`${BackUrl}school/crud_school_user/${info.id}`, "PUT", JSON.stringify(data), headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: "O'qituvchi muvaffaqiyatli o'zgartirildi",
@@ -176,7 +176,7 @@ const CrudStudent = ({info,setActiveModal}) => {
                     dispatch(changeSchoolTeacher(res.user))
                 })
         } else {
-            request(`${BackUrl}crud_school_user/`, "POST", JSON.stringify(data), headers())
+            request(`${BackUrl}school/crud_school_user/`, "POST", JSON.stringify(data), headers())
                 .then(res => {
                     dispatch(setMessage({
                         msg: "O'qituvchi muvaffaqiyatli yaratildi",
@@ -196,7 +196,7 @@ const CrudStudent = ({info,setActiveModal}) => {
 
         if (username !== info?.username) {
             setLoading(true)
-            request(`${BackUrl}check_username`, "POST", JSON.stringify(username))
+            request(`${BackUrl}checks/check_username`, "POST", JSON.stringify(username))
                 .then(res => {
                     setLoading(false)
                     if (res.found) {

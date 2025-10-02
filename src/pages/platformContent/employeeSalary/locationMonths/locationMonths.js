@@ -67,7 +67,7 @@ const LocationMonths = () => {
 
     const deleteSalary = (data) => {
         const {id} = data
-        request(`${BackUrl}delete_salary_teacher/${id}/${userId}`,"POST",JSON.stringify(data),headers())
+        request(`${BackUrl}account/delete_salary_teacher/${id}/${userId}`,"POST",JSON.stringify(data),headers())
             .then( res => {
                 if (res.success) {
                     const data = {
@@ -80,7 +80,7 @@ const LocationMonths = () => {
     }
 
     const changePaymentTypeData = (id,value) => {
-        request(`${BackUrl}change_teacher_salary/${id}/${value}/${userId}`,"GET",null,headers())
+        request(`${BackUrl}account/change_teacher_salary/${id}/${value}/${userId}`,"GET",null,headers())
             .then( res => {
                 if (res.success) {
                     const data = {
@@ -191,7 +191,6 @@ const PaymentModal = ({monthId,salary,setActiveChangeModal,userId}) => {
     const [day, setDay] = useState(null)
     const [month, setMonth] = useState(null)
 
-    console.log(dataToChange)
 
     const {
         register,
@@ -219,7 +218,7 @@ const PaymentModal = ({monthId,salary,setActiveChangeModal,userId}) => {
         }
 
 
-        request(`${BackUrl}salary_give_teacher/${monthId}/${userId}`,"POST",JSON.stringify(newData),headers())
+        request(`${BackUrl}account/salary_give_teacher/${monthId}/${userId}`,"POST",JSON.stringify(newData),headers())
             .then( res => {
                 if (res.success) {
                     reset()

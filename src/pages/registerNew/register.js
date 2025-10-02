@@ -80,6 +80,7 @@ const Register = () => {
         setSelectedSubjects(arr => [...arr, ...filteredSubjects])
     }
 
+    console.log(subjects)
 
     const onDeleteSub = (id) => {
         setSubjects(subjects => {

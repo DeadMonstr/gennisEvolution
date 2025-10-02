@@ -1,5 +1,5 @@
-import React, {useCallback, useMemo} from 'react';
-import {useDispatch} from "react-redux";
+import React, {useCallback, useMemo, useState} from 'react';
+import {useDispatch, useSelector} from "react-redux";
 
 import Button from "components/platform/platformUI/button";
 
@@ -7,7 +7,10 @@ import Button from "components/platform/platformUI/button";
 import "./filters.sass"
 import FilterFromTo from "components/platform/platformUI/filters/filterFromTo";
 import FilterSelect from "components/platform/platformUI/filters/filterSelect";
-import {setActive} from "slices/filtersSlice";
+import {setActive, setDateFilter} from "slices/filtersSlice";
+import {setFilters} from "../../../../slices/currentFilterSlice";
+import {useSearchParams} from "react-router-dom";
+import Input from "components/platform/platformUI/input";
 
 const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters}) => {
 
@@ -18,6 +21,7 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
     }),[heightOtherFilters])
 
     const styleOtherFilters = activeOthers ? style : null
+
 
     const renderFilters = useCallback(() => {
         const filtersKeys = Object.keys(filters)
@@ -38,7 +42,6 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
                 )
             }
             else if (filters[key].type === "btn") {
-
                 return (
                     <div data-key={index} key={index} className="otherFilters__item">
                         <h2>{filters[key].title}:</h2>
@@ -58,6 +61,18 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
                         <h2>{filters[key].title}:</h2>
                         <div>
                             <FilterFromTo
+                                activeFilter={key}
+                            />
+                        </div>
+                    </div>
+                )
+            }
+            else if (filters[key].type === "date") {
+                return (
+                    <div data-key={index} key={index} className="otherFilters__item">
+                        <h2>{filters[key].title}:</h2>
+                        <div>
+                            <FilterDate
                                 activeFilter={key}
                             />
                         </div>
@@ -93,12 +108,25 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
 
 const FilterSubItem = React.memo(({funcsSlice,itemBtns,activeFilter,activeBtns}) => {
 
-
+    const [searchParams, setSearchParams] = useSearchParams();
     const dispatch = useDispatch()
-    const onChangeFilter = (subFilter,activeFilter) => {
-        dispatch(setActive({activeFilter : activeFilter, subFilter:subFilter}))
-    }
 
+    const {currentFilters} = useSelector(state => state.currentFilterSlice)
+
+    const activeBtn = currentFilters[activeFilter] || null; // redux’dan olamiz
+
+    const onChangeFilter = (subFilter, activeFilter) => {
+        let newValue;
+
+        if (activeBtn === subFilter) {
+            newValue = null; // qayta bosilsa o‘chadi
+        } else {
+            newValue = subFilter;
+        }
+
+        dispatch(setFilters({ [activeFilter]: newValue }));
+        setSearchParams({ ...currentFilters, [activeFilter]: newValue || "" });
+    };
 
     return itemBtns.map( (item,index) => {
 
@@ -107,11 +135,12 @@ const FilterSubItem = React.memo(({funcsSlice,itemBtns,activeFilter,activeBtns})
             return (
                 <Button
                     key={index}
-                    onClickBtn={() => onChangeFilter(item,activeFilter)}
-                    active={activeBtns.includes(item)}
+                    onClickBtn={() => onChangeFilter(item, activeFilter)}
+                    active={item === activeBtn} // faqat redux’dagi active ishlaydi
                 >
                     {item}
                 </Button>
+
 
             )
         } else {
@@ -131,7 +160,38 @@ const FilterSubItem = React.memo(({funcsSlice,itemBtns,activeFilter,activeBtns})
     })
 })
 
+const FilterDate = ({ funcsSlice, activeFilter }) => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const { currentFilters } = useSelector(state => state.currentFilterSlice);
 
+    const [from, setFrom] = useState();
+    const [to, setTo] = useState();
+
+    const dispatch = useDispatch();
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+        const fromTo = { from, to };
+        const days = { from  , to };
+
+        // Redux filter update
+        dispatch(setDateFilter({ activeFilter, fromTo }));
+        dispatch(setFilters(days));
+
+        // URL params update
+        setSearchParams({ ...currentFilters, ...days });
+    };
+
+    return (
+        <form className="fromToForm" onSubmit={onSubmit}>
+            <div>
+                <Input title="От" type={"date"} name="from" onChange={setFrom} />
+                <Input title="До" type={"date"}  name="to" onChange={setTo} />
+            </div>
+            <input className="input-submit" type="submit" />
+        </form>
+    );
+}
 
 
 

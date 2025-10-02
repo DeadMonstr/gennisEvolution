@@ -56,7 +56,7 @@ const RegisterUserStep1 = ({updateUserData,userData}) => {
     }
 
     const checkUsername = (username) => {
-        request(`${BackUrl}check_username`,"POST", JSON.stringify(username))
+        request(`${BackUrl}checks/vcheck_username`,"POST", JSON.stringify(username))
             .then(res => {
                 if (res.found) {
                     setError('username', {

@@ -6,29 +6,41 @@ const initialState = {
     teachers: [],
     btns: [],
     fetchTeachersStatus: "idle",
+    totalCount: null,
+    totalCount2: null,
 }
 
 
 export const  fetchTeachers = createAsyncThunk(
     'teachersSlice/fetchTeachers',
-    async () => {
+    async ({pageSize , currentPage}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_teachers`,"GET",null,headers())
+        return await request(`${BackUrl}teacher/get_teachers${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}`,"GET",null,headers())
     }
 )
 export const  fetchTeachersByLocation = createAsyncThunk(
     'teachersSlice/fetchTeachersByLocation',
-    async (id) => {
+    async ({locationId , pageSize , currentPage , search  ,currentFilters}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_teachers_location/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}teacher/get_teachers_location/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.language ? `&language=${currentFilters.language}` : ""}${currentFilters.subjects ? `&subject=${currentFilters.subjects}` : ""}`,"GET",null,headers())
     }
 )
 
+export const  fetchTeachersByLocationWithoutPagination = createAsyncThunk(
+    'teachersSlice/fetchTeachersByLocationWithoutPagination',
+    async ({locationId }) => {
+        const {request} = useHttp();
+        return await request(`${BackUrl}teacher/get_teachers_group/${locationId}`,"GET",null,headers())
+    }
+)
+
+
+
 export const  fetchDeletedTeachersByLocation = createAsyncThunk(
     'teachersSlice/fetchDeletedTeachersByLocation',
-    async (id) => {
+    async ({locationId , pageSize , currentPage , search , currentFilters}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_deletedTeachers_location/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}teacher/get_deletedTeachers_location/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.language ? `&language=${currentFilters.language}` : ""}${currentFilters.subjects ? `&subject=${currentFilters.subjects}` : ""}`,"GET",null,headers())
     }
 )
 
@@ -48,6 +60,8 @@ const teachersSlice = createSlice({
             .addCase(fetchTeachers.fulfilled,(state, action) => {
                 state.fetchTeachersStatus = 'success';
                 state.teachers = action.payload.teachers
+                state.totalCount2 = action.payload?.pagination
+
             })
             .addCase(fetchTeachers.rejected,state => {state.fetchTeachersStatus = 'error'} )
 
@@ -55,14 +69,25 @@ const teachersSlice = createSlice({
             .addCase(fetchTeachersByLocation.fulfilled,(state, action) => {
                 state.fetchTeachersStatus = 'success';
                 state.teachers = action.payload.teachers
+                state.totalCount = action.payload?.pagination
             })
             .addCase(fetchTeachersByLocation.rejected,state => {state.fetchTeachersStatus = 'error'} )
+
+            .addCase(fetchTeachersByLocationWithoutPagination.pending,state => {state.fetchTeachersStatus = 'loading'} )
+            .addCase(fetchTeachersByLocationWithoutPagination.fulfilled,(state, action) => {
+                state.fetchTeachersStatus = 'success';
+                state.teachers = action.payload.teachers
+
+            })
+            .addCase(fetchTeachersByLocationWithoutPagination.rejected,state => {state.fetchTeachersStatus = 'error'} )
 
 
             .addCase(fetchDeletedTeachersByLocation.pending,state => {state.fetchTeachersStatus = 'loading'} )
             .addCase(fetchDeletedTeachersByLocation.fulfilled,(state, action) => {
                 state.fetchTeachersStatus = 'success';
                 state.teachers = action.payload.teachers
+                state.totalCount = action.payload?.pagination
+
             })
             .addCase(fetchDeletedTeachersByLocation.rejected,state => {state.fetchTeachersStatus = 'error'} )
     }

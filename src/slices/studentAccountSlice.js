@@ -16,7 +16,7 @@ export const  fetchStudentAccData = createAsyncThunk(
     'studentAccountSlice/fetchStudentAccData',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}student_attendance_info/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}student/student_attendance_info/${id}`,"GET",null,headers())
     }
 )
 

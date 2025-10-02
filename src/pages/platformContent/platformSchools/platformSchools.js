@@ -140,7 +140,7 @@ const RegisterSchool = ({setActive}) => {
 
 
     useEffect(() => {
-        request(`${BackUrl}school_details`,"GET",null,headers())
+        request(`${BackUrl}school/school_details`,"GET",null,headers())
             .then(res => {
                 setSchools(res.school_numbers)
                 setRegions(res.regions)
@@ -150,7 +150,7 @@ const RegisterSchool = ({setActive}) => {
 
     useEffect(() => {
         if (region) {
-            request(`${BackUrl}school_details/${region}`,"GET",null,headers())
+            request(`${BackUrl}school/school_details/${region}`,"GET",null,headers())
                 .then(res => {
                     setDistricts(res.districts)
                 })
@@ -185,7 +185,7 @@ const RegisterSchool = ({setActive}) => {
 
 
 
-        request(`${BackUrl}crud_school`,"POST",JSON.stringify(data),headers())
+        request(`${BackUrl}school/crud_school`,"POST",JSON.stringify(data),headers())
             .then(res => {
                 dispatch(setMessage({
                     msg: "Maktab muvaffaqiyatli qo'shildi",

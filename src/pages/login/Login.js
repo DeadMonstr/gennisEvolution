@@ -41,7 +41,8 @@ const Login = () => {
         }
 
         setPostDataStatus("loading")
-        request(`${BackUrl}login2`,"POST",JSON.stringify(user))
+        request(`${BackUrl}base/login`,"POST",JSON.stringify(user))
+        // request(`${BackUrl}login2`,"POST",JSON.stringify(user))
             .then(res => {
                 if (res.success) {
                     localStorage.setItem("userData", JSON.stringify(res.data))

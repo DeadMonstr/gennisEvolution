@@ -13,7 +13,7 @@ export const  fetchLocationMoney = createAsyncThunk(
     'dataToChangeSlice/fetchLocationMoney',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}get_location_money/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}account/get_location_money/${id}`,"GET",null,headers())
     }
 )
 
@@ -21,14 +21,14 @@ export const  fetchDataToChange = createAsyncThunk(
     'dataToChangeSlice/fetchDataToChange',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}block_information2${id ? `/${id}` : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}base/block_information2${id ? `/${id}` : ""}`,"GET",null,headers())
     }
 )
 export const  fetchDataTools = createAsyncThunk(
     'dataToChangeSlice/fetchDataTools',
     async () => {
         const {request} = useHttp();
-        return await request(`${BackUrl}list_tools_info`,"GET",null,headers())
+        return await request(`${BackUrl}programmers/list_tools_info`,"GET",null,headers())
     }
 )
 

@@ -61,7 +61,7 @@ const AccountantStaffs = () => {
         }
 
 
-        request(`${BackUrl}register_camp_staff`, "POST", JSON.stringify(newData), headers())
+        request(`${BackUrl}account/register_camp_staff`, "POST", JSON.stringify(newData), headers())
             .then(res => {
                 console.log(res)
                 dispatch(onAddStaff(res.user))
@@ -82,7 +82,7 @@ const AccountantStaffs = () => {
 
     const checkUsername = (username) => {
         setLoading(true)
-        request(`${BackUrl}check_username`, "POST", JSON.stringify(username))
+        request(`${BackUrl}checks/check_username`, "POST", JSON.stringify(username))
             .then(res => {
                 setLoading(false)
 

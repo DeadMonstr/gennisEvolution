@@ -165,7 +165,7 @@ const OverheadBooks = () => {
     // let sum = dataAcc.reduce((a, c) => { return a + c[summa]}, 0);
     const {request} = useHttp()
     const changePaymentTypeData = (id,value) => {
-        request(`${BackUrl}change_overhead_book/${id}/${value}`,"GET",null,headers())
+        request(`${BackUrl}book/change_overhead_book/${id}/${value}`,"GET",null,headers())
             .then( res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -187,7 +187,7 @@ const OverheadBooks = () => {
         const {id} = data
 
 
-        request(`${BackUrl}delete_book_overhead/${id}`, "POST", JSON.stringify(data),headers())
+        request(`${BackUrl}book/delete_book_overhead/${id}`, "POST", JSON.stringify(data),headers())
             .then( res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -401,7 +401,7 @@ const CreatOverhead = ({setMsg,setTypeMsg,setActiveMessage,setActiveChangeModal}
             month,
             day
         }
-        request(`${BackUrl}book_overhead2/`,"POST", JSON.stringify(newData),headers())
+        request(`${BackUrl}book/book_overhead2/`,"POST", JSON.stringify(newData),headers())
             .then(res => {
                 if (res.success) {
                     reset()

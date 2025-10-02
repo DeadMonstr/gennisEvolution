@@ -15,14 +15,14 @@ export const  fetchRooms = createAsyncThunk(
     async (id) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}rooms_location/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}room/rooms_location/${id}`,"GET",null,headers())
     }
 )
 export const  fetchInsideRoom = createAsyncThunk(
     'roomsSlice/fetchInsideRoom',
     async (id) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}room_profile/${id}`,"GET",null,headers())
+        return await request(`${BackUrl}room/room_profile/${id}`,"GET",null,headers())
     }
 )
 

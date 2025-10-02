@@ -14,7 +14,7 @@ import {useHttp} from "hooks/http.hook";
 import SampleAccounting from "components/platform/platformSamples/sampleAccaunting/SampleAccounting";
 import useFilteredData from "pages/platformContent/platformAccounting/useFilteredData";
 import AccountingTable from "components/platform/platformUI/tables/accountingTable";
-import Pagination from "components/platform/platformUI/pagination";
+import Pagination, {ExtraPagination} from "components/platform/platformUI/pagination";
 import Button from "components/platform/platformUI/button";
 import {setMessage} from "slices/messageSlice";
 import {getUIPageByPath, setPagePosition} from "slices/uiSlice";
@@ -22,54 +22,40 @@ import {getUIPageByPath, setPagePosition} from "slices/uiSlice";
 
 const StudentsPayments = ({locationId, path}) => {
 
-    const {data, fetchAccDataStatus, fetchedDataType, btns, location} = useSelector(state => state.accounting)
+    const {
+        data,
+        fetchAccDataStatus,
+        fetchedDataType,
+        btns,
+        location,
+        totalCount
+    } = useSelector(state => state.accounting)
     const [isChangedData, setIsChangedData] = useState(false)
     const [isDeleted, setIsDeleted] = useState(false)
 
     const {pathname} = useLocation()
 
 
-    const oldPage = useSelector((state) => getUIPageByPath(state,pathname))
+    const oldPage = useSelector((state) => getUIPageByPath(state, pathname))
     const [currentPage, setCurrentPage] = useState(1);
-    let PageSize = useMemo(() => 30, [])
+    let PageSize = useMemo(() => 50, [])
 
     const dispatch = useDispatch()
     const {request} = useHttp()
 
-    const [filteredData,searchedData] = useFilteredData(data.data, currentPage, PageSize)
+    const {search} = useSelector(state => state.accounting)
 
 
+    // const [filteredData,searchedData] = useFilteredData(data.data, currentPage, PageSize)
+
+    const {activeFilters} = useSelector(state => state.filters)
     useEffect(() => {
         dispatch(onChangeAccountingPage({value: path}))
-    },[])
 
-
-
-    useEffect(() => {
-
-        if (fetchedDataType !== path || !data.data.length || locationId !== location  ) {
-            const data = {
-                locationId,
-                type: "payments"
-            }
-            dispatch(fetchAccData(data))
-            const newData = {
-                name: "accounting_payment",
-                location: locationId
-            }
-            dispatch(fetchFilters(newData))
-            dispatch(onChangeFetchedDataType({type: path}))
-        }
-    }, [locationId])
-
-
-
-    useEffect(() => {
         let data = {
             locationId,
             type: "payments"
         }
-
         for (let item of btns) {
             if (item.active) {
                 data = {
@@ -78,30 +64,82 @@ const StudentsPayments = ({locationId, path}) => {
                 }
             }
         }
-        setIsDeleted(data.deleted)
 
-        if (data.deleted) {
+        dispatch(fetchFilters({
+            name: "capital_tools",
+            location: locationId,
+            type: data.archive ? "archive" : ""
+        }));
+    }, [])
 
-            if (data.archive) {
-                dispatch(fetchDeletedAccData({...data, isArchive: true}))
-            } else {
-                getArchive()
-                dispatch(fetchDeletedAccData(data))
-            }
-        } else if (data.archive) {
 
-            getArchive()
-            dispatch(fetchAccData({...data, isArchive: true}))
-        } else if (isChangedData) {
-            dispatch(fetchAccData(data))
+    useEffect(() => {
+        if (fetchedDataType !== path || !data.data.length || locationId !== location) {
+            const baseData = {
+                locationId,
+                type: "payments"
+            };
+
+            // if (isDeleted) {
+            //     dispatch(fetchDeletedAccData({data: baseData, PageSize, currentPage, search}));
+            // } else {
+            //     dispatch(fetchAccData({data: baseData, PageSize, currentPage, search}));
+            // }
+
+
+            dispatch(onChangeFetchedDataType({type: path}));
         }
-    }, [btns, isChangedData])
+    }, [locationId, currentPage, isDeleted, search]);
+
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [isDeleted, locationId, path,]);
+
+
+
+    useEffect(() => {
+
+        let params = {
+            locationId,
+            type: "payments"
+        };
+
+
+        for (let item of btns) {
+            if (item.active) {
+                params[item.name] = item.active;
+            }
+        }
+
+        setIsDeleted(params.deleted);
+
+
+
+
+        const route = "students_payments/"
+
+        dispatch(fetchAccData({
+            data: params,
+            isArchive: !!params.archive,
+            PageSize,
+            currentPage,
+            activeFilters,
+            locationId,
+            route,
+            deleted: params.deleted
+        }));
+
+
+        dispatch(onChangeFetchedDataType({type: path}));
+
+    }, [locationId, currentPage, btns, path , activeFilters]);
 
     useEffect(() => {
         if (oldPage) {
             setCurrentPage(oldPage)
         }
-    },[])
+    }, [])
 
 
     const activeItems = () => {
@@ -128,11 +166,10 @@ const StudentsPayments = ({locationId, path}) => {
     }
 
 
-
     const onDelete = (data) => {
         const {id} = data
         dispatch(deleteAccDataItem({id: id}))
-        request(`${BackUrl}delete_payment/${id}`, "POST", JSON.stringify(data), headers())
+        request(`${BackUrl}account/delete_payment/${id}`, "POST", JSON.stringify(data), headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -152,7 +189,7 @@ const StudentsPayments = ({locationId, path}) => {
 
 
     const changePaymentTypeData = (id, value, userId) => {
-        request(`${BackUrl}change_teacher_salary/${id}/${value}/${userId}`, "GET", null, headers())
+        request(`${BackUrl}account/change_teacher_salary/${id}/${value}/${userId}`, "GET", null, headers())
             .then(res => {
                 if (res.success) {
                     dispatch(setMessage({
@@ -186,11 +223,10 @@ const StudentsPayments = ({locationId, path}) => {
 
     }
 
-    const setChangedBtns = (id,active) => {
+    const setChangedBtns = (id, active) => {
         if (!active) setIsChangedData(true)
         dispatch(onChangeAccountingBtns({id}))
     }
-
 
 
     const links = useMemo(() => {
@@ -198,24 +234,23 @@ const StudentsPayments = ({locationId, path}) => {
         const newBtns = []
 
         for (let item of btns) {
-            if (item.page && item.page === path ) {
+            if (item.page && item.page === path) {
                 newBtns.push({
                     ...item,
                     elem: Button,
                     props: {
                         active: item.active,
-                        onClickBtn: () => setChangedBtns(item.id,item.active),
+                        onClickBtn: () => setChangedBtns(item.id, item.active),
                         children: item.title
                     }
                 })
-            }
-            else if (!item.page) {
+            } else if (!item.page) {
                 newBtns.push({
                     ...item,
                     elem: Button,
                     props: {
                         active: item.active,
-                        onClickBtn: () => setChangedBtns(item.id,item.active),
+                        onClickBtn: () => setChangedBtns(item.id, item.active),
                         children: item.title
                     }
                 })
@@ -235,39 +270,49 @@ const StudentsPayments = ({locationId, path}) => {
 
     const onChangedPage = (page) => {
         setCurrentPage(page)
-        dispatch(setPagePosition({path:pathname,page: page}))
+        dispatch(setPagePosition({path: pathname, page: page}))
     }
 
 
     let summa = "payment"
 
 
-    let sum = filteredData?.reduce((a, c) => {
+    let sum = data?.data?.reduce((a, c) => {
         return a + c[summa]
     }, 0);
+
 
     return (
         <>
             <SampleAccounting
                 links={links}
             >
-                <AccountingTable
-                    sum={sum}
-                    // cache={true}
-                    typeOfMoney={data.typeOfMoney}
-                    fetchUsersStatus={fetchAccDataStatus}
-                    funcSlice={funcsSlice}
-                    activeRowsInTable={activeItems()}
-                    users={filteredData}
-                />
+                <div style={{height: "43vh", overflow: "auto"}}>
+                    <AccountingTable
+                        sum={sum}
+                        // cache={true}
+                        typeOfMoney={"user"}
+                        fetchUsersStatus={fetchAccDataStatus}
+                        funcSlice={funcsSlice}
+                        activeRowsInTable={activeItems()}
+                        users={data?.data}
+                    />
+                </div>
 
-                <Pagination
-                    className="pagination-bar"
-                    currentPage={currentPage}
-                    totalCount={searchedData.length}
+
+                <ExtraPagination
                     pageSize={PageSize}
-                    onPageChange={page => onChangedPage(page)}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                    totalCount={totalCount?.total}
                 />
+                {/*<Pagination*/}
+                {/*    className="pagination-bar"*/}
+                {/*    currentPage={currentPage}*/}
+                {/*    totalCount={searchedData.length}*/}
+                {/*    pageSize={PageSize}*/}
+                {/*    onPageChange={page => onChangedPage(page)}*/}
+                {/*/>*/}
             </SampleAccounting>
         </>
     )

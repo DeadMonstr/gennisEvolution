@@ -6,24 +6,25 @@ const initialState = {
     employees: [],
     btns: [],
     fetchEmployeesStatus: "idle",
+    totalCount: null
 }
 
 
 export const  fetchEmployees = createAsyncThunk(
     'employeesSlice/fetchEmployees',
-    async (loc) => {
+    async ({locationId , pageSize , currentPage , search ,currentFilters}) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}employees/${loc}`,"GET",null,headers())
+        return await request(`${BackUrl}account/employees/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.job ? `&job=${currentFilters.job}` : ""}${currentFilters.language ? `&language=${currentFilters.language}` : ""}`,"GET",null,headers())
     }
 )
 
 export const  fetchDeletedEmployees = createAsyncThunk(
     'employeesSlice/fetchDeletedEmployees',
-    async (loc) => {
+    async ({locationId , pageSize , currentPage , search , currentFilters}) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}employees/${loc}/deleted`,"GET",null,headers())
+        return await request(`${BackUrl}account/employees/${locationId}/deleted${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.job ? `&job=${currentFilters.job}` : ""}${currentFilters.language ? `&language=${currentFilters.language}` : ""}`,"GET",null,headers())
     }
 )
 
@@ -48,6 +49,7 @@ const employeesSlice = createSlice({
             .addCase(fetchEmployees.fulfilled,(state, action) => {
                 state.fetchEmployeesStatus = 'success';
                 state.employees = action.payload.data
+                state.totalCount = action.payload?.pagination
             })
             .addCase(fetchEmployees.rejected,state => {state.fetchEmployeesStatus = 'error'} )
 
@@ -55,6 +57,8 @@ const employeesSlice = createSlice({
             .addCase(fetchDeletedEmployees.fulfilled,(state, action) => {
                 state.fetchEmployeesStatus = 'success';
                 state.employees = action.payload.data
+                state.totalCount = action.payload?.pagination
+
             })
             .addCase(fetchDeletedEmployees.rejected,state => {state.fetchEmployeesStatus = 'error'} )
     }

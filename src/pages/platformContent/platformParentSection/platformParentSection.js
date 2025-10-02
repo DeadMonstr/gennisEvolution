@@ -67,7 +67,7 @@ const PlatformParentSection = () => {
 
     useEffect(() => {
         dispatch(fetchParentData(id))
-        dispatch(fetchStudyingStudents(locationId))
+        dispatch(fetchStudyingStudents({locationId}))
     }, []);
 
     useEffect(() => {
@@ -75,7 +75,6 @@ const PlatformParentSection = () => {
             setFilteredStudyingStudents(studyingStudents)
     }, [studyingStudents])
 
-    console.log(data, "da")
 
     useEffect(() => {
         setFilteredStudyingStudents(
@@ -127,7 +126,7 @@ const PlatformParentSection = () => {
         const body = {
             username: username
         }
-        request(`${BackUrl}check_exist_username/${id}`, "POST", JSON.stringify(body), headers())
+        request(`${BackUrl}checks/check_exist_username/${id}`, "POST", JSON.stringify(body), headers())
             .then(res => {
                 if (res.found === true){
                     setErrorMessage("Username band")
