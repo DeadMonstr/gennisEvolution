@@ -280,6 +280,7 @@ const SampleUsers = (props) => {
 
                             <Filters key={3} filterRef={filterRef} filters={filters}
                                      heightOtherFilters={heightOtherFilters} activeOthers={activeOthers}/>
+
                         </header>
                         <div className="links">
                             {

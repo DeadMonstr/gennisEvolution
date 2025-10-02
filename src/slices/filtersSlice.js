@@ -156,6 +156,16 @@ const newStudentsSlice = createSlice({
                 }
             })
         },
+        setDateFilter: (state, action) => {
+            const { activeFilter, fromTo } = action.payload;
+
+            if (state.filters[activeFilter]) {
+                state.filters[activeFilter] = {
+                    ...state.filters[activeFilter],
+                    fromTo
+                };
+            }
+        },
         setActiveFilter: (state, action) => {
             const { key, value } = action.payload;
             if (state.activeFilters[key] === value) {
@@ -195,6 +205,7 @@ export const {
     setActive,
     setFromToFilter,
     setSelectOption,
-    setActiveFilter
+    setActiveFilter,
+    setDateFilter
 } = actions
 

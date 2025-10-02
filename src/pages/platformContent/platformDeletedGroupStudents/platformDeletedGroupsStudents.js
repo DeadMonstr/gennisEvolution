@@ -83,6 +83,7 @@ const PlatformGroupDeletedStudents = () => {
         dispatch(fetchDataToChange())
     },[])
 
+    console.log(currentFilters , "activeFilters")
     useEffect(()=> {
         if (activeOption) {
             const data = {
@@ -91,18 +92,18 @@ const PlatformGroupDeletedStudents = () => {
                 currentPage , pageSize,
                 search
             }
-            dispatch(fetchDeletedStudent({data , activeFilters}))
+            dispatch(fetchDeletedStudent({data , activeFilters , currentFilters}))
         } else {
             const data = {
                 type: "O'qituvchi yoqmadi",
                 locationId,currentPage , pageSize
             }
-            dispatch(fetchDeletedStudent({data , activeFilters}))
+            dispatch(fetchDeletedStudent({data , activeFilters , currentFilters}))
         }
 
         dispatch(setSelectedLocation({id:locationId}))
 
-    },[activeOption,dispatch, locationId , currentPage , search , activeFilters])
+    },[activeOption,dispatch, locationId , currentPage , search , activeFilters , currentFilters])
 
 
 

@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 
 import Button from "components/platform/platformUI/button";
@@ -7,9 +7,10 @@ import Button from "components/platform/platformUI/button";
 import "./filters.sass"
 import FilterFromTo from "components/platform/platformUI/filters/filterFromTo";
 import FilterSelect from "components/platform/platformUI/filters/filterSelect";
-import {setActive} from "slices/filtersSlice";
+import {setActive, setDateFilter} from "slices/filtersSlice";
 import {setFilters} from "../../../../slices/currentFilterSlice";
 import {useSearchParams} from "react-router-dom";
+import Input from "components/platform/platformUI/input";
 
 const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters}) => {
 
@@ -60,6 +61,18 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
                         <h2>{filters[key].title}:</h2>
                         <div>
                             <FilterFromTo
+                                activeFilter={key}
+                            />
+                        </div>
+                    </div>
+                )
+            }
+            else if (filters[key].type === "date") {
+                return (
+                    <div data-key={index} key={index} className="otherFilters__item">
+                        <h2>{filters[key].title}:</h2>
+                        <div>
+                            <FilterDate
                                 activeFilter={key}
                             />
                         </div>
@@ -147,7 +160,38 @@ const FilterSubItem = React.memo(({funcsSlice,itemBtns,activeFilter,activeBtns})
     })
 })
 
+const FilterDate = ({ funcsSlice, activeFilter }) => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const { currentFilters } = useSelector(state => state.currentFilterSlice);
 
+    const [from, setFrom] = useState();
+    const [to, setTo] = useState();
+
+    const dispatch = useDispatch();
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+        const fromTo = { from, to };
+        const days = { from  , to };
+
+        // Redux filter update
+        dispatch(setDateFilter({ activeFilter, fromTo }));
+        dispatch(setFilters(days));
+
+        // URL params update
+        setSearchParams({ ...currentFilters, ...days });
+    };
+
+    return (
+        <form className="fromToForm" onSubmit={onSubmit}>
+            <div>
+                <Input title="От" type={"date"} name="from" onChange={setFrom} />
+                <Input title="До" type={"date"}  name="to" onChange={setTo} />
+            </div>
+            <input className="input-submit" type="submit" />
+        </form>
+    );
+}
 
 
 
