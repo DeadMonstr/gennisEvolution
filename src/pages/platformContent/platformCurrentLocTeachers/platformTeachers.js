@@ -66,7 +66,7 @@ const PlatformTeachers = () => {
         } else {
             dispatch(fetchTeachersByLocation({ locationId, currentPage, pageSize , search , currentFilters }));
         }
-    } , [currentPage , activeStatus , search , currentFilters])
+    } , [currentPage , activeStatus , search , currentFilters , locationId])
 
 
     useEffect(() => {
