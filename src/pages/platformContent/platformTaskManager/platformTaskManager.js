@@ -56,6 +56,7 @@ import Input from "components/platform/platformUI/input";
 import PlatformSearch from "components/platform/platformUI/search";
 import Table from "components/platform/platformUI/table";
 import {fetchDataToChange} from "slices/dataToChangeSlice";
+import Form from "../../../components/platform/platformUI/form/Form";
 
 const FuncContext = createContext(null)
 const options = [
@@ -111,12 +112,14 @@ const PlatformTaskManager = () => {
 
 
     const [activeModal, setActiveModal] = useState(false)
+    const [leadId, setLeadId] = useState()
     const [date, setDate] = useState(new Date())
     const [studentId, setStudentId] = useState()
     const [studentSelect, setStudentSelect] = useState()
     const [dellLead, setDellLead] = useState(false)
     const [isConfirm, setIsConfirm] = useState(false)
     const [searchValue, setSearchValue] = useState("")
+    const [leadActive, setLeadActive] = useState(false)
     const [tableData, setTableDate] = useState([])
 
 
@@ -451,6 +454,29 @@ const PlatformTaskManager = () => {
         }
     }
 
+    const onLeadAdd = (source) => {
+        console.log(source)
+        const data = {
+            ...source,
+            recommended_by_id: leadId
+        }
+        const formatted = formatDate(date)
+        request(`${BackUrl}register_lead/recommend`, "POST", JSON.stringify(data), headers())
+            .then((res) => {
+                dispatch(setMessage({
+                    msg: res.msg,
+                    type: "success",
+                    active: true
+                }))
+                dispatch(fetchLeadsData({locationId, date: formatted}))
+                setLeadActive(false)
+                setActiveModal(false)
+
+            })
+
+
+    }
+
 
     // const onSearch = (value) => {
     //     setSearchValue(value)
@@ -544,7 +570,7 @@ const PlatformTaskManager = () => {
                     {/*<h1>My tasks</h1>*/}
                     {/*<div className={cls.header__search}>*/}
 
-                    <div style={{display: "flex"}}>
+                    <div style={{display: "flex", gap: "2rem"}}>
                         <SwitchButton
                             isCompleted={isCompleted}
                             setIsCompleted={onChangeIsCompleted}
@@ -628,6 +654,14 @@ const PlatformTaskManager = () => {
                         <Link to={`../profile/${studentId}`}>
                             <img src={profile.img ? profile.img : unknownUser} alt=""/>
                         </Link>
+                        {
+                            activeMenu === "leads" ?
+                                <Button extraClass={cls.userbox__btn} children={"+"} onClickBtn={() => {
+                                    setLeadActive(!leadActive)
+                                    setLeadId(studentId)
+                                }}/> : null
+                        }
+
 
                     </div>
                     <h2 className={cls.userbox__name}>
@@ -697,6 +731,43 @@ const PlatformTaskManager = () => {
                         })
                     }
                 </div> : null}
+                {profile.invitations?.length >= 1 ? <div className={cls.wrapperList}>
+                    {
+                        profile.invitations && profile.invitations?.map((item) => {
+                            return (
+                                <div className={cls.wrapperList__box}>
+                                    <div className={cls.wrapperList__items}>
+                                        <div className={cls.wrapperList__comment}>
+                                            Ism-familiya : <span>{item.name}</span>
+                                        </div>
+                                        <div className={cls.wrapperList__smen}>
+                                            {item.phone}
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })
+                    }
+                </div> : null}
+            </Modal>
+            <Modal activeModal={leadActive} setActiveModal={() => setLeadActive(!leadActive)}>
+                <Form extraClassname={cls.leadModal} onSubmit={handleSubmit(onLeadAdd)}>
+                    <InputForm
+                        register={register}
+                        name={"name"}
+                        type={"text"}
+                        required
+                        placeholder={"Ism-Familiya"}
+                    />
+                    <InputForm
+                        register={register}
+                        name={"phone"}
+                        type={"number"}
+                        required
+                        placeholder={"Telefon raqami"}
+                    />
+
+                </Form>
             </Modal>
             <Modal activeModal={dellLead} setActiveModal={() => setDellLead(false)}>
                 <Confirm setActive={setDellLead} getConfirm={setIsConfirm} text={"O'chirishni hohlaysizmi"}/>

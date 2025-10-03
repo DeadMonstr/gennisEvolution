@@ -26,6 +26,8 @@
     display: flex
     flex-direction: column
 
+
+
     .header
       padding: 2rem 0
       width: 100%
@@ -34,6 +36,7 @@
       align-items: center
       border-bottom: 2px solid rgba(0, 0, 0, 0.2)
       font-size: 1.6rem
+
 
       &__search
         width: 300px
@@ -54,6 +57,9 @@
     .info
       width: 100%
       display: flex
+      align-items: center
+      justify-content: center
+
 
       &__progress
         width: 90%
@@ -313,7 +319,20 @@
   display: flex
   align-items: center
   flex-direction: column
+  position: relative
   padding: 30px 0 30px 0
+  &__btn
+    border-radius: 50%
+    display: flex
+    align-items: center
+    justify-content: center
+    font-size: 2.3rem
+    position: absolute
+    right: 1rem
+    background: #2e8cff !important
+    color: white !important
+    border: none !important
+    top: 2rem
   &__info
     width: 100%
     display: flex
@@ -345,6 +364,10 @@
     img
       width: 170px
       height: 170px
+.leadModal
+  background: white !important
+  padding: 2rem
+  border-radius: 2rem
 .wrapperList
   //height: 600px
   padding: 20px
