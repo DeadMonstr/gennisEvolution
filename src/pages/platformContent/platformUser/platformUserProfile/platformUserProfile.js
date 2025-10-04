@@ -347,7 +347,7 @@ const UserContent = ({userId}) => {
                                 )
                             }
                             {
-                                info.subject.length > 0 ? (
+                                info.subject?.length > 0 ? (
                                     <div className="profile__left__contact__arounder__list">
                                         <i style={{color: "#6D727B", fontSize: "2rem"}} className="fa-regular fa-file"></i>
                                         <span className="profile__left__contact__arounder__list__span">
@@ -410,7 +410,7 @@ const UserContent = ({userId}) => {
                         )
                     }
                     {
-                        user.groups.length > 0 ? (
+                        user.groups?.length > 0 ? (
                             <div style={{width: "40%"}} className="profile__right__card">
                                 <h1>Guruhlar:</h1>
                                 <UserGroups data={user.groups}/>
