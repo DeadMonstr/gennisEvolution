@@ -131,7 +131,7 @@ export const ExtraPagination = ({
             pages.push(i);
         }
         return pages;
-    }, [currentPage, maxVisiblePages, totalPages]);
+    }, [currentPage, maxVisiblePages, totalPages , pageSize]);
 
     const pages = getPageNumbers();
 
@@ -153,7 +153,7 @@ export const ExtraPagination = ({
                 </li>
             );
         })
-    },[currentPage, onPageChange])
+    },[currentPage, onPageChange , totalPages , pageSize])
 
 
     // Hooklardan keyin return qilsak bo‘ladi

@@ -8,9 +8,12 @@ import "./filters.sass"
 import FilterFromTo from "components/platform/platformUI/filters/filterFromTo";
 import FilterSelect from "components/platform/platformUI/filters/filterSelect";
 import {setActive, setDateFilter} from "slices/filtersSlice";
-import {setFilters} from "../../../../slices/currentFilterSlice";
+import {setFilters} from "slices/currentFilterSlice";
 import {useSearchParams} from "react-router-dom";
 import Input from "components/platform/platformUI/input";
+
+
+
 
 const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters}) => {
 
@@ -185,8 +188,8 @@ const FilterDate = ({ funcsSlice, activeFilter }) => {
     return (
         <form className="fromToForm" onSubmit={onSubmit}>
             <div>
-                <Input title="От" type={"date"} name="from" onChange={setFrom} />
-                <Input title="До" type={"date"}  name="to" onChange={setTo} />
+                <Input value={currentFilters.from || ""} title="От" type={"date"} name="from" onChange={setFrom} />
+                <Input value={currentFilters.to || ""} title="До" type={"date"}  name="to" onChange={setTo} />
             </div>
             <input className="input-submit" type="submit" />
         </form>

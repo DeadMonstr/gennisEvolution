@@ -25,7 +25,7 @@ const PlatformStudyingStudents = () => {
     const dispatch = useDispatch()
     const [currentPage, setCurrentPage] = useState(1)
     const pageSize = useMemo(() => 50, [])
-    console.log(currentFilters , "activeFilters")
+
     const [search , setSearch] = useState("")
     useEffect(()=> {
 
