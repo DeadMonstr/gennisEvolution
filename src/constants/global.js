@@ -1,21 +1,22 @@
+
 import {useMemo} from "react";
+// export const ClassroomUrl = `https://classroom.gennis.uz"/`
+//
 
-
-// export const BackUrlForDoc = `http://26.196.249.247:5002/`
+// export const BackUrlForDoc = `http://26.12.122.72:5002/`
+// export const BackUrl = `${BackUrlForDoc}api/`
+//
+// export const ClassroomUrl = `http://localhost:3000/`
+// export const ClassroomUrlForDoc = "http://26.12.122.72:5001/"
+//
+export const BackUrl = "https://admin.gennis.uz/api/"
 export const BackUrlForDoc = "https://admin.gennis.uz/"
 
-export const BackUrl = `${BackUrlForDoc}api/`
-export const ClassroomUrl = `http://localhost:3000/`
-export const ClassroomUrlForDoc = "http://26.196.249.247:5002/"
-
-// export const BackUrl = "https://admin.gennis.uz/api/"
-// export const BackUrlForDoc = "https://admin.gennis.uz/"
-
-
+//
+//
 // export const BackUrl = "/api/"
-// export const ClassroomUrl = `https://classroom.gennis.uz/`
 // export const BackUrlForDoc = "/"
-// export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
+export const ClassroomUrlForDoc = "https://classroom.gennis.uz/"
 
 export const headers = () => {
     const token = sessionStorage.getItem("token")
@@ -62,19 +63,19 @@ export const requireMenuItems = (id) => {
             roles: [ROLES.Admin,ROLES.User,ROLES.Director,ROLES.Programmer,ROLES.Teacher,ROLES.Student,ROLES.Editor,ROLES.Smm,ROLES.Accountant]
         },
         {
-            to : "taskManager",
+            to : "adminItem",
             name: "Task Manager",
             classIcon: "fa-tasks",
             location: true,
             children: true,
             roles: [ROLES.Admin,ROLES.Director]
         },
-        {
-            to: "adminRating",
-            name: "Admin rating",
-            classIcon: "fa-chart-bar",
-            roles: [ROLES.Director,ROLES.Admin]
-        },
+        // {
+        //     to: "adminRating",
+        //     name: "Admin rating",
+        //     classIcon: "fa-chart-bar",
+        //     roles: [ROLES.Director,ROLES.Admin]
+        // },
         // {
         //     to : "blockTest",
         //     name: "Block test",
@@ -91,7 +92,7 @@ export const requireMenuItems = (id) => {
         // },
         {
             to : "newRegister",
-            name: "Yangi Registratsiya",
+            name: "Registratsiya",
             classIcon: "fa-edit",
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
         },
@@ -119,6 +120,23 @@ export const requireMenuItems = (id) => {
             location: true,
             children: true,
             roles: [ROLES.Teacher]
+        },
+        {
+            to : "students",
+            name: "Studenlar",
+            classIcon: "fa fa-users",
+            location: true,
+            children: true,
+            roles: [ROLES.Admin,ROLES.Director , ROLES.Programmer]
+        },
+
+        {
+            to : "users",
+            name: "Userlar",
+            classIcon: "fa fa-users",
+            location: true,
+            children: true,
+            roles: [ROLES.Admin,ROLES.Director , ROLES.Programmer]
         },
         // {
         //     to : "/registerTeacher",
@@ -155,31 +173,31 @@ export const requireMenuItems = (id) => {
             children: true,
             roles: [ROLES.Admin,ROLES.Director]
         },
-        {
-            to : "newStudents",
-            name : "Yangi oq'uvchilar",
-            classIcon: "fa-user",
-            location: true,
-            children: true,
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
-        {
-            to : "deletedGroupStudent",
-            name : "Ochirilgan oq'uvchilar",
-            classIcon: "fa-user-alt-slash",
-            location: true,
-            children: true,
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
-        {
-            to : "studyingStudents",
-            name : "O'qityotgan oq'uvchilar",
-            classIcon: "fa-user-graduate",
-            location: true,
-            children: true,
-
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
+        // {
+        //     to : "newStudents",
+        //     name : "Yangi oq'uvchilar",
+        //     classIcon: "fa-user",
+        //     location: true,
+        //     children: true,
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        // },
+        // {
+        //     to : "deletedGroupStudent",
+        //     name : "Ochirilgan oq'uvchilar",
+        //     classIcon: "fa-user-alt-slash",
+        //     location: true,
+        //     children: true,
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        // },
+        // {
+        //     to : "studyingStudents",
+        //     name : "O'qityotgan oq'uvchilar",
+        //     classIcon: "fa-user-graduate",
+        //     location: true,
+        //     children: true,
+        //
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        // },
         {
             to : "groups",
             name : "Guruhlar",
@@ -189,40 +207,40 @@ export const requireMenuItems = (id) => {
 
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
         },
-        {
-            to : "teachers",
-            name : "O'qituvchilar",
-            classIcon: "fa-user-tie",
-            location: true,
-            children: true,
-            // children : [
-            //     {
-            //         childId : 1,
-            //         to : "1",
-            //         childName: "Xo'jakent",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 2,
-            //         to : "2",
-            //         childName: "Gazalkent",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 3,
-            //         to : "3",
-            //         childName: "Chirchiq",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 4,
-            //         to : "4",
-            //         childName: "Sergeli",
-            //         iconClazz : "fa-map-marker-alt"
-            //     }
-            // ],
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
+        // {
+        //     to : "teachers",
+        //     name : "O'qituvchilar",
+        //     classIcon: "fa-user-tie",
+        //     location: true,
+        //     children: true,
+        //     // children : [
+        //     //     {
+        //     //         childId : 1,
+        //     //         to : "1",
+        //     //         childName: "Xo'jakent",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 2,
+        //     //         to : "2",
+        //     //         childName: "Gazalkent",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 3,
+        //     //         to : "3",
+        //     //         childName: "Chirchiq",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 4,
+        //     //         to : "4",
+        //     //         childName: "Sergeli",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     }
+        //     // ],
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        // },
         // {
         //
         //     to : "teachers",
@@ -230,41 +248,41 @@ export const requireMenuItems = (id) => {
         //     classIcon: "fa-user-tie",
         //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
         // },
-        {
-
-            to : "employees",
-            location: true,
-            name : "Ishchilar",
-            classIcon: "fa-id-badge",
-            children: true,
-            // children : [
-            //     {
-            //         childId : 1,
-            //         to : "1",
-            //         childName: "Xo'jakent",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 2,
-            //         to : "2",
-            //         childName: "Gazalkent",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 3,
-            //         to : "3",
-            //         childName: "Chirchiq",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 4,
-            //         to : "4",
-            //         childName: "Sergeli",
-            //         iconClazz : "fa-map-marker-alt"
-            //     }
-            // ],
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
+        // {
+        //
+        //     to : "employees",
+        //     location: true,
+        //     name : "Ishchilar",
+        //     classIcon: "fa-id-badge",
+        //     children: true,
+        //     // children : [
+        //     //     {
+        //     //         childId : 1,
+        //     //         to : "1",
+        //     //         childName: "Xo'jakent",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 2,
+        //     //         to : "2",
+        //     //         childName: "Gazalkent",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 3,
+        //     //         to : "3",
+        //     //         childName: "Chirchiq",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 4,
+        //     //         to : "4",
+        //     //         childName: "Sergeli",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     }
+        //     // ],
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        // },
         {
             to : "oneDay",
             name : "Kunlik hisob",
@@ -307,46 +325,46 @@ export const requireMenuItems = (id) => {
             // ],
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer , ROLES.Accountant]
         },
-        {
-            to : "books",
-            name : "Kitoblar",
-            classIcon: "fa-book",
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Editor,ROLES.Teacher,ROLES.Student]
-        },
-        {
-            to : "rooms",
-            name : "Honalar",
-            classIcon: "fa-door-closed",
-            location: true,
-            children: true,
-            // children : [
-            //     {
-            //         childId : 1,
-            //         to : "1",
-            //         childName: "Xo'jakent",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 2,
-            //         to : "2",
-            //         childName: "Gazalkent",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 3,
-            //         to : "3",
-            //         childName: "Chirchiq",
-            //         iconClazz : "fa-map-marker-alt"
-            //     },
-            //     {
-            //         childId : 4,
-            //         to : "4",
-            //         childName: "Sergeli",
-            //         iconClazz : "fa-map-marker-alt"
-            //     }
-            // ],
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
-        },
+        // {
+        //     to : "books",
+        //     name : "Kitoblar",
+        //     classIcon: "fa-book",
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Editor,ROLES.Teacher,ROLES.Student]
+        // },
+        // {
+        //     to : "rooms",
+        //     name : "Honalar",
+        //     classIcon: "fa-door-closed",
+        //     location: true,
+        //     children: true,
+        //     // children : [
+        //     //     {
+        //     //         childId : 1,
+        //     //         to : "1",
+        //     //         childName: "Xo'jakent",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 2,
+        //     //         to : "2",
+        //     //         childName: "Gazalkent",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 3,
+        //     //         to : "3",
+        //     //         childName: "Chirchiq",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     },
+        //     //     {
+        //     //         childId : 4,
+        //     //         to : "4",
+        //     //         childName: "Sergeli",
+        //     //         iconClazz : "fa-map-marker-alt"
+        //     //     }
+        //     // ],
+        //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
+        // },
         // {
         //     to : "survey",
         //     name : "So'rovnoma",
@@ -408,12 +426,12 @@ export const requireMenuItems = (id) => {
             children: true,
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Accountant]
         },
-        {
-            to : "staffs",
-            name : "Staffs",
-            classIcon: "fa-users",
-            roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
-        },
+        // {
+        //     to : "staffs",
+        //     name : "Staffs",
+        //     classIcon: "fa-users",
+        //     roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
+        // },
         {
             to : "bookKeeping",
             name : "Dividend",
@@ -432,328 +450,326 @@ export const requireMenuItems = (id) => {
         //     classIcon: "fa-dollar-sign",
         //     roles: [ROLES.Director,ROLES.Programmer,ROLES.Accountant]
         // },
-        {
-            to: `parentsList`,
-            name: "Ota-onalar ro'yxati",
-            classIcon: "fa-users",
-            location: true,
-            children: true,
-            roles: [ROLES.Director,ROLES.Programmer, ROLES.Accountant , ROLES.Admin]
-        }
+        // {
+        //     to: `parentsList`,
+        //     name: "Ota-onalar ro'yxati",
+        //     classIcon: "fa-users",
+        //     location: true,
+        //     children: true,
+        //     roles: [ROLES.Director,ROLES.Programmer, ROLES.Accountant , ROLES.Admin]
+        // }
     ]
 }
 
 export const DatesList = () => {
     const years = useMemo(() =>
-        [
-            {
-                num: "2023"
-            },
-            {
-                num: "2022"
-            },
-            {
-                num: "2021"
-            },
-            {
-                num: "2020"
-            },
-            {
-                num: "2019"
-            },
-            {
-                num: "2018"
-            },
-            {
-                num: "2017"
-            },
-            {
-                num: "2016"
-            },
-            {
-                num: "2015"
-            },
-            {
-                num: "2014"
-            },
-            {
-                num: "2013"
-            },
-            {
-                num: "2012"
-            },
-            {
-                num: "2011"
-            },
-            {
-                num: "2010"
-            },
-            {
-                num: "2009"
-            },
-            {
-                num: "2008"
-            },
-            {
-                num: "2009"
-            },
-            {
-                num: "2007"
-            },
-            {
-                num: "2006"
-            },
-            {
-                num: "2005"
-            },
-            {
-                num: "2004"
-            },
-            {
-                num: "2003"
-            },
-            {
-                num: "2002"
-            },
-            {
-                num: "2001"
-            },
-            {
-                num: "2000"
-            },
-            {
-                num: "1999"
-            },
-            {
-                num: "1998"
-            },
-            {
-                num: "1997"
-            },
-            {
-                num: "1996"
-            },
-            {
-                num: "1995"
-            },
-            {
-                num: "1994"
-            },
-            {
-                num: "1993"
-            },
-            {
-                num: "1992"
-            },
-            {
-                num: "1991"
-            },
-            {
-                num: "1990"
-            },
-            {
-                num: "1989"
-            },
-            {
-                num: "1988"
-            },
-            {
-                num: "1987"
-            },
-            {
-                num: "1986"
-            },
-            {
-                num: "1985"
-            },
-            {
-                num: "1984"
-            },
-            {
-                num: "1983"
-            },
-            {
-                num: "1982"
-            },
-            {
-                num: "1981"
-            },
-            {
-                num: "1980"
-            },
-            {
-                num: "1979"
-            },
-            {
-                num: "1978"
-            },
-            {
-                num: "1977"
-            },
-            {
-                num: "1976"
-            },
-            {
-                num: "1975"
-            },
-            {
-                num: "1974"
-            },
-            {
-                num: "1973"
-            },
-            {
-                num: "1972"
-            },
-            {
-                num: "1971"
-            },
-            {
-                num: "1970"
-            },
-        ]
-    ,[])
+            [
+                {
+                    num: "2023"
+                },
+                {
+                    num: "2022"
+                },
+                {
+                    num: "2021"
+                },
+                {
+                    num: "2020"
+                },
+                {
+                    num: "2019"
+                },
+                {
+                    num: "2018"
+                },
+                {
+                    num: "2017"
+                },
+                {
+                    num: "2016"
+                },
+                {
+                    num: "2015"
+                },
+                {
+                    num: "2014"
+                },
+                {
+                    num: "2013"
+                },
+                {
+                    num: "2012"
+                },
+                {
+                    num: "2011"
+                },
+                {
+                    num: "2010"
+                },
+                {
+                    num: "2009"
+                },
+                {
+                    num: "2008"
+                },
+                {
+                    num: "2009"
+                },
+                {
+                    num: "2007"
+                },
+                {
+                    num: "2006"
+                },
+                {
+                    num: "2005"
+                },
+                {
+                    num: "2004"
+                },
+                {
+                    num: "2003"
+                },
+                {
+                    num: "2002"
+                },
+                {
+                    num: "2001"
+                },
+                {
+                    num: "2000"
+                },
+                {
+                    num: "1999"
+                },
+                {
+                    num: "1998"
+                },
+                {
+                    num: "1997"
+                },
+                {
+                    num: "1996"
+                },
+                {
+                    num: "1995"
+                },
+                {
+                    num: "1994"
+                },
+                {
+                    num: "1993"
+                },
+                {
+                    num: "1992"
+                },
+                {
+                    num: "1991"
+                },
+                {
+                    num: "1990"
+                },
+                {
+                    num: "1989"
+                },
+                {
+                    num: "1988"
+                },
+                {
+                    num: "1987"
+                },
+                {
+                    num: "1986"
+                },
+                {
+                    num: "1985"
+                },
+                {
+                    num: "1984"
+                },
+                {
+                    num: "1983"
+                },
+                {
+                    num: "1982"
+                },
+                {
+                    num: "1981"
+                },
+                {
+                    num: "1980"
+                },
+                {
+                    num: "1979"
+                },
+                {
+                    num: "1978"
+                },
+                {
+                    num: "1977"
+                },
+                {
+                    num: "1976"
+                },
+                {
+                    num: "1975"
+                },
+                {
+                    num: "1974"
+                },
+                {
+                    num: "1973"
+                },
+                {
+                    num: "1972"
+                },
+                {
+                    num: "1971"
+                },
+                {
+                    num: "1970"
+                },
+            ]
+        ,[])
 
     const days = useMemo(() =>
-         [
-            {
-                num: "01"
-            },
-            {
-                num: "02"
-            },
-            {
-                num: "03"
-            },
-            {
-                num: "04"
-            },
-            {
-                num: "05"
-            },
-            {
-                num: "06"
-            },
-            {
-                num: "07"
-            },
-            {
-                num: "08"
-            },
-            {
-                num: "09"
-            },
-            {
-                num: "10"
-            },
-            {
-                num: "11"
-            },
-            {
-                num: "12"
-            },
-            {
-                num: "13"
-            },
-            {
-                num: "14"
-            },
-            {
-                num: "15"
-            },
-            {
-                num: "16"
-            },
-            {
-                num: "17"
-            },
-            {
-                num: "18"
-            },
-            {
-                num: "19"
-            },
-            {
-                num: "20"
-            },
-            {
-                num: "21"
-            },
-            {
-                num: "22"
-            },
-            {
-                num: "23"
-            },
-            {
-                num: "24"
-            },
-            {
-                num: "25"
-            },
-            {
-                num: "26"
-            },
-            {
-                num: "27"
-            },
-            {
-                num: "28"
-            },
-            {
-                num: "29"
-            },
-            {
-                num: "30"
-            },
-            {
-                num: "31"
-            }
-        ]
-    ,[])
+            [
+                {
+                    num: "01"
+                },
+                {
+                    num: "02"
+                },
+                {
+                    num: "03"
+                },
+                {
+                    num: "04"
+                },
+                {
+                    num: "05"
+                },
+                {
+                    num: "06"
+                },
+                {
+                    num: "07"
+                },
+                {
+                    num: "08"
+                },
+                {
+                    num: "09"
+                },
+                {
+                    num: "10"
+                },
+                {
+                    num: "11"
+                },
+                {
+                    num: "12"
+                },
+                {
+                    num: "13"
+                },
+                {
+                    num: "14"
+                },
+                {
+                    num: "15"
+                },
+                {
+                    num: "16"
+                },
+                {
+                    num: "17"
+                },
+                {
+                    num: "18"
+                },
+                {
+                    num: "19"
+                },
+                {
+                    num: "20"
+                },
+                {
+                    num: "21"
+                },
+                {
+                    num: "22"
+                },
+                {
+                    num: "23"
+                },
+                {
+                    num: "24"
+                },
+                {
+                    num: "25"
+                },
+                {
+                    num: "26"
+                },
+                {
+                    num: "27"
+                },
+                {
+                    num: "28"
+                },
+                {
+                    num: "29"
+                },
+                {
+                    num: "30"
+                },
+                {
+                    num: "31"
+                }
+            ]
+        ,[])
     const months = useMemo(()=>
-         [
-            {
-                num: "01"
-            },
-            {
-                num: "02"
-            },
-            {
-                num: "03"
-            },
-            {
-                num: "04"
-            },
-            {
-                num: "05"
-            },
-            {
-                num: "06"
-            },
-            {
-                num: "07"
-            },
-            {
-                num: "08"
-            },
-            {
-                num: "09"
-            },
-            {
-                num: "10"
-            },
-            {
-                num: "11"
-            },
-            {
-                num: "12"
-            }
-        ]
-    ,[])
+            [
+                {
+                    num: "01"
+                },
+                {
+                    num: "02"
+                },
+                {
+                    num: "03"
+                },
+                {
+                    num: "04"
+                },
+                {
+                    num: "05"
+                },
+                {
+                    num: "06"
+                },
+                {
+                    num: "07"
+                },
+                {
+                    num: "08"
+                },
+                {
+                    num: "09"
+                },
+                {
+                    num: "10"
+                },
+                {
+                    num: "11"
+                },
+                {
+                    num: "12"
+                }
+            ]
+        ,[])
 
 
     return {days,months,years}
 }
-
-

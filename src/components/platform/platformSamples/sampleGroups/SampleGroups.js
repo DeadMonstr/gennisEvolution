@@ -235,6 +235,7 @@ const SampleGroups = (props) => {
     }, [PageSize, currentPage, searchedGroups]);
 
 
+
     const clazzBtnFilter = activeOthers ? "funcButtons__btn funcButtons__btn-active" : "funcButtons__btn "
 
 
@@ -345,7 +346,7 @@ const SampleGroups = (props) => {
                         <main className="section__main">
                             <GroupsTable
                                 activeRowsInTable={activeRowsInTable}
-                                groups={currentTableData}
+                                groups={groups}
                             />
 
                             <Pagination

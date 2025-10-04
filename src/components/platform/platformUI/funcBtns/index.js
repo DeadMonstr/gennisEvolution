@@ -54,7 +54,7 @@ const FuncBtns = React.memo(({funcsSlice,dataBtns,locationId}) => {
                 }
             }
             else if (btn.type === "link") {
-                const isLocation = btn.location ? `/${locationId}` : null
+                const isLocation = btn.location ? `/${locationId}` : ""
                 return (
                     <Link to={`../../${btn.link}${isLocation}`}>
                         <Button

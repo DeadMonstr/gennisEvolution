@@ -12,19 +12,19 @@ const initialState = {
 
 export const  fetchEmployees = createAsyncThunk(
     'employeesSlice/fetchEmployees',
-    async ({locationId , pageSize , currentPage , search}) => {
+    async ({locationId , pageSize , currentPage , search ,currentFilters}) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}account/employees/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}account/employees/${locationId}${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.job ? `&job=${currentFilters.job}` : ""}${currentFilters.language ? `&language=${currentFilters.language}` : ""}`,"GET",null,headers())
     }
 )
 
 export const  fetchDeletedEmployees = createAsyncThunk(
     'employeesSlice/fetchDeletedEmployees',
-    async ({locationId , pageSize , currentPage , search}) => {
+    async ({locationId , pageSize , currentPage , search , currentFilters}) => {
         const {request} = useHttp();
 
-        return await request(`${BackUrl}account/employees/${locationId}/deleted${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}`,"GET",null,headers())
+        return await request(`${BackUrl}account/employees/${locationId}/deleted${pageSize ? `?offset=${(currentPage-1) * 50}&limit=${pageSize}` : ""}${search ? `&search=${search}` : ""}${currentFilters.job ? `&job=${currentFilters.job}` : ""}${currentFilters.language ? `&language=${currentFilters.language}` : ""}`,"GET",null,headers())
     }
 )
 

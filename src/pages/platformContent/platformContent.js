@@ -19,6 +19,7 @@ import PlatformTeacherEquipments from "./platformTeacherEquipments/platformTeach
 
 
 
+
 const PlatformInvistitsiya =  React.lazy(() => import('./platformInvistitsiya/platformInvistitsiya'));
 
 const PlatformHome =  React.lazy(() => import('./platformHome/platformHome'));
@@ -98,6 +99,9 @@ const PlatformParentSection = React.lazy(() => import('./platformParentSection/p
 const PlaftformParentsList = React.lazy(() => import('./platformParentsList/platformParentsList'));
 const PlatformOneDay = React.lazy(() => import('./platformOneDay'));
 // const PlatformTeacherEquipments = React.lazy(() => import('./platformTeacherEquipments/platformTeacherEquipments'))
+const PlatformStudentsPage = React.lazy(() => import('pages/platformContent/platformStudentsPage/platformStudentsPage'));
+const PlatformUsersPage = React.lazy(() => import('./platformUsersPage/platformUsersPage'));
+const PlatformAdminItem = React.lazy(() => import('./platformAdminItem/platformAdminItem'));
 
 
 
@@ -131,9 +135,12 @@ const PlatformContent = () => {
                     <Route path="changePhoto/:userId/:userRole" element={<PlatformUserProfileChangePhoto/>}/>
                     <Route path="studentPayment/:userId/:role/*" element={<PlatformUserPayment/>}/>
                     <Route path="accountantBill/:id" element={<PlatformBillProfile/>}/>
+                    <Route path="students/:locationId/*" element={<PlatformStudentsPage/>}/>
+                    <Route path="users/:locationId/*" element={<PlatformUsersPage/>}/>
 
 
                     <Route path="oneDay/:locationId" element={<PlatformOneDay/>}/>
+                    <Route path="adminItem/:locationId" element={<PlatformAdminItem/>}/>
 
 
                     {/*<Route path="newStudents/:locationId" element={<PlatformNewStudents/>}/>*/}

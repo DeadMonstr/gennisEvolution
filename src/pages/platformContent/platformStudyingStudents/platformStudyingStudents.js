@@ -44,7 +44,7 @@ const PlatformStudyingStudents = () => {
             name: true,
             surname : true,
             username: true,
-            age: false,
+            age: true,
             phone : false,
             reg_date: false,
             checked: false,

@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
+import {useSelector} from "react-redux";
 
 const initialState = {
     newStudents: [
@@ -120,6 +121,7 @@ export const fetchNewStudentsDeleted = createAsyncThunk(
     'newStudentsSlice/fetchNewStudentsDeleted',
     async (id) => {
         const {request} = useHttp();
+
         return await request(`${BackUrl}student/new_del_students/${id}`, "GET", null, headers())
     }
 )

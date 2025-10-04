@@ -36,18 +36,18 @@ const PlatformTeachers = () => {
     const [activeStatus, setActiveStatus] = useState(1)
     const pageSize = useMemo(() => 50, [])
     const [search , setSearch] = useState("")
-
+    const {currentFilters} = useSelector(state => state.currentFilterSlice)
 
     const dispatch = useDispatch()
 
 
     useEffect(() => {
-
-        if (activeStatus === true) {
-            dispatch(fetchDeletedTeachersByLocation({ locationId, pageSize, currentPage , search }));
-        } else {
-            dispatch(fetchTeachersByLocation({ locationId, currentPage, pageSize , search }));
-        }
+        //
+        // if (activeStatus === true) {
+        //     dispatch(fetchDeletedTeachersByLocation({ locationId, pageSize, currentPage , search }));
+        // } else {
+        //     dispatch(fetchTeachersByLocation({ locationId, currentPage, pageSize , search }));
+        // }
         const newData = {
             name: "teachers",
             location: locationId
@@ -62,11 +62,11 @@ const PlatformTeachers = () => {
         // }
 
         if (activeStatus === true) {
-            dispatch(fetchDeletedTeachersByLocation({ locationId, pageSize, currentPage , search }));
+            dispatch(fetchDeletedTeachersByLocation({ locationId, pageSize, currentPage , search , currentFilters }));
         } else {
-            dispatch(fetchTeachersByLocation({ locationId, currentPage, pageSize , search }));
+            dispatch(fetchTeachersByLocation({ locationId, currentPage, pageSize , search , currentFilters }));
         }
-    } , [currentPage , activeStatus , search])
+    } , [currentPage , activeStatus , search , currentFilters , locationId])
 
 
     useEffect(() => {

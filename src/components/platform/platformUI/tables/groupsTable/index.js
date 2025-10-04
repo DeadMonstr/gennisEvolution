@@ -96,7 +96,7 @@ const GroupsTable = React.memo(({groups, activeRowsInTable}) => {
         console.log('error')
     }
 
-    console.log(activeRowsInTable , "table")
+
 
     return (
         <div className="tableBox">

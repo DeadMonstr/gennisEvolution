@@ -6,12 +6,27 @@ const initialState = {
     groups: [],
     btns: [
         {
+            id: 1,
+            type: "link",
+            link: "rooms",
+            title: "Rooms",
+            location: true
+        },
+        {
             id: 2,
             type: "link",
             link: "timeTable",
             title: "Time Table",
             location: true
         },
+        {
+            id: 3,
+            type: "link",
+            link: "books",
+            title: "Books",
+            // location: true
+        },
+
     ],
     fetchGroupsStatus: "idle",
 }
@@ -19,10 +34,34 @@ const initialState = {
 
 export const fetchGroups = createAsyncThunk(
     'groupsSlice/fetchGroups',
-    async (loc) => {
+    async ({locationId , currentFilters}) => {
         const {request} = useHttp();
-        return await request(`${BackUrl}group/groups/${loc}`,"GET",null,headers())
-    }
+        const queryParams = [];
+
+        if (currentFilters.subjects) {
+            queryParams.push(`subject=${currentFilters.subjects}`);
+        }
+        if (currentFilters.languages) {
+            queryParams.push(`language=${currentFilters.languages}`);
+        }
+        if (currentFilters.status) {
+            queryParams.push(`status=${currentFilters.status}`);
+        }
+        if (currentFilters.teacherName) {
+            queryParams.push(`teacher=${currentFilters.teacherName}`);
+        }
+        if (currentFilters.typeOfCourse) {
+            queryParams.push(`typeOfCourse=${currentFilters.typeOfCourse}`);
+        }
+
+        const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
+
+        return await request(
+            `${BackUrl}group/groups/${locationId}${queryString}`,
+            "GET",
+            null,
+            headers()
+        );    }
 )
 
 
