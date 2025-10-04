@@ -38,6 +38,7 @@ const Textarea = React.memo((
 					[`${styles?.error}`] : errors?.[name]
 				})}
 				required={required}
+				placeholder={placeholder}
 				{...register(name,{
 					value:value,
 					defaultValue: defaultValue,

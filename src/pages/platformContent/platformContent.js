@@ -13,6 +13,7 @@ import PlatformBooks from "pages/platformContent/platformBooks/platformBooks";
 import PlatformTeachersRating from "pages/platformContent/platformTeachersRating/platformTeachersRating";
 import TeacherDebtStudents from "pages/platformContent/platformTeacherDebtStudents/TeacherDebtStudents";
 import PlatformCentreInfo from "pages/platformContent/platformCentreInfo/PlatformCentreInfo";
+import PlatformTeacherEquipments from "./platformTeacherEquipments/platformTeacherEquipments";
 
 
 
@@ -96,6 +97,7 @@ const PlatformSchoolStudentsRegister =  React.lazy(() => import('./platformSchoo
 const PlatformParentSection = React.lazy(() => import('./platformParentSection/platformParentSection'))
 const PlaftformParentsList = React.lazy(() => import('./platformParentsList/platformParentsList'));
 const PlatformOneDay = React.lazy(() => import('./platformOneDay'));
+// const PlatformTeacherEquipments = React.lazy(() => import('./platformTeacherEquipments/platformTeacherEquipments'))
 
 
 
@@ -231,6 +233,7 @@ const PlatformContent = () => {
                     <Route path="myStudents/:id" element={<PlatformSchoolTeacherStudents/>}/>
                     <Route path="registeredSchoolStudents/:id" element={<PlatformSchoolStudentsRegister/>}/>
                     <Route path="parentSection/:id" element={<PlatformParentSection/>}/>
+                    <Route path="teacherEquipments" element={<PlatformTeacherEquipments/>}/>
 
 
                     <Route
