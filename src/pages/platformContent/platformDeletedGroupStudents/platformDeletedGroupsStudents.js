@@ -19,29 +19,29 @@ import {setSelectedLocation} from "slices/meSlice";
 import {useAuth} from "hooks/useAuth";
 
 
-const SampleUsers = React.lazy(() => import("components/platform/platformSamples/sampleUsers/SampleUsers") )
+const SampleUsers = React.lazy(() => import("components/platform/platformSamples/sampleUsers/SampleUsers"))
 
 
 const PlatformGroupDeletedStudents = () => {
 
     let {locationId} = useParams()
 
-    const {students,btns,fetchDeletedStudentStatus , totalCount} = useSelector(state => state.deletedGroupStudents)
-    const {filters , activeFilters} = useSelector(state => state.filters)
+    const {students, btns, fetchDeletedStudentStatus, totalCount} = useSelector(state => state.deletedGroupStudents)
+    const {filters, activeFilters} = useSelector(state => state.filters)
 
-    const {location,role} = useSelector(state => state.me)
+    const {location, role} = useSelector(state => state.me)
     const {isCheckedPassword} = useSelector(state => state.me)
     const {dataToChange} = useSelector(state => state.dataToChange)
     const {currentFilters} = useSelector(state => state.currentFilterSlice)
 
-    const [activeCheckPassword,setActiveCheckPassword] = useState(false)
-    const [activeModal,setActiveModal] = useState(false)
-    const [deleteStId,setDeleteStId] = useState()
-    const [activeOption,setActiveOption] = useState("Hammasi")
+    const [activeCheckPassword, setActiveCheckPassword] = useState(false)
+    const [activeModal, setActiveModal] = useState(false)
+    const [deleteStId, setDeleteStId] = useState()
+    const [activeOption, setActiveOption] = useState("Hammasi")
     const [currentPage, setCurrentPage] = useState(1)
     const pageSize = useMemo(() => 50, [])
     const dispatch = useDispatch()
-    const [search , setSearch] = useState("")
+    const [search, setSearch] = useState("")
 
     // const options = [
     //     {
@@ -67,8 +67,7 @@ const PlatformGroupDeletedStudents = () => {
     // ]
 
 
-
-    useEffect(()=> {
+    useEffect(() => {
         const newData = {
             name: "deletedGroupStudents",
             location: locationId
@@ -76,44 +75,46 @@ const PlatformGroupDeletedStudents = () => {
 
 
         dispatch(fetchFilters(newData))
-    },[dispatch,locationId])
+    }, [dispatch, locationId])
 
 
     useEffect(() => {
         dispatch(fetchDataToChange())
-    },[])
+    }, [])
 
-    console.log(currentFilters , "activeFilters")
-    useEffect(()=> {
+
+    useEffect(() => {
         if (activeOption) {
             const data = {
                 type: activeOption,
                 locationId,
-                currentPage , pageSize,
+                currentPage, pageSize,
                 search
             }
-            dispatch(fetchDeletedStudent({data , activeFilters , currentFilters}))
+            dispatch(fetchDeletedStudent({data, activeFilters, currentFilters}))
         } else {
             const data = {
                 type: "O'qituvchi yoqmadi",
-                locationId,currentPage , pageSize
+                locationId, currentPage, pageSize
             }
-            dispatch(fetchDeletedStudent({data , activeFilters , currentFilters}))
+            dispatch(fetchDeletedStudent({data, activeFilters, currentFilters}))
         }
 
-        dispatch(setSelectedLocation({id:locationId}))
+        dispatch(setSelectedLocation({id: locationId}))
 
-    },[activeOption,dispatch, locationId , currentPage , search , activeFilters , currentFilters])
+    }, [activeOption, dispatch, locationId, currentPage, search, activeFilters, currentFilters])
 
-
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [locationId])
 
     const navigate = useNavigate()
 
-    useEffect(()=>{
+    useEffect(() => {
         if (location !== +locationId && role !== ROLES["Director"]) {
             navigate(-1)
         }
-    },[location, locationId, navigate, role])
+    }, [location, locationId, navigate, role])
 
 
     useEffect(() => {
@@ -121,32 +122,30 @@ const PlatformGroupDeletedStudents = () => {
             setActiveCheckPassword(false)
             setActiveModal(true)
         }
-    },[deleteStId, isCheckedPassword])
+    }, [deleteStId, isCheckedPassword])
 
 
     const activeItems = useMemo(() => {
         if (activeOption === "Hammasi") {
             return {
-                name: true,
-                surname : true,
-                phone : true,
+                fullname: true,
+                // phone: true,
                 money: true,
                 reg_date: true,
+                subjects: true,
                 deleted_date: true,
                 reason: true,
             }
         }
         return {
-            name: true,
-            surname : true,
-            phone : true,
+            fullname: true,
+            // phone: true,
             money: true,
             reg_date: true,
             deleted_date: true
         }
-        
-    },[activeOption])
 
+    }, [activeOption])
 
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -161,7 +160,6 @@ const PlatformGroupDeletedStudents = () => {
 
 
     const {request} = useHttp()
-
 
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -184,9 +182,7 @@ const PlatformGroupDeletedStudents = () => {
             changeOption,
             setDisableOption
         }
-    },[changeOption, onDelete])
-
-
+    }, [changeOption, onDelete])
 
 
     return (
@@ -239,11 +235,10 @@ const PlatformGroupDeletedStudents = () => {
 };
 
 
-
 const CreateSubject = () => {
 
-    const [subjects,setSubjects] = useState([])
-    const [selectedSubjects,setSelectedSubjects] = useState([])
+    const [subjects, setSubjects] = useState([])
+    const [selectedSubjects, setSelectedSubjects] = useState([])
     const {dataToChange} = useSelector(state => state.dataToChange)
 
     const dispatch = useDispatch()
@@ -253,7 +248,7 @@ const CreateSubject = () => {
 
     useEffect(() => {
         dispatch(fetchDataToChange(selectedLocation))
-    },[selectedLocation])
+    }, [selectedLocation])
 
     const onGetSubject = (subjectName) => {
         if (subjectName !== "Fan tanla") {
@@ -261,21 +256,21 @@ const CreateSubject = () => {
             setSubjects(subjects => {
                 return subjects.map(item => {
                     if (item.name === subjectName) {
-                        return {...item,disabled: true}
+                        return {...item, disabled: true}
                     }
                     return item
                 })
             })
-            setSelectedSubjects([...selectedSubjects,filteredSubjects])
+            setSelectedSubjects([...selectedSubjects, filteredSubjects])
         }
     }
 
     const onDeleteSubject = (subjectName) => {
-        if (subjectName !== "Fan tanla" ) {
+        if (subjectName !== "Fan tanla") {
             setSubjects(subjects => {
                 return subjects.map(item => {
                     if (item.name === subjectName) {
-                        return {...item,disabled: false}
+                        return {...item, disabled: false}
                     }
                     return item
                 })
@@ -286,7 +281,7 @@ const CreateSubject = () => {
 
     const renderOptions = (list) => {
         return (
-            list.map((item,index) => {
+            list.map((item, index) => {
                 return (
                     <option key={index} value={item.name}>{item.name}</option>
                 )
@@ -295,12 +290,12 @@ const CreateSubject = () => {
     }
 
 
-    const selectedSubjectLevel = (name,value) => {
+    const selectedSubjectLevel = (name, value) => {
         if (value !== "defaultLevel") {
             setSelectedSubjects(subjects => {
                 return subjects.map(item => {
                     if (item.name === name) {
-                        return {...item,selectedLevel: value}
+                        return {...item, selectedLevel: value}
                     }
                     return item
                 })
@@ -310,7 +305,7 @@ const CreateSubject = () => {
 
     const renderSubjects = (list) => {
         return (
-            list.map((item,index) => {
+            list.map((item, index) => {
                 return (
                     <div
 
@@ -333,7 +328,7 @@ const CreateSubject = () => {
                                     <select
                                         id={item.name}
                                         className="input-fields"
-                                        onChange={e => selectedSubjectLevel(item.name,e.target.value)}
+                                        onChange={e => selectedSubjectLevel(item.name, e.target.value)}
                                     >
                                         <option value="defaultLevel">Darajani tanlang</option>
                                         {renderOptions(item.levels)}
@@ -354,7 +349,7 @@ const CreateSubject = () => {
     const onSubmit = (e) => {
         e.preventDefault()
 
-        request(`${BackUrl}`, "POST", JSON.stringify({selectedSubjects}),headers())
+        request(`${BackUrl}`, "POST", JSON.stringify({selectedSubjects}), headers())
             .then(() => console.log("hello"))
 
     }
@@ -373,11 +368,12 @@ const CreateSubject = () => {
                                 className="input-fields"
                                 onChange={e => onGetSubject(e.target.value)}
                             >
-                                <option value="Fan tanla" >Fan tanlang</option>
+                                <option value="Fan tanla">Fan tanlang</option>
                                 {
                                     subjects?.map(item => {
                                         return (
-                                            <option disabled={item.disabled}  key={item.id} value={item.name}>{item.name}</option>
+                                            <option disabled={item.disabled} key={item.id}
+                                                    value={item.name}>{item.name}</option>
                                         )
                                     })
                                 }
@@ -392,7 +388,7 @@ const CreateSubject = () => {
                     </div>
                 </div>
 
-                <input type="submit" disabled={disabled} className="input-submit" />
+                <input type="submit" disabled={disabled} className="input-submit"/>
             </form>
         </div>
     )

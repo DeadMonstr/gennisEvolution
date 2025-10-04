@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import Select from "components/platform/platformUI/select";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {setSelectOption} from "slices/filtersSlice";
 
 const FilterSelect = React.memo(({options,activeFilter,name,onChangeActiveFilter}) => {
     const [option,setOption] = useState(null)
+    const {filters , activeFilters} = useSelector(state => state.filters)
+
 
 
     const dispatch = useDispatch()
@@ -22,11 +24,12 @@ const FilterSelect = React.memo(({options,activeFilter,name,onChangeActiveFilter
         }
     }
 
+    console.log(activeFilters, "activeFilters[activeFilter]")
 
     return (
         <div>
 
-            <Select all={true} onChangeOption={onChangeOption} options={options} name={"select-filter"} title={name}/>
+            <Select all={true} defaultValue={activeFilters[activeFilter]} onChangeOption={onChangeOption} options={options} name={"select-filter"} title={name}/>
         </div>
     );
 }) ;
