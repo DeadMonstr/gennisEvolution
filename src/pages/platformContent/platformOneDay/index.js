@@ -25,6 +25,9 @@ const PlatformOneDay = () => {
     const [paymentTypes, setPaymentTypes] = useState([])
     const [selectedType, setSelectedType] = useState(null)
 
+    const [titles, setTitles] = useState([])
+    const [activeTitle, setActiveTitle] = useState(null)
+
     useEffect(() => {
         if (lastDate) {
             const last = JSON.parse(lastDate)
@@ -54,11 +57,42 @@ const PlatformOneDay = () => {
         if (locationId) {
             request(`${BackUrl}base/block_information2/${locationId}`, "GET", null, headers())
                 .then(res => {
-                    // console.log(res)
                     setPaymentTypes(res?.data?.payment_types)
                 })
         }
     }, [locationId])
+
+    useEffect(() => {
+        if (!!date) {
+            const sectionTitles = {
+                joined_students: "Qo‘shilgan o‘quvchilar",
+                new_groups: "Yangi guruhlar",
+                new_students: "Yangi o‘quvchilar",
+                new_leads: "Yangi leadlar",
+                teacher_salaries: "O‘qituvchilar maoshi",
+                staff_salaries: "Xodimlar maoshi",
+                payments: "To‘lovlar",
+                overheads: "Xarajatlar",
+                expenses: "Umumiy xarajatlar",
+                overall: "Umumiy balans"
+            }
+
+            setTitles(
+                Object.entries(date)
+                    .map(([key, value]) => {
+                        if (typeof value === "number") return null
+                        if (typeof value === "object" && value.items) {
+                            return ({
+                                name: `${sectionTitles[key]} (count: ${value.count || value.items.length}${value.sum ? `, sum: ${value.sum}` : ""})`,
+                                id: key,
+                                sum: value.sum ?? ""
+                            })
+                        }
+                    })
+                    .filter(item => item)
+            )
+        }
+    }, [date])
 
     const render = () => {
         const sectionTitles = {
@@ -78,6 +112,14 @@ const PlatformOneDay = () => {
             if (typeof value === "number") return null
 
             if (typeof value === "object" && value.items) {
+                // setTitles(prev => [...prev, {
+                //     name: sectionTitles[key],
+                //     sum: value.sum ?? "",
+                //     id: key
+                // }]);
+
+                if (activeTitle !== key && activeTitle !== "all") return null;
+
                 let columns = [];
                 let headers = {};
 
@@ -91,22 +133,23 @@ const PlatformOneDay = () => {
                         comment: "Izoh"
                     };
                 } else if (key.includes("salaries")) {
-                    columns = ["name", "surname", "amount", "date", "reason"];
+                    columns = ["name", "surname", "amount", "date", "reason", "payment_type"];
                     headers = {
                         name: "Ism",
                         surname: "Familiya",
                         amount: "Miqdori",
                         date: "Sana",
-                        reason: "Sabab"
+                        reason: "Sabab",
+                        payment_type: "Turi"
                     };
                 } else if (key.includes("payments")) {
-                    columns = ["name", "surname", "amount", "date", "type_name"];
+                    columns = ["name", "surname", "amount", "date", "payment_type"];
                     headers = {
                         name: "Ism",
                         surname: "Familiya",
                         amount: "Miqdori",
                         date: "Sana",
-                        type_name: "Turi"
+                        payment_type: "Turi"
                     };
                 } else if (key.includes("leads")) {
                     columns = ["name", "phone", "day", "status"];
@@ -148,47 +191,45 @@ const PlatformOneDay = () => {
                             </span>
                         </h2>
                         <Table className={cls.item__table}>
-                            <table>
-                                <thead>
-                                <tr>
-                                    <th>№</th>
-                                    {
-                                        columns.map((field) => (
-                                            <th key={field}>{headers[field] || field}</th>
-                                        ))
-                                    }
-                                </tr>
-                                </thead>
-                                <tbody>
+                            <thead>
+                            <tr>
+                                <th>№</th>
                                 {
-                                    value.items.map((item, idx) => (
-                                        <tr key={idx}>
-                                            <td>{idx + 1}</td>
-                                            {
-                                                columns.map((field) => (
-                                                    <td key={field}>
-                                                        {
-                                                            item[field] !== null && item[field] !== undefined
-                                                                ? field === "status"
-                                                                    ?
-                                                                    <div className={cls.status}>
-                                                                <span
-                                                                    className={classNames(cls.span, {
-                                                                        [cls.red]: item[field] === "red"
-                                                                    })}
-                                                                />
-                                                                    </div>
-                                                                    : String(item[field])
-                                                                : "—"
-                                                        }
-                                                    </td>
-                                                ))
-                                            }
-                                        </tr>
+                                    columns.map((field) => (
+                                        <th key={field}>{headers[field] || field}</th>
                                     ))
                                 }
-                                </tbody>
-                            </table>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {
+                                value.items.map((item, idx) => (
+                                    <tr key={idx}>
+                                        <td>{idx + 1}</td>
+                                        {
+                                            columns.map((field) => (
+                                                <td key={field}>
+                                                    {
+                                                        item[field] !== null && item[field] !== undefined
+                                                            ? field === "status"
+                                                                ?
+                                                                <div className={cls.status}>
+                                                            <span
+                                                                className={classNames(cls.span, {
+                                                                    [cls.red]: item[field] === "red"
+                                                                })}
+                                                            />
+                                                                </div>
+                                                                : String(item[field])
+                                                            : "—"
+                                                    }
+                                                </td>
+                                            ))
+                                        }
+                                    </tr>
+                                ))
+                            }
+                            </tbody>
                         </Table>
                     </div>
                 );
@@ -200,7 +241,14 @@ const PlatformOneDay = () => {
     return (
         <div className={cls.oneDay}>
             <div className={cls.oneDay__header}>
-                <h1>Hisob</h1>
+                <div className={cls.title}>
+                    <h1>Hisob</h1>
+                    <Select
+                        options={[{name: "Hammasi", id: "all"}, ...titles]}
+                        // title
+                        onChangeOption={setActiveTitle}
+                    />
+                </div>
                 <div className={cls.date}>
                     <Select
                         clazzLabel={cls.date__select}
