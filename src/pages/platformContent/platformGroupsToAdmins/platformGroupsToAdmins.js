@@ -25,7 +25,7 @@ const PlatformGroupsToAdmins = () => {
     const dispatch = useDispatch()
     const {currentFilters} = useSelector(state => state.currentFilterSlice)
 
-    console.log(currentFilters ,"currentFilters")
+
     useEffect(()=> {
         dispatch(fetchGroups({locationId  , currentFilters}))
         dispatch(fetchDataToChange())
