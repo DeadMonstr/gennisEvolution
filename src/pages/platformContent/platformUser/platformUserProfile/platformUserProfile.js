@@ -236,48 +236,233 @@ const UserContent = ({userId}) => {
     }
 
     const userImg = user.photo_profile ? `${BackUrlForDoc}${user.photo_profile}` : null
+    const info = user?.info
+    console.log(user, "img")
+
 
     return (
         <>
             <div className="profile" onClick={handleClick}>
-                <div className="profile__container">
-                    <header className="profile__header">
-                        <div>
-                            <img className="profile-img" src={userImg ? userImg : img} alt=""/>
-                            <h2 className="profile-username">{user.username}</h2>
+                <div className="profile__left">
+                    <div className="profile__left__info">
+                        <div className="profile__left__info__profileImg">
+                            <img src="" alt=""/>
                         </div>
-                        <div>
-                            <i className="fas fa-user profile-rankIcon" />
-                            <span className="profile-rankName">{user.type_role}</span>
-                        </div>
-                        <div>
-                            <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Accountant]}>
+                        <h1 title={info.fathersName?.value} className="profile__left__info__name">{info.name?.value} {info.surname?.value}</h1>
+                        <span className="profile__left__info__userStatus">
+                            <h3>{user.type_role}</h3>
+                        </span>
+                        <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Accountant]}>
+                            <div
+                                onClick={() => setActiveOptions(!activeOptions)}
+                                className="profile__header-btn"
+                            >
+                                <i className="fas fa-ellipsis-v" />
                                 <div
-                                    onClick={() => setActiveOptions(!activeOptions)}
-                                    className="profile__header-btn"
+                                    className={classNames('modalOptions', {
+                                        "active": activeOptions
+                                    })}
                                 >
-                                    <i className="fas fa-ellipsis-v" />
-                                    <div
-                                        className={classNames('modalOptions', {
-                                            "active": activeOptions
-                                        })}
-                                    >
-                                        {renderedLinks}
-                                    </div>
+                                    {renderedLinks}
                                 </div>
-                            </RequireAuthChildren>
+                            </div>
+                        </RequireAuthChildren>
+                        <div className="profile__left__info__panel">
+                            <div className="profile__left__info__panel__table">
+                                <span className="profile__left__info__panel__table__arounder">
+                                    <i style={{color: "#6D727B", fontSize: "2rem"}} className="fa-regular fa-user"></i>
+                                    <h2>Username:</h2>
+                                </span>
+                                <h1>{info.username?.value}</h1>
+                            </div>
+                            <div className="profile__left__info__panel__table">
+                                <span className="profile__left__info__panel__table__arounder">
+                                    <i style={{color: "#6D727B", fontSize: "2rem"}} className="fa-regular fa-calendar"></i>
+                                    <h2>Yoshi:</h2>
+                                </span>
+                                <h1>{info.age?.value}</h1>
+                            </div>
+                            <div className="profile__left__info__panel__table">
+                                <span className="profile__left__info__panel__table__arounder">
+                                    <i style={{color: "#6D727B", fontSize: "2rem"}} className="fa-regular fa-clock"></i>
+                                    <h2>Tug'ilgan yili:</h2>
+                                </span>
+                                <h1>{info.birthDate?.value}</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="profile__left__contact">
+                        <h1>Qo'shimcha ma'lumotlar</h1>
+                        <div className="profile__left__contact__arounder">
+
+                            <div className="profile__left__contact__arounder__list">
+                                <i style={{color: "#6D727B", fontSize: "2rem"}} className="fa-regular fa-comments"></i>
+                                <span className="profile__left__contact__arounder__list__span">
+                                    <p>Tel raqami</p>
+                                    <h2>{info.phone?.value}</h2>
+                                </span>
+                            </div>
+                            {
+                                info.parentPhone && (
+                                    <div className="profile__left__contact__arounder__list">
+                                        <i style={{color: "#6D727B", fontSize: "2rem"}} className="fa-regular fa-comments"></i>
+                                        <span className="profile__left__contact__arounder__list__span">
+                                    <p>Ota-onasining tel raqami</p>
+                                    <h2>{info.parentPhone?.value}</h2>
+                                </span>
+                                    </div>
+                                )
+                            }
+                            {
+                                info.contract && (
+                                    <div className="profile__left__contact__arounder__list">
+                                        <i style={{color: "#6D727B", fontSize: "2rem"}} className="fa-regular fa-file-lines"></i>
+                                        <span className="profile__left__contact__arounder__list__span">
+                                    <p>Shartnoma</p>
+                                    <h2>{info?.contract?.value === false ? "Yo'q" : info?.contract?.value}</h2>
+                                </span>
+                                    </div>
+                                )
+                            }
+                            {
+                                info.shift && (
+                                    <div className="profile__left__contact__arounder__list">
+                                        <i style={{color: "#6D727B", fontSize: "2rem"}} className="fa-regular fa-clock"></i>
+                                        <span className="profile__left__contact__arounder__list__span">
+                                    <p>Smen</p>
+                                    <h2>{info.shift?.value}</h2>
+                                </span>
+                                    </div>
+                                )
+                            }
+                            {
+                                info.students && (
+                                    <div className="profile__left__contact__arounder__list">
+                                        <i style={{color: "#6D727B", fontSize: "2rem"}} className="fa-solid fa-users"></i>
+                                        <span className="profile__left__contact__arounder__list__span">
+                                    <p>O'quvchilar soni</p>
+                                    <h2>{info.students?.value}</h2>
+                                </span>
+                                    </div>
+                                )
+                            }
+                            {
+                                info.subject?.length > 0 ? (
+                                    <div className="profile__left__contact__arounder__list">
+                                        <i style={{color: "#6D727B", fontSize: "2rem"}} className="fa-regular fa-file"></i>
+                                        <span className="profile__left__contact__arounder__list__span">
+                                    <p>Fan</p>
+                                            {
+                                                info.subject?.value.map((item,index) => (
+                                                    <h2 style={{marginTop: "2rem"}}>{item.name}</h2>
+                                                ))
+                                            }
+
+                                </span>
+                                    </div>
+                                ) : null
+                            }
+
+
 
                         </div>
-                    </header>
-
-                    <div className="profile__subHeader">
-
                     </div>
-
-                    <main className="profile__main">
-                        {renderedItems}
-                    </main>
                 </div>
+                <div className="profile__right">
+                    {
+                        info.combined_payment && (
+                            <div className="profile__right__card">
+                                <div className="profile__right__card__header">
+                                    <i style={{color: "#6D727B", fontSize: "2.5rem"}} className="fa-regular fa-credit-card"></i>
+                                    <h2>Umumiy hisob</h2>
+                                </div>
+                                <div className="profile__right__card__footer">
+                                    <h1>{info.combined_payment?.value.toLocaleString()}</h1>
+                                </div>
+                            </div>
+                        )
+                    }
+
+                    {
+                        info.balance && (
+                            <div className="profile__right__card">
+                                <div className="profile__right__card__header">
+                                    <i style={{color: "#6D727B", fontSize: "2.5rem"}} className="fa-regular fa-credit-card"></i>
+                                    <h2>Hisobi</h2>
+                                </div>
+                                <div className="profile__right__card__footer">
+                                    <h1>{info.balance?.value.toLocaleString()}</h1>
+                                </div>
+                            </div>
+                        )
+                    }
+                    {
+                        info.old_debt && (
+                            <div className="profile__right__card">
+                                <div className="profile__right__card__header">
+                                    <i style={{color: "#6D727B", fontSize: "2.5rem"}} className="fa-regular fa-credit-card"></i>
+                                    <h2>Eski platformadagi hisobi</h2>
+                                </div>
+                                <div className="profile__right__card__footer">
+                                    <h1>{info.old_debt?.value.toLocaleString()}</h1>
+                                </div>
+                            </div>
+                        )
+                    }
+                    {
+                        user.groups?.length > 0 ? (
+                            <div style={{width: "40%"}} className="profile__right__card">
+                                <h1>Guruhlar:</h1>
+                                <UserGroups data={user.groups}/>
+                            </div>
+                        ) : null
+                    }
+
+
+
+
+                </div>
+
+
+
+                {/*<div className="profile__container">*/}
+                {/*    <header className="profile__header">*/}
+                {/*        <div>*/}
+                {/*            <img className="profile-img" src={userImg ? userImg : img} alt=""/>*/}
+                {/*            <h2 className="profile-username">{user.username}</h2>*/}
+                {/*        </div>*/}
+                {/*        <div>*/}
+                {/*            <i className="fas fa-user profile-rankIcon" />*/}
+                {/*            <span className="profile-rankName">{user.type_role}</span>*/}
+                {/*        </div>*/}
+                {/*        <div>*/}
+                {/*            <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Accountant]}>*/}
+                {/*                <div*/}
+                {/*                    onClick={() => setActiveOptions(!activeOptions)}*/}
+                {/*                    className="profile__header-btn"*/}
+                {/*                >*/}
+                {/*                    <i className="fas fa-ellipsis-v" />*/}
+                {/*                    <div*/}
+                {/*                        className={classNames('modalOptions', {*/}
+                {/*                            "active": activeOptions*/}
+                {/*                        })}*/}
+                {/*                    >*/}
+                {/*                        {renderedLinks}*/}
+                {/*                    </div>*/}
+                {/*                </div>*/}
+                {/*            </RequireAuthChildren>*/}
+
+                {/*        </div>*/}
+                {/*    </header>*/}
+
+                {/*    <div className="profile__subHeader">*/}
+
+                {/*    </div>*/}
+
+                {/*    <main className="profile__main">*/}
+                {/*        {renderedItems}*/}
+                {/*    </main>*/}
+                {/*</div>*/}
             </div>
 
             <RequireAuthChildren allowedRules={[ROLES.Admin,ROLES.Director,ROLES.Programmer]}>
@@ -409,15 +594,16 @@ const UserGroups = React.memo(({data}) => {
         const userImg = item.photo_profile ? `${BackUrl}${item.photo_profile}` : null
         return (
             <Link to={`../../../insideGroup/${item.id}`}>
-                <div className="groups__item">
+                <div style={{display: "flex", alignItems: "center", gap: "1rem", borderBottom: "2px solid #E3E5E8", padding: "1rem"}} className="groups__item">
                     <h1 className="index">{index+1}.</h1>
-                    <img src={userImg ? userImg : img} alt="teacherImg"/>
+                    <img style={{width: "5rem"}} src={userImg ? userImg : img} alt="teacherImg"/>
                     <h1 className="name">{item?.nameGroup}</h1>
                 </div>
             </Link>
         )
     })
 })
+
 
 const StudentPaymentChange = ({userId,setActiveChangeModal}) => {
 
