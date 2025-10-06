@@ -116,12 +116,14 @@ const UsersTable = React.memo(({
 
     const renderElements = useCallback(() => {
         return usersList?.map((item,index) => {
+
             const userImg = item.photo_profile ? `${BackUrlForDoc}${item.photo_profile}` : user_img
 
             return (
                 <tr key={index} >
                     <td>{index + 1}</td>
                     <td className="imgTd" onClick={(e) => LinkToUser(e,item.id)}><img src={userImg} alt="userImg"/></td>
+                    {activeRowsInTable.fullname ? <td>{item.name} {item.surname}</td> : ""}
                     {activeRowsInTable.name ? <td>{stringCheck(item.name)}</td> : null}
                     {activeRowsInTable.surname ? <td>{stringCheck(item.surname)}</td> : null}
                     {activeRowsInTable.username ? <td>{stringCheck(item.username)}</td>: null}
@@ -142,13 +144,15 @@ const UsersTable = React.memo(({
                             </td> : null
                     }
                     {
-                        activeRowsInTable.subjects ?
+                        activeRowsInTable?.subjects ?
                             <td>
+
                                 {
-                                    item.subjects.map((item,index) =>{
+                                    item?.subjects?.map((item,index) =>{
                                         return <span key={index} className="subject">
+
                                             {
-                                                item.substring(0,8)
+                                                item?.substring(0,8)
                                             }...
                                         </span>
                                     })
@@ -269,6 +273,7 @@ const UsersTable = React.memo(({
                     <tr className="tbody_th">
                         <th/>
                         <th/>
+                        {activeRowsInTable.fullname ? <th>F.I.O</th> : null}
                         {activeRowsInTable.name ? <th>Ism</th> : null}
                         {activeRowsInTable.surname ?  <th>Familya</th> : null}
                         {activeRowsInTable.username ?  <th>Username</th> : null}

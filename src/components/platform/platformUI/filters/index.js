@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 
 import Button from "components/platform/platformUI/button";
@@ -7,18 +7,24 @@ import Button from "components/platform/platformUI/button";
 import "./filters.sass"
 import FilterFromTo from "components/platform/platformUI/filters/filterFromTo";
 import FilterSelect from "components/platform/platformUI/filters/filterSelect";
-import {setActive, setDateFilter} from "slices/filtersSlice";
-import {setFilters} from "../../../../slices/currentFilterSlice";
+import {setActive, setDateFilter, setSelectOption} from "slices/filtersSlice";
+import {setFilters} from "slices/currentFilterSlice";
 import {useSearchParams} from "react-router-dom";
 import Input from "components/platform/platformUI/input";
+import Select from "components/platform/platformUI/select";
+import {useHttp} from "hooks/http.hook";
+import {BackUrl, BackUrlForDoc, headers} from "constants/global";
 
-const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters}) => {
+
+const Filters = React.memo(({activeOthers, heightOtherFilters, filterRef, filters}) => {
 
     const clazzOtherFilters = activeOthers ? "otherFilters otherFilters_active" : "otherFilters "
 
+
+
     const style = useMemo(() => ({
         height: heightOtherFilters + "px"
-    }),[heightOtherFilters])
+    }), [heightOtherFilters])
 
     const styleOtherFilters = activeOthers ? style : null
 
@@ -26,7 +32,7 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
     const renderFilters = useCallback(() => {
         const filtersKeys = Object.keys(filters)
 
-        return filtersKeys?.map((key ,index) => {
+        return filtersKeys?.map((key, index) => {
             if (filters[key].type === "select") {
                 return (
                     <div data-key={index} key={index} className="otherFilters__item">
@@ -40,8 +46,7 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
                         </div>
                     </div>
                 )
-            }
-            else if (filters[key].type === "btn") {
+            } else if (filters[key].type === "btn") {
                 return (
                     <div data-key={index} key={index} className="otherFilters__item">
                         <h2>{filters[key].title}:</h2>
@@ -54,8 +59,7 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
                         </div>
                     </div>
                 )
-            }
-            else if (filters[key].type === "input") {
+            } else if (filters[key].type === "input") {
                 return (
                     <div data-key={index} key={index} className="otherFilters__item">
                         <h2>{filters[key].title}:</h2>
@@ -66,8 +70,7 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
                         </div>
                     </div>
                 )
-            }
-            else if (filters[key].type === "date") {
+            } else if (filters[key].type === "date") {
                 return (
                     <div data-key={index} key={index} className="otherFilters__item">
                         <h2>{filters[key].title}:</h2>
@@ -81,22 +84,22 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
             }
 
 
-
         })
-    },[filters])
+    }, [filters ])
 
 
     const renderedFilters = renderFilters()
-
-
     return (
         <div>
             <div
                 className={clazzOtherFilters}
-                style={styleOtherFilters}
+                style={ styleOtherFilters}
                 ref={filterRef}
             >
                 {renderedFilters}
+
+
+
             </div>
 
         </div>
@@ -104,9 +107,7 @@ const Filters = React.memo(({activeOthers,heightOtherFilters,filterRef,filters})
 })
 
 
-
-
-const FilterSubItem = React.memo(({funcsSlice,itemBtns,activeFilter,activeBtns}) => {
+const FilterSubItem = React.memo(({funcsSlice, itemBtns, activeFilter, activeBtns}) => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const dispatch = useDispatch()
@@ -124,11 +125,11 @@ const FilterSubItem = React.memo(({funcsSlice,itemBtns,activeFilter,activeBtns})
             newValue = subFilter;
         }
 
-        dispatch(setFilters({ [activeFilter]: newValue }));
-        setSearchParams({ ...currentFilters, [activeFilter]: newValue || "" });
+        dispatch(setFilters({[activeFilter]: newValue}));
+        setSearchParams({...currentFilters, [activeFilter]: newValue || ""});
     };
 
-    return itemBtns.map( (item,index) => {
+    return itemBtns.map((item, index) => {
 
 
         if (Array.isArray(activeBtns)) {
@@ -148,7 +149,7 @@ const FilterSubItem = React.memo(({funcsSlice,itemBtns,activeFilter,activeBtns})
             return (
                 <Button
                     key={index}
-                    onClickBtn={() => onChangeFilter(item,activeFilter)}
+                    onClickBtn={() => onChangeFilter(item, activeFilter)}
                     active={item === activeBtns}
                 >
                     {item}
@@ -160,9 +161,9 @@ const FilterSubItem = React.memo(({funcsSlice,itemBtns,activeFilter,activeBtns})
     })
 })
 
-const FilterDate = ({ funcsSlice, activeFilter }) => {
+const FilterDate = ({funcsSlice, activeFilter}) => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const { currentFilters } = useSelector(state => state.currentFilterSlice);
+    const {currentFilters} = useSelector(state => state.currentFilterSlice);
 
     const [from, setFrom] = useState();
     const [to, setTo] = useState();
@@ -171,28 +172,27 @@ const FilterDate = ({ funcsSlice, activeFilter }) => {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        const fromTo = { from, to };
-        const days = { from  , to };
+        const fromTo = {from, to};
+        const days = {from, to};
 
         // Redux filter update
-        dispatch(setDateFilter({ activeFilter, fromTo }));
+        dispatch(setDateFilter({activeFilter, fromTo}));
         dispatch(setFilters(days));
 
         // URL params update
-        setSearchParams({ ...currentFilters, ...days });
+        setSearchParams({...currentFilters, ...days});
     };
 
     return (
         <form className="fromToForm" onSubmit={onSubmit}>
             <div>
-                <Input title="От" type={"date"} name="from" onChange={setFrom} />
-                <Input title="До" type={"date"}  name="to" onChange={setTo} />
+                <Input value={currentFilters.from || ""} title="От" type={"date"} name="from" onChange={setFrom}/>
+                <Input value={currentFilters.to || ""} title="До" type={"date"} name="to" onChange={setTo}/>
             </div>
-            <input className="input-submit" type="submit" />
+            <input className="input-submit" type="submit"/>
         </form>
     );
 }
-
 
 
 export default Filters;
