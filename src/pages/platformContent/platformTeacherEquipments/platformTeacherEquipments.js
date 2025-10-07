@@ -48,8 +48,7 @@ export const PlatformTeacherEquipments = () => {
         dispatch(updateLoading())
         const forPatch = {
             ...data,
-            status: selectedStatus,
-            deleted: true
+            status: selectedStatus
         }
         request(`${BackUrl}teacher/teacher-requests/${changeItem?.id}`, "PATCH", JSON.stringify(forPatch), headers())
             .then(res => {
