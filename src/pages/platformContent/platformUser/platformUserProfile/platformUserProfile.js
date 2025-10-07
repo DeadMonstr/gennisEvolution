@@ -347,16 +347,18 @@ const UserContent = ({userId}) => {
                                 )
                             }
                             {
-                                info.subject?.length > 0 ? (
+                                user.subjects?.length > 0 ? (
                                     <div className="profile__left__contact__arounder__list">
                                         <i style={{color: "#6D727B", fontSize: "2rem"}} className="fa-regular fa-file"></i>
                                         <span className="profile__left__contact__arounder__list__span">
                                     <p>Fan</p>
-                                            {
-                                                info.subject?.value.map((item,index) => (
-                                                    <h2 style={{marginTop: "2rem"}}>{item.name}</h2>
+                                            {Array.isArray(user.subjects) ? (
+                                                user.subjects.map((item, index) => (
+                                                    <h2 key={index} style={{ marginTop: "2rem" }}>{item.name}</h2>
                                                 ))
-                                            }
+                                            ) : (
+                                                <h2 style={{ marginTop: "2rem" }}>{user.subjects?.name}</h2>
+                                            )}
 
                                 </span>
                                     </div>
@@ -377,7 +379,7 @@ const UserContent = ({userId}) => {
                                     <h2>Umumiy hisob</h2>
                                 </div>
                                 <div className="profile__right__card__footer">
-                                    <h1>{info.combined_payment?.value.toLocaleString()}</h1>
+                                    <h1>{info.combined_payment?.value?.toLocaleString()}</h1>
                                 </div>
                             </div>
                         )
@@ -391,7 +393,7 @@ const UserContent = ({userId}) => {
                                     <h2>Hisobi</h2>
                                 </div>
                                 <div className="profile__right__card__footer">
-                                    <h1>{info.balance?.value.toLocaleString()}</h1>
+                                    <h1>{info.balance?.value?.toLocaleString()}</h1>
                                 </div>
                             </div>
                         )
@@ -404,7 +406,7 @@ const UserContent = ({userId}) => {
                                     <h2>Eski platformadagi hisobi</h2>
                                 </div>
                                 <div className="profile__right__card__footer">
-                                    <h1>{info.old_debt?.value.toLocaleString()}</h1>
+                                    <h1>{info.old_debt?.value?.toLocaleString()}</h1>
                                 </div>
                             </div>
                         )
