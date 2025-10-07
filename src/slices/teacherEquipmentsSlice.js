@@ -4,9 +4,9 @@ import { useHttp } from "hooks/http.hook";
 
 export const fetchQuarterMasterData = createAsyncThunk(
     "teacherEquipments/fetchQuarterMasterData",
-    ({id, status}) => {
+    ({id, status, deleted}) => {
         const {request} = useHttp()
-        return request(`${BackUrl}teacher/teacher-requests?location_id=${id}${status !== "all" ? `&status=${status}` : ""}`, "GET", null, headers())
+        return request(`${BackUrl}teacher/teacher-requests?location_id=${id}${status !== "all" ? `&status=${status}` : ""}&deleted=${deleted}`, "GET", null, headers())
     }
 )
 
@@ -30,6 +30,10 @@ export const teacherEquipments = createSlice({
                     return action.payload
                 } else return item
             })
+        },
+        deleteQuarter: (state, action) => {
+            state.loading = false
+            state.quarterMasters = state.quarterMasters.filter(item => item.id !== action.payload)
         }
     },
     extraReducers: builder =>
@@ -53,6 +57,7 @@ export const {reducer: quarterMasterReducer, actions: quarterMasterActions} = te
 
 export const {
     updateLoading,
-    updateQuarter
+    updateQuarter,
+    deleteQuarter
 } = quarterMasterActions
 export default teacherEquipments.reducer

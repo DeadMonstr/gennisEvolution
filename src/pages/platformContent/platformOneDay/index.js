@@ -26,7 +26,7 @@ const PlatformOneDay = () => {
     const [selectedType, setSelectedType] = useState(null)
 
     const [titles, setTitles] = useState([])
-    const [activeTitle, setActiveTitle] = useState(null)
+    const [activeTitle, setActiveTitle] = useState("all")
 
     useEffect(() => {
         if (lastDate) {
@@ -247,6 +247,7 @@ const PlatformOneDay = () => {
                         options={[{name: "Hammasi", id: "all"}, ...titles]}
                         // title
                         onChangeOption={setActiveTitle}
+                        defaultValue={activeTitle}
                     />
                 </div>
                 <div className={cls.date}>

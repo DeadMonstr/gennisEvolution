@@ -35,7 +35,7 @@ const App = () => {
             {/*</Route>*/}
 
 
-            <Route element={<RequireAuth allowedRules={[ROLES.Admin,ROLES.Director,ROLES.User,ROLES.Student,ROLES.Teacher,ROLES.Programmer,ROLES.Smm,ROLES.Editor,ROLES.Accountant , ROLES.Main_admin]}/>} >
+            <Route element={<RequireAuth allowedRules={[ROLES.Admin,ROLES.Director,ROLES.User,ROLES.Student,ROLES.Teacher,ROLES.Programmer,ROLES.Smm,ROLES.Editor,ROLES.Accountant , ROLES.Main_admin, ROLES.Zavxos]}/>} >
                 <Route path="/platform"  element={<Platform/>} >
                     <Route path="/platform/*" element={<PlatformContent/>}/>
                 </Route>

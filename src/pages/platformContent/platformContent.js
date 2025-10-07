@@ -109,19 +109,23 @@ const PlatformContent = () => {
 
     const dispatch = useDispatch()
     const {locations} = useSelector(state => state.locations)
+    const {location} = useSelector(state => state.me)
 
 
     useEffect(() => {
         dispatch(fetchLocations())
     },[])
 
+    console.log(location);
+    
 
 
     return (
         <div className="content" id={"content"}>
             <Suspense fallback={<DefaultLoader/>} >
                 <Routes>
-                    <Route path="home" element={<PlatformHome/>}/>
+                    {/* <Route path="home" element={<PlatformHome/>}/> */}
+                    <Route path="home/:locationId" element={<PlatformOneDay/>}/>
                     <Route path="taskManager/:locationId" element={<PlatformTaskManager/>}/>
                     <Route path="blockTest/:locationId" element={<PlatformBlockTest/>}/>
                     <Route path="newRegister" element={<PlatformNewRegister/>}/>
@@ -139,7 +143,7 @@ const PlatformContent = () => {
                     <Route path="users/:locationId/*" element={<PlatformUsersPage/>}/>
 
 
-                    <Route path="oneDay/:locationId" element={<PlatformOneDay/>}/>
+                    {/* <Route path="oneDay/:locationId" element={<PlatformOneDay/>}/> */}
                     <Route path="adminItem/:locationId" element={<PlatformAdminItem/>}/>
 
 
@@ -240,7 +244,7 @@ const PlatformContent = () => {
                     <Route path="myStudents/:id" element={<PlatformSchoolTeacherStudents/>}/>
                     <Route path="registeredSchoolStudents/:id" element={<PlatformSchoolStudentsRegister/>}/>
                     <Route path="parentSection/:id" element={<PlatformParentSection/>}/>
-                    <Route path="teacherEquipments" element={<PlatformTeacherEquipments/>}/>
+                    <Route path="teacherEquipments/:id" element={<PlatformTeacherEquipments/>}/>
 
 
                     <Route
@@ -265,7 +269,11 @@ const PlatformContent = () => {
                     {/*    path="newStudents/:locationId"*/}
                     {/*    element={<Navigate to="list" replace />}*/}
                     {/*/>*/}
-
+                    
+                    <Route
+                        path="home"
+                        element={<Navigate to={`../home/${location}`}/>}
+                    />
                 </Routes>
             </Suspense>
         </div>
