@@ -3,14 +3,14 @@ import {useMemo} from "react";
 // export const ClassroomUrl = `https://classroom.gennis.uz"/`
 //
 
-// export const BackUrlForDoc = `http://26.12.122.72:5002/`
-// export const BackUrl = `${BackUrlForDoc}api/`
+export const BackUrlForDoc = `http://26.196.249.247:5002/`
+export const BackUrl = `${BackUrlForDoc}api/`
 //
 // export const ClassroomUrl = `http://localhost:3000/`
 // export const ClassroomUrlForDoc = "http://26.12.122.72:5001/"
 //
-export const BackUrl = "https://admin.gennis.uz/api/"
-export const BackUrlForDoc = "https://admin.gennis.uz/"
+// export const BackUrl = "https://admin.gennis.uz/api/"
+// export const BackUrlForDoc = "https://admin.gennis.uz/"
 //
 
 
@@ -51,6 +51,7 @@ export const ROLES = {
     Smm: "a21b00q41",
     Editor: "n41c88z45",
     Accountant: "ak47a76m69",
+    Zavxos: "z2vs2221"
 }
 
 
@@ -60,6 +61,8 @@ export const requireMenuItems = (id) => {
             to : "home",
             name: "Bosh sahifa",
             classIcon: "fa-home",
+            location: true,
+            children: true,
             roles: [ROLES.Admin,ROLES.User,ROLES.Director,ROLES.Programmer,ROLES.Teacher,ROLES.Student,ROLES.Editor,ROLES.Smm,ROLES.Accountant]
         },
         {
@@ -284,14 +287,6 @@ export const requireMenuItems = (id) => {
         //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
         // },
         {
-            to : "oneDay",
-            name : "Kunlik hisob",
-            classIcon: "fa-chart-line",
-            location: true,
-            children: true,
-            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer , ROLES.Accountant , ROLES.Main_admin]
-        },
-        {
             to : "accounting",
             name : "Buxgalteriya hisobi",
             classIcon: "fa-file-invoice-dollar",
@@ -425,6 +420,14 @@ export const requireMenuItems = (id) => {
             location: true,
             children: true,
             roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Accountant]
+        },
+        {
+            to : "teacherEquipments",
+            name : "Zavxoz profil",
+            classIcon: "fa-toolbox icon-link",
+            location: true,
+            children: true,
+            roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer,ROLES.Accountant, ROLES.Zavxos]
         },
         // {
         //     to : "staffs",

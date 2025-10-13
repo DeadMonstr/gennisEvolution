@@ -37,9 +37,11 @@ const AddGroupModal = ({btnName, activeModal, setMsg, setTypeMsg, setActiveMessa
     const locationId = localStorage.getItem("selectedLocation")
 
     useEffect(() => {
-        dispatch(fetchGroups(locationId))
+        if (locationId) {
+            dispatch(fetchGroups(locationId))
+            dispatch(fetchTeachersByLocationWithoutPagination({locationId}))
+        }
         dispatch(fetchCreateGroupTools())
-        dispatch(fetchTeachersByLocationWithoutPagination({locationId}))
     }, [dispatch, locationId])
 
 

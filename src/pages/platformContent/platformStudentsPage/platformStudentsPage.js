@@ -8,6 +8,7 @@ import PlatformDeletedGroupsStudents
     from "pages/platformContent/platformDeletedGroupStudents/platformDeletedGroupsStudents";
 import {useLocation} from "react-router-dom";
 import cls from "pages/platformContent/platformUsersPage/platformUsersPage.module.sass";
+import { PlatformStudentsAttendance } from "../platformStudentsAttendance/platformStudentsAttendance";
 
 const studentsPage = [
     {
@@ -22,7 +23,10 @@ const studentsPage = [
         name: "deletedStudents",
         label: "Deleted students"
     },
-
+    {
+        name: "attendance",
+        label: "Davomat"
+    }
 ]
 
 const PlatformStudentsPage = () => {
@@ -44,6 +48,8 @@ const PlatformStudentsPage = () => {
                 return <PlatformStudyingStudents/>
             case "deletedStudents" :
                 return <PlatformDeletedGroupsStudents/>
+            case "attendance" :
+                return <PlatformStudentsAttendance/>
         }
     }
     const isProfilePage = location.pathname.includes("profile");

@@ -39,7 +39,8 @@ const ChangeGroupStudents = () => {
 
 
     useEffect(() => {
-        dispatch(fetchTeachersByLocationWithoutPagination({locationId}))
+        if (locationId)
+            dispatch(fetchTeachersByLocationWithoutPagination({locationId}))
     }, [])
 
     useEffect(() => {

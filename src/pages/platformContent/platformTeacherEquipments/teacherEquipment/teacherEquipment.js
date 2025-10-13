@@ -39,23 +39,32 @@ const CommentIcon = () => (
     </svg>
 )
 
-export function TeacherEquipment({ order, onChange, statuses }) {
+export function TeacherEquipment({ order, onChange, onDelete, statuses, isDelete }) {
     
   const { quantity, itemName } = parseText(order.text)
 
   return (
     <div className={styles.card}>
         <div className={styles.cardTop}>
-            <div className={styles.userInfo}>
-                <div className={styles.avatar}>
-                    <UserIcon />
-                </div>
-                <div className={styles.userDetails}>
-                    <div className={styles.userName}>{order.teacher_name}</div>
-                    <div className={styles.branchName}>{order.branch_name}</div>
-                </div>
+          <div className={styles.userInfo}>
+              <div className={styles.avatar}>
+                  <UserIcon />
+              </div>
+              <div className={styles.userDetails}>
+                  <div className={styles.userName}>{order.teacher_name}</div>
+                  <div className={styles.branchName}>{order.branch_name}</div>
+              </div>
+          </div>
+          {
+            !isDelete &&
+            <div className={styles.cardTop__inner}>
+              <div onClick={onChange} className={`${styles.status} ${styles[order.status]}`}>{statuses?.filter(item => item.id === order.status)[0]?.name}</div>
+              <i
+                className="fas fa-trash"
+                onClick={onDelete}
+              /> 
             </div>
-            <div onClick={onChange} className={`${styles.status} ${styles[order.status]}`}>{statuses?.filter(item => item.id === order.status)[0]?.name}</div>
+          }
         </div>
 
         <div className={styles.orderDetails}>
