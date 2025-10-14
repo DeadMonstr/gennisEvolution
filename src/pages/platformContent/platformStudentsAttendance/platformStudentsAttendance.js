@@ -13,68 +13,35 @@ export const PlatformStudentsAttendance = () => {
     const dispatch = useDispatch()
 
     const {attendance, attendanceCount, loading} = useSelector(state => state.groupsAttendanceSlice)
-    // const attendanceDates = useSelector(getAttendanceAll)
     const {location} = useSelector(state => state.me)
     const [selectedDate, setSelectedDate] = useState(null)
 
-    // const onSelectYear = (year) => {
-    //     setSelectedYear(+year);
-
-    //     const yearData = attendanceDates?.filter(item => item.year === +year)[0];
-    //     if (yearData) {
-    //         const months = yearData?.months?.map(m => m.month);
-    //         setAttendanceMonth(months);
-
-    //         const lastMonthObj = yearData?.months[yearData?.months?.length - 1];
-    //         setSelectedMonth(lastMonthObj?.month);
-
-    //         setAttendanceDays(lastMonthObj?.days);
-    //         setSelectedDay(lastMonthObj?.days[lastMonthObj?.days?.length - 1]);
-    //     }
-    // };
-
-    // const onSelectMonth = (month) => {
-    //     setSelectedMonth(month);
-
-    //     const yearData = attendanceDates.filter(item => item.year === selectedYear)[0];
-    //     if (yearData) {
-    //         const monthData = yearData?.months?.filter(m => m.month === +month)[0];
-    //         if (monthData) {
-    //             setAttendanceDays(monthData?.days);
-
-    //             setSelectedDay(monthData?.days[monthData?.days?.length - 1]);
-    //         }
-    //     }
-    // };
-
-
-    // useEffect(() => {
-    //     if (attendanceDates && attendanceDates.length) {
-    //         const lastYear = attendanceDates[attendanceDates?.length - 1]?.year
-    //         const yearMonths = attendanceDates.filter(item => item.year === lastYear)[0]?.months
-    //         const lastMonth = yearMonths[yearMonths?.length - 1]
-    //         setAttendanceYears(attendanceDates?.map(item => item?.year))
-    //         setAttendanceMonth(yearMonths?.map(item => item?.month))
-    //         setSelectedYear(lastYear)
-    //         setSelectedMonth(lastMonth?.month)
-    //         setAttendanceDays(lastMonth?.days)
-    //         setSelectedDay(lastMonth?.days[lastMonth?.days?.length - 1])
-    //     }
-    // }, [attendanceDates])
-
     useEffect(() => {
-        // dispatch(getSchoolAttendanceAll())
+        const today = new Date().toISOString().split("T")[0]
+        setSelectedDate(today)
     }, [])
 
     useEffect(() => {
+        // if (!selectedDate) {
+            // const savedDate = localStorage.getItem("selectedDate")
+            // if (savedDate) {
+                // setSelectedDate(savedDate)
+            // } else {
+                // const today = new Date().toISOString().split("T")[0]
+                // setSelectedDate(today)
+                // localStorage.setItem("selectedDate", today)
+            // }
+        // }
+
         if (selectedDate && location) {
-            const [year, month, day] = selectedDate.split("-");
+            const [year, month, day] = selectedDate.split("-")
             dispatch(fetchGroupsAttendance({
                 location,
                 day,
                 month,
                 year
             }))
+            localStorage.setItem("selectedDate", selectedDate)
         }
     }, [selectedDate, location])
 
@@ -154,7 +121,7 @@ export const PlatformStudentsAttendance = () => {
                         options={attendanceYears}
                         defaultValue={selectedYear}
                     /> */}
-                    <Input type={"date"} onChange={setSelectedDate}/>
+                    <Input defaultValue={selectedDate} type={"date"} onChange={setSelectedDate}/>
                 </div>
             </div>
             <div className={cls.studentAttendance__container}>
