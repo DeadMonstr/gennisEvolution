@@ -1,0 +1,76 @@
+.filter
+  display: flex
+  flex-direction: column
+  gap: 1rem
+
+  &__header
+    width: 100%
+    //height: 10rem
+    border: 1px solid oklch(0.93 0 0)
+    border-radius: 10px
+    padding: 2rem
+    display: flex
+    flex-direction: column
+    gap: .5rem
+
+    &_buttons
+      display: flex
+    //gap: .5rem
+    &_type
+      display: flex
+      gap: 4rem
+      //justify-content: flex-start
+      width: fit-content
+
+      &_item
+        color: oklch(0.56 0.02 131.48)
+        text-transform: capitalize
+        display: flex
+        flex-direction: column
+        gap: .4rem
+        &  > span
+          //font-size: 1.2rem
+
+  //font-size: 1.2rem
+
+  &__body
+    width: 100%
+    border: 1px solid oklch(0.93 0 0)
+    border-radius: 10px
+    padding: 2rem
+    gap: 2rem
+    display: flex
+    flex-direction: column
+  //height: 20rem
+  &__item
+    display: flex
+    flex-direction: column
+    gap: 1rem
+    //margin-top: 1.5rem
+    &_btns
+      display: flex
+  &__footer
+    display: flex
+    align-items: center
+    justify-content: space-between
+
+    //border: 1px solid oklch(0.93 0 0)
+    //width: 100%
+    //border-radius: 10px
+    //padding: 2rem
+    &_btns
+      display: flex
+    &_payment
+      display: flex
+      gap: 2rem
+.filter__body_wrapper
+  overflow: hidden
+
+.modal
+  width: 100%
+  display: flex
+  align-items: center
+  justify-content: center
+  padding: 5rem
+  background: white
+  border-radius: 10px

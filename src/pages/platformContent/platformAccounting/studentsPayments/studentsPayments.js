@@ -119,6 +119,7 @@ const StudentsPayments = ({locationId, path}) => {
 
         const route = "students_payments/"
 
+        console.log(activeFilters, "activeFilters")
         dispatch(fetchAccData({
             data: params,
             isArchive: !!params.archive,
@@ -133,7 +134,7 @@ const StudentsPayments = ({locationId, path}) => {
 
         dispatch(onChangeFetchedDataType({type: path}));
 
-    }, [locationId, currentPage, btns, path , activeFilters]);
+    }, [locationId, currentPage, btns, path , ]);
 
     useEffect(() => {
         if (oldPage) {

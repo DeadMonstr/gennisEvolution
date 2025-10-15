@@ -42,6 +42,7 @@ import parentSlice from "slices/parentSectionSlice"
 import adminRatingSlice from "slices/adminRatingSlice";
 import currentFilterSlice from "slices/currentFilterSlice";
 import teacherEquipmentsSlice from "slices/teacherEquipmentsSlice";
+import newAccountingSlice from "pages/platformContent/platformAccounting2.0/model/accountingSlice"
 import groupsAttendanceSlice from "slices/groupsAttendanceSlice";
 
 const stringMiddlewere = () => (next) => (action) => {
@@ -96,8 +97,9 @@ const store = configureStore({
         parentSlice,
         adminRatingSlice,
         currentFilterSlice,
+        groupsAttendanceSlice,
         teacherEquipmentsSlice,
-        groupsAttendanceSlice
+        newAccountingSlice
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware().concat(

@@ -1,0 +1,203 @@
+import React, {useMemo, useState} from "react";
+import cls from "./accountingTable.module.sass"
+
+import {useDispatch, useSelector} from "react-redux";
+import {
+    newAccountingData, newAccountingDataLoading,
+    newAccountingTotalCount
+} from "../model/accountingSelector";
+import DefaultLoader from "components/loader/defaultLoader/DefaultLoader";
+import {RenderTh} from "../accountingRender/renderTh";
+import {RenderTd} from "../accountingRender/renderTd";
+
+import Modal from "components/platform/platformUI/modal";
+import Confirm from "components/platform/platformModals/confirm/confirm";
+import ConfimReason from "components/platform/platformModals/confirmReason/confimReason";
+import {changePaymentType, onDeleteItem} from "../model/accountingSlice";
+import Select from "components/platform/platformUI/select";
+import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
+import {useHttp} from "hooks/http.hook";
+import {BackUrl, headers} from "constants/global";
+import {RenderRoute} from "pages/platformContent/platformAccounting2.0/renderRoute/renderRoute";
+
+
+export const AccountingTable = ({
+                                    currentPage,
+                                    setCurrentPage,
+                                    handleDelete,
+                                    pageSize = 10,
+                                }) => {
+
+    const options = [
+        {
+            value: "cash",
+            name: "Cash"
+        },
+        {
+            value: "bank",
+            name: "Bank"
+        },
+        {
+            value: "click",
+            name: "Click"
+        }
+    ]
+    const loading = useSelector(newAccountingDataLoading)
+    const data = useSelector(newAccountingData)
+
+    const [confirmModal, setConfirmModal] = useState(false)
+    const [confirm, setConfirm] = useState("")
+    //delete item olish uchun
+    const [item, setItem] = useState({})
+    const dispatch = useDispatch()
+    const [changeActive, setChangeActive] = useState(false)
+    const {request} = useHttp()
+    const [renderRoute, setRenderRoute] = useState({})
+
+
+
+    const onDelete = () => {
+
+        request(`${BackUrl}account/${renderRoute.delete}/${item.id}`, "POST", JSON.stringify({}), headers())
+            .then(res => {
+                setConfirm("")
+
+                setConfirmModal(false)
+
+                dispatch(onDeleteItem(item.id))
+                setItem({})
+            })
+
+
+    }
+
+
+    const changePayment = (id, value) => {
+        request(`${BackUrl}account/${renderRoute.change}/${item.id}/${value}/${item.userId}`, "GET", null, headers())
+            .then(res => {
+                dispatch(changePaymentType({id, typePayment: value}));
+                setChangeActive(false)
+                setItem({})
+            })
+
+    };
+
+    return (
+        <div className={cls.card}>
+            <div className={cls.tableWrapper}>
+                {loading ? <DefaultLoader/> : <table className={cls.table}>
+                    <thead>
+                    <tr>
+                        <RenderTh/>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {data.length > 0 && data?.map((item, index) => (
+                        <tr key={item?.id}>
+                            <RenderTd setChangeActive={setChangeActive} setItem={setItem} item={item} index={index}
+                                      setConfirmModal={setConfirmModal}/>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>}
+            </div>
+
+
+            <Pagination loading={loading} currentPage={currentPage} setCurrentPage={setCurrentPage}
+                        pageSize={pageSize}/>
+            <Modal activeModal={confirmModal} setActiveModal={() => setConfirmModal(false)}>
+                <Confirm setActive={setConfirmModal} text={"O'chirilsinmi?"}
+                         getConfirm={setConfirm}/>
+            </Modal>
+            {
+                confirm === "yes" ?
+                    <Modal
+                        activeModal={confirmModal}
+                        setActiveModal={() => {
+                            setConfirmModal(false)
+                            setConfirm("")
+                        }}
+                    >
+                        <ConfimReason getConfirm={onDelete} reason={true}/>
+                    </Modal> : null
+            }
+            <Modal activeModal={changeActive} setActiveModal={() => setChangeActive(false)}>
+                <div className="changeTypePayment">
+                    <Select
+                        options={options}
+                        name={""}
+                        title={"Payment turi"}
+                        onChangeOption={changePayment}
+                        id={item.id}
+                        defaultValue={item.typePayment}
+                    />
+                </div>
+            </Modal>
+            <RenderRoute setRenderRoute={setRenderRoute}/>
+
+        </div>
+    );
+};
+
+
+const Pagination = ({
+                        currentPage,
+                        setCurrentPage,
+                        handleDelete,
+                        pageSize,
+                        loading
+                    }) => {
+    const totalPage = useSelector(newAccountingTotalCount)
+
+    const totalPages = Math.ceil(totalPage / pageSize);
+    const pages = useMemo(() => {
+        const visiblePages = [];
+        const maxVisible = 5;
+
+        if (totalPages <= maxVisible) {
+            for (let i = 1; i <= totalPages; i++) visiblePages.push(i);
+        } else {
+            let start = Math.max(1, currentPage - 2);
+            let end = Math.min(totalPages, start + maxVisible - 1);
+            if (end - start < maxVisible - 1) start = Math.max(1, end - maxVisible + 1);
+            for (let i = start; i <= end; i++) visiblePages.push(i);
+        }
+
+        return visiblePages;
+    }, [totalPages, currentPage]);
+
+    return (
+        <div className={cls.pagination}>
+            {/*{loading ? <div style={{width: "fit-content"}}><DefaultLoaderSmall/></div> : <>*/}
+
+                <button
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className={cls.pageBtn}
+                >
+                    <i className={"fas fa-chevron-left"}/>
+                </button>
+
+                {pages.map((page) => (
+                    <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`${cls.pageBtn} ${
+                            currentPage === page ? cls.activePage : ""
+                        }`}
+                    >
+                        {page}
+                    </button>
+                ))}
+
+                <button
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className={cls.pageBtn}
+                >
+                    <i className={"fas fa-chevron-right"}/>
+                </button>
+            {/*</>}*/}
+        </div>
+    )
+}
