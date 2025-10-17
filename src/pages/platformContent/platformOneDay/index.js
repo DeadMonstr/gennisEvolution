@@ -13,7 +13,7 @@ import cls from "./style.module.sass";
 
 const PlatformOneDay = () => {
 
-    const lastDate = localStorage.getItem("from_toData")
+    const lastType = localStorage.getItem("oneDayType")
     const {request} = useHttp()
     const {locationId} = useParams()
 
@@ -29,17 +29,17 @@ const PlatformOneDay = () => {
     const [activeTitle, setActiveTitle] = useState("all")
 
     useEffect(() => {
-        if (lastDate) {
-            const last = JSON.parse(lastDate)
-            setFromDate(last.fromDate)
-            setToDate(last.toDate)
-        } else {
-            const date = new Date()
-            const getFullDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
-            setFromDate(getFullDate)
-            setToDate(getFullDate)
+        const today = new Date().toISOString().split("T")[0];
+        setFromDate(today)
+        setToDate(today)
+    }, [])
+
+    useEffect(() => {
+        if (lastType) {
+            // const last = JSON.parse(lastType)
+            setActiveTitle(lastType)
         }
-    }, [lastDate])
+    }, [lastType])
 
     useEffect(() => {
         if (locationId && fromDate && toDate) {
@@ -65,7 +65,7 @@ const PlatformOneDay = () => {
     useEffect(() => {
         if (!!date) {
             const sectionTitles = {
-                joined_students: "Qo‘shilgan o‘quvchilar",
+                joined_students: "Guruhga qo‘shilgan o‘quvchilar",
                 new_groups: "Yangi guruhlar",
                 new_students: "Yangi o‘quvchilar",
                 new_leads: "Yangi leadlar",
@@ -94,9 +94,14 @@ const PlatformOneDay = () => {
         }
     }, [date])
 
+    const onChangeType = (type) => {
+        localStorage.setItem("oneDayType", type)
+        setActiveTitle(type)
+    }
+
     const render = () => {
         const sectionTitles = {
-            joined_students: "Qo‘shilgan o‘quvchilar",
+            joined_students: "Guruhga qo‘shilgan o‘quvchilar",
             new_groups: "Yangi guruhlar",
             new_students: "Yangi o‘quvchilar",
             new_leads: "Yangi leadlar",
@@ -123,13 +128,22 @@ const PlatformOneDay = () => {
                 let columns = [];
                 let headers = {};
 
-                if (key.includes("students")) {
+                if (key.includes("new_students")) {
                     columns = ["name", "surname", "phone", "reg_date", "comment"];
                     headers = {
                         name: "Ism",
                         surname: "Familiya",
                         phone: "Telefon",
                         reg_date: "Ro‘yxatga olingan sana",
+                        comment: "Izoh"
+                    };
+                } else if (key.includes("joined")) {
+                    columns = ["name", "surname", "phone", "joined_date", "comment"];
+                    headers = {
+                        name: "Ism",
+                        surname: "Familiya",
+                        phone: "Telefon",
+                        joined_date: "Guruhga qo‘shilgan sana",
                         comment: "Izoh"
                     };
                 } else if (key.includes("salaries")) {
@@ -246,7 +260,7 @@ const PlatformOneDay = () => {
                     <Select
                         options={[{name: "Hammasi", id: "all"}, ...titles]}
                         // title
-                        onChangeOption={setActiveTitle}
+                        onChangeOption={onChangeType}
                         defaultValue={activeTitle}
                     />
                 </div>
