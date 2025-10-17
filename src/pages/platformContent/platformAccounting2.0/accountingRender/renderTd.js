@@ -10,13 +10,15 @@ export const RenderTd = ({item, index , setConfirmModal , setItem , setChangeAct
     }
 
 
+
     switch (selectOptionValue) {
+
         case "bookPayment": {
             return <>
-                <th>#</th>
-                <th>Nomi</th>
-                <th>Narxi</th>
-                <th>Sana</th>
+                <td>{index +1 }</td>
+                <td>{item.name}</td>
+                <td>{formatNumber(item.price)}</td>
+                <td>{item.date}</td>
             </>
         }
 

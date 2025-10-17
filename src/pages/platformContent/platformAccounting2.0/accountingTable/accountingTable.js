@@ -3,7 +3,7 @@ import cls from "./accountingTable.module.sass"
 
 import {useDispatch, useSelector} from "react-redux";
 import {
-    newAccountingData, newAccountingDataLoading,
+    newAccountingData, newAccountingDataLoading, newAccountingSelectOptionValue,
     newAccountingTotalCount
 } from "../model/accountingSelector";
 import DefaultLoader from "components/loader/defaultLoader/DefaultLoader";
@@ -19,6 +19,7 @@ import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSma
 import {useHttp} from "hooks/http.hook";
 import {BackUrl, headers} from "constants/global";
 import {RenderRoute} from "pages/platformContent/platformAccounting2.0/renderRoute/renderRoute";
+import {setMessage} from "slices/messageSlice";
 
 
 export const AccountingTable = ({
@@ -54,57 +55,149 @@ export const AccountingTable = ({
     const {request} = useHttp()
     const [renderRoute, setRenderRoute] = useState({})
 
+    const selectedValue = useSelector(newAccountingSelectOptionValue)
 
 
     const onDelete = () => {
 
-        request(`${BackUrl}account/${renderRoute.delete}/${item.id}`, "POST", JSON.stringify({}), headers())
-            .then(res => {
-                setConfirm("")
+        if (selectedValue === "teachersSalary" || selectedValue === "employeesSalary") {
+            request(`${BackUrl}account/${renderRoute.delete}/${item.id}/${item.user_id}`, "POST", JSON.stringify({}), headers())
+                .then(res => {
+                    setConfirm("")
 
-                setConfirmModal(false)
+                    setConfirmModal(false)
 
-                dispatch(onDeleteItem(item.id))
-                setItem({})
-            })
+                    dispatch(onDeleteItem(item.id))
+                    setItem({})
+                    dispatch(setMessage({
+                        msg: res.msg,
+                        type: "success",
+                        active: true
+                    }))
+                })
+        } else {
+            request(`${BackUrl}account/${renderRoute.delete}/${item.id}`, "POST", JSON.stringify({}), headers())
+                .then(res => {
+                    setConfirm("")
+
+                    setConfirmModal(false)
+
+                    dispatch(onDeleteItem(item.id))
+                    setItem({})
+                    dispatch(setMessage({
+                        msg: res.msg,
+                        type: "success",
+                        active: true
+                    }))
+                })
+        }
 
 
     }
 
 
     const changePayment = (id, value) => {
-        request(`${BackUrl}account/${renderRoute.change}/${item.id}/${value}/${item.userId}`, "GET", null, headers())
+        request(`${BackUrl}account/${renderRoute.change}/${item.id}/${value}${item.user_id ? `/${item.user_id}` : ""}`, "GET", null, headers())
             .then(res => {
                 dispatch(changePaymentType({id, typePayment: value}));
                 setChangeActive(false)
                 setItem({})
+                dispatch(setMessage({
+                    msg: res.msg,
+                    type: "success",
+                    active: true
+                }))
             })
 
     };
 
+    console.log(data,)
     return (
-        <div className={cls.card}>
-            <div className={cls.tableWrapper}>
-                {loading ? <DefaultLoader/> : <table className={cls.table}>
-                    <thead>
-                    <tr>
-                        <RenderTh/>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {data.length > 0 && data?.map((item, index) => (
-                        <tr key={item?.id}>
-                            <RenderTd setChangeActive={setChangeActive} setItem={setItem} item={item} index={index}
-                                      setConfirmModal={setConfirmModal}/>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>}
-            </div>
+        <>
+
+            {selectedValue === "bookPayment" ? <div style={{display: "flex" , gap: "1rem"}}>
+
+                    <div
+                    style={{width: "50%"}}
+                        // className={cls.card}
+                    >
+                        <div className={cls.tableWrapper}>
+                            {loading ? <DefaultLoader/> : <table className={cls.table}>
+                                <thead>
+                                <tr>
+                                    <RenderTh/>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {data?.book_overheads?.length > 0 && data.book_overheads?.map((item, index) => {
+                                    return(
+                                        <tr key={item?.id}>
+                                            <RenderTd setChangeActive={setChangeActive} setItem={setItem} item={item}
+                                                      index={index}
+                                                      setConfirmModal={setConfirmModal}/>
+                                        </tr>
+                                    )
+                                })}
+                                </tbody>
+                            </table>}
+                        </div>
+                        <Pagination loading={loading} currentPage={currentPage} setCurrentPage={setCurrentPage}
+                                    pageSize={pageSize}/>
+                    </div>
+                    <div
+                        style={{width: "50%"}}
+                        // className={cls.card}
+                    >
+                        <div className={cls.tableWrapper}>
+                            {loading ? <DefaultLoader/> : <table className={cls.table}>
+                                <thead>
+                                <tr>
+                                    <RenderTh/>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {data?.book_overheads?.length > 0 && data.book_payments?.map((item, index) => {
+                                    return(
+                                        <tr key={item?.id}>
+                                            <RenderTd setChangeActive={setChangeActive} setItem={setItem} item={item}
+                                                      index={index}
+                                                      setConfirmModal={setConfirmModal}/>
+                                        </tr>
+                                    )
+                                })}
+                                </tbody>
+                            </table>}
+                        </div>
+                        <Pagination loading={loading} currentPage={currentPage} setCurrentPage={setCurrentPage}
+                                    pageSize={pageSize}/>
+                    </div>
+
+                </div> :
+                <div className={cls.card}>
+                    <div className={cls.tableWrapper}>
+                        {loading ? <DefaultLoader/> : <table className={cls.table}>
+                            <thead>
+                            <tr>
+                                <RenderTh/>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {data.length > 0 && data?.map((item, index) => (
+                                <tr key={item?.id}>
+                                    <RenderTd setChangeActive={setChangeActive} setItem={setItem} item={item}
+                                              index={index}
+                                              setConfirmModal={setConfirmModal}/>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>}
+                    </div>
+                    <Pagination loading={loading} currentPage={currentPage} setCurrentPage={setCurrentPage}
+                                pageSize={pageSize}/>
+                </div>
+            }
 
 
-            <Pagination loading={loading} currentPage={currentPage} setCurrentPage={setCurrentPage}
-                        pageSize={pageSize}/>
             <Modal activeModal={confirmModal} setActiveModal={() => setConfirmModal(false)}>
                 <Confirm setActive={setConfirmModal} text={"O'chirilsinmi?"}
                          getConfirm={setConfirm}/>
@@ -135,7 +228,7 @@ export const AccountingTable = ({
             </Modal>
             <RenderRoute setRenderRoute={setRenderRoute}/>
 
-        </div>
+        </>
     );
 };
 
@@ -170,33 +263,33 @@ const Pagination = ({
         <div className={cls.pagination}>
             {/*{loading ? <div style={{width: "fit-content"}}><DefaultLoaderSmall/></div> : <>*/}
 
-                <button
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    className={cls.pageBtn}
-                >
-                    <i className={"fas fa-chevron-left"}/>
-                </button>
+            <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className={cls.pageBtn}
+            >
+                <i className={"fas fa-chevron-left"}/>
+            </button>
 
-                {pages.map((page) => (
-                    <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`${cls.pageBtn} ${
-                            currentPage === page ? cls.activePage : ""
-                        }`}
-                    >
-                        {page}
-                    </button>
-                ))}
-
+            {pages.map((page) => (
                 <button
-                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                    disabled={currentPage === totalPages}
-                    className={cls.pageBtn}
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`${cls.pageBtn} ${
+                        currentPage === page ? cls.activePage : ""
+                    }`}
                 >
-                    <i className={"fas fa-chevron-right"}/>
+                    {page}
                 </button>
+            ))}
+
+            <button
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className={cls.pageBtn}
+            >
+                <i className={"fas fa-chevron-right"}/>
+            </button>
             {/*</>}*/}
         </div>
     )

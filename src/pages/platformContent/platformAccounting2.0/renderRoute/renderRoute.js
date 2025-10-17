@@ -22,8 +22,8 @@ export const RenderRoute = ({setRenderRoute}) => {
                 };
             case "teachersSalary":
                 return {
-                    change: "delete_salary_teacher",
-                    delete: "change_teacher_salary",
+                    change: "change_teacher_salary",
+                    delete: "delete_salary_teacher",
                 };
             case "employeesSalary":
                 return {

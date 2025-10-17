@@ -15,7 +15,7 @@ import {
 } from "pages/platformContent/platformAccounting2.0/model/accountingSelector";
 import {onAddItem} from "pages/platformContent/platformAccounting2.0/model/accountingSlice";
 
-export const AccountingAddCapital = () => {
+export const AccountingAddCapital = ({setActive}) => {
 
     const {
         register,
@@ -97,7 +97,9 @@ export const AccountingAddCapital = () => {
                         type: "success",
                         active: true
                     }))
-                    // dispatch(onAddItem(newData))
+                    setActive(false)
+
+                    dispatch(onAddItem(res?.data))
                     // setActiveChangeModal(false)
                     const data = {
                         locationId,

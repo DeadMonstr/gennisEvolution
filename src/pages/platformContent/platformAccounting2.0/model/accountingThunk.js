@@ -18,7 +18,7 @@ export const fetchAccounting = createAsyncThunk(
     "newAccountingSlice/fetchAccounting",
     async ({data , isArchive , PageSize , currentPage , search , activeFilters , locationId , route , deleted}) => {
         const {request} = useHttp()
-        return await request(`${BackUrl}account/account_info/${route}${renderQuery({PageSize , currentPage , search , activeFilters , locationId})}${isArchive ? "&typeFilter=archive/" : ""}${deleted ? `&deleted=${deleted}` : ""}`, locationId ? "GET" : "POST", locationId ? null : JSON.stringify(data), headers())
+        return await request(`${BackUrl}account/account_info/${route}${renderQuery({PageSize , currentPage , search , activeFilters , locationId})}${isArchive ? "&typeFilter=archive/" : ""}${deleted ? `&deleted=${1 }` : ""}`, locationId ? "GET" : "POST", locationId ? null : JSON.stringify(data), headers())
 
     }
 )

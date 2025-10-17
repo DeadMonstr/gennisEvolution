@@ -6,10 +6,37 @@ const savedValue = localStorage.getItem("selectedValue");
 const savedName = localStorage.getItem("selectedName");
 
 const initialState = {
-    data: {
-        book_overheads: [],
-        book_payments: [],
-    },
+    // data: {
+    //     book_overheads: [{
+    //         date: "2024-04-05",
+    //         day: "962",
+    //         id: 1,
+    //         month: "39",
+    //         name: "Kitobchiga pul",
+    //         price: 10000,
+    //         reason: "",
+    //         type: "book_payments",
+    //         typePayment: "click",
+    //         year: "4"
+    //     }
+    //     ],
+    //     book_payments: [
+    //         {
+    //             date: "2024-04-05",
+    //             day: "962",
+    //             id: 1,
+    //             month: "39",
+    //             name: "Kitobchiga pul",
+    //             price: 10000,
+    //             reason: "",
+    //             type: "book_payments",
+    //             typePayment: "click",
+    //             year: "4"
+    //         }
+    //
+    //     ],
+    // },
+    data: [],
     loading: false,
     error: null,
     selectOptions: [
@@ -81,7 +108,7 @@ const newAccountingSlice = createSlice({
             );
         },
         onAddItem: (state ,action) => {
-            state.data = [...state.data , action.payload]
+            state.data = [action.payload  , ...state.data]
         }
     },
     extraReducers: builder =>

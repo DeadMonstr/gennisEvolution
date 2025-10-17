@@ -9,8 +9,9 @@ import {setMessage} from "slices/messageSlice";
 import {fetchAccData} from "slices/accountingSlice";
 import {newAccountingOverheadTools} from "pages/platformContent/platformAccounting2.0/model/accountingSelector";
 import {useParams} from "react-router-dom";
+import {onAddItem} from "pages/platformContent/platformAccounting2.0/model/accountingSlice";
 
-export const AccountingAddOverhead = () => {
+export const AccountingAddOverhead = ({setActive}) => {
     const {
         register,
         formState: {errors},
@@ -98,7 +99,11 @@ export const AccountingAddOverhead = () => {
                         msg: res.msg,
                         type: "success",
                         active: true
+
                     }))
+                    dispatch(onAddItem(res?.data))
+
+                    setActive(false)
 
                     const data = {
                         locationId,
