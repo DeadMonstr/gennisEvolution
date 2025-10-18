@@ -2,6 +2,7 @@ import {useSelector} from "react-redux";
 import {newAccountingSelectOptionValue} from "../model/accountingSelector";
 import React, {useState} from "react";
 import cls from "pages/platformContent/platformAccounting2.0/accountingTable/accountingTable.module.sass";
+import {useNavigate} from "react-router-dom";
 
 export const RenderTd = ({item, index , setConfirmModal , setItem , setChangeActive}) => {
     const selectOptionValue = useSelector(newAccountingSelectOptionValue)
@@ -10,6 +11,7 @@ export const RenderTd = ({item, index , setConfirmModal , setItem , setChangeAct
     }
 
 
+    const navigate = useNavigate()
 
     switch (selectOptionValue) {
 
@@ -25,7 +27,7 @@ export const RenderTd = ({item, index , setConfirmModal , setItem , setChangeAct
         case "debtStudents": {
             return <>
                 <td>{index + 1}</td>
-                <td>{item?.name} {item?.surname}</td>
+                <td onClick={() => navigate(`../profile/${item?.user_id || item?.id}`)}>{item?.name} {item?.surname}</td>
                 <td className={cls.mono}>
                     <div className={cls.tooltipWrapper}>
                         <span className={cls.text}>
@@ -120,7 +122,7 @@ export const RenderTd = ({item, index , setConfirmModal , setItem , setChangeAct
         case "studentsPayments" : {
             return <>
                 <td>{index + 1}</td>
-                <td>{item?.name}</td>
+                <td onClick={() => navigate(`../profile/${item?.user_id}`)}>{item?.name}</td>
                 <td>{item?.surname}</td>
                 <td className={cls.mono}>{formatNumber(item?.payment)}</td>
                 <td className={cls.muted}>{item?.date}</td>
@@ -149,7 +151,7 @@ export const RenderTd = ({item, index , setConfirmModal , setItem , setChangeAct
         case "teachersSalary" : {
             return <>
                 <td>{index + 1}</td>
-                <td>{item?.name}</td>
+                <td onClick={() => navigate(`../profile/${item?.user_id}`)}>{item?.name}</td>
                 <td>{item?.surname}</td>
                 <td className={cls.mono}>{formatNumber(item?.salary)}</td>
                 <td className={cls.muted}>{item?.date}</td>
@@ -177,7 +179,7 @@ export const RenderTd = ({item, index , setConfirmModal , setItem , setChangeAct
         case "studentsDiscounts" : {
             return <>
                 <td>{index + 1}</td>
-                <td>{item?.name}</td>
+                <td onClick={() => navigate(`../profile/${item?.user_id}`)}>{item?.name}</td>
                 <td>{item?.surname}</td>
                 <td className={cls.mono}>{formatNumber(item?.payment)}</td>
                 <td className={cls.muted}>{item?.date}</td>
@@ -198,7 +200,7 @@ export const RenderTd = ({item, index , setConfirmModal , setItem , setChangeAct
         case "employeesSalary" : {
             return <>
                 <td>{index + 1}</td>
-                <td>{item?.name}</td>
+                <td onClick={() => navigate(`../profile/${item?.user_id}`)}>{item?.name}</td>
                 <td>{item?.surname}</td>
                 <td className={cls.mono}>{formatNumber(item?.salary)}</td>
                 <td className={cls.muted}>{item?.date}</td>

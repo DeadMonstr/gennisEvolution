@@ -22,7 +22,7 @@ import {
 } from "pages/platformContent/platformAccounting2.0/accountingAddOverhead/accountingAddOverhead";
 
 
-export const AccountingFilter = ({currentPage, pageSize, setCurrentPage, search}) => {
+export const AccountingFilter = ({currentPage, pageSize, setCurrentPage, search , setCurrentPage2 , currentPage2}) => {
     const navigate = useNavigate();
     const {locationId} = useParams();
     const {filters, activeFilters} = useSelector(state => state.filters);
@@ -38,6 +38,7 @@ export const AccountingFilter = ({currentPage, pageSize, setCurrentPage, search}
 
     useEffect(() => {
         setCurrentPage(1);
+        setCurrentPage2(1);
     }, [selectOptionValue, activeFilters, activeDeleted, activeArchive, search]);
 
     useEffect(() => {
@@ -111,10 +112,12 @@ export const AccountingFilter = ({currentPage, pageSize, setCurrentPage, search}
                 deleted: activeDeleted,
                 isArchive: activeArchive,
                 search,
-                route
+                route,
+                currentPage2,
+                type_pagination: selectOptionValue === "bookPayment" ? "book_payments" : ""
             }));
         }
-    }, [activeFilters, activeDeleted, activeArchive, currentPage, search, selectOptionValue , locationId]);
+    }, [activeFilters, activeDeleted, activeArchive, currentPage, search, selectOptionValue , locationId , currentPage2]);
 
 
     let normalizedData = [];

@@ -4,21 +4,80 @@ import {BackUrl, headers} from "constants/global";
 
 
 
-const renderQuery = ({PageSize , currentPage , search , activeFilters , locationId}) => {
-    return `${PageSize ? `?offset=${(currentPage - 1) * 50}&limit=${PageSize}` : ""}${locationId ? `&locationId=${locationId}` : ""}${search ? `&search=${search}` : ""}${activeFilters.teacher ? `&teacherId=${activeFilters.teacher}` : ""}${activeFilters.moneyType ? `&color=${activeFilters.moneyType}` : ""}${activeFilters.status ? `&groupStatus=${activeFilters.status}` : ""}${activeFilters?.name ? `&overheadType=${activeFilters.name}` : ""}${activeFilters.typePayment ? `&paymentType=${activeFilters?.typePayment}` : ""}${activeFilters?.day ==="all" || activeFilters.day === undefined ? "" : `&day=${activeFilters?.day}` }${activeFilters?.year !== "all" && activeFilters.year !== undefined ? `&year=${activeFilters?.year}` : ""}${activeFilters?.month !== "all" && activeFilters.month !== undefined ? `&month=${activeFilters?.month}` : ""}`
-}
+const renderQuery = ({
+                         PageSize,
+                         currentPage,
+                         currentPage2,
+                         search,
+                         activeFilters,
+                         locationId,
+                         type_pagination,
+                     }) => {
+
+    const offsetPage = currentPage2 ? currentPage2 : currentPage;
+    const offset = (offsetPage - 1) * (PageSize || 50);
+
+    return `${PageSize ? `?offset=${offset}&limit=${PageSize}` : ""}${
+        locationId ? `&locationId=${locationId}` : ""
+    }${search ? `&search=${search}` : ""}${
+        activeFilters.teacher ? `&teacherId=${activeFilters.teacher}` : ""
+    }${activeFilters.moneyType ? `&color=${activeFilters.moneyType}` : ""}${
+        activeFilters.status ? `&groupStatus=${activeFilters.status}` : ""
+    }${activeFilters?.name ? `&overheadType=${activeFilters.name}` : ""}${
+        activeFilters.typePayment ? `&paymentType=${activeFilters?.typePayment}` : ""
+    }${
+        activeFilters?.day === "all" || activeFilters.day === undefined
+            ? ""
+            : `&day=${activeFilters?.day}`
+    }${
+        activeFilters?.year !== "all" && activeFilters.year !== undefined
+            ? `&year=${activeFilters?.year}`
+            : ""
+    }${
+        activeFilters?.month !== "all" && activeFilters.month !== undefined
+            ? `&month=${activeFilters?.month}`
+            : ""
+    }${type_pagination ? `&type_pagenation=${type_pagination}` : ""}`;
+};
 
 
-
-const renderQuery2 = ({PageSize , book_overheads , search , activeFilters , locationId}) => {
-    return `${PageSize ? `?offset=${(book_overheads - 1) * 50}&limit=${PageSize}` : ""}${locationId ? `&locationId=${locationId}` : ""}${search ? `&search=${search}` : ""}${activeFilters.teacher ? `&teacherId=${activeFilters.teacher}` : ""}${activeFilters.moneyType ? `&color=${activeFilters.moneyType}` : ""}${activeFilters.status ? `&groupStatus=${activeFilters.status}` : ""}${activeFilters?.name ? `&overheadType=${activeFilters.name}` : ""}${activeFilters.typePayment ? `&paymentType=${activeFilters?.typePayment}` : ""}${activeFilters?.day ==="all" || activeFilters.day === undefined ? "" : `&day=${activeFilters?.day}` }${activeFilters?.year !== "all" && activeFilters.year !== undefined ? `&year=${activeFilters?.year}` : ""}${activeFilters?.month !== "all" && activeFilters.month !== undefined ? `&month=${activeFilters?.month}` : ""}`
-}
 
 export const fetchAccounting = createAsyncThunk(
     "newAccountingSlice/fetchAccounting",
-    async ({data , isArchive , PageSize , currentPage , search , activeFilters , locationId , route , deleted}) => {
-        const {request} = useHttp()
-        return await request(`${BackUrl}account/account_info/${route}${renderQuery({PageSize , currentPage , search , activeFilters , locationId})}${isArchive ? "&typeFilter=archive/" : ""}${deleted ? `&deleted=${1 }` : ""}`, locationId ? "GET" : "POST", locationId ? null : JSON.stringify(data), headers())
+    async ({
+               data,
+               isArchive,
+               PageSize,
+               currentPage,
+               currentPage2,
+               search,
+               activeFilters,
+               locationId,
+               route,
+               deleted,
+               type_pagination,
+           }) => {
+        const { request } = useHttp();
 
+        const query = renderQuery({
+            PageSize,
+            currentPage,
+            currentPage2,
+            search,
+            activeFilters,
+            locationId,
+            type_pagination,
+        });
+
+        const url = `${BackUrl}account/account_info/${route}${query}${
+            isArchive ? "&typeFilter=archive/" : ""
+        }${deleted ? `&deleted=1` : ""}`;
+
+        return await request(
+            url,
+            "GET",
+            JSON.stringify(data),
+            headers()
+        );
     }
-)
+);
