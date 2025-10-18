@@ -102,6 +102,7 @@ const PlatformOneDay = React.lazy(() => import('./platformOneDay'));
 const PlatformStudentsPage = React.lazy(() => import('pages/platformContent/platformStudentsPage/platformStudentsPage'));
 const PlatformUsersPage = React.lazy(() => import('./platformUsersPage/platformUsersPage'));
 const PlatformAdminItem = React.lazy(() => import('./platformAdminItem/platformAdminItem'));
+const PlatformNewAccounting = React.lazy(() => import('./platformAccounting2.0/platformNewAccounting'));
 
 
 
@@ -179,7 +180,8 @@ const PlatformContent = () => {
 
 
                     {/*<Route path="overheadBooks.js/:locationId" element={<PlatformAccounting/>}/>*/}
-                    <Route path="accounting/:locationId/*" element={<PlatformAccounting/>} />
+                    {/*<Route path="accounting/:locationId/*" element={<PlatformAccounting/>} />*/}
+                    <Route path="accounting/:locationId/*" element={<PlatformNewAccounting/>} />
 
 
                     <Route path="employeeSalary/:userId/*" element={<PlatformEmployeeSalary/>} />
@@ -247,10 +249,10 @@ const PlatformContent = () => {
                     <Route path="teacherEquipments/:id" element={<PlatformTeacherEquipments/>}/>
 
 
-                    <Route
-                        path="accounting/:locationId"
-                        element={<Navigate to="studentsPayments" replace />}
-                    />
+                    {/*<Route*/}
+                    {/*    path="accounting/:locationId"*/}
+                    {/*    element={<Navigate to="studentsPayments" replace />}*/}
+                    {/*/>*/}
 
                     <Route
                         path="books/*"

@@ -1121,7 +1121,7 @@ const TaskCard = ({item, index}) => {
                         activeMenu === "leads" ?
                             <li className={cls.infoList__item}>Register date: <span>{item?.day}  </span></li> :
                             <>
-                                <li className={cls.infoList__item}>Koment: <span>{item?.comment}  </span></li>
+                                {/*<li className={cls.infoList__item}>Koment: <span>{item?.comment}  </span></li>*/}
 
 
                             </>

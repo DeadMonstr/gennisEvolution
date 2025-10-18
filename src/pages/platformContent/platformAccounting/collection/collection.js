@@ -194,7 +194,9 @@ const Collection = () => {
             date,
             activeFilter
         }
-        dispatch(fetchCollection(newData))
+        if (date.do && date.ot && locationId) {
+            dispatch(fetchCollection(newData))
+        }
     },[activeFilter, date, locationId])
     
 

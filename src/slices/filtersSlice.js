@@ -77,6 +77,7 @@ const newStudentsSlice = createSlice({
     reducers: {
         resetState: () => initialState,
         setActive: (state, action) => {
+            console.log(action.payload)
             const filterKeys = Object.keys(state.filters);
             filterKeys.map(keys => {
                 if (keys === action.payload.activeFilter) {
@@ -168,6 +169,7 @@ const newStudentsSlice = createSlice({
         },
         setActiveFilter: (state, action) => {
             const { key, value } = action.payload;
+            console.log(action.payload , "action")
             if (state.activeFilters[key] === value) {
                 const updated = { ...state.activeFilters };
                 delete updated[key];
