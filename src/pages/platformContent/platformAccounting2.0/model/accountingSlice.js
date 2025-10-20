@@ -121,7 +121,7 @@ const newAccountingSlice = createSlice({
                 state.loading = false;
                 state.error = false;
                 state.data = action.payload.data.data;
-                state.totalCount = action?.payload?.data?.pagination?.total;
+                state.totalCount = action?.payload?.data?.pagination;
                 state.capital_tools = action?.payload?.data?.capital_tools
                 state.overhead_tools = action?.payload?.data?.overhead_tools
 

@@ -26,7 +26,10 @@ export const AccountingTable = ({
                                     currentPage,
                                     setCurrentPage,
                                     handleDelete,
-                                    pageSize = 10,
+                                    // pageSize = 10,
+                                    currentPage2,
+                                    setCurrentPage2,
+                                    pageSize
                                 }) => {
 
     const options = [
@@ -56,7 +59,9 @@ export const AccountingTable = ({
     const [renderRoute, setRenderRoute] = useState({})
 
     const selectedValue = useSelector(newAccountingSelectOptionValue)
+    const totalPage = useSelector(newAccountingTotalCount)
 
+    console.log(totalPage, "totalPage")
 
     const onDelete = () => {
 
@@ -111,14 +116,14 @@ export const AccountingTable = ({
 
     };
 
-    console.log(data,)
+    console.log(data, "data")
     return (
         <>
 
-            {selectedValue === "bookPayment" ? <div style={{display: "flex" , gap: "1rem"}}>
+            {selectedValue === "bookPayment" ? <div style={{display: "flex", gap: "1rem"}}>
 
                     <div
-                    style={{width: "50%"}}
+                        style={{width: "50%"}}
                         // className={cls.card}
                     >
                         <div className={cls.tableWrapper}>
@@ -130,7 +135,7 @@ export const AccountingTable = ({
                                 </thead>
                                 <tbody>
                                 {data?.book_overheads?.length > 0 && data.book_overheads?.map((item, index) => {
-                                    return(
+                                    return (
                                         <tr key={item?.id}>
                                             <RenderTd setChangeActive={setChangeActive} setItem={setItem} item={item}
                                                       index={index}
@@ -141,7 +146,8 @@ export const AccountingTable = ({
                                 </tbody>
                             </table>}
                         </div>
-                        <Pagination loading={loading} currentPage={currentPage} setCurrentPage={setCurrentPage}
+                        <Pagination totalPage={totalPage?.book_overheads?.total} loading={loading} currentPage={currentPage}
+                                    setCurrentPage={setCurrentPage}
                                     pageSize={pageSize}/>
                     </div>
                     <div
@@ -156,8 +162,9 @@ export const AccountingTable = ({
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {data?.book_overheads?.length > 0 && data.book_payments?.map((item, index) => {
-                                    return(
+                                {data?.book_payments?.length > 0 && data.book_payments?.map((item, index) => {
+
+                                    return (
                                         <tr key={item?.id}>
                                             <RenderTd setChangeActive={setChangeActive} setItem={setItem} item={item}
                                                       index={index}
@@ -168,7 +175,8 @@ export const AccountingTable = ({
                                 </tbody>
                             </table>}
                         </div>
-                        <Pagination loading={loading} currentPage={currentPage} setCurrentPage={setCurrentPage}
+                        <Pagination totalPage={totalPage?.book_payments?.total} loading={loading} currentPage={currentPage2}
+                                    setCurrentPage={setCurrentPage2}
                                     pageSize={pageSize}/>
                     </div>
 
@@ -192,7 +200,8 @@ export const AccountingTable = ({
                             </tbody>
                         </table>}
                     </div>
-                    <Pagination loading={loading} currentPage={currentPage} setCurrentPage={setCurrentPage}
+                    <Pagination totalPage={totalPage?.total} loading={loading} currentPage={currentPage}
+                                setCurrentPage={setCurrentPage}
                                 pageSize={pageSize}/>
                 </div>
             }
@@ -238,9 +247,9 @@ const Pagination = ({
                         setCurrentPage,
                         handleDelete,
                         pageSize,
-                        loading
+                        loading,
+                        totalPage
                     }) => {
-    const totalPage = useSelector(newAccountingTotalCount)
 
     const totalPages = Math.ceil(totalPage / pageSize);
     const pages = useMemo(() => {
