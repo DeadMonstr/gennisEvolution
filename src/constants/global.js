@@ -3,7 +3,7 @@ import { useMemo } from "react";
 // export const ClassroomUrl = `https://classroom.gennis.uz"/`
 //
 
-// export const BackUrlForDoc = `http://26.12.122.72:5002/`
+// export const BackUrlForDoc = `http://26.196.249.247:5002/`
 // export const BackUrl = `${BackUrlForDoc}api/`
 //
 // export const ClassroomUrl = `http://localhost:3000/`

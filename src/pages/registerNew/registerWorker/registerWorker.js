@@ -1,29 +1,29 @@
 import cls from "../style.module.sass"
 import InputForm from "components/platform/platformUI/inputForm";
-import React, {useEffect, useState} from "react";
-import {useForm} from "react-hook-form";
-import {BackUrl, headers} from "constants/global";
-import {useHttp} from "hooks/http.hook";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { BackUrl, headers } from "constants/global";
+import { useHttp } from "hooks/http.hook";
 import Input from "components/platform/platformUI/input";
 
 import Select from "components/platform/platformUI/select";
 import classNames from "classnames";
 import Button from "components/platform/platformUI/button";
-import {setMessage} from "slices/messageSlice";
-import {useDispatch, useSelector} from "react-redux";
+import { setMessage } from "slices/messageSlice";
+import { useDispatch, useSelector } from "react-redux";
 import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 
 export const RegisterWorker = ({
-                                   locations,
-                                   jobs,
-                                   genders,
-                                   deleteSub,
-                                   selectedSubjects,
-                                   language
-                               }) => {
+    locations,
+    jobs,
+    genders,
+    deleteSub,
+    selectedSubjects,
+    language
+}) => {
     const {
         register,
-        formState: {errors},
+        formState: { errors },
         handleSubmit,
         clearErrors,
         setError,
@@ -35,13 +35,13 @@ export const RegisterWorker = ({
     const [selectedSubjectId, setSelectedSubjectId] = useState("all");
 
     const [loading, setLoading] = useState(false)
-    const {request} = useHttp()
+    const { request } = useHttp()
     const [activeError, setActiveError] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
     const [isCheckLen, setIsCheckLen] = useState(false)
     const [isCheckPass, setIsCheckPass] = useState(false)
     const [password, setPassword] = useState("12345678")
-    const {location} = useSelector(state => state.me)
+    const { location } = useSelector(state => state.me)
 
     const [lang, setLang] = useState(1)
 
@@ -50,7 +50,7 @@ export const RegisterWorker = ({
 
     useEffect(() => {
         setSelectedLocation(location)
-    } , [location])
+    }, [location])
     const [confirmPassword, setConfirmPassword] = useState("12345678")
     const [selectedLocation, setSelectedLocation] = useState(location)
     const [selectJob, setSelectJob] = useState(null)
@@ -66,7 +66,7 @@ export const RegisterWorker = ({
                         type: "manual",
                         message: "username band"
 
-                    }, {shouldFocus: true})
+                    }, { shouldFocus: true })
                     setActiveError(true)
                     setErrorMessage("Username band")
                 } else {
@@ -90,7 +90,7 @@ export const RegisterWorker = ({
     const onSubmit = (data) => {
         const res = {
             ...data,
-            job: jobs.filter(item => item.id === +selectJob) [0]?.name,
+            job: jobs.filter(item => item.id === +selectJob)[0]?.name,
             location: selectedLocation,
             language: lang,
             password,
@@ -114,8 +114,8 @@ export const RegisterWorker = ({
 
     return (
         <form className={cls.form}
-              id="form"
-              onSubmit={handleSubmit(onSubmit)}
+            id="form"
+            onSubmit={handleSubmit(onSubmit)}
         >
 
             <InputForm
@@ -126,12 +126,12 @@ export const RegisterWorker = ({
                 required
             />
             {activeError ? <span className={cls.form__error}>
-                              Username band
-                          </span> :
+                Username band
+            </span> :
                 errors?.username &&
                 <span className={cls.form__error}>
-                                     {errors?.username?.message}
-                          </span>}
+                    {errors?.username?.message}
+                </span>}
             <InputForm
                 register={register}
                 name={"name"}
@@ -173,7 +173,7 @@ export const RegisterWorker = ({
                 type={"password"}
                 onChange={onCheckLength}
             />
-            {  isCheckLen ? <p className={cls.error}>Parolingiz 8 ta dan kam bo'lmasligi
+            {isCheckLen ? <p className={cls.error}>Parolingiz 8 ta dan kam bo'lmasligi
                 kerak</p> : null
 
             }
@@ -201,14 +201,14 @@ export const RegisterWorker = ({
                 cols="30"
                 rows="10"
             />
-            <Select title={"O'quv markazi joylashuvi"} defaultValue={selectedLocation} options={locations} onChangeOption={setSelectedLocation}/>
-            <Select title={"Ta'lim tili"} defaultValue={lang} options={language} onChangeOption={setLang}/>
-            <Select title={"Ish faoliyati"} options={jobs} onChangeOption={setSelectJob}/>
+            <Select title={"O'quv markazi joylashuvi"} defaultValue={selectedLocation} options={locations} onChangeOption={setSelectedLocation} />
+            <Select title={"Ta'lim tili"} defaultValue={lang} options={language} onChangeOption={setLang} />
+            <Select title={"Ish faoliyati"} options={jobs} onChangeOption={setSelectJob} />
 
             {/*<Select title={"Ta'lim vaqti"} defaultValue={selectedShift} options={shifts} onChangeOption={setSelectedShift}/>*/}
-            <Select title={"Jinsi"}  options={genders} onChangeOption={setSelectedGender}/>
+            <Select title={"Jinsi"} options={genders} onChangeOption={setSelectedGender} />
 
-            {loading ? <DefaultLoaderSmall/> :  <Button type={"submit"} formId={"form"}>Yakunlash</Button>}
+            {loading ? <DefaultLoaderSmall /> : <Button type={"submit"} formId={"form"}>Yakunlash</Button>}
 
         </form>
     );
