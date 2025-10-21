@@ -317,7 +317,7 @@ const UserContent = ({ userId }) => {
                                 <div className="profile__left__contact__arounder__list">
                                     <i style={{ color: "#6D727B", fontSize: "2rem" }} className="fa-regular fa-map"></i>
                                     <span className="profile__left__contact__arounder__list__span">
-                                        <p>Adres</p>
+                                        <p>Manzil</p>
                                         <h2>{user?.address ?? "Kiritilmagan"}</h2>
                                     </span>
                                 </div>

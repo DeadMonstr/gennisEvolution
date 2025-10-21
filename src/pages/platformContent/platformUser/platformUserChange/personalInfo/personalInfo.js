@@ -477,7 +477,7 @@ const AllLabels = React.memo(({ data, extraInfo, userId }) => {
             {
                 data?.address ?
                     <label htmlFor="address">
-                        <span className="name-field">Adres</span>
+                        <span className="name-field">Manzil</span>
                         <input
                             defaultValue={extraInfo?.address?.value}
                             id="address"
