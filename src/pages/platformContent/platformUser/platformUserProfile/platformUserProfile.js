@@ -237,7 +237,7 @@ const UserContent = ({ userId }) => {
 
     const userImg = user.photo_profile ? `${BackUrlForDoc}${user.photo_profile}` : null
     const info = user?.info
-    console.log(user, "img")
+    console.log(user, "user")
 
 
     return (
@@ -319,7 +319,7 @@ const UserContent = ({ userId }) => {
                                     <i style={{ color: "#6D727B", fontSize: "2rem" }} className="fa-regular fa-map"></i>
                                     <span className="profile__left__contact__arounder__list__span">
                                         <p>Adres</p>
-                                        <h2>{info?.address ?? "Kiritilmagan"}</h2>
+                                        <h2>{user?.address ?? "Kiritilmagan"}</h2>
                                     </span>
                                 </div>
                                 // )

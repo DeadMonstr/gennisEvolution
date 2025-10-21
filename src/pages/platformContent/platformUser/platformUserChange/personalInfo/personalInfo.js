@@ -477,27 +477,27 @@ const AllLabels = React.memo(({ data, extraInfo, userId }) => {
                         }
                     </label> : null
             }
-            {/* {
+            {
                 data?.address ?
-                <label htmlFor="address">
-                    <span className="name-field">Adres</span>
-                    <input
-                        defaultValue={extraInfo?.address?.value}
-                        id="address"
-                        className="input-fields "
-                        {...register("address", {
-                            required: "Iltimos to'ldiring"
-                        })}
-                    />
-                    {
-                        errors?.address &&
-                        <span className="error-field">
-                            {errors?.address?.message}
-                        </span>
-                    }
-                </label>
-                : null
-            } */}
+                    <label htmlFor="address">
+                        <span className="name-field">Adres</span>
+                        <input
+                            defaultValue={extraInfo?.address?.value}
+                            id="address"
+                            className="input-fields "
+                            {...register("address", {
+                                required: "Iltimos to'ldiring"
+                            })}
+                        />
+                        {
+                            errors?.address &&
+                            <span className="error-field">
+                                {errors?.address?.message}
+                            </span>
+                        }
+                    </label>
+                    : null
+            }
             {
                 data?.comment ?
                     <label htmlFor="comment">
