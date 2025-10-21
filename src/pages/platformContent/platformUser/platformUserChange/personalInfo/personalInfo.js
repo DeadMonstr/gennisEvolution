@@ -20,8 +20,6 @@ const PersonalInfo = React.memo(({ accessData, userId }) => {
     })
     const dispatch = useDispatch()
 
-    console.log(accessData, "accessData");
-
 
     return (
         <div>
@@ -302,7 +300,6 @@ const AllLabels = React.memo(({ data, extraInfo, userId }) => {
 
 
     const renderedSelectedOptions = renderSubjects()
-    console.log(data, "data")
 
     return (
         <form

@@ -237,7 +237,6 @@ const UserContent = ({ userId }) => {
 
     const userImg = user.photo_profile ? `${BackUrlForDoc}${user.photo_profile}` : null
     const info = user?.info
-    console.log(user, "user")
 
 
     return (

@@ -61,10 +61,6 @@ const PlatformUserChange = () => {
     }, [dispatch, isCheckedPassword])
 
 
-    console.log(user, "user");
-    console.log(extraInfo, "extraInfo");
-
-
     const checkUserRole = useMemo(() => {
         let data = {
             activeToChange: null,
