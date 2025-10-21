@@ -55,13 +55,16 @@ const Info = () => {
                 statistics={statistics}
             />
 
-            <PercentageTests data={percentageTest}/>
 
-            <Students
-                data={data.students}
-                LinkToUser={LinkToUser}
-                stringCheck={stringCheck}
-            />
+            <div className={cls.main__box}>
+                <Students
+                    data={data.students}
+                    LinkToUser={LinkToUser}
+                    stringCheck={stringCheck}
+                />
+                <PercentageTests data={percentageTest}/>
+            </div>
+
 
 
         </div>

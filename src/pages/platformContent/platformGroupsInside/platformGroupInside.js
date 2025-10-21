@@ -194,6 +194,15 @@ const GroupInfo = ({groupId}) => {
                     <BackButton/>
                 </div>
                 <div>
+                    <span>
+                            <svg aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="none"
+                                 viewBox="0 0 24 24">
+  <path stroke="white" stroke-linecap="round" stroke-width="2"
+        d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+</svg>
+
+                        </span>
                     <h2>{groupName}</h2>
                 </div>
                 <div>
@@ -203,7 +212,7 @@ const GroupInfo = ({groupId}) => {
                             className={cls.headerBtn}
                         >
 
-                            <i className="fas fa-ellipsis-v"/>
+                        <i className="fas fa-ellipsis-v"/>
 
                             <div
                                 className={classNames(cls.modalOptions, {
@@ -217,10 +226,21 @@ const GroupInfo = ({groupId}) => {
                 </div>
             </header>
             <div className={cls.error}>
+                <div className={cls.error__header}>
+                    <span className={cls.error__header__span}>
+                        <svg className="w-6 h-6 text-white" fill="none" width="35" height="35" stroke="white" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                    </span>
+                    <h1>Muhim eslatmalar <sup>{msg?.length}</sup></h1>
+                </div>
                 <h1>{!isTime ? "Guruhga dars jadvali belgilanmagan !" : null}</h1>
-                {msg && msg?.map(item => (
-                    <h1>{item}</h1>
-                ))}
+                <ul className={cls.error__list}>
+                    {msg && msg?.map(item => (
+                        <li>{item}</li>
+                    ))}
+                </ul>
+
 
             </div>
 

@@ -3,25 +3,70 @@
 
 
 .insideGroup
-  padding: 4rem
+  padding: 2rem
+  background: #F3F7FB
+  position: relative
+  display: flex
+  flex-direction: column
+  gap: 2rem
   .header
     width: 100%
+    position: sticky
+    top: 2rem
+    right: 0
+    z-index: 200
     padding: 3rem
+    border-radius: 2rem
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px
+    background: #FDFEFF
     display: flex
+    gap: 5rem
     &>div
-      width: 33.3333%
+      width: fit-content
       display: flex
+      align-items: end
+      padding-top: 1.5rem
       flex-direction: column
       &:nth-child(2)
-        align-items: center
-      &:last-child
+        width: 90%
+        padding-top: 0
         flex-direction: row
+        align-items: center
+        gap: 1.5rem
+        span
+          background: linear-gradient(34deg, #3284EA, #118FBF)
+          padding: 1.3rem
+          border-radius: 1rem
+          display: flex
+          position: relative
+          align-items: center
+          text-align: center
+          &::after
+            content: ""
+            position: absolute
+            inset: 0
+            border-radius: 10px
+            background: linear-gradient(34deg, #3284EA, #118FBF)
+            filter: blur(20px)
+            opacity: 0.6
+            z-index: -1
+
+
+        h2
+          text-transform: uppercase
+          font-size: 3rem
+
+      &:last-child
+        padding-top: 0
+        padding-bottom: 1.5rem
+        flex-direction: row
+        align-self: end
         justify-content: flex-end
-      h1
-        font-size: 2.3rem
-      h2
-        margin-top: 1rem
-        font-size: 2.5rem
+      //h1
+      //  font-size: 2.3rem
+      //h2
+      //  margin-top: 1rem
+      //  font-size: 2.5rem
     &Btn
       position: relative
       display: flex
@@ -66,20 +111,77 @@
             margin-left: 1rem
   .error
     margin: 1rem 0
+    background: #FEF3F2
+    border-radius: 2rem
     display: flex
     flex-direction: column
-    align-items: center
-    justify-content: center
-    h1
-      color: red
-  .subheader
-    width: 100%
-    padding: 3rem
-    margin-top: 1rem
-    &__links
+    border: 2px solid #FEDEDE
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 10px 50px
+    &__header
       width: 100%
-      height: fit-content
       padding: 2rem
+      display: flex
+      gap: 2rem
+      align-items: center
+      h1
+        font-weight: bold
+        font-family: "Arial Black" !important
+        font-size: 2rem
+        margin-top: -2rem
+        color: #7F1D1D
+        sup
+          font-size: 0.8em
+          align-items: center
+          text-align: center
+          vertical-align: super
+          background: #FECACA
+          border-radius: 50%
+          padding: 1rem 1rem 1rem 1rem
+      &__span
+        border-radius: 1.2rem
+        background: linear-gradient(-45deg, #F57B6B, #F88448)
+        padding: 1rem
+        animation: alert .6s ease-in-out infinite alternate
+        @keyframes alert
+          from
+            opacity: 1
+            transform: scale(1)
+          to
+            opacity: 0.6
+            transform: scale(1.05)
+    &__list
+      //width: 100%
+      display: flex
+      flex-direction: column
+      gap: 2rem
+      padding: 2rem
+      align-items: center
+      li
+        background: #FFFFFF
+        border-radius: 1rem
+        padding: 1rem
+        width: 90%
+        color: #7F1D1D
+        font-size: 1.8rem
+        font-weight: 700
+
+
+
+
+
+  .subheader
+    width: 40%
+    padding: 0
+    margin-top: 2rem
+    &__links
+      width: 70%
+      gap: 2rem
+      height: fit-content
+      padding: 1rem
+      box-shadow: rgba(0, 0, 0, 0.2) 0px 10px 50px
+      background: #fff
+      border-radius: 2rem
+
       display: flex
       align-items: center
       &Item
@@ -88,14 +190,20 @@
         display: flex
         align-items: center
         justify-content: center
-        padding: 2rem 0
-        border-bottom: 2px solid
+        padding: 2rem
+        color: #47556E
+        border-radius: 2rem
         font-weight: bold
         cursor: pointer
+        position: relative
         user-select: none
-        &:hover,&.active
-          border-bottom: 2px solid $color-main-dark
-          color: $color-main-dark
+        transition: all 0.3s ease
+
+        &.active
+          background: linear-gradient(to right, #4691F7, #17C0E1)
+          color: #fff
+
+
 
 @media (max-width: 768px)
   .insideGroup
