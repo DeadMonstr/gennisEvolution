@@ -1,21 +1,21 @@
-import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
-import {Outlet, useHistory, useLocation, Routes, Route, Navigate, useNavigate, useParams} from "react-router-dom";
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { Outlet, useHistory, useLocation, Routes, Route, Navigate, useNavigate, useParams } from "react-router-dom";
 
 import PlatformSearch from "components/platform/platformUI/search";
 import FuncBtns from "components/platform/platformUI/funcBtns";
 import Filters from "components/platform/platformUI/filters";
 import UsersTable from "components/platform/platformUI/tables/usersTable";
-import Pagination, {ExtraPagination} from "components/platform/platformUI/pagination";
+import Pagination, { ExtraPagination } from "components/platform/platformUI/pagination";
 import Modals from "components/platform/platformModals";
 import Button from "components/platform/platformUI/button";
 import Message from "components/platform/platformMessage";
 import "components/platform/platformSamples/platformSamples.sass"
-import {Link} from "react-router-dom";
-import {useDispatch} from "react-redux";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import PlatformUserProfile from "pages/platformContent/platformUser/platformUserProfile/platformUserProfile";
 import Select from "components/platform/platformUI/select";
-import {motion} from "framer-motion";
-import {useScrollCache} from "../../../../hooks/useScroll";
+import { motion } from "framer-motion";
+import { useScrollCache } from "../../../../hooks/useScroll";
 
 const activeFilteredItems = {
     name: true,
@@ -68,7 +68,7 @@ const SampleUsers = (props) => {
         selectedOption,
         filteredNewStudents,
         status,
-        totalCount ,
+        totalCount,
         pageSize,
         onPageChange,
         currentPage2,
@@ -136,7 +136,6 @@ const SampleUsers = (props) => {
 
     const scrollEvent = (e) => {
         setCurrentScroll(e.target.scrollTop)
-        console.log("ueraasdasdas")
     }
 
 
@@ -205,11 +204,11 @@ const SampleUsers = (props) => {
 
     useEffect(() => {
         // if (location !== currentLocation) {
-            setTimeout(() => {
-                if (sectionRef.current?.scrollTop) {
-                    sectionRef.current.scrollTop = currentScroll
-                }
-            }, 500)
+        setTimeout(() => {
+            if (sectionRef.current?.scrollTop) {
+                sectionRef.current.scrollTop = currentScroll
+            }
+        }, 500)
         // }
     }, [location])
 
@@ -223,7 +222,7 @@ const SampleUsers = (props) => {
                     <section className="section" onScroll={scrollEvent} ref={sectionRef}>
                         <header className="section__header">
                             <div key={1}>
-                                <PlatformSearch search={search} setSearch={setSearch}/>
+                                <PlatformSearch search={search} setSearch={setSearch} />
                                 <FuncBtns
                                     locationId={locationId}
                                     funcsSlice={funcsSlice}
@@ -245,7 +244,7 @@ const SampleUsers = (props) => {
                                 }
 
                             </div>
-                            <div key={2} style={{justifyContent: "normal"}}>
+                            <div key={2} style={{ justifyContent: "normal" }}>
                                 <Button
                                     onClickBtn={() => {
                                         setActiveOthers(!activeOthers)
@@ -279,7 +278,7 @@ const SampleUsers = (props) => {
                             </div>
 
                             <Filters key={3} filterRef={filterRef} filters={filters}
-                                     heightOtherFilters={heightOtherFilters} activeOthers={activeOthers}/>
+                                heightOtherFilters={heightOtherFilters} activeOthers={activeOthers} />
 
                         </header>
                         <div className="links">
@@ -311,7 +310,7 @@ const SampleUsers = (props) => {
                             }
                         </div>
                         <main className="section__main">
-                            <div style={{height: "52vh" , overflow: "auto"}} ref={refScroll}>
+                            <div style={{ height: "52vh", overflow: "auto" }} ref={refScroll}>
                                 <UsersTable
                                     fetchUsersStatus={fetchUsersStatus}
                                     funcsSlice={funcsSlice}
@@ -323,7 +322,7 @@ const SampleUsers = (props) => {
                                     cache={true}
                                 />
                             </div>
-                             <ExtraPagination
+                            <ExtraPagination
                                 totalCount={totalCount?.total}
                                 onPageChange={onPageChange}
                                 currentPage={currentPage2}
@@ -343,13 +342,13 @@ const SampleUsers = (props) => {
                         </footer>
                         <Message typeMessage={typeMsg} activeMsg={activeMessage}>{msg}</Message>
                     </section>
-                </List>}/>
+                </List>} />
 
                 <Route path="filtered" element={<Filtered>
                     <section className="section" onScroll={scrollEvent} ref={sectionRef}>
                         <header className="section__header">
                             <div key={1}>
-                                <PlatformSearch search={search} setSearch={setSearch}/>
+                                <PlatformSearch search={search} setSearch={setSearch} />
                                 <FuncBtns
                                     locationId={locationId}
                                     funcsSlice={funcsSlice}
@@ -384,7 +383,7 @@ const SampleUsers = (props) => {
                             </div>
 
                             <Filters key={3} filterRef={filterRef} filters={filters}
-                                     heightOtherFilters={heightOtherFilters} activeOthers={activeOthers}/>
+                                heightOtherFilters={heightOtherFilters} activeOthers={activeOthers} />
                         </header>
                         <div className="links">
                             {
@@ -424,7 +423,7 @@ const SampleUsers = (props) => {
                                     className="scroll__inner"
                                     id="scroll__inner"
                                     drag={"x"}
-                                    dragConstraints={{left: -width, right: 0}}
+                                    dragConstraints={{ left: -width, right: 0 }}
                                 >
                                     {
                                         filteredNewStudents?.map((item, i) => {
@@ -464,14 +463,14 @@ const SampleUsers = (props) => {
                             </motion.div>
                         </main>
                     </section>
-                </Filtered>}/>
+                </Filtered>} />
 
-                <Route path="profile/:userId/*" element={<PlatformUserProfile/>}/>
+                <Route path="profile/:userId/*" element={<PlatformUserProfile />} />
 
                 <Route path="/" element={
                     // This links to /:userId/messages, no matter
                     // how many segments were matched by the *
-                    <Navigate to="list"/>
+                    <Navigate to="list" />
                 }
                 />
             </Routes>
@@ -557,11 +556,11 @@ const SampleUsers = (props) => {
     );
 };
 
-const List = React.memo(({children}) => {
+const List = React.memo(({ children }) => {
     return children
 })
 
-const Filtered = React.memo(({children}) => {
+const Filtered = React.memo(({ children }) => {
     return children
 })
 
