@@ -1,17 +1,17 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {useHttp} from "hooks/http.hook";
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useHttp } from "hooks/http.hook";
 
 
-import {useForm} from "react-hook-form";
-import {useDispatch, useSelector} from "react-redux";
-import {useNavigate} from "react-router-dom";
-import {BackUrl, DatesList, headers, ROLES} from "constants/global";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { BackUrl, DatesList, headers, ROLES } from "constants/global";
 import Message from "components/platform/platformMessage";
-import {fetchDataToChange} from "slices/dataToChangeSlice";
-import {useAuth} from "hooks/useAuth";
-import {setMessage} from "slices/messageSlice";
+import { fetchDataToChange } from "slices/dataToChangeSlice";
+import { useAuth } from "hooks/useAuth";
+import { setMessage } from "slices/messageSlice";
 
-const PersonalInfo = React.memo(({accessData, userId}) => {
+const PersonalInfo = React.memo(({ accessData, userId }) => {
 
     const {
         handleSubmit,
@@ -20,6 +20,7 @@ const PersonalInfo = React.memo(({accessData, userId}) => {
     })
     const dispatch = useDispatch()
 
+    console.log(accessData, "accessData");
 
 
     return (
@@ -34,18 +35,18 @@ const PersonalInfo = React.memo(({accessData, userId}) => {
 });
 
 
-const AllLabels = React.memo(({data, extraInfo, userId}) => {
+const AllLabels = React.memo(({ data, extraInfo, userId }) => {
 
-    const {days, months, years} = DatesList()
-    const {dataToChange} = useSelector(state => state.dataToChange)
+    const { days, months, years } = DatesList()
+    const { dataToChange } = useSelector(state => state.dataToChange)
 
     const [subjects, setSubjects] = useState(null)
     const [selectedSubjects, setSelectedSubjects] = useState([])
     const [shift, setShift] = useState("")
 
-    const {type} = useSelector(state => state.message)
+    const { type } = useSelector(state => state.message)
 
-    const  user = useSelector(state => state.usersProfile.user)
+    const user = useSelector(state => state.usersProfile.user)
 
     useEffect(() => {
         setSelectedSubjects([])
@@ -61,7 +62,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
     const dispatch = useDispatch()
 
 
-    const {selectedLocation} = useAuth()
+    const { selectedLocation } = useAuth()
 
 
     useEffect(() => {
@@ -95,17 +96,17 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
 
     const {
         register,
-        formState: {errors},
+        formState: { errors },
         handleSubmit,
         setError
     } = useForm({
         mode: "onBlur"
     })
 
-    const {request} = useHttp()
+    const { request } = useHttp()
 
 
-    const {role} = useAuth()
+    const { role } = useAuth()
 
     const onSubmit = (data, e) => {
         e.preventDefault()
@@ -143,13 +144,13 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
     }
 
     const checkUsername = async (username) => {
-        request(`${BackUrl}checks/check_exist_username/${userId}`, "POST", JSON.stringify({username}), headers())
+        request(`${BackUrl}checks/check_exist_username/${userId}`, "POST", JSON.stringify({ username }), headers())
             .then(res => {
                 if (res.found) {
                     setError('username', {
                         type: "manual",
                         message: "username band"
-                    }, {shouldFocus: true})
+                    }, { shouldFocus: true })
                     dispatch(setMessage({
                         msg: "username band",
                         type: "error",
@@ -178,7 +179,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
             setSubjects(subjects => {
                 return subjects.map(item => {
                     if (item.name === subjectName) {
-                        return {...item, disabled: true}
+                        return { ...item, disabled: true }
                     }
                     return item
                 })
@@ -193,7 +194,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
             setSubjects(subjects => {
                 return subjects.map(item => {
                     if (item.name === subjectName) {
-                        return {...item, disabled: false}
+                        return { ...item, disabled: false }
                     }
                     return item
                 })
@@ -218,7 +219,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
             setSelectedSubjects(subjects => {
                 return subjects.map(item => {
                     if (item.name === name) {
-                        return {...item, selectedLevel: value}
+                        return { ...item, selectedLevel: value }
                     }
                     return item
                 })
@@ -301,7 +302,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
 
 
     const renderedSelectedOptions = renderSubjects()
-    console.log(role)
+    console.log(data, "data")
 
     return (
         <form
@@ -364,8 +365,8 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
                         {
                             errors?.surname &&
                             <span className="error-field">
-                        {errors?.surname?.message}
-                    </span>
+                                {errors?.surname?.message}
+                            </span>
                         }
                     </label> : null
             }
@@ -384,8 +385,8 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
                         {
                             errors?.fatherName &&
                             <span className="error-field">
-                        {errors?.fatherName?.message}
-                    </span>
+                                {errors?.fatherName?.message}
+                            </span>
                         }
                     </label> : null
             }
@@ -399,7 +400,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
                                 <select
                                     name="birthDay"
                                     id="birthDay"
-                                    {...register("birthDay", {required: true})}
+                                    {...register("birthDay", { required: true })}
                                     defaultValue={extraInfo?.birthDay?.value}
                                 >
                                     {
@@ -412,7 +413,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
                                 <select
                                     name="birthMonth"
                                     id="birthMonth"
-                                    {...register("birthMonth", {required: true})}
+                                    {...register("birthMonth", { required: true })}
                                     defaultValue={extraInfo?.birthMonth?.value}
                                 >
                                     {
@@ -425,7 +426,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
                                 <select
                                     name="birthYear"
                                     id="birthYear"
-                                    {...register("birthYear", {required: true})}
+                                    {...register("birthYear", { required: true })}
                                     defaultValue={extraInfo?.birthYear?.value}
                                 >
                                     {
@@ -471,11 +472,32 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
                         {
                             errors?.parentPhone &&
                             <span className="error-field">
-                        {errors?.parentPhone?.message}
-                    </span>
+                                {errors?.parentPhone?.message}
+                            </span>
                         }
                     </label> : null
             }
+            {/* {
+                data?.address ?
+                <label htmlFor="address">
+                    <span className="name-field">Adres</span>
+                    <input
+                        defaultValue={extraInfo?.address?.value}
+                        id="address"
+                        className="input-fields "
+                        {...register("address", {
+                            required: "Iltimos to'ldiring"
+                        })}
+                    />
+                    {
+                        errors?.address &&
+                        <span className="error-field">
+                            {errors?.address?.message}
+                        </span>
+                    }
+                </label>
+                : null
+            } */}
             {
                 data?.comment ?
                     <label htmlFor="comment">
@@ -510,7 +532,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
                                 times?.map((item, index) => {
                                     return (
                                         <option disabled={item.disabled} key={index}
-                                                value={item.name}>{item.name}</option>
+                                            value={item.name}>{item.name}</option>
                                     )
                                 })
                             }
@@ -532,7 +554,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
                                     subjects?.map((item, index) => {
                                         return (
                                             <option disabled={item.disabled} key={index}
-                                                    value={item.name}>{item.name}</option>
+                                                value={item.name}>{item.name}</option>
                                         )
                                     })
                                 }
@@ -564,7 +586,7 @@ const AllLabels = React.memo(({data, extraInfo, userId}) => {
             {/*            </select>*/}
             {/*        </label> : null*/}
             {/*}*/}
-            <input disabled={type === "error"} className="input-submit" type="submit" value="Submit"/>
+            <input disabled={type === "error"} className="input-submit" type="submit" value="Submit" />
         </form>
     )
 })

@@ -1,17 +1,17 @@
 import cls from "./accountingFilter.module.sass"
 import PlatformSearch from "components/platform/platformUI/search";
 import Button from "components/platform/platformUI/button";
-import {useNavigate, useParams} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import React, {useCallback, useEffect, useState} from "react";
-import {fetchFilters, setActive, setActiveFilter} from "slices/filtersSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import React, { useCallback, useEffect, useState } from "react";
+import { fetchFilters, setActive, setActiveFilter } from "slices/filtersSlice";
 import FilterSelect from "components/platform/platformUI/filters/filterSelect";
 import FilterFromTo from "components/platform/platformUI/filters/filterFromTo";
-import {motion, AnimatePresence} from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import useMeasure from "react-use-measure";
-import {fetchLocationMoney} from "slices/dataToChangeSlice";
-import {newAccountingData, newAccountingDataLoading, newAccountingSelectOptionValue} from "../model/accountingSelector";
-import {fetchAccounting} from "pages/platformContent/platformAccounting2.0/model/accountingThunk";
+import { fetchLocationMoney } from "slices/dataToChangeSlice";
+import { newAccountingData, newAccountingDataLoading, newAccountingSelectOptionValue } from "../model/accountingSelector";
+import { fetchAccounting } from "pages/platformContent/platformAccounting2.0/model/accountingThunk";
 import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 import Modal from "components/platform/platformUI/modal";
 import {
@@ -22,10 +22,10 @@ import {
 } from "pages/platformContent/platformAccounting2.0/accountingAddOverhead/accountingAddOverhead";
 
 
-export const AccountingFilter = ({currentPage, pageSize, setCurrentPage, search , setCurrentPage2 , currentPage2}) => {
+export const AccountingFilter = ({ currentPage, pageSize, setCurrentPage, search, setCurrentPage2, currentPage2 }) => {
     const navigate = useNavigate();
-    const {locationId} = useParams();
-    const {filters, activeFilters} = useSelector(state => state.filters);
+    const { locationId } = useParams();
+    const { filters, activeFilters } = useSelector(state => state.filters);
     const dispatch = useDispatch();
     const [activeFilter, setActiveFilter] = useState(false);
     const [ref, bounds] = useMeasure();
@@ -64,7 +64,7 @@ export const AccountingFilter = ({currentPage, pageSize, setCurrentPage, search 
                 filterType = "capital_tools";
         }
         if (filterType) {
-            dispatch(fetchFilters({name: filterType, location: locationId}));
+            dispatch(fetchFilters({ name: filterType, location: locationId }));
         }
     }, [selectOptionValue]);
 
@@ -117,7 +117,7 @@ export const AccountingFilter = ({currentPage, pageSize, setCurrentPage, search 
                 type_pagination: selectOptionValue === "bookPayment" ? "book_payments" : ""
             }));
         }
-    }, [activeFilters, activeDeleted, activeArchive, currentPage, search, selectOptionValue , locationId , currentPage2]);
+    }, [activeFilters, activeDeleted, activeArchive, currentPage, search, selectOptionValue, locationId, currentPage2]);
 
 
     let normalizedData = [];
@@ -183,7 +183,7 @@ export const AccountingFilter = ({currentPage, pageSize, setCurrentPage, search 
 
                 <div className={cls.filter__header_type}>
                     {loading ? (
-                        <DefaultLoaderSmall/>
+                        <DefaultLoaderSmall />
                     ) : (
                         Object.entries(paymentsByType).map(([type, sum]) => (
                             <div key={type} className={cls.filter__header_type_item}>
@@ -197,12 +197,12 @@ export const AccountingFilter = ({currentPage, pageSize, setCurrentPage, search 
 
             <AnimatePresence initial={false}>
                 <motion.div
-                    animate={{height: activeFilter ? bounds.height : 0, opacity: activeFilter ? 1 : 0}}
-                    transition={{duration: 0.35, ease: "easeInOut"}}
+                    animate={{ height: activeFilter ? bounds.height : 0, opacity: activeFilter ? 1 : 0 }}
+                    transition={{ duration: 0.35, ease: "easeInOut" }}
                     className={cls.filter__body_wrapper}
                 >
                     <div className={cls.filter__body} ref={ref}>
-                        <RenderFilter filters={filters}/>
+                        <RenderFilter filters={filters} />
                     </div>
                 </motion.div>
             </AnimatePresence>
@@ -214,13 +214,13 @@ export const AccountingFilter = ({currentPage, pageSize, setCurrentPage, search 
                     {(selectOptionValue === "overhead" ||
                         selectOptionValue === "investments" ||
                         selectOptionValue === "capital") && (
-                        <Button onClickBtn={() => setActiveAdd(true)}>Qo'shish</Button>
-                    )}
+                            <Button onClickBtn={() => setActiveAdd(true)}>Qo'shish</Button>
+                        )}
                 </div>
 
                 <div className={cls.filter__footer_payment}>
                     {loading ? (
-                        <DefaultLoaderSmall/>
+                        <DefaultLoaderSmall />
                     ) : shouldCalculateTotal && (
                         <h1>Total: {totalPayment?.toLocaleString()}</h1>
                     )}
@@ -229,8 +229,8 @@ export const AccountingFilter = ({currentPage, pageSize, setCurrentPage, search 
 
             <Modal activeModal={activeAdd} setActiveModal={setActiveAdd}>
                 <div className={cls.modal}>
-                    {selectOptionValue === "overhead" && <AccountingAddOverhead setActive={setActiveAdd}/>}
-                    {selectOptionValue === "capital" && <AccountingAddCapital setActive={setActiveAdd}/>}
+                    {selectOptionValue === "overhead" && <AccountingAddOverhead setActive={setActiveAdd} />}
+                    {selectOptionValue === "capital" && <AccountingAddCapital setActive={setActiveAdd} />}
                 </div>
             </Modal>
         </div>
@@ -238,11 +238,11 @@ export const AccountingFilter = ({currentPage, pageSize, setCurrentPage, search 
 };
 
 
-const RenderFilter = ({filters}) => {
+const RenderFilter = ({ filters }) => {
     const dispatch = useDispatch();
 
     const onChangeActiveFilter = (key, value) => {
-        dispatch(setActiveFilter({key, value}));
+        dispatch(setActiveFilter({ key, value }));
     };
 
     const renderFilters = useCallback(() => {
@@ -281,7 +281,7 @@ const RenderFilter = ({filters}) => {
                     <div data-key={index} key={index} className={cls.filter__item}>
                         <h2>{filters[key].title}:</h2>
                         <div>
-                            <FilterFromTo activeFilter={key}/>
+                            <FilterFromTo activeFilter={key} />
                         </div>
                     </div>
                 );
@@ -293,13 +293,13 @@ const RenderFilter = ({filters}) => {
 };
 
 
-const FilterSubItem = React.memo(({itemBtns, activeFilter, activeBtns, onChangeActiveFilter}) => {
+const FilterSubItem = React.memo(({ itemBtns, activeFilter, activeBtns, onChangeActiveFilter }) => {
     const dispatch = useDispatch();
     const [activeBtn, setActiveBtn] = useState(null);
 
     const onChangeFilter = (subFilter, activeFilter) => {
         setActiveBtn(subFilter === activeBtn ? null : subFilter);
-        dispatch(setActive({activeFilter: activeFilter, subFilter: subFilter}));
+        dispatch(setActive({ activeFilter: activeFilter, subFilter: subFilter }));
         if (onChangeActiveFilter) {
             onChangeActiveFilter(activeFilter, subFilter);
         }
