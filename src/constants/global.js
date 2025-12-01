@@ -154,12 +154,12 @@ export const requireMenuItems = (id) => {
         //     classIcon: "fa-address-book",
         //     roles: [ROLES.Admin,ROLES.Director]
         // },
-        {
-            to: "/",
-            name: "Website",
-            classIcon: "fa-edit",
-            roles: [ROLES.Smm, ROLES.Director]
-        },
+        // {
+        //     to: "/",
+        //     name: "Website",
+        //     classIcon: "fa-edit",
+        //     roles: [ROLES.Smm, ROLES.Director]
+        // },
         {
             to: "lead",
             name: "Lead",
@@ -387,12 +387,12 @@ export const requireMenuItems = (id) => {
         //     ],
         //     roles: [ROLES.Admin,ROLES.Director,ROLES.Programmer]
         // },
-        {
-            to: "developerTools",
-            name: "Developer Toold",
-            classIcon: "fa-laptop-code",
-            roles: [ROLES.Director]
-        },
+        //{
+        //    to: "developerTools",
+        //    name: "Developer Toold",
+        //    classIcon: "fa-laptop-code",
+        //    roles: [ROLES.Director]
+        //},
         {
             to: `myGroups/${id}`,
             name: "Mening Guruhlarim",

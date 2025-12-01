@@ -60,7 +60,7 @@ const AccountingProfileSalary = () => {
             return (
                 <tr key={index} className={styles.tableRow}>
                     <td className={styles.tableCell}>{index + 1}</td>
-                    <td className={styles.tableCell}>{staff.teacher_name}</td>
+                    <td className={styles.tableCell}>{activeCategory === "teacher" ? staff.teacher_name : staff.staff_name}</td>
                     <td className={`${styles.tableCell} ${styles.tableCellRight}`}>{formatCurrency(staff.teacher_salary)}</td>
                     <td className={`${styles.tableCell} ${styles.tableCellRight}`}>{formatCurrency(staff.taken_money)}</td>
                     <td className={`${styles.tableCell} ${styles.tableCellRight} ${styles.tableCellBold}`}>
