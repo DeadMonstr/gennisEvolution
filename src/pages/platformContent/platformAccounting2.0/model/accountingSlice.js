@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {fetchAccounting} from "pages/platformContent/platformAccounting2.0/model/accountingThunk";
+import { fetchAccounting } from "pages/platformContent/platformAccounting2.0/model/accountingThunk";
 
 
 const savedValue = localStorage.getItem("selectedValue");
@@ -89,7 +89,7 @@ const newAccountingSlice = createSlice({
                 localStorage.setItem("selectedName", selected.name);
             }
         },
-        onDeleteItem: (state , action) => {
+        onDeleteItem: (state, action) => {
 
             state.data = state.data.filter(item => item.id !== action.payload)
         },
@@ -107,17 +107,17 @@ const newAccountingSlice = createSlice({
                 item.id === id ? { ...item, typePayment } : item
             );
         },
-        onAddItem: (state ,action) => {
-            state.data = [action.payload  , ...state.data]
+        onAddItem: (state, action) => {
+            state.data = [action.payload, ...state.data]
         }
     },
     extraReducers: builder =>
         builder
-            .addCase(fetchAccounting.pending , state => {
+            .addCase(fetchAccounting.pending, state => {
                 state.loading = true;
                 state.error = false;
             })
-            .addCase(fetchAccounting.fulfilled , (state , action) => {
+            .addCase(fetchAccounting.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = false;
                 state.data = action.payload.data.data;
@@ -126,7 +126,7 @@ const newAccountingSlice = createSlice({
                 state.overhead_tools = action?.payload?.data?.overhead_tools
 
             })
-            .addCase(fetchAccounting.rejected , state => {
+            .addCase(fetchAccounting.rejected, state => {
                 state.loading = false;
                 state.error = true;
             })
@@ -134,4 +134,4 @@ const newAccountingSlice = createSlice({
 
 const { actions, reducer } = newAccountingSlice;
 export default reducer;
-export const { onChangeAccountingPage  ,onDeleteItem , onAddItem  , changePaymentType } = actions;
+export const { onChangeAccountingPage, onDeleteItem, onAddItem, changePaymentType } = actions;
