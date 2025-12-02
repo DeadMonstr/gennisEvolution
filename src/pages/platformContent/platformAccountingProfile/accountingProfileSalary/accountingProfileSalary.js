@@ -55,12 +55,29 @@ const AccountingProfileSalary = () => {
         return "0 UZS"
     }
 
+    function sortSalary(data) {
+        if (!Array.isArray(data) || data.length === 0) {
+            return [];
+        }
+
+        return [...data].sort((a, b) => {
+            const aVal = a?.teacher_salary ?? 0;
+            const bVal = b?.teacher_salary ?? 0;
+
+            return bVal - aVal; // сортировка по убыванию
+        });
+    }
+
+
     const render = () => {
-        return data?.salary_list?.map((staff, index) => {
+        return sortSalary(data?.salary_list)?.map((staff, index) => {
             return (
                 <tr key={index} className={styles.tableRow}>
                     <td className={styles.tableCell}>{index + 1}</td>
-                    <td className={styles.tableCell}>{activeCategory === "teacher" ? staff.teacher_name : staff.staff_name}</td>
+                    <td className={styles.tableCell}>
+                        {activeCategory === "teacher" ? staff.teacher_name : staff.staff_name}
+                        {staff.is_deleted ? " 🚫" : null}
+                    </td>
                     <td className={`${styles.tableCell} ${styles.tableCellRight}`}>{formatCurrency(staff.teacher_salary)}</td>
                     <td className={`${styles.tableCell} ${styles.tableCellRight}`}>{formatCurrency(staff.taken_money)}</td>
                     <td className={`${styles.tableCell} ${styles.tableCellRight} ${styles.tableCellBold}`}>

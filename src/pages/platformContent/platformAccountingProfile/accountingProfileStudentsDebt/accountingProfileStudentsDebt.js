@@ -71,11 +71,45 @@ const AccountingProfileStudentsDebt = () => {
         return "0 UZS"; // fallback
     };
 
+    function processStudents(data) {
+        if (!Array.isArray(data) || data.length === 0) {
+            return [];
+        }
+
+        return data
+            // 1. Считаем суммарный total_debt по всем группам
+            .map(student => {
+                const totalDebt = Array.isArray(student.groups)
+                    ? student.groups.reduce(
+                        (sum, g) => sum + (g?.total_debt ?? 0),
+                        0
+                    )
+                    : 0;
+
+                return {
+                    ...student,
+                    totalDebt
+                };
+            })
+
+            // 2. Сортировка: долги сверху, нули внизу
+            .sort((a, b) => {
+                if (a.totalDebt === 0 && b.totalDebt === 0) return 0;
+                if (a.totalDebt === 0) return 1;
+                if (b.totalDebt === 0) return -1;
+                return a.totalDebt - b.totalDebt;
+            });
+    }
+
+
     const render = () => {
-        return data?.student_list?.map((item, index) => {
+        return processStudents(data?.student_list)?.map((item, index) => {
             return (
                 <tr key={item.id} className={styles.tableRow}>
-                    <td className={styles.tableCell}>{item.student_name}</td>
+                    <td className={styles.tableCell}>
+                        {item.student_name}
+                        {item.is_deleted ? " 🚫" : null}
+                    </td>
                     <td
                         className={`${styles.tableCell} ${styles.tableCellRight}`}
                     >
@@ -140,7 +174,7 @@ const AccountingProfileStudentsDebt = () => {
                 <div className={styles.cardsGrid}>
                     <div className={`${styles.card} ${styles.cardPrimary}`}>
                         <div className={styles.cardHeader}>
-                            <h3 className={styles.cardLabel}>Umumiy Qarz</h3>
+                            <h3 className={styles.cardLabel}>Hisoblangan to'lov</h3>
                         </div>
                         <div className={styles.cardContent}>
                             <p className={styles.cardValue}>
