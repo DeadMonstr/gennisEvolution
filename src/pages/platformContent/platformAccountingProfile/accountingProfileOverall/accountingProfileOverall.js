@@ -1,7 +1,12 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import classNames from "classnames"
 
 import Input from "components/platform/platformUI/input"
+import { fetchAccountingProfileData } from "slices/accountingProfileSlice"
+import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall"
+import DefaultLoader from "components/loader/defaultLoader/DefaultLoader"
 
 import styles from "./accountingProfileOverall.module.sass"
 
@@ -14,26 +19,82 @@ const overheadItems = [
 ]
 
 const AccountingProfileOverall = () => {
-    const navigate = useNavigate()
-    const [sortBy, setSortBy] = useState("total")
-    const [filterType, setFilterType] = useState("cash")
 
-    const totalSum = overheadItems.reduce((sum, item) => sum + item.total, 0)
-    const avgExpense = totalSum / overheadItems.length
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const { locationId } = useParams()
+
+    const { loading, data } = useSelector(state => state.accountingProfileSlice)
+    const getCurrentYear = new Date().getFullYear()
+    const getCurrentMonth = new Date().getMonth() + 1
+
+    const [currentMonth, setCurrentMonth] = useState(null)
 
     const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("uz-UZ", {
-            style: "currency",
-            currency: "UZS",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).format(amount)
+        if (typeof amount === "number") {
+            const formatted = new Intl.NumberFormat("uz-UZ", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            }).format(amount);
+
+            return `${formatted} UZS`
+        }
+        return "0 UZS"
     }
 
-    const sortedItems = [...overheadItems].sort((a, b) => {
-        if (sortBy === "name") return a.category.localeCompare(b.category)
-        return b.total - a.total
-    })
+    useEffect(() => {
+        if (getCurrentYear && getCurrentMonth)
+            setCurrentMonth(`${getCurrentYear}-${getCurrentMonth}`)
+    }, [getCurrentYear, getCurrentMonth])
+
+    useEffect(() => {
+        if (currentMonth && locationId) {
+            const [year, month] = currentMonth.split("-")
+            dispatch(fetchAccountingProfileData({
+                URL_TYPE: "overhead", locationId, year, month
+            }))
+        }
+    }, [currentMonth])
+
+    function sortSalary(data) {
+        if (!Array.isArray(data) || data.length === 0) {
+            return [];
+        }
+
+        return [...data].sort((a, b) => {
+            const aVal = a?.item_sum ?? 0;
+            const bVal = b?.item_sum ?? 0;
+
+            return bVal - aVal; // сортировка по убыванию
+        });
+    }
+
+    const render = () => {
+        return sortSalary(data?.overhead_list)?.map((item, index) => {
+            return (
+                <tr key={item.id} className={styles.tableRow}>
+                    {/* <td className={`${styles.tableCell} ${styles.tableCellCenter} ${styles.tableCellBold}`}>
+                        {index + 1}
+                    </td> */}
+                    <td className={styles.tableCell}>{item.item_name}</td>
+                    <td className={`${styles.tableCell} ${styles.tableCellCenter} ${styles.tableCellMuted}`}>
+                        {item.payment_type}
+                    </td>
+                    <td className={`${styles.tableCell} ${styles.tableCellRight} ${styles.tableCellBold}`}>
+                        {formatCurrency(item.item_sum)}
+                    </td>
+                    {/* <td className={`${styles.tableCell} ${styles.tableCellRight}`}>
+                        <div className={styles.progressContainer}>
+                            <div className={styles.progressBar}>
+                                <div className={styles.progressFill} style={{ width: `${percentage}%` }} />
+                                <span className={styles.progressBar__string}>{percentage}%</span>
+                            </div>
+                        </div>
+                    </td> */}
+                </tr>
+            )
+        })
+    }
 
     return (
         <main className={styles.container}>
@@ -41,10 +102,10 @@ const AccountingProfileOverall = () => {
                 <div className={styles.navContent}>
                     <div className={styles.breadcrumb}>
                         <span className={styles.breadcrumbItem}>Moliya Boshqarma</span>
+                        {/* <span className={styles.breadcrumbSeparator}>/</span> */}
+                        {/* <span className={styles.breadcrumbItem}>Qo'shimcha Xarajatlar</span> */}
                         <span className={styles.breadcrumbSeparator}>/</span>
-                        <span className={styles.breadcrumbItem}>Qo'shimcha Xarajatlar</span>
-                        <span className={styles.breadcrumbSeparator}>/</span>
-                        <span className={styles.breadcrumbItemActive}>Umumiy Ma'lumotlar</span>
+                        <span className={styles.breadcrumbItemActive}>Qo'shimcha Xarajatlar</span>
                     </div>
                 </div>
             </nav>
@@ -66,27 +127,95 @@ const AccountingProfileOverall = () => {
                             <h3 className={styles.cardLabel}>Umumiy Xarajat</h3>
                         </div>
                         <div className={styles.cardContent}>
-                            <p className={styles.cardValue}>{formatCurrency(totalSum)}</p>
+                            <p className={styles.cardValue}>
+                                {
+                                    loading
+                                        ? <DefaultLoaderSmall />
+                                        : formatCurrency(data?.total_arenda + data?.total_gaz + data?.total_suv + data?.total_svet + data?.total_other)
+                                }
+                            </p>
                         </div>
                     </div>
 
                     <div className={`${styles.card} ${styles.cardSecondary}`}>
                         <div className={styles.cardHeader}>
-                            <h3 className={styles.cardLabel}>O'rtacha Xarajat</h3>
+                            <h3 className={styles.cardLabel}>Arenda</h3>
                         </div>
                         <div className={styles.cardContent}>
-                            <p className={styles.cardValue}>{formatCurrency(avgExpense)}</p>
+                            <p className={styles.cardValue}>
+                                {
+                                    loading
+                                        ? <DefaultLoaderSmall />
+                                        : formatCurrency(data?.total_arenda)
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <div className={`${styles.card} ${styles.cardSecondary}`}>
+                        <div className={styles.cardHeader}>
+                            <h3 className={styles.cardLabel}>Gaz</h3>
+                        </div>
+                        <div className={styles.cardContent}>
+                            <p className={styles.cardValue}>
+                                {
+                                    loading
+                                        ? <DefaultLoaderSmall />
+                                        : formatCurrency(data?.total_gaz)
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <div className={`${styles.card} ${styles.cardSecondary}`}>
+                        <div className={styles.cardHeader}>
+                            <h3 className={styles.cardLabel}>Suv</h3>
+                        </div>
+                        <div className={styles.cardContent}>
+                            <p className={styles.cardValue}>
+                                {
+                                    loading
+                                        ? <DefaultLoaderSmall />
+                                        : formatCurrency(data?.total_suv)
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <div className={`${styles.card} ${styles.cardSecondary}`}>
+                        <div className={styles.cardHeader}>
+                            <h3 className={styles.cardLabel}>Svet</h3>
+                        </div>
+                        <div className={styles.cardContent}>
+                            <p className={styles.cardValue}>
+                                {
+                                    loading
+                                        ? <DefaultLoaderSmall />
+                                        : formatCurrency(data?.total_svet)
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <div className={`${styles.card} ${styles.cardSecondary}`}>
+                        <div className={styles.cardHeader}>
+                            <h3 className={styles.cardLabel}>Boshqa Xarajatlar</h3>
+                        </div>
+                        <div className={styles.cardContent}>
+                            <p className={styles.cardValue}>
+                                {
+                                    loading
+                                        ? <DefaultLoaderSmall />
+                                        : formatCurrency(data?.total_other)
+                                }
+                            </p>
                         </div>
                     </div>
 
-                    <div className={`${styles.card} ${styles.cardTertiary}`}>
+                    {/* <div className={`${styles.card} ${styles.cardTertiary}`}>
                         <div className={styles.cardHeader}>
                             <h3 className={styles.cardLabel}>Kategoriya Soni</h3>
                         </div>
                         <div className={styles.cardContent}>
-                            <p className={styles.cardValue}>{overheadItems.length}</p>
+                            <p className={styles.cardValue}>{ }</p>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* <div className={styles.sortCard}>
@@ -114,41 +243,13 @@ const AccountingProfileOverall = () => {
                         <h3 className={styles.filterTitle}>Filtrlash</h3>
                     </div>
                     <div className={styles.filterButtons}>
-                        <div className={styles.filterButtons__btns}>
-                            <button
-                                onClick={() => setFilterType("cash")}
-                                className={`${styles.filterBtn} ${filterType === "cash" ? styles.filterBtnActive : ""}`}
-                            >
-                                Cash
-                            </button>
-                            <button
-                                onClick={() => setFilterType("bank")}
-                                className={`${styles.filterBtn} ${filterType === "bank" ? styles.filterBtnActive : ""}`}
-                            >
-                                Bank
-                            </button>
-                            <button
-                                onClick={() => setFilterType("click")}
-                                className={`${styles.filterBtn} ${filterType === "click" ? styles.filterBtnActive : ""}`}
-                            >
-                                Click
-                            </button>
-                        </div>
-                        <Input clazzLabel={styles.filterButtons__input} onChange={() => { }} type={"date"} />
-                    </div>
-                    <div className={styles.sortButtons}>
-                        <button
-                            onClick={() => setSortBy("name")}
-                            className={`${styles.sortBtn} ${sortBy === "name" ? styles.sortBtnActive : ""}`}
-                        >
-                            Nomi bo'yicha
-                        </button>
-                        <button
-                            onClick={() => setSortBy("total")}
-                            className={`${styles.sortBtn} ${sortBy === "total" ? styles.sortBtnActive : ""}`}
-                        >
-                            Summasi bo'yicha
-                        </button>
+                        <Input
+                            clazzLabel={styles.filterButtons__input}
+                            onChange={setCurrentMonth}
+                            value={currentMonth}
+                            defaultValue={`${getCurrentYear}-${getCurrentMonth}`}
+                            type={"month"}
+                        />
                     </div>
                 </div>
 
@@ -156,43 +257,31 @@ const AccountingProfileOverall = () => {
                     <div className={styles.tableHeader}>
                         <h3 className={styles.tableTitle}>Xarajat Kategoriyalari</h3>
                     </div>
-                    <div className={styles.tableContent}>
-                        <div className={styles.tableWrapper}>
-                            <table className={styles.table}>
-                                <thead>
-                                    <tr className={styles.tableHeaderRow}>
-                                        <th className={styles.tableHeaderCell}>Kategoriya</th>
-                                        <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellCenter}`}>Element Soni</th>
-                                        <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellRight}`}>Umumiy Xarajat</th>
-                                        <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellRight}`}>Foiz</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {sortedItems.map((item) => {
-                                        const percentage = ((item.total / totalSum) * 100).toFixed(1)
-                                        return (
-                                            <tr key={item.id} className={styles.tableRow}>
-                                                <td className={styles.tableCell}>{item.category}</td>
-                                                <td className={`${styles.tableCell} ${styles.tableCellCenter} ${styles.tableCellMuted}`}>
-                                                    {item.items}
-                                                </td>
-                                                <td className={`${styles.tableCell} ${styles.tableCellRight} ${styles.tableCellBold}`}>
-                                                    {formatCurrency(item.total)}
-                                                </td>
-                                                <td className={`${styles.tableCell} ${styles.tableCellRight}`}>
-                                                    <div className={styles.progressContainer}>
-                                                        <div className={styles.progressBar}>
-                                                            <div className={styles.progressFill} style={{ width: `${percentage}%` }} />
-                                                            <span className={styles.progressBar__string}>{percentage}%</span>
-                                                        </div>
-                                                    </div>
-                                                </td>
+                    <div
+                        className={classNames(styles.tableContent, {
+                            [styles.loading]: loading
+                        })}
+                    >
+                        {
+
+                            loading
+                                ? <DefaultLoader />
+                                : <div className={styles.tableWrapper}>
+                                    <table className={styles.table}>
+                                        <thead className={styles.table__head}>
+                                            <tr className={styles.tableHeaderRow}>
+                                                <th className={styles.tableHeaderCell}>Xarajat nomi</th>
+                                                <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellCenter}`}>To'lov turi</th>
+                                                <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellRight}`}>Umumiy Xarajat</th>
+                                                {/* <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellRight}`}>Foiz</th> */}
                                             </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
+                                        </thead>
+                                        <tbody>
+                                            {render()}
+                                        </tbody>
+                                    </table>
+                                </div>
+                        }
                     </div>
                 </div>
 

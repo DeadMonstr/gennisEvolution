@@ -71,6 +71,47 @@
     &:hover
         background-color: var(--muted)
 
+.filterSection
+    padding: 1.5rem
+    margin-bottom: 2rem
+    border-radius: 0.5rem
+    border: 1px solid var(--border)
+    background-color: var(--card)
+    display: flex
+    justify-content: space-between
+    align-items: center
+    // flex-direction: column
+    gap: 1.5rem
+
+.filterHeader
+    // border-bottom: 1px solid var(--border)
+    padding: 1rem 0
+
+.filterTitle
+    font-size: 2rem
+    font-weight: 600
+    color: var(--foreground)
+    margin: 0
+
+.filterDescription
+    margin-top: 0.25rem
+    font-size: 1.4rem
+    color: var(--muted-foreground)
+    margin-bottom: 0
+
+.filterButtons
+    display: flex
+    justify-content: flex-end
+    flex-wrap: wrap
+    // gap: 0.75rem
+    &__btns
+        display: flex
+        gap: 1rem
+    &__input
+        margin: 0
+        width: 30rem
+        height: 4rem
+
 .cardsGrid
     display: grid
     gap: 1rem

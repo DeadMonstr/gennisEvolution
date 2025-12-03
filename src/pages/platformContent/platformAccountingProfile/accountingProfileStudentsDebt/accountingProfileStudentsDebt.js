@@ -20,11 +20,7 @@ const AccountingProfileStudentsDebt = () => {
     const getCurrentYear = new Date().getFullYear()
     const getCurrentMonth = new Date().getMonth() + 1
 
-    const [filterStatus, setFilterStatus] = useState("all")
-    const [filterType, setFilterType] = useState("cash")
     const [currentMonth, setCurrentMonth] = useState(null)
-    const [currentPage, setCurrentPage] = useState(1)
-    const PageSize = useMemo(() => 50, [])
 
 
     useEffect(() => {
@@ -239,26 +235,6 @@ const AccountingProfileStudentsDebt = () => {
                         <h3 className={styles.filterTitle}>Filtrlash</h3>
                     </div>
                     <div className={styles.filterButtons}>
-                        {/* <div className={styles.filterButtons__btns}>
-                            <button
-                                onClick={() => setFilterType("cash")}
-                                className={`${styles.filterBtn} ${filterType === "cash" ? styles.filterBtnActive : ""}`}
-                            >
-                                Cash
-                            </button>
-                            <button
-                                onClick={() => setFilterType("bank")}
-                                className={`${styles.filterBtn} ${filterType === "bank" ? styles.filterBtnActive : ""}`}
-                            >
-                                Bank
-                            </button>
-                            <button
-                                onClick={() => setFilterType("click")}
-                                className={`${styles.filterBtn} ${filterType === "click" ? styles.filterBtnActive : ""}`}
-                            >
-                                Click
-                            </button>
-                        </div> */}
                         <Input
                             clazzLabel={styles.filterButtons__input}
                             onChange={setCurrentMonth}
@@ -267,26 +243,6 @@ const AccountingProfileStudentsDebt = () => {
                             type={"month"}
                         />
                     </div>
-                    {/* <div className={styles.filterButtons__btns}>
-                        <button
-                            onClick={() => setFilterStatus("all")}
-                            className={`${styles.filterBtn} ${filterStatus === "all" ? styles.filterBtnActive : ""}`}
-                        >
-                            Barchasi
-                        </button>
-                        <button
-                            onClick={() => setFilterStatus("unpaid")}
-                            className={`${styles.filterBtn} ${filterStatus === "unpaid" ? styles.filterBtnActive : ""}`}
-                        >
-                            To'lanmagan
-                        </button>
-                        <button
-                            onClick={() => setFilterStatus("partial")}
-                            className={`${styles.filterBtn} ${filterStatus === "partial" ? styles.filterBtnActive : ""}`}
-                        >
-                            Qisman To'langan
-                        </button>
-                    </div> */}
                 </div>
 
                 <div className={styles.tableCard}>

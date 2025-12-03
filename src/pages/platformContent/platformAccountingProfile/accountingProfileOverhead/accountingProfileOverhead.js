@@ -1,4 +1,10 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+
+import Input from "components/platform/platformUI/input"
+import { fetchAccountingProfileData } from "slices/accountingProfileSlice"
+
 import styles from "./accountingProfileOverhead.module.sass"
 
 const categories = [
@@ -10,16 +16,42 @@ const categories = [
 ]
 
 const AccountingProfileOverhead = () => {
+
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const { locationId } = useParams()
+
+    const { loading, data } = useSelector(state => state.accountingProfileSlice)
+    const getCurrentYear = new Date().getFullYear()
+    const getCurrentMonth = new Date().getMonth() + 1
+
+    const [currentMonth, setCurrentMonth] = useState(null)
 
     const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("uz-UZ", {
-            style: "currency",
-            currency: "UZS",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).format(amount)
+        if (typeof amount === "number") {
+            const formatted = new Intl.NumberFormat("uz-UZ", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            }).format(amount);
+
+            return `${formatted} UZS`
+        }
+        return "0 UZS"
     }
+
+    useEffect(() => {
+        if (getCurrentYear && getCurrentMonth)
+            setCurrentMonth(`${getCurrentYear}-${getCurrentMonth}`)
+    }, [getCurrentYear, getCurrentMonth])
+
+    useEffect(() => {
+        if (currentMonth && locationId) {
+            const [year, month] = currentMonth.split("-")
+            dispatch(fetchAccountingProfileData({
+                URL_TYPE: "overhead", locationId, year, month
+            }))
+        }
+    }, [currentMonth])
 
     return (
         <main className={styles.container}>
@@ -42,6 +74,20 @@ const AccountingProfileOverhead = () => {
                     <button onClick={() => navigate(-1)} className={styles.backBtn}>
                         Orqaga
                     </button>
+                </div>
+                <div className={styles.filterSection}>
+                    <div className={styles.filterHeader}>
+                        <h3 className={styles.filterTitle}>Filtrlash</h3>
+                    </div>
+                    <div className={styles.filterButtons}>
+                        <Input
+                            clazzLabel={styles.filterButtons__input}
+                            onChange={setCurrentMonth}
+                            value={currentMonth}
+                            defaultValue={`${getCurrentYear}-${getCurrentMonth}`}
+                            type={"month"}
+                        />
+                    </div>
                 </div>
 
                 <div className={styles.cardsGrid}>
