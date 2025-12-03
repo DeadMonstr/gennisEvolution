@@ -22,11 +22,9 @@ const AccountingProfileOverall = () => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { locationId } = useParams()
+    const { locationId, date } = useParams()
 
     const { loading, data } = useSelector(state => state.accountingProfileSlice)
-    const getCurrentYear = new Date().getFullYear()
-    const getCurrentMonth = new Date().getMonth() + 1
 
     const [currentMonth, setCurrentMonth] = useState(null)
 
@@ -43,9 +41,9 @@ const AccountingProfileOverall = () => {
     }
 
     useEffect(() => {
-        if (getCurrentYear && getCurrentMonth)
-            setCurrentMonth(`${getCurrentYear}-${getCurrentMonth}`)
-    }, [getCurrentYear, getCurrentMonth])
+        if (date)
+            setCurrentMonth(date)
+    }, [date])
 
     useEffect(() => {
         if (currentMonth && locationId) {
@@ -73,9 +71,6 @@ const AccountingProfileOverall = () => {
         return sortSalary(data?.overhead_list)?.map((item, index) => {
             return (
                 <tr key={item.id} className={styles.tableRow}>
-                    {/* <td className={`${styles.tableCell} ${styles.tableCellCenter} ${styles.tableCellBold}`}>
-                        {index + 1}
-                    </td> */}
                     <td className={styles.tableCell}>{item.item_name}</td>
                     <td className={`${styles.tableCell} ${styles.tableCellCenter} ${styles.tableCellMuted}`}>
                         {item.payment_type}
@@ -83,14 +78,6 @@ const AccountingProfileOverall = () => {
                     <td className={`${styles.tableCell} ${styles.tableCellRight} ${styles.tableCellBold}`}>
                         {formatCurrency(item.item_sum)}
                     </td>
-                    {/* <td className={`${styles.tableCell} ${styles.tableCellRight}`}>
-                        <div className={styles.progressContainer}>
-                            <div className={styles.progressBar}>
-                                <div className={styles.progressFill} style={{ width: `${percentage}%` }} />
-                                <span className={styles.progressBar__string}>{percentage}%</span>
-                            </div>
-                        </div>
-                    </td> */}
                 </tr>
             )
         })
@@ -102,10 +89,10 @@ const AccountingProfileOverall = () => {
                 <div className={styles.navContent}>
                     <div className={styles.breadcrumb}>
                         <span className={styles.breadcrumbItem}>Moliya Boshqarma</span>
-                        {/* <span className={styles.breadcrumbSeparator}>/</span> */}
-                        {/* <span className={styles.breadcrumbItem}>Qo'shimcha Xarajatlar</span> */}
                         <span className={styles.breadcrumbSeparator}>/</span>
-                        <span className={styles.breadcrumbItemActive}>Qo'shimcha Xarajatlar</span>
+                        <span className={styles.breadcrumbItem}>Qo'shimcha Xarajatlar</span>
+                        <span className={styles.breadcrumbSeparator}>/</span>
+                        <span className={styles.breadcrumbItemActive}>Umumiy Xarajat</span>
                     </div>
                 </div>
             </nav>
@@ -247,7 +234,7 @@ const AccountingProfileOverall = () => {
                             clazzLabel={styles.filterButtons__input}
                             onChange={setCurrentMonth}
                             value={currentMonth}
-                            defaultValue={`${getCurrentYear}-${getCurrentMonth}`}
+                            // defaultValue={`${getCurrentYear}-${getCurrentMonth}`}
                             type={"month"}
                         />
                     </div>

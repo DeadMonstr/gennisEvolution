@@ -6,13 +6,14 @@ import Input from "components/platform/platformUI/input"
 import { fetchAccountingProfileData } from "slices/accountingProfileSlice"
 
 import styles from "./accountingProfileOverhead.module.sass"
+import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall"
 
 const categories = [
-    { id: 1, name: "Kommunal Xarajatlar", description: "Elektr, Suv, Gaz", total: 5000000 },
-    { id: 2, name: "Sodir Tutar Xarajatlar", description: "Ofis materiallar", total: 2300000 },
-    { id: 3, name: "Ixcham va Asboblar", description: "Saqlash xarajatlari", total: 1800000 },
-    { id: 4, name: "Transport", description: "Taksi, benzin", total: 3500000 },
-    { id: 5, name: "Boshqa Xarajatlar", description: "Turli xarajatlar", total: 1200000 },
+    { id: 1, name: "Arenda", type: "arenda" },
+    { id: 2, name: "Gaz", type: "gaz" },
+    { id: 3, name: "Suv", type: "suv" },
+    { id: 4, name: "Svet", type: "svet" },
+    { id: 5, name: "Boshqa Xarajatlar", type: "other" },
 ]
 
 const AccountingProfileOverhead = () => {
@@ -95,22 +96,26 @@ const AccountingProfileOverhead = () => {
                         <div
                             key={category.id}
                             className={styles.categoryCard}
-                            onClick={() => navigate(`${category.id}`)}
+                            onClick={() => navigate(`${category.type}/${currentMonth}`)}
                         >
                             <div className={styles.categoryCardHeader}>
                                 <h3 className={styles.categoryCardTitle}>{category.name}</h3>
                             </div>
                             <div className={styles.categoryCardContent}>
-                                <p className={styles.categoryCardDescription}>{category.description}</p>
-                                <div className={styles.categoryCardTotal}>
-                                    <p className={styles.categoryCardTotalLabel}>Umumiy Xarajat</p>
-                                    <p className={styles.categoryCardTotalValue}>{formatCurrency(category.total)}</p>
-                                </div>
+                                {/* <p className={styles.categoryCardDescription}>{category.description}</p> */}
+                                {
+                                    loading
+                                        ? <DefaultLoaderSmall />
+                                        : <div className={styles.categoryCardTotal}>
+                                            <p className={styles.categoryCardTotalLabel}>Umumiy Xarajat</p>
+                                            <p className={styles.categoryCardTotalValue}>{formatCurrency(data[`total_${category.type}`])}</p>
+                                        </div>
+                                }
                             </div>
                         </div>
                     ))}
                 </div>
-                <button onClick={() => navigate("overall")} className={styles.navButton}>
+                <button onClick={() => navigate(`overall/${currentMonth}`)} className={styles.navButton}>
                     Umumiy Ma'lumotlarni Ko'rish
                 </button>
             </div>

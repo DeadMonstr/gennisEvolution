@@ -19,9 +19,9 @@ const PlatformAccountingProfile = () => {
                 <Route path="salary" element={<AccountingProfileSalary />} />
                 <Route path="students-debt" element={<AccountingProfileStudentsDebt />} />
                 <Route path="overhead">
-                    {/* <Route index element={<AccountingProfileOverhead />} /> */}
-                    {/* <Route path=":categoryId" element={<AccountingProfileCategory />} /> */}
-                    <Route index element={<AccountingProfileOverall />} />
+                    <Route index element={<AccountingProfileOverhead />} />
+                    <Route path=":categoryId/:date" element={<AccountingProfileCategory />} />
+                    <Route path="overall/:date" element={<AccountingProfileOverall />} />
                 </Route>
             </Routes>
         </div>

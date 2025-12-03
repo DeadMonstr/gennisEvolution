@@ -51,15 +51,6 @@ const PlatformOtchot = () => {
                 </div> */}
 
                 <div className={styles.categoryGrid}>
-                    <div className={styles.categoryCard} onClick={() => navigate("salary")}>
-                        <div className={styles.categoryCardHeader}>
-                            <h3 className={styles.categoryCardTitle}>Oyliklar</h3>
-                            {/* <p className={styles.categoryCardSubtitle}>Salary Management</p> */}
-                        </div>
-                        <div className={styles.categoryCardContent}>
-                            <p>O'qituvchi va xodimlar oyliklarini boshqarish</p>
-                        </div>
-                    </div>
 
                     <div className={styles.categoryCard} onClick={() => navigate("students-debt")}>
                         <div className={styles.categoryCardHeader}>
@@ -68,6 +59,15 @@ const PlatformOtchot = () => {
                         </div>
                         <div className={styles.categoryCardContent}>
                             <p>O'quvchi qarzdorliklarini kuzatib borish</p>
+                        </div>
+                    </div>
+                    <div className={styles.categoryCard} onClick={() => navigate("salary")}>
+                        <div className={styles.categoryCardHeader}>
+                            <h3 className={styles.categoryCardTitle}>Oyliklar</h3>
+                            {/* <p className={styles.categoryCardSubtitle}>Salary Management</p> */}
+                        </div>
+                        <div className={styles.categoryCardContent}>
+                            <p>O'qituvchi va xodimlar oyliklarini boshqarish</p>
                         </div>
                     </div>
 
