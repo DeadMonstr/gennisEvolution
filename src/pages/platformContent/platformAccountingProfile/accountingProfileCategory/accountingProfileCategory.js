@@ -64,7 +64,7 @@ const AccountingProfileCategory = () => {
                     item.item_name !== "suv" &&
                     item.item_name !== "arenda"
                 )))
-            } else setSortData(data.overhead_list.filter(item => item.item_name === categoryId))
+            } else setSortData(data.overhead_list?.filter(item => item.item_name === categoryId))
         }
     }, [data])
 
