@@ -66,7 +66,7 @@ const AccountingProfileCategory = () => {
                 )))
             } else setSortData(data.overhead_list.filter(item => item.item_name === categoryId))
         }
-    }, [])
+    }, [data])
 
     function sortSalary(data) {
         if (!Array.isArray(data) || data.length === 0) {
