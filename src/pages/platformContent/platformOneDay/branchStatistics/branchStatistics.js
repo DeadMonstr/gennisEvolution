@@ -278,7 +278,7 @@ export const BranchStatistics = () => {
                         extraClass={cls.date__navigate}
                         onClickBtn={() => navigate("dailyReport")}
                     >
-                        Kunlik statistika
+                        Kunlik Hisobotlar
                     </Button>
                     <Select
                         clazzLabel={cls.date__select}

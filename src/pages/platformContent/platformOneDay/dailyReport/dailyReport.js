@@ -96,7 +96,7 @@ export const DailyReport = () => {
         <div className={cls.dailyReport}>
             <div className={cls.dailyReport__header}>
                 <div>
-                    <h1>Hisobotlar</h1>
+                    <h1>Kunlik Hisobotlar</h1>
                     <Input
                         type={"month"}
                         onChange={setSelectedMonth}
