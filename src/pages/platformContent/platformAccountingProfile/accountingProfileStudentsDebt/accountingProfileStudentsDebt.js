@@ -222,7 +222,7 @@ const AccountingProfileStudentsDebt = () => {
                                 {
                                     loading
                                         ? <DefaultLoaderSmall />
-                                        : data?.student_list?.length || 0
+                                        : `${data?.student_list?.length || 0}  ( ${data?.student_list.filter(item => item.is_deleted)?.length} 🚫 )`
                                 }
                             </p>
                             {/* <p className={styles.cardDescription}>Total Debtors</p> */}
@@ -239,7 +239,7 @@ const AccountingProfileStudentsDebt = () => {
                             clazzLabel={styles.filterButtons__input}
                             onChange={setCurrentMonth}
                             value={currentMonth}
-                            defaultValue={`${getCurrentYear}-${getCurrentMonth}`}
+                            // defaultValue={`${getCurrentYear}-${getCurrentMonth}`}
                             type={"month"}
                         />
                     </div>
