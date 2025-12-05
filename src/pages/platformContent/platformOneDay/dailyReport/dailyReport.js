@@ -44,12 +44,7 @@ export const DailyReport = () => {
         //     return [];
         // }
 
-        return [...data].sort((a, b) => {
-            const [yearA, monthA, dayA] = a?.date;
-            const [yearB, monthB, dayB] = b?.date;
-
-            return Number(dayB) - Number(dayA); // сортировка по убыванию
-        });
+        return [...data].reverse();
     }
 
     const render = () => {
