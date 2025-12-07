@@ -42,7 +42,7 @@ const datas = [
 
 const PlatformParentSection = () => {
 
-    const locationId = localStorage.getItem("location_id")
+    // const locationId = localStorage.getItem("location_id")
     const [childModal, setChildModal] = useState(false)
     const [activeError, setActiveError] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
@@ -60,7 +60,7 @@ const PlatformParentSection = () => {
     const { data } = useSelector(state => state.parentSlice)
     const children = data.children
     const { request } = useHttp()
-    const { id } = useParams()
+    const { id, locationId } = useParams()
     const navigate = useNavigate()
 
     useEffect(() => {
