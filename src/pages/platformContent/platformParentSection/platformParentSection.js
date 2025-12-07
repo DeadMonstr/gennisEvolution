@@ -63,8 +63,6 @@ const PlatformParentSection = () => {
     const { id } = useParams()
     const navigate = useNavigate()
 
-    console.log(children, 'logggg')
-
     useEffect(() => {
         if (locationId)
             dispatch(fetchStudyingStudentsWithoutPagination({ locationId }))
@@ -100,7 +98,6 @@ const PlatformParentSection = () => {
         }
         setSelectAll(!selectAll);
     };
-    console.log(children)
 
     const handleSelectItem = (id) => {
         if (selectedItems.includes(id)) {
