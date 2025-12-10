@@ -262,7 +262,7 @@ const AccountingProfileStudentsDebt = () => {
                                         <thead className={styles.table__head}>
                                             <tr className={styles.tableHeaderRow}>
                                                 <th className={styles.tableHeaderCell}>O'quvchi</th>
-                                                <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellRight}`}>Umumiy Qarz</th>
+                                                <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellRight}`}>Hisoblangan to'lov</th>
                                                 <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellRight}`}>To'langan</th>
                                                 <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellRight}`}>Qolgan</th>
                                                 <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellCenter}`}>Chegirma</th>
