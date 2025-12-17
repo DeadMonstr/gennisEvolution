@@ -1,0 +1,2277 @@
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { useForm } from "react-hook-form"
+import classNames from "classnames"
+
+import {
+    getTaskCategoryList,
+    getTaskLoading, getTaskNotificationLoading, getTaskNotificationsList, getTaskProfileLoading,
+    getTaskRecurringTypes,
+    getTasks,
+    getTaskStatusList,
+    getTaskTags,
+    getTaskTagsLoading
+} from "../model/todoistSelector"
+import {
+    addAttachments,
+    addComments,
+    addProofs,
+    addSubTasks,
+    addTag,
+    addTask,
+    deleteAttachments, deleteComments,
+    deleteProofs,
+    deleteSubTasks,
+    deleteTag, deleteTask,
+    editAttachments, editComments, editNotification, editProofs,
+    editSubTasks,
+    editTag,
+    editTask,
+    notificationLoading,
+    notificationLoadingStop,
+    taskLoading,
+    taskLoadingStop, taskProfileLoading, taskProfileLoadingStop,
+    taskTagsLoading,
+    taskTagsLoadingStop
+} from "../model/todoistSlice"
+import { fetchTaskNotifications, fetchTaskProfile, fetchTasks, fetchTaskTags } from "../model/todoistThunk"
+import { API_URL, headerImg, headers, useHttp } from "shared/api/base"
+import { onAddAlertOptions } from "features/alert"
+import { getUserId } from "pages/loginPage"
+import { Modal } from "shared/ui/modal"
+import { Form } from "shared/ui/form"
+import { Input } from "shared/ui/input"
+import { Textarea } from "shared/ui/textArea"
+import { ConfirmModal } from "shared/ui/confirmModal"
+import { Select } from "shared/ui/select"
+import { MiniLoader } from "shared/ui/miniLoader"
+
+import styles from "./todoistPage.module.sass"
+import { fetchTeachersData, getTeacherData } from "entities/oftenUsed"
+import { getUserBranchId, getUserLevel } from "entities/profile/userProfile"
+import { AnimatedMulti } from "features/workerSelect"
+import { fetchEmployersData, fetchEmployersDataWithoutPagination } from "entities/employer/model/slice/employersThunk.js";
+import { getEmployersData } from "entities/employer/model/selector/employersSelector.js";
+import { employersReducer } from "entities/employer/index.js";
+import { DynamicModuleLoader } from "shared/lib/components/DynamicModuleLoader/DynamicModuleLoader.jsx";
+import { DefaultLoader, DefaultPageLoader } from "shared/ui/defaultLoader/index.js";
+import { Button } from "shared/ui/button"
+
+const reducers = {
+    employers: employersReducer
+}
+
+const TASK_TYPES = [
+    { id: "myTasks", name: "Menig vazifalarim" },
+    { id: "givenTask", name: "Bergan vazifalarim" },
+    { id: "viewTasks", name: "Tekshirish vazifalari" },
+]
+
+const NOTIFICATION_TYPES = [
+    { id: "executor", name: "Menig vazifalarim" },
+    { id: "creator", name: "Bergan vazifalarim" },
+    { id: "reviewer", name: "Tekshirish vazifalari" },
+]
+
+const PlatformTodoist = () => {
+
+
+    const formDataImg = new FormData()
+    const dispatch = useDispatch()
+    const { request } = useHttp()
+    const { register, handleSubmit, setValue } = useForm()
+
+    const userBranchId = useSelector(getUserBranchId)
+    const userLevel = useSelector(getUserLevel)
+    const userId = useSelector(getUserId)
+    const teachers = useSelector(getTeacherData)
+    const employers = useSelector(getEmployersData)
+    const tags = useSelector(getTaskTags)
+    const tagsLoading = useSelector(getTaskTagsLoading)
+    const tasks = useSelector(getTasks)
+    const tasksLoading = useSelector(getTaskLoading)
+    const tasksProfileLoading = useSelector(getTaskProfileLoading)
+    const statusList = useSelector(getTaskStatusList)
+    const categoryList = useSelector(getTaskCategoryList)
+    const recurringTypes = useSelector(getTaskRecurringTypes)
+    const notificationsList = useSelector(getTaskNotificationsList)
+    const notificationsLoading = useSelector(getTaskNotificationLoading)
+
+    // State management
+
+    const [isFilter, setIsFilter] = useState(false)
+    const [selectedStatus, setSelectedStatus] = useState("all")
+    const [selectedCreate, setSelectedCreate] = useState()
+    const [selectedDeadlineFrom, setSelectedDeadlineFrom] = useState()
+    const [selectedDeadlineTo, setSelectedDeadlineTo] = useState()
+    const [selectedTags, setSelectedTags] = useState([])
+    const [selectedCategory, setSelectedCategory] = useState("all")
+
+    const [isRedirected, setIsRedirected] = useState(false)
+    const [selectedRedirect, setSelectedRedirect] = useState(null)
+    const [isHaveNot, setIsHaveNot] = useState(false)
+    const [activePage, setActivePage] = useState("task")
+    const [activeTaskType, setActiveTaskType] = useState("myTasks")
+    const [activeNotificationType, setActiveNotificationType] = useState("executor")
+    const [modalType, setModalType] = useState(null)
+    const [nestedModalType, setNestedModalType] = useState(null)
+    const [selectedTask, setSelectedTask] = useState(null)
+    const [selectedTag, setSelectedTag] = useState(null)
+    const [activeCollapsibles, setActiveCollapsibles] = useState(new Set())
+    const [isRecurring, setIsRecurring] = useState(false)
+    const [recurringType, setRecurringType] = useState()
+    const [teachersList, setTeachersList] = useState([])
+    const [tagsList, setTagsList] = useState([])
+
+    // Form state
+    const [formData, setFormData] = useState({})
+    const [tagFormData, setTagFormData] = useState(null)
+    const [nestedFormData, setNestedFormData] = useState({})
+
+    useEffect(() => {
+        if (userBranchId) {
+            dispatch(fetchTaskTags())
+            dispatch(fetchTeachersData(userBranchId))
+            dispatch(fetchEmployersDataWithoutPagination({ branch: userBranchId, level: userLevel }))
+        }
+    }, [userBranchId])
+
+    useEffect(() => {
+        if (userId && activeTaskType) {
+            if (activePage === "task") {
+                console.log(selectedTags);
+
+                const props = {
+                    status: selectedStatus,
+                    created_at: selectedCreate,
+                    deadline_after: selectedDeadlineFrom,
+                    deadline_before: selectedDeadlineTo,
+                    category: selectedCategory,
+                    tags: selectedTags.length === 0 ? null : selectedTags.map(item => item.value)
+                }
+                if (activeTaskType === "myTasks") {
+                    dispatch(fetchTasks({ executor: userId, ...props }))
+                } else if (activeTaskType === "givenTask") {
+                    dispatch(fetchTasks({ creator: userId, ...props }))
+                } else {
+                    dispatch(fetchTasks({ reviewer: userId, ...props }))
+                }
+            } else {
+                dispatch(fetchTaskNotifications({ role: activeNotificationType, user_id: userId }))
+            }
+        }
+    }, [userId, activeTaskType, activePage, activeNotificationType, selectedCreate, selectedDeadlineFrom, selectedDeadlineTo, selectedStatus, selectedCategory, selectedTags])
+
+    useEffect(() => {
+        if (teachers && employers)
+            setTeachersList([
+                ...teachers.map(item => ({
+                    id: item.user_id,
+                    name: `${item.name} ${item.surname} (${item.subject[0]?.name})`
+                })),
+                ...employers.map(item => ({
+                    id: item.user_id,
+                    name: `${item.name} (${item.job})`
+                }))
+            ])
+    }, [teachers, employers])
+
+    useEffect(() => {
+        if (tags) {
+            setTagsList(
+                tags.map(item =>
+                    ({ value: item.id, label: item.name })
+                )
+            )
+        }
+    }, [tags])
+
+
+    // Modal handlers
+    const openCreateTaskModal = () => {
+        setFormData({
+            title: "",
+            description: "",
+            executor_ids: [],
+            reviewer: userId,
+            creator: userId,
+            category: "admin",
+            tags: [],
+            status: "not_started",
+            deadline: "",
+            is_recurring: false,
+            recurring_type: "daily",
+            repeat_every: 1,
+        })
+        setModalType("createTask")
+    }
+
+    const openEditTaskModal = (task) => {
+        setSelectedTask(task)
+        setFormData({
+            ...task,
+            tags: task.tags && task.tags.map(item => ({ value: item.id, label: item.name }))
+        })
+        setModalType("editTask")
+    }
+
+    const openChangeStatusModal = (task) => {
+        setSelectedTask(task)
+        setFormData({
+            ...task,
+            tags: task.tags && task.tags.map(item => ({ value: item.id, label: item.name }))
+        })
+        setModalType("changeStatus")
+    }
+
+    const openRedirectModal = (task) => {
+        setSelectedTask(task)
+        setIsRedirected(true)
+    }
+
+    const openViewTaskModal = (task) => {
+        setSelectedTask(task)
+        setModalType("viewTask")
+        setActiveCollapsibles(new Set())
+    }
+
+    const openDeleteTaskModal = (task) => {
+        setSelectedTask(task)
+        setModalType("deleteTask")
+    }
+
+    const openCreateTagModal = () => {
+        setTagFormData(null)
+        setModalType("createTag")
+    }
+
+    const openEditTagModal = (tag) => {
+        setSelectedTag(tag)
+        setModalType("editTag")
+        setTagFormData(tag.name)
+    }
+
+    const openDeleteTagModal = (tag) => {
+        setSelectedTag(tag)
+        setModalType("deleteTag")
+    }
+
+    // Nested CRUD handlers
+    const openNestedModal = (type, item) => {
+        setNestedFormData(item || {})
+        setNestedModalType(type)
+    }
+
+    const onToggleRead = (id, isRead) => {
+
+        dispatch(notificationLoading())
+
+        request(`${API_URL}Tasks/notifications/${id}/`, "PATCH", JSON.stringify({ is_read: isRead }), headers())
+            .then(res => {
+                dispatch(editNotification(res))
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "success",
+                    msg: isRead ? "O'qib chiqildi" : "Ortga qaytarildi"
+                }))
+                // NOTIFICATION_TYPES.map(item => {
+                //     request(`${API_URL}Tasks/notifications/?role=${item.id}&user_id=${userId}`, "GET", null, headers())
+                //         .then(res => {
+                //             const filtered = res.filter(item => !item.is_read)
+                //             if (filtered.length > 0) {
+                //                 setIsHaveNot(true)
+                //             } else {
+                //                 if (isHaveNot) setIsHaveNot(false)
+                //             }
+                //         })
+                // })
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(notificationLoadingStop())
+            })
+    }
+
+    const onViewTask = (id) => {
+
+        request(`${API_URL}Tasks/missions/${id}/`, "GET", null, headers())
+            .then(res => {
+                setSelectedTask(res)
+                setModalType("viewTask")
+                setActiveCollapsibles(new Set())
+            })
+
+    }
+
+    useEffect(() => {
+        // if (notificationsList.length > 0)
+        if (userId) {
+            // NOTIFICATION_TYPES.map(item => {
+            request(`${API_URL}Tasks/notifications/?user_id=${userId}`, "GET", null, headers())
+                .then(res => {
+                    const filtered = res.filter(item => !item.is_read)
+                    if (filtered.length > 0) {
+                        setIsHaveNot(true)
+                    }
+                })
+            // })
+        }
+    }, [userId])
+
+    const onChangeRedirect = () => {
+
+        const patch = {
+            executor: +selectedRedirect
+        }
+
+        dispatch(taskLoading())
+        request(`${API_URL}Tasks/missions/${selectedTask.id}/`, "PATCH", JSON.stringify(patch), headers())
+            .then(res => {
+                request(`${API_URL}Tasks/missions/${res.id}/`, "GET", null, headers())
+                    .then(res => {
+                        dispatch(editTask(res))
+                        dispatch(onAddAlertOptions({
+                            status: true,
+                            type: "success",
+                            msg: "Vazifa yo'naltirildi"
+                        }))
+                        setModalType(null)
+                    })
+                    .catch(err => {
+                        dispatch(onAddAlertOptions({
+                            status: true,
+                            type: "error",
+                            msg: "Xatolik yuz berdi!"
+                        }))
+                        dispatch(taskLoadingStop())
+                    })
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskLoadingStop())
+            })
+    }
+
+    // Task CRUD operations
+    const handleCreateTask = () => {
+
+        let repeat = {}
+        if (formData.recurring_type !== "custom") {
+            repeat = {
+                repeat_every: recurringTypes.filter(item => item.id === formData.recurring_type)[0]?.number
+            }
+        }
+
+        const post = {
+            ...formData,
+            tags: formData.tags.map(item => item.value),
+            // executor_ids: formData.executor_ids.map(item => item.value),
+            executor_ids: [Number(formData.executor_ids)],
+            ...repeat,
+        }
+
+        dispatch(taskLoading())
+        request(`${API_URL}Tasks/missions/`, "POST", JSON.stringify(post), headers())
+            .then(res => {
+                res.map(item => {
+                    request(`${API_URL}Tasks/missions/${item.id}/`, "GET", null, headers())
+                        .then(res => {
+                            dispatch(addTask(res))
+                            dispatch(onAddAlertOptions({
+                                status: true,
+                                type: "success",
+                                msg: "Vazifa yaratildi"
+                            }))
+                            setModalType(null)
+                            setActiveTaskType("givenTask")
+                        })
+                })
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskLoadingStop())
+            })
+    }
+
+    const handleEditTask = () => {
+
+        const patch = {
+            ...formData,
+            tags: formData.tags.map(item => item.value),
+            creator: formData.creator.id,
+            // executor_ids: formData.executor_ids.map(item => item.value),
+            executor_ids: formData.executor_ids ? [Number(formData.executor_ids)] : [formData.executor.id],
+            reviewer: typeof formData.reviewer === "object" ? formData.reviewer.id : formData.reviewer
+        }
+
+        dispatch(taskLoading())
+        request(`${API_URL}Tasks/missions/${formData.id}/`, "PATCH", JSON.stringify(patch), headers())
+            .then(res => {
+
+                request(`${API_URL}Tasks/missions/${res.id}/`, "GET", null, headers())
+                    .then(res => {
+                        dispatch(editTask(res))
+                        dispatch(onAddAlertOptions({
+                            status: true,
+                            type: "success",
+                            msg: "Vazifa o`zgartirildi"
+                        }))
+                        setModalType(null)
+                    })
+                    .catch(err => {
+                        dispatch(onAddAlertOptions({
+                            status: true,
+                            type: "error",
+                            msg: "Xatolik yuz berdi!"
+                        }))
+                        dispatch(taskLoadingStop())
+                    })
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskLoadingStop())
+            })
+    }
+
+    const handleDeleteTask = () => {
+        dispatch(taskLoading())
+        request(`${API_URL}Tasks/missions/${selectedTask.id}/`, "DELETE", null, headers())
+            .then(res => {
+                dispatch(deleteTask(selectedTask.id))
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "success",
+                    msg: `${selectedTask.title} - Vazifasi o'chirildi`
+                }))
+                setModalType(null)
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskLoadingStop())
+            })
+    }
+
+    const handleChangeStatus = () => {
+        dispatch(taskLoading())
+        request(`${API_URL}Tasks/missions/${formData.id}/`, "PATCH", JSON.stringify({ status: formData.status }), headers())
+            .then(res => {
+                request(`${API_URL}Tasks/missions/${res.id}/`, "GET", null, headers())
+                    .then(res => {
+                        dispatch(editTask(res))
+                        dispatch(onAddAlertOptions({
+                            status: true,
+                            type: "success",
+                            msg: "Vazifani statusi o`zgartirildi"
+                        }))
+                        setModalType(null)
+                    })
+                    .catch(err => {
+                        dispatch(onAddAlertOptions({
+                            status: true,
+                            type: "error",
+                            msg: "Xatolik yuz berdi!"
+                        }))
+                        dispatch(taskLoadingStop())
+                    })
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskLoadingStop())
+            })
+    }
+
+    // Tag CRUD operations
+    const handleCreateTag = () => {
+        dispatch(taskTagsLoading())
+        request(`${API_URL}Tasks/tags/`, "POST", JSON.stringify({ name: tagFormData }), headers())
+            .then(res => {
+                dispatch(addTag(res))
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "success",
+                    msg: "Teg yaratildi"
+                }))
+                setModalType(null)
+                setTagFormData(null)
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Bu nomli teg bor yoki xatolik yuz berdi!"
+                }))
+                dispatch(taskTagsLoadingStop())
+                setTagFormData(null)
+            })
+    }
+
+    const handleEditTag = () => {
+        dispatch(taskTagsLoading())
+        request(`${API_URL}Tasks/tags/${selectedTag.id}/`, "PATCH", JSON.stringify({ name: tagFormData }), headers())
+            .then(res => {
+                dispatch(editTag(res))
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "success",
+                    msg: `Tegni nomi "${res.name}"ga o'zgartirildi`
+                }))
+                setModalType(null)
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskTagsLoadingStop())
+            })
+    }
+
+    const handleDeleteTag = () => {
+        dispatch(taskTagsLoading())
+        request(`${API_URL}Tasks/tags/${selectedTag.id}/`, "DELETE", null, headers())
+            .then(res => {
+                dispatch(deleteTag(selectedTag.id))
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "danger",
+                    msg: `"${selectedTag.name}" - tegi o'chirildi`
+                }))
+                setModalType(null)
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskTagsLoadingStop())
+            })
+    }
+
+    // Nested CRUD operations
+    const handleCreateSubtask = () => {
+
+        dispatch(taskProfileLoading("subtasks"))
+
+        const post = {
+            title: nestedFormData.title,
+            order: nestedFormData.order,
+            mission: selectedTask.id
+        }
+
+        request(`${API_URL}Tasks/subtasks/`, "POST", JSON.stringify(post), headers())
+            .then(res => {
+                dispatch(addSubTasks(res))
+                setSelectedTask(prev => ({
+                    ...prev,
+                    subtasks: [...prev.subtasks, res]
+                }))
+                setNestedModalType(null)
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "success",
+                    msg: "Sub-task qo'shildi"
+                }))
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskProfileLoadingStop())
+            })
+
+    }
+
+    const handleEditSubtask = () => {
+
+        dispatch(taskProfileLoading("subtasks"))
+
+        const patch = {
+            title: nestedFormData.title,
+            order: nestedFormData.order,
+        }
+
+        request(`${API_URL}Tasks/subtasks/${nestedFormData.id}/`, "PATCH", JSON.stringify(patch), headers())
+            .then(res => {
+                dispatch(editSubTasks(res))
+                setSelectedTask({
+                    ...selectedTask,
+                    subtasks: selectedTask.subtasks.map((s) => (s.id === res.id ? res : s)),
+                })
+                setNestedModalType(null)
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "success",
+                    msg: "Sub-task o'zgartirildi"
+                }))
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskProfileLoadingStop())
+            })
+
+    }
+
+    const handleDeleteSubtask = () => {
+
+        dispatch(taskProfileLoading("subtasks"))
+
+        request(`${API_URL}Tasks/subtasks/${nestedFormData.id}`, "DELETE", null, headers())
+            .then(res => {
+                dispatch(deleteSubTasks({ mission: selectedTask.id, subtask: nestedFormData.id }))
+                setSelectedTask({
+                    ...selectedTask,
+                    subtasks: selectedTask.subtasks.filter((s) => s.id !== nestedFormData.id),
+                })
+                setNestedModalType(null)
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "danger",
+                    msg: "Sub-task o'chirildi"
+                }))
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskProfileLoadingStop())
+            })
+    }
+
+    const handleCompleteSubtask = (isDone, id) => {
+
+        dispatch(taskProfileLoading("subtasks"))
+
+        request(`${API_URL}Tasks/subtasks/${id}/`, "PATCH", JSON.stringify({ is_done: !isDone }), headers())
+            .then(res => {
+                dispatch(editSubTasks(res))
+                setSelectedTask({
+                    ...selectedTask,
+                    subtasks: selectedTask.subtasks.map((s) => (s.id === res.id ? res : s)),
+                })
+                setNestedModalType(null)
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: isDone ? "danger" : "success",
+                    msg: isDone ? "Sub-task qaytarildi" : "Sub-task bajirildi"
+                }))
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskProfileLoadingStop())
+            })
+
+    }
+
+    const handleCreateAttachment = () => {
+
+        dispatch(taskProfileLoading("attachments"))
+
+        formDataImg.append("note", nestedFormData.note)
+        if (nestedFormData.file && typeof nestedFormData.file === "object") {
+            formDataImg.append("file", nestedFormData.file)
+        }
+        formDataImg.append("mission", selectedTask.id)
+
+        request(`${API_URL}Tasks/attachments/`, "POST", formDataImg, headerImg())
+            .then(res => {
+                dispatch(addAttachments(res))
+                setSelectedTask(prev => ({
+                    ...prev,
+                    attachments: [...prev.attachments, res]
+                }))
+                setNestedModalType(null)
+                formDataImg.delete("note")
+                formDataImg.delete("file")
+                formDataImg.delete("mission")
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "success",
+                    msg: "Qo'shimcha qo'shildi"
+                }))
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskProfileLoadingStop())
+            })
+
+    }
+
+    const handleEditAttachment = () => {
+
+        dispatch(taskProfileLoading("attachments"))
+
+        formDataImg.append("note", nestedFormData.note)
+        if (nestedFormData.file && typeof nestedFormData.file === "object") {
+            formDataImg.append("file", nestedFormData.file)
+        }
+
+        request(`${API_URL}Tasks/attachments/${nestedFormData.id}/`, "PATCH", formDataImg, headerImg())
+            .then(res => {
+                dispatch(editAttachments(res))
+                setSelectedTask({
+                    ...selectedTask,
+                    attachments: selectedTask.attachments.map((s) => (s.id === res.id ? res : s)),
+                })
+                setNestedModalType(null)
+                formDataImg.delete("note")
+                formDataImg.delete("file")
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "success",
+                    msg: "Qo'shimcha o'zgartirildi"
+                }))
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskProfileLoadingStop())
+            })
+
+    }
+
+    const handleDeleteAttachment = () => {
+
+        dispatch(taskProfileLoading("attachments"))
+
+        request(`${API_URL}Tasks/attachments/${nestedFormData.id}`, "DELETE", null, headers())
+            .then(res => {
+                dispatch(deleteAttachments({ mission: selectedTask.id, attachment: nestedFormData.id }))
+                setSelectedTask({
+                    ...selectedTask,
+                    attachments: selectedTask.attachments.filter((s) => s.id !== nestedFormData.id),
+                })
+                setNestedModalType(null)
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "danger",
+                    msg: "Qo'shimcha o'chirildi"
+                }))
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskProfileLoadingStop())
+            })
+
+    }
+
+    const handleCreateComment = () => {
+
+        dispatch(taskProfileLoading("comments"))
+
+        formDataImg.append("text", nestedFormData.text)
+        formDataImg.append("user", userId)
+        if (nestedFormData.comFile && typeof nestedFormData.comFile === "object") {
+            formDataImg.append("attachment", nestedFormData.comFile)
+        }
+        formDataImg.append("mission", selectedTask.id)
+
+        request(`${API_URL}Tasks/comments/`, "POST", formDataImg, headerImg())
+            .then(res => {
+                dispatch(addComments(res))
+                setSelectedTask(prev => ({
+                    ...prev,
+                    comments: [...prev.comments, res]
+                }))
+                setNestedModalType(null)
+                formDataImg.delete("text")
+                formDataImg.delete("user")
+                formDataImg.delete("attachment")
+                formDataImg.delete("mission")
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "success",
+                    msg: "Koment qo'shildi"
+                }))
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskProfileLoadingStop())
+            })
+
+
+    }
+
+    const handleEditComment = () => {
+
+        dispatch(taskProfileLoading("comments"))
+
+        formDataImg.append("text", nestedFormData.text)
+        if (nestedFormData.comFile && typeof nestedFormData.comFile === "object") {
+            formDataImg.append("attachment", nestedFormData.comFile)
+        }
+
+        request(`${API_URL}Tasks/comments/${nestedFormData.id}/`, "PATCH", formDataImg, headerImg())
+            .then(res => {
+                dispatch(editComments(res))
+                setSelectedTask({
+                    ...selectedTask,
+                    comments: selectedTask.comments.map((s) => (s.id === res.id ? res : s)),
+                })
+                setNestedModalType(null)
+                formDataImg.delete("text")
+                formDataImg.delete("attachment")
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "success",
+                    msg: "Koment o'zgartirildi"
+                }))
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskProfileLoadingStop())
+            })
+
+    }
+
+    const handleDeleteComment = () => {
+
+        dispatch(taskProfileLoading("comments"))
+
+        request(`${API_URL}Tasks/comments/${nestedFormData.id}`, "DELETE", null, headers())
+            .then(res => {
+                dispatch(deleteComments({ mission: selectedTask.id, comment: nestedFormData.id }))
+                setSelectedTask({
+                    ...selectedTask,
+                    comments: selectedTask.comments.filter((s) => s.id !== nestedFormData.id),
+                })
+                setNestedModalType(null)
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "danger",
+                    msg: "Koment o'chirildi"
+                }))
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskProfileLoadingStop())
+            })
+    }
+
+    const handleCreateProof = () => {
+
+        dispatch(taskProfileLoading("proofs"))
+
+        formDataImg.append("comment", nestedFormData.comment)
+        if (nestedFormData.proofFile && typeof nestedFormData.proofFile === "object") {
+            formDataImg.append("file", nestedFormData.proofFile)
+        }
+        formDataImg.append("mission", selectedTask.id)
+
+        request(`${API_URL}Tasks/proofs/`, "POST", formDataImg, headerImg())
+            .then(res => {
+                dispatch(addProofs(res))
+                setSelectedTask(prev => ({
+                    ...prev,
+                    proofs: [...prev.proofs, res]
+                }))
+                setNestedModalType(null)
+                formDataImg.delete("comment")
+                formDataImg.delete("file")
+                formDataImg.delete("mission")
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "success",
+                    msg: "Proof qo'shildi"
+                }))
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskProfileLoadingStop())
+            })
+
+    }
+
+    const handleEditProof = () => {
+
+        dispatch(taskProfileLoading("proofs"))
+
+        formDataImg.append("comment", nestedFormData.comment)
+        if (nestedFormData.proofFile && typeof nestedFormData.proofFile === "object") {
+            formDataImg.append("file", nestedFormData.proofFile)
+        }
+
+        request(`${API_URL}Tasks/proofs/${nestedFormData.id}/`, "PATCH", formDataImg, headerImg())
+            .then(res => {
+                dispatch(editProofs(res))
+                setSelectedTask({
+                    ...selectedTask,
+                    proofs: selectedTask.proofs.map((s) => (s.id === res.id ? res : s)),
+                })
+                setNestedModalType(null)
+                formDataImg.delete("comment")
+                formDataImg.delete("file")
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "success",
+                    msg: "Proof o'zgartirildi"
+                }))
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskProfileLoadingStop())
+            })
+
+    }
+
+    const handleDeleteProof = () => {
+
+        dispatch(taskProfileLoading("proofs"))
+
+        request(`${API_URL}Tasks/proofs/${nestedFormData.id}`, "DELETE", null, headers())
+            .then(res => {
+                dispatch(deleteProofs({ mission: selectedTask.id, proof: nestedFormData.id }))
+                setSelectedTask({
+                    ...selectedTask,
+                    proofs: selectedTask.proofs.filter((s) => s.id !== nestedFormData.id),
+                })
+                setNestedModalType(null)
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "danger",
+                    msg: "Proof o'chirildi"
+                }))
+            })
+            .catch(err => {
+                dispatch(onAddAlertOptions({
+                    status: true,
+                    type: "error",
+                    msg: "Xatolik yuz berdi!"
+                }))
+                dispatch(taskProfileLoadingStop())
+            })
+
+    }
+
+    const toggleCollapsible = (section) => {
+        const newSet = new Set(activeCollapsibles)
+        if (newSet.has(section)) {
+            newSet.delete(section)
+        } else {
+            newSet.add(section)
+        }
+        setActiveCollapsibles(newSet)
+    }
+
+    function compareByOrder(a, b) {
+        return a.order - b.order;
+    }
+
+    function sortTasks(data) {
+        const colorOrder = {
+            red: 0,
+            yellow: 1,
+            green: 2
+        };
+
+        return [...data].sort((a, b) => {
+            // completed всегда в самый низ
+            if (a.status === "completed" && b.status !== "completed") return 1;
+            if (b.status === "completed" && a.status !== "completed") return -1;
+
+            // если оба completed — сортировка по цветам не нужна
+            if (a.status === "completed" && b.status === "completed") return 0;
+
+            // сортировка по цветам
+            const aVal = colorOrder[a.deadline_color] ?? 999;
+            const bVal = colorOrder[b.deadline_color] ?? 999;
+
+            return aVal - bVal;
+        });
+    }
+
+
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "not_started":
+                return "#999999";        // серый — ещё не начато
+            case "in_progress":
+                return "#4A90E2";        // синий — в процессе
+            case "blocked":
+                return "#FF6B6B";        // красный — заблокировано
+            case "completed":
+                return "#51CF66";        // зелёный — выполнено
+            case "approved":
+                return "#845EF7";        // фиолетовый — одобрено
+            case "declined":
+                return "#D6336C";        // тёмно-розовый/красный — отклонено
+            case "recheck":
+                return "#F59F00";        // жёлтый — требует пересмотра
+            default:
+                return "#999999";        // fallback
+        }
+    };
+
+
+    return (
+        <DynamicModuleLoader reducers={reducers}>
+            <div className={styles.container}>
+                <header className={styles.header}>
+                    <h1 className={styles.title}>Tasks</h1>
+                    <div className={styles.headerActions}>
+                        <button className={styles.btnPrimary} onClick={openCreateTaskModal}>
+                            + New Task
+                        </button>
+                        <button className={styles.btnSecondary} onClick={openCreateTagModal}>
+                            + New Tag
+                        </button>
+                    </div>
+                </header>
+
+                <div className={styles.content}>
+                    {/* Tasks Section */}
+                    <section className={styles.section}>
+                        <div className={styles.sectionHeader}>
+                            <h1 className={styles.sectionTitle}>
+                                <span
+                                    onClick={() => setActivePage("task")}
+                                    className={classNames(styles.sectionTitle__item, {
+                                        [styles.active]: activePage === "task"
+                                    })}
+                                >
+                                    Tasks
+                                </span>
+                                /
+                                <span
+                                    onClick={() => {
+                                        setActivePage("notification")
+                                        setIsHaveNot(false)
+                                    }}
+                                    className={classNames(styles.sectionTitle__item, {
+                                        [styles.active]: activePage === "notification"
+                                    })}
+                                >
+                                    Notifications
+                                    {
+                                        isHaveNot && (
+                                            <div className={styles.dott} />
+                                        )
+                                    }
+                                </span>
+                            </h1>
+                            <div className={styles.sectionHeader__filter}>
+                                <Button
+                                    type={"filter"}
+                                    status={"filter"}
+                                    onClick={() => setIsFilter(true)}
+                                    extraClass={styles.btnFilter}
+                                >
+                                    Filter
+                                </Button>
+                                <Select
+                                    options={activePage === "task" ? TASK_TYPES : NOTIFICATION_TYPES}
+                                    onChangeOption={activePage === "task" ? setActiveTaskType : setActiveNotificationType}
+                                    defaultValue={activePage === "task" ? activeTaskType : activeNotificationType}
+                                />
+                            </div>
+                        </div>
+                        <div
+                            className={classNames(styles.grid, {
+                                [styles.loading]: tasksLoading || notificationsLoading,
+                                [styles.level]: userLevel > 2
+                            })}
+                        >
+                            {
+                                activePage === "task"
+                                    ?
+                                    tasksLoading
+                                        ? <DefaultPageLoader status={"none"} />
+                                        : sortTasks(tasks).map((task) => (
+                                            <div
+                                                key={task.id}
+                                                className={styles.card}
+                                                style={
+                                                    task.status === "completed"
+                                                        ? null
+                                                        : {
+                                                            "background": task.deadline_color === "red"
+                                                                ? "rgba(255, 0, 0, 0.12)"
+                                                                : task.deadline_color === "green"
+                                                                    ? "rgba(0, 255, 0, 0.12)"
+                                                                    : "rgba(255, 255, 0, 0.2)"
+                                                        }
+                                                }
+                                            >
+                                                <div className={styles.cardHeader}>
+                                                    <h3 className={styles.cardTitle}>{task.title}</h3>
+                                                    <span
+                                                        className={styles.status}
+                                                        style={{ color: getStatusColor(task.status) }}
+                                                        onClick={() => openChangeStatusModal(task)}
+                                                    >
+                                                        {statusList.filter(item => item.id === task.status)[0]?.name}
+                                                    </span>
+                                                </div>
+                                                <p className={styles.cardText}>
+                                                    <strong>Executor:</strong> {task.executor.full_name}
+                                                </p>
+                                                <p className={styles.cardText}>
+                                                    <strong>Deadline:</strong> {task.deadline}
+                                                </p>
+                                                <div className={styles.tags}>
+                                                    {
+                                                        task.tags.length > 3
+                                                            ? <>
+                                                                {
+                                                                    task.tags.slice(0, 3).map((tagId) => {
+                                                                        // const tag = tags.find((t) => t.id === tagId)
+                                                                        return (
+                                                                            <span key={tagId.id} className={styles.tag}>
+                                                                                {tagId?.name}
+                                                                            </span>
+                                                                        )
+                                                                    })
+                                                                }
+                                                                <p className={styles.tags__inner}>+{task.tags.length - 3}</p>
+                                                            </>
+                                                            : task.tags.map((tagId) => {
+                                                                // const tag = tags.find((t) => t.id === tagId)
+                                                                return (
+                                                                    <span key={tagId.id} className={styles.tag}>
+                                                                        {tagId?.name}
+                                                                    </span>
+                                                                )
+                                                            })
+                                                    }
+                                                </div>
+                                                <div className={styles.cardActions}>
+                                                    {
+                                                        task.executor.id === userId && (
+                                                            <button
+                                                                className={styles.btnRedirected}
+                                                                onClick={() => openRedirectModal(task)}
+                                                            >
+                                                                Redirected
+                                                            </button>
+                                                        )
+                                                    }
+                                                    <button className={styles.btnView} onClick={() => openViewTaskModal(task)}>
+                                                        View More
+                                                    </button>
+                                                    {
+                                                        task.creator.id === userId && (
+                                                            <>
+                                                                <button className={styles.btnEdit}
+                                                                    onClick={() => openEditTaskModal(task)}>
+                                                                    Edit
+                                                                </button>
+                                                                <button className={styles.btnDelete}
+                                                                    onClick={() => openDeleteTaskModal(task)}>
+                                                                    Delete
+                                                                </button>
+                                                            </>
+                                                        )
+                                                    }
+                                                </div>
+                                            </div>
+                                        ))
+                                    :
+                                    notificationsLoading
+                                        ? <DefaultPageLoader status={"none"} />
+                                        : notificationsList?.map(item => {
+                                            return <NotificationCard data={item} onToggleRead={onToggleRead} onViewTask={onViewTask} />
+                                        })
+                            }
+                        </div>
+                    </section>
+
+                    {/* Tags Section */}
+                    {
+                        userLevel < 2 && (
+                            <section className={styles.section}>
+                                <h1 className={styles.sectionTitle}>Tags</h1>
+                                <div
+                                    className={classNames(styles.tagsList, {
+                                        [styles.loading]: tagsLoading
+                                    })}
+                                >
+                                    {
+                                        tagsLoading
+                                            ? <DefaultPageLoader status={"none"} />
+                                            : tags.map((tag) => (
+                                                <div key={tag.id} className={styles.tagItem}>
+                                                    <span className={styles.tagName}>{tag.name}</span>
+                                                    <div className={styles.tagActions}>
+                                                        <button className={styles.btnSmallEdit}
+                                                            onClick={() => openEditTagModal(tag)}>
+                                                            Edit
+                                                        </button>
+                                                        <button className={styles.btnSmallDelete}
+                                                            onClick={() => openDeleteTagModal(tag)}>
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))
+                                    }
+                                </div>
+                            </section>
+                        )
+                    }
+                </div>
+
+                {/* Modals */}
+
+                {/* Create/Edit Task Modal */}
+                {(modalType === "createTask" || modalType === "editTask") && (
+                    <div className={styles.modalBackdrop} onClick={() => setModalType(null)}>
+                        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                            <h2 className={styles.modalTitle}>{modalType === "createTask" ? "Create Task" : "Edit Task"}</h2>
+                            <div className={styles.formGroup}>
+                                <label>Title</label>
+                                <input
+                                    type="text"
+                                    value={formData.title || ""}
+                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                    placeholder="Task title"
+                                    required
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Description</label>
+                                <textarea
+                                    value={formData.description || ""}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    placeholder="Task description"
+                                    rows={3}
+                                />
+                            </div>
+                            <div className={styles.formRow}>
+                                <div className={styles.formGroup}>
+                                    <label>Tags</label>
+                                    <AnimatedMulti
+                                        extraClass={styles.formGroup__multiSelect}
+                                        options={tagsList}
+                                        onChange={(e) => setFormData({ ...formData, tags: e })}
+                                        value={formData.tags}
+                                        fontSize={15}
+                                    />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Departmant</label>
+                                    <select
+                                        value={formData.category || "admin"}
+                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                        required
+                                    >
+                                        {
+                                            categoryList.map(item =>
+                                                <option value={item.id}>{item.name}</option>
+                                            )
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            {
+                                !(userLevel === 4) && (
+                                    <div className={styles.formRow}>
+                                        <div className={styles.formGroup}>
+                                            <label>Executor</label>
+                                            {/* <AnimatedMulti
+                                                extraClass={styles.formGroup__multiSelect}
+                                                options={
+                                                    teachersList
+                                                        .filter(item => item.id !== userId)
+                                                        .map(item => ({ value: item.id, label: item.name }))
+                                                }
+                                                onChange={(e) => setFormData({ ...formData, executor_ids: e })}
+                                                value={formData.executor_ids}
+                                                fontSize={15}
+                                            /> */}
+                                            <select
+                                                value={typeof formData.executor === "object" ? formData.executor.id : formData.executor_ids || "none"}
+                                                onChange={(e) => setFormData({ ...formData, executor_ids: e.target.value })}
+                                                required
+                                            >
+                                                <option value={"none"}>Select Executor</option>
+                                                {
+                                                    [...teachersList].map(item =>
+                                                        <option value={item.id}>{item.name}</option>
+                                                    )
+                                                }
+                                            </select>
+                                        </div>
+                                        <div className={styles.formGroup}>
+                                            <label>Reviewer</label>
+                                            <select
+                                                value={typeof formData.reviewer === "object" ? formData.reviewer.id : formData.reviewer || "none"}
+                                                onChange={(e) => setFormData({ ...formData, reviewer: e.target.value })}
+                                                required
+                                            >
+                                                <option value={"none"}>Select Reviewer</option>
+                                                {
+                                                    [...teachersList].map(item =>
+                                                        <option value={item.id}>{item.name}</option>
+                                                    )
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                )
+                            }
+                            <div className={styles.formRow}>
+                                <div className={styles.formGroup}>
+                                    <label>Status</label>
+                                    <select
+                                        value={formData.status || "not_started"}
+                                        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                                        required
+                                    >
+                                        {
+                                            statusList.map(item =>
+                                                <option value={item.id}>{item.name}</option>
+                                            )
+                                        }
+                                    </select>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Deadline</label>
+                                    <input
+                                        type="date"
+                                        value={formData.deadline || ""}
+                                        onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.is_recurring || false}
+                                        onChange={(e) => setFormData({ ...formData, is_recurring: e.target.checked })}
+                                    />
+                                    Recurring
+                                </label>
+                            </div>
+                            {formData.is_recurring && (
+                                <div className={styles.formRow}>
+                                    <div className={styles.formGroup}>
+                                        <label>Recurring Type</label>
+                                        <select
+                                            value={formData.recurring_type || "daily"}
+                                            onChange={(e) => setFormData({ ...formData, recurring_type: e.target.value })}
+                                        >
+                                            {
+                                                recurringTypes.map(item =>
+                                                    <option value={item.id}>{item.name}</option>
+                                                )
+                                            }
+                                        </select>
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label>Repeat Every</label>
+                                        <input
+                                            disabled={formData.recurring_type !== "custom"}
+                                            type="number"
+                                            min="1"
+                                            value={formData.recurring_type !== "custom" ? recurringTypes.filter(item => item.id === formData.recurring_type)[0]?.number : formData.repeat_every}
+                                            onChange={(e) => setFormData({
+                                                ...formData,
+                                                repeat_every: Number.parseInt(formData.recurring_type !== "custom" ? recurringTypes.filter(item => item.id === formData.recurring_type)[0]?.number : e.target.value)
+                                            })}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                            <div className={styles.formActions}>
+                                <button className={styles.btnCancel} onClick={() => setModalType(null)}>
+                                    Cancel
+                                </button>
+                                <button
+                                    disabled={!formData.title || !formData.deadline}
+                                    className={classNames(styles.btnPrimary, {
+                                        [styles.disabled]: !formData.title || !formData.deadline
+                                    })}
+                                    onClick={modalType === "createTask" ? handleCreateTask : handleEditTask}
+                                >
+                                    {modalType === "createTask" ? "Create" : "Update"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Delete Task Modal */}
+                {modalType === "deleteTask" && (
+                    <div className={styles.modalBackdrop} onClick={() => setModalType(null)}>
+                        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                            <h2 className={styles.modalTitle}>Delete Task</h2>
+                            <p className={styles.confirmText}>
+                                Are you sure you want to delete "{selectedTask?.title}"? This action cannot be undone.
+                            </p>
+                            <div className={styles.formActions}>
+                                <button className={styles.btnCancel} onClick={() => setModalType(null)}>
+                                    Cancel
+                                </button>
+                                <button className={styles.btnDanger} onClick={handleDeleteTask}>
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* View Task Modal */}
+                {modalType === "viewTask" && selectedTask && (
+                    <div className={styles.modalBackdrop} onClick={() => setModalType(null)}>
+                        <div className={styles.modalLarge} onClick={(e) => e.stopPropagation()}>
+                            <h2 className={styles.modalTitle}>{selectedTask.title}</h2>
+
+                            <div className={styles.viewContent}>
+                                <div className={styles.infoGrid}>
+                                    <div>
+                                        <strong>Description:</strong>
+                                        <p>{selectedTask.description}</p>
+                                    </div>
+                                    <div>
+                                        <strong>Departmant:</strong>
+                                        <p>{categoryList.filter(item => item.id === selectedTask.category)[0]?.name}</p>
+                                    </div>
+                                    <div>
+                                        <strong>Creator:</strong>
+                                        <p>{selectedTask.creator.full_name}</p>
+                                    </div>
+                                    <div>
+                                        <strong>Executor:</strong>
+                                        <p>{selectedTask.executor.full_name}</p>
+                                    </div>
+                                    <div>
+                                        <strong>Reviewer:</strong>
+                                        <p>{selectedTask.reviewer.full_name}</p>
+                                    </div>
+                                    <div>
+                                        <strong>Deadline:</strong>
+                                        <p>{selectedTask.deadline}</p>
+                                    </div>
+                                    <div>
+                                        <strong>Status:</strong>
+                                        <p>{statusList.filter(item => item.id === selectedTask.status)[0]?.name}</p>
+                                    </div>
+                                    <div>
+                                        <strong>Created:</strong>
+                                        <p>{selectedTask.created_at}</p>
+                                    </div>
+                                    <div>
+                                        <strong>Recurring:</strong>
+                                        <p>{selectedTask.is_recurring ? `Yes (${selectedTask.recurring_type})` : "No"}</p>
+                                    </div>
+                                </div>
+
+                                <div className={styles.viewContent__tags}>
+                                    <strong className={styles.tagsTitle}>Tags:</strong>
+                                    <div
+                                        className={classNames(styles.tagsContainer, {
+                                            [styles.none]: selectedTask.tags.length === 0
+                                        })}
+                                    >
+                                        {
+                                            selectedTask.tags.length === 0
+                                                ? <h2>Teglar qo'shilmagan</h2>
+                                                : selectedTask.tags.map(item =>
+                                                    <h3 className={styles.tag}>{item.name}</h3>
+                                                )
+                                        }
+                                    </div>
+                                </div>
+
+                                {/* Collapsible Sections */}
+                                <div className={styles.collapsibleSection}>
+                                    <div className={styles.collapsibleHeader}
+                                        onClick={() => toggleCollapsible("subtasks")}>
+                                        <span>Subtasks ({selectedTask.subtasks.length})</span>
+                                        <span>{activeCollapsibles.has("subtasks") ? "−" : "+"}</span>
+                                    </div>
+                                    {activeCollapsibles.has("subtasks") && (
+                                        <>
+                                            <div className={styles.collapsibleContent}>
+                                                {
+                                                    tasksProfileLoading && tasksProfileLoading === "subtasks"
+                                                        ? <MiniLoader />
+                                                        : [...selectedTask.subtasks]?.sort(compareByOrder)?.map((st) => (
+                                                            <div key={st.id} className={styles.nestedItem}>
+                                                                <p style={st.is_done ? { textDecoration: "line-through", color: "#6b7280" } : null}>{st.order}. {st.title}</p>
+                                                                <div className={styles.nestedActions}>
+                                                                    <i
+                                                                        className={classNames(
+                                                                            `fa-regular ${st.is_done ? "fa-circle-xmark" : "fa-circle-check"}`,
+                                                                            styles.nestedActions__icon, {
+                                                                            [styles.compledted]: st.is_done
+                                                                        }
+                                                                        )}
+                                                                        onClick={() => handleCompleteSubtask(st.is_done, st.id)}
+                                                                    />
+                                                                    <button className={styles.btnSmallEdit}
+                                                                        onClick={() => openNestedModal("editSubtask", st)}>
+                                                                        Edit
+                                                                    </button>
+                                                                    <button
+                                                                        className={styles.btnSmallDelete}
+                                                                        onClick={() => openNestedModal("deleteSubtask", st)}
+                                                                    >
+                                                                        Delete
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                }
+                                            </div>
+                                            <div className={styles.btnSmallContainer}>
+                                                <button className={styles.btnSmall}
+                                                    onClick={() => openNestedModal("createSubtask")}>
+                                                    + Add Subtask
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+
+                                <div className={styles.collapsibleSection}>
+                                    <div className={styles.collapsibleHeader}
+                                        onClick={() => toggleCollapsible("attachments")}>
+                                        <span>Attachments ({selectedTask.attachments.length})</span>
+                                        <span>{activeCollapsibles.has("attachments") ? "−" : "+"}</span>
+                                    </div>
+                                    {activeCollapsibles.has("attachments") && (
+                                        <>
+                                            <div className={styles.collapsibleContent}>
+                                                {[...selectedTask.attachments]?.reverse().map((att) => (
+                                                    <div key={att.id}
+                                                        className={classNames(styles.nestedItem, styles.dual)}>
+                                                        <div className={styles.nestedItem__header}>
+                                                            <div
+                                                                className={classNames(styles.nestedActions, styles.btns, styles.innerDual)}
+                                                            >
+                                                                <p className={styles.btns__title}>{att.uploaded_at}</p>
+                                                                <div className={styles.btns__container}>
+                                                                    <button
+                                                                        className={styles.btnSmallEdit}
+                                                                        onClick={() => openNestedModal("editAttachment", att)}
+                                                                    >
+                                                                        Edit
+                                                                    </button>
+                                                                    <button
+                                                                        className={styles.btnSmallDelete}
+                                                                        onClick={() => openNestedModal("deleteAttachment", att)}
+                                                                    >
+                                                                        Delete
+                                                                    </button>
+                                                                </div>
+
+                                                            </div>
+                                                            <div>
+                                                                <p>{att.note}</p>
+                                                            </div>
+                                                        </div>
+                                                        {
+                                                            att.file && (
+                                                                <div className={styles.nestedItem__content}>
+                                                                    <img crossOrigin="anonymous" src={att.file} alt="" />
+                                                                </div>
+                                                            )
+                                                        }
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className={styles.btnSmallContainer}>
+                                                <button className={styles.btnSmall}
+                                                    onClick={() => openNestedModal("createAttachment")}>
+                                                    + Add Attachment
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+
+                                <div className={styles.collapsibleSection}>
+                                    <div className={styles.collapsibleHeader}
+                                        onClick={() => toggleCollapsible("comments")}>
+                                        <span>Comments ({selectedTask.comments.length})</span>
+                                        <span>{activeCollapsibles.has("comments") ? "−" : "+"}</span>
+                                    </div>
+                                    {activeCollapsibles.has("comments") && (
+                                        <>
+                                            <div className={styles.collapsibleContent}>
+                                                {[...selectedTask.comments].reverse().map((com) => (
+                                                    <div key={com.id}
+                                                        className={classNames(styles.nestedItem, styles.dual)}>
+                                                        <div className={styles.nestedItem__header}>
+                                                            <div className={styles.info}>
+                                                                <p className={styles.btns__title}>{com.created_at}</p>
+                                                                {
+                                                                    com.user.id === userId || com.user === userId
+                                                                        ? <div
+                                                                            className={classNames(styles.nestedActions, styles.btns)}>
+                                                                            <button className={styles.btnSmallEdit}
+                                                                                onClick={() => openNestedModal("editComment", com)}>
+                                                                                Edit
+                                                                            </button>
+                                                                            <button
+                                                                                className={styles.btnSmallDelete}
+                                                                                onClick={() => openNestedModal("deleteComment", com)}
+                                                                            >
+                                                                                Delete
+                                                                            </button>
+                                                                        </div>
+                                                                        : <p className={styles.btns__title}>{com.user.full_name}</p>
+                                                                }
+                                                            </div>
+                                                            <div>
+                                                                <p>{com.text}</p>
+                                                            </div>
+                                                        </div>
+                                                        {
+                                                            com.attachment && (
+                                                                <div className={styles.nestedItem__content}>
+                                                                    <img crossOrigin="anonymous" src={com.attachment}
+                                                                        alt="" />
+                                                                </div>
+                                                            )
+                                                        }
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className={styles.btnSmallContainer}>
+                                                <button className={styles.btnSmall}
+                                                    onClick={() => openNestedModal("createComment")}>
+                                                    + Add Comment
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+
+                                <div className={styles.collapsibleSection}>
+                                    <div className={styles.collapsibleHeader}
+                                        onClick={() => toggleCollapsible("proofs")}>
+                                        <span>Proofs ({selectedTask.proofs.length})</span>
+                                        <span>{activeCollapsibles.has("proofs") ? "−" : "+"}</span>
+                                    </div>
+                                    {activeCollapsibles.has("proofs") && (
+                                        <>
+                                            <div className={styles.collapsibleContent}>
+                                                {[...selectedTask.proofs].reverse().map((proof) => (
+                                                    <div key={proof.id}
+                                                        className={classNames(styles.nestedItem, styles.dual)}>
+                                                        <div className={styles.nestedItem__header}>
+                                                            <div
+                                                                className={classNames(styles.nestedActions, styles.btns, styles.innerDual)}
+                                                            >
+                                                                <p className={styles.btns__title}>{proof.created_at}</p>
+                                                                <div className={styles.nestedActions}>
+                                                                    <button className={styles.btnSmallEdit}
+                                                                        onClick={() => openNestedModal("editProof", proof)}>
+                                                                        Edit
+                                                                    </button>
+                                                                    <button
+                                                                        className={styles.btnSmallDelete}
+                                                                        onClick={() => openNestedModal("deleteProof", proof)}
+                                                                    >
+                                                                        Delete
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <p>{proof.comment}</p>
+                                                            </div>
+                                                        </div>
+                                                        {
+                                                            proof.file && (
+                                                                <div className={styles.nestedItem__content}>
+                                                                    <img crossOrigin="anonymous" src={proof.file} alt="" />
+                                                                </div>
+                                                            )
+                                                        }
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className={styles.btnSmallContainer}>
+                                                <button className={styles.btnSmall}
+                                                    onClick={() => openNestedModal("createProof")}>
+                                                    + Add Proof
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className={styles.formActions}>
+                                <button className={styles.btnCancel} onClick={() => setModalType(null)}>
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Nested CRUD Modals */}
+                {nestedModalType && (
+                    <div className={styles.modalBackdrop} onClick={() => setNestedModalType(null)}>
+                        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                            {nestedModalType === "createSubtask" || nestedModalType === "editSubtask" ? (
+                                <>
+                                    <h2 className={styles.modalTitle}>
+                                        {nestedModalType === "createSubtask" ? "Create Subtask" : "Edit Subtask"}
+                                    </h2>
+                                    <div className={styles.formGroup}>
+                                        <label>Title</label>
+                                        <input
+                                            type="text"
+                                            value={nestedFormData.title || ""}
+                                            onChange={(e) => setNestedFormData({
+                                                ...nestedFormData,
+                                                title: e.target.value
+                                            })}
+                                            placeholder="Subtask title"
+                                        />
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label>Order</label>
+                                        <input
+                                            type="number"
+                                            value={nestedFormData.order || ""}
+                                            onChange={(e) => setNestedFormData({
+                                                ...nestedFormData,
+                                                order: e.target.value
+                                            })}
+                                            placeholder="Subtask order"
+                                        />
+                                    </div>
+                                    {
+                                        tasksProfileLoading && tasksProfileLoading === "subtasks"
+                                            ? <MiniLoader />
+                                            : <div className={styles.formActions}>
+                                                <button className={styles.btnCancel}
+                                                    onClick={() => setNestedModalType(null)}>
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    disabled={!nestedFormData.order || !nestedFormData.title}
+                                                    className={classNames(styles.btnPrimary, {
+                                                        [styles.disabled]: !nestedFormData.order || !nestedFormData.title
+                                                    })}
+                                                    onClick={nestedModalType === "createSubtask" ? handleCreateSubtask : handleEditSubtask}
+                                                >
+                                                    {nestedModalType === "createSubtask" ? "Create" : "Update"}
+                                                </button>
+                                            </div>
+                                    }
+                                </>
+                            ) : nestedModalType === "deleteSubtask" ? (
+                                <>
+                                    <h2 className={styles.modalTitle}>Delete Subtask</h2>
+                                    <p className={styles.confirmText}>Are you sure?</p>
+                                    {
+                                        tasksProfileLoading && tasksProfileLoading === "subtasks"
+                                            ? <MiniLoader />
+                                            : <div className={styles.formActions}>
+                                                <button className={styles.btnCancel}
+                                                    onClick={() => setNestedModalType(null)}>
+                                                    Cancel
+                                                </button>
+                                                <button className={styles.btnDanger} onClick={handleDeleteSubtask}>
+                                                    Delete
+                                                </button>
+                                            </div>
+                                    }
+
+                                </>
+                            ) : nestedModalType === "createAttachment" || nestedModalType === "editAttachment" ? (
+                                <>
+                                    <h2 className={styles.modalTitle}>
+                                        {nestedModalType === "createAttachment" ? "Create Attachment" : "Edit Attachment"}
+                                    </h2>
+                                    <div className={styles.formGroup}>
+                                        <label>Note</label>
+                                        <input
+                                            type="text"
+                                            value={nestedFormData.note || ""}
+                                            onChange={(e) => setNestedFormData({
+                                                ...nestedFormData,
+                                                note: e.target.value
+                                            })}
+                                            placeholder="Note"
+                                        />
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label>File</label>
+                                        <input
+                                            type="file"
+                                            onChange={(e) => setNestedFormData({
+                                                ...nestedFormData,
+                                                file: e.target.files[0]
+                                            })}
+                                            placeholder="Filename"
+                                        />
+                                    </div>
+                                    {
+
+                                        tasksProfileLoading && tasksProfileLoading === "attachments"
+                                            ? <MiniLoader />
+                                            : <div className={styles.formActions}>
+                                                <button className={styles.btnCancel}
+                                                    onClick={() => setNestedModalType(null)}>
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    disabled={!nestedFormData.note}
+                                                    className={classNames(styles.btnPrimary, {
+                                                        [styles.disabled]: !nestedFormData.note
+                                                    })}
+                                                    onClick={nestedModalType === "createAttachment" ? handleCreateAttachment : handleEditAttachment}
+                                                >
+                                                    {nestedModalType === "createAttachment" ? "Create" : "Update"}
+                                                </button>
+                                            </div>
+                                    }
+
+                                </>
+                            ) : nestedModalType === "deleteAttachment" ? (
+                                <>
+                                    <h2 className={styles.modalTitle}>Delete Attachment</h2>
+                                    <p className={styles.confirmText}>Are you sure?</p>
+                                    {
+
+                                        tasksProfileLoading && tasksProfileLoading === "attachments"
+                                            ? <MiniLoader />
+                                            : <div className={styles.formActions}>
+                                                <button className={styles.btnCancel}
+                                                    onClick={() => setNestedModalType(null)}>
+                                                    Cancel
+                                                </button>
+                                                <button className={styles.btnDanger} onClick={handleDeleteAttachment}>
+                                                    Delete
+                                                </button>
+                                            </div>
+                                    }
+
+                                </>
+                            ) : nestedModalType === "createComment" || nestedModalType === "editComment" ? (
+                                <>
+                                    <h2 className={styles.modalTitle}>
+                                        {nestedModalType === "createComment" ? "Create Comment" : "Edit Comment"}
+                                    </h2>
+                                    <div className={styles.formGroup}>
+                                        <label>Text</label>
+                                        <textarea
+                                            value={nestedFormData.text || ""}
+                                            onChange={(e) => setNestedFormData({
+                                                ...nestedFormData,
+                                                text: e.target.value
+                                            })}
+                                            placeholder="Comment text"
+                                            rows={3}
+                                        />
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label>File</label>
+                                        <input
+                                            type="file"
+                                            onChange={(e) => setNestedFormData({
+                                                ...nestedFormData,
+                                                comFile: e.target.files[0]
+                                            })}
+                                            placeholder="Filename"
+                                        />
+                                    </div>
+                                    {
+                                        tasksProfileLoading && tasksProfileLoading === "comments"
+                                            ? <MiniLoader />
+                                            : <div className={styles.formActions}>
+                                                <button className={styles.btnCancel}
+                                                    onClick={() => setNestedModalType(null)}>
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    className={styles.btnPrimary}
+                                                    onClick={nestedModalType === "createComment" ? handleCreateComment : handleEditComment}
+                                                >
+                                                    {nestedModalType === "createComment" ? "Create" : "Update"}
+                                                </button>
+                                            </div>
+                                    }
+                                </>
+                            ) : nestedModalType === "deleteComment" ? (
+                                <>
+                                    <h2 className={styles.modalTitle}>Delete Comment</h2>
+                                    <p className={styles.confirmText}>Are you sure?</p>
+                                    {
+                                        tasksProfileLoading && tasksProfileLoading === "comments"
+                                            ? <MiniLoader />
+                                            : <div className={styles.formActions}>
+                                                <button className={styles.btnCancel}
+                                                    onClick={() => setNestedModalType(null)}>
+                                                    Cancel
+                                                </button>
+                                                <button className={styles.btnDanger} onClick={handleDeleteComment}>
+                                                    Delete
+                                                </button>
+                                            </div>
+                                    }
+                                </>
+                            ) : nestedModalType === "createProof" || nestedModalType === "editProof" ? (
+                                <>
+                                    <h2 className={styles.modalTitle}>
+                                        {nestedModalType === "createProof" ? "Create Proof" : "Edit Proof"}
+                                    </h2>
+                                    <div className={styles.formGroup}>
+                                        <label>Comment</label>
+                                        <textarea
+                                            value={nestedFormData.comment || ""}
+                                            onChange={(e) => setNestedFormData({
+                                                ...nestedFormData,
+                                                comment: e.target.value
+                                            })}
+                                            placeholder="Proof comment"
+                                            rows={2}
+                                        />
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label>File</label>
+                                        <input
+                                            type="file"
+                                            onChange={(e) => setNestedFormData({
+                                                ...nestedFormData,
+                                                proofFile: e.target.files[0]
+                                            })}
+                                            placeholder="Filename"
+                                        />
+                                    </div>
+                                    {
+                                        tasksProfileLoading && tasksProfileLoading === "proofs"
+                                            ? <MiniLoader />
+                                            : <div className={styles.formActions}>
+                                                <button className={styles.btnCancel}
+                                                    onClick={() => setNestedModalType(null)}>
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    className={styles.btnPrimary}
+                                                    onClick={nestedModalType === "createProof" ? handleCreateProof : handleEditProof}
+                                                >
+                                                    {nestedModalType === "createProof" ? "Create" : "Update"}
+                                                </button>
+                                            </div>
+                                    }
+                                </>
+                            ) : nestedModalType === "deleteProof" ? (
+                                <>
+                                    <h2 className={styles.modalTitle}>Delete Proof</h2>
+                                    <p className={styles.confirmText}>Are you sure?</p>
+                                    {
+                                        tasksProfileLoading && tasksProfileLoading === "proofs"
+                                            ? <MiniLoader />
+                                            : <div className={styles.formActions}>
+                                                <button className={styles.btnCancel}
+                                                    onClick={() => setNestedModalType(null)}>
+                                                    Cancel
+                                                </button>
+                                                <button className={styles.btnDanger} onClick={handleDeleteProof}>
+                                                    Delete
+                                                </button>
+                                            </div>
+                                    }
+                                </>
+                            ) : null}
+                        </div>
+                    </div>
+                )}
+
+                {(modalType === "changeStatus") && (
+                    <div className={styles.modalBackdrop} onClick={() => setModalType(null)}>
+                        <div className={styles.modal} onClick={(e) => e.stopPropagation()} style={{ width: "17%" }}>
+                            <h2 className={styles.modalTitle}>Change task status</h2>
+                            <div className={styles.formGroup}>
+                                <label>Status</label>
+                                <select
+                                    value={formData.status}
+                                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                                    required
+                                >
+                                    {
+                                        statusList.map(item =>
+                                            <option value={item.id}>{item.name}</option>
+                                        )
+                                    }
+                                </select>
+                            </div>
+                            <div className={styles.formActions}>
+                                <button className={styles.btnCancel} onClick={() => setModalType(null)}>
+                                    Cancel
+                                </button>
+                                <button
+                                    // disabled={!tagFormData}
+                                    className={classNames(styles.btnPrimary, {
+                                        // [styles.disabled]: !tagFormData
+                                    })}
+                                    onClick={handleChangeStatus}
+                                >
+                                    Update
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Create/Edit/Delete Tag Modals */}
+                {(modalType === "createTag" || modalType === "editTag") && (
+                    <div className={styles.modalBackdrop} onClick={() => setModalType(null)}>
+                        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                            <h2 className={styles.modalTitle}>{modalType === "createTag" ? "Create Tag" : "Edit Tag"}</h2>
+                            <div className={styles.formGroup}>
+                                <label>Tag Name</label>
+                                <input
+                                    type="text"
+                                    value={tagFormData || ""}
+                                    onChange={(e) => setTagFormData(e.target.value)}
+                                    placeholder="Tag name"
+                                />
+                            </div>
+                            <div className={styles.formActions}>
+                                <button className={styles.btnCancel} onClick={() => setModalType(null)}>
+                                    Cancel
+                                </button>
+                                <button
+                                    disabled={!tagFormData}
+                                    className={classNames(styles.btnPrimary, {
+                                        [styles.disabled]: !tagFormData
+                                    })}
+                                    onClick={modalType === "createTag" ? handleCreateTag : handleEditTag}
+                                >
+                                    {modalType === "createTag" ? "Create" : "Update"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {modalType === "deleteTag" && (
+                    <div className={styles.modalBackdrop} onClick={() => setModalType(null)}>
+                        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                            <h2 className={styles.modalTitle}>Delete Tag</h2>
+                            <p className={styles.confirmText}>Are you sure you want to delete the tag
+                                "{selectedTag?.name}"?</p>
+                            <div className={styles.formActions}>
+                                <button className={styles.btnCancel} onClick={() => setModalType(null)}>
+                                    Cancel
+                                </button>
+                                <button className={styles.btnDanger} onClick={handleDeleteTag}>
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+            <Modal
+                active={isFilter}
+                setActive={setIsFilter}
+                extraClass={styles.filter}
+            >
+                <h1>Filter</h1>
+                <div className={styles.filter__container}>
+                    <Select
+                        title={"Status"}
+                        extraClass={styles.mainInput}
+                        options={[{ id: "all", name: "Hammasi" }, ...statusList]}
+                        onChangeOption={setSelectedStatus}
+                        value={selectedStatus}
+                    />
+                    {/* <Input
+                        extraClassName={styles.mainInput}
+                        title={"Created at"}
+                        type={"date"}
+                        onChange={(e) => setSelectedCreate(e.target.value)}
+                    /> */}
+                    <div className={styles.tags}>
+                        <span className={styles.tags__title}>Tags</span>
+                        <AnimatedMulti
+                            title={"Tags"}
+                            options={tagsList}
+                            onChange={setSelectedTags}
+                            value={selectedTags}
+                            fontSize={15}
+                        />
+                    </div>
+                    <Select
+                        title={"Departmant"}
+                        extraClass={styles.mainInput}
+                        options={[{ id: "all", name: "Hammasi" }, ...categoryList]}
+                        onChangeOption={setSelectedCategory}
+                        value={selectedCategory}
+                    />
+                    {/* <Input title={"Deadline"} /> */}
+                    <div className={styles.dualInput}>
+                        <Input
+                            extraClassName={styles.dualInput__inner}
+                            title={"Deadline (form)"}
+                            type={"date"}
+                            onChange={(e) => setSelectedDeadlineFrom(e.target.value)}
+                            value={selectedDeadlineFrom}
+                        />
+                        <Input
+                            extraClassName={styles.dualInput__inner}
+                            title={"Deadline (to)"}
+                            type={"date"}
+                            onChange={(e) => setSelectedDeadlineTo(e.target.value)}
+                            value={selectedDeadlineTo}
+                        />
+                    </div>
+                    <Button
+                        extraClass={styles.clearBtn}
+                        type={"danger"}
+                        onClick={() => {
+                            setSelectedCreate(null)
+                            setSelectedDeadlineFrom(null)
+                            setSelectedDeadlineTo(null)
+                            setSelectedStatus("all")
+                            setSelectedTags([])
+                            setSelectedCategory("all")
+                        }}
+                    >
+                        Clear
+                    </Button>
+                </div>
+            </Modal>
+            <Modal
+                setActive={setIsRedirected}
+                active={isRedirected}
+                extraClass={styles.redirect}
+            >
+                <h1>Redirect</h1>
+                <Select
+                    title={"Select redirect"}
+                    options={
+                        teachersList
+                            .filter(item => item.id !== userId)
+                    }
+                    onChangeOption={setSelectedRedirect}
+                    value={selectedRedirect}
+                />
+                <Button
+                    extraClass={styles.redirect__btn}
+                    onClick={onChangeRedirect}
+                >
+                    Enter
+                </Button>
+            </Modal>
+        </DynamicModuleLoader>
+    )
+}
+
+export function NotificationCard({ data, onToggleRead, onViewTask }) {
+    const { id, message, role, mission, deadline, is_read, created_at } = data;
+
+    const handleToggle = () => {
+        console.log("hello");
+
+        onToggleRead(id, !is_read);
+    };
+
+    const handleView = () => {
+        onViewTask(mission)
+    }
+
+    return (
+        <div className={`${styles.card} ${is_read ? styles.read : ""}`}>
+            <div className={styles.header}>
+                {/* <span className={styles.role}>{role}</span> */}
+                <span className={styles.date}>{created_at}</span>
+            </div>
+
+            <p className={styles.message}>{message}</p>
+
+            <div className={styles.info}>
+                {/* <span className={styles.mission}>Mission: {mission}</span> */}
+                <span className={styles.deadline}>Deadline: {deadline}</span>
+            </div>
+
+            <div className={styles.card__btn}>
+                <button
+                    className={styles.viewBtn}
+                    onClick={handleView}
+                >
+                    Vazifani korish
+                </button>
+                <button
+                    className={styles.toggleBtn}
+                    onClick={handleToggle}
+                >
+                    {is_read ? "O'qilmagan deb belgilash" : "O'qilgan deb belgilash"}
+                </button>
+            </div>
+        </div>
+    );
+}
+
+export default PlatformTodoist

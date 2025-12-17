@@ -104,6 +104,7 @@ const PlatformUsersPage = React.lazy(() => import('./platformUsersPage/platformU
 const PlatformAdminItem = React.lazy(() => import('./platformAdminItem/platformAdminItem'));
 const PlatformNewAccounting = React.lazy(() => import('./platformAccounting2.0/platformNewAccounting'));
 const PlatformAccountingProfile = React.lazy(() => import("./platformAccountingProfile/platformAccountingProfile"))
+const PlatformTodoist = React.lazy(() => import('./platformTodoist/platformTodoist'))
 
 
 
@@ -246,6 +247,7 @@ const PlatformContent = () => {
                     <Route path="registeredSchoolStudents/:id" element={<PlatformSchoolStudentsRegister />} />
                     <Route path="users/:locationId/parentSection/:id" element={<PlatformParentSection />} />
                     <Route path="teacherEquipments/:id" element={<PlatformTeacherEquipments />} />
+                    <Route path="todoist/:id" element={<PlatformTodoist />} />
 
 
                     {/*<Route*/}
