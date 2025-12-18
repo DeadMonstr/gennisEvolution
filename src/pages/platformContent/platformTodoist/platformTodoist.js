@@ -1,17 +1,9 @@
-import {useEffect, useState} from "react"
-import {useDispatch, useSelector} from "react-redux"
-import {useForm} from "react-hook-form"
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { useForm } from "react-hook-form"
 import classNames from "classnames"
+import { useParams } from "react-router-dom"
 
-// import {
-//     getTaskCategoryList,
-//     getTaskLoading, getTaskNotificationLoading, getTaskNotificationsList, getTaskProfileLoading,
-//     getTaskRecurringTypes,
-//     getTasks,
-//     getTaskStatusList,
-//     getTaskTags,
-//     getTaskTagsLoading
-// } from "../model/todoistSelector"
 import {
     addAttachments,
     addComments,
@@ -41,56 +33,45 @@ import {
     taskTagsLoading,
     taskTagsLoadingStop,
     fetchTaskNotifications,
-    fetchTaskProfile,
     fetchTasks,
     fetchTaskTags
 } from "slices/todoistSlice"
-import {useHttp} from "../../../hooks/http.hook";
-// import { onAddAlertOptions } from "features/alert"
-// import { getUserId } from "pages/loginPage"
-// import { Modal } from "shared/ui/modal"
-// import { Form } from "shared/ui/form"
-// import { Input } from "shared/ui/input"
-// import { Textarea } from "shared/ui/textArea"
-// import { ConfirmModal } from "shared/ui/confirmModal"
-// import { Select } from "shared/ui/select"
-// import { MiniLoader } from "shared/ui/miniLoader"
+import { useHttp } from "hooks/http.hook";
+import { BackUrl, headers, headersImg } from "constants/global"
+import { fetchTeachersByLocationWithoutPagination } from "slices/teachersSlice"
+import { setMessage } from "slices/messageSlice"
+import Button from "components/platform/platformUI/button"
+import Select from "components/platform/platformUI/select"
+import Modal from "components/platform/platformUI/modal"
+import Input from "components/platform/platformUI/input"
+import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall"
+import DefaultLoader from "components/loader/defaultLoader/DefaultLoader"
 
-import styles from "./todoistPage.module.sass"
-// import { fetchTeachersData, getTeacherData } from "entities/oftenUsed"
-// import { getUserBranchId, getUserLevel } from "entities/profile/userProfile"
-// import { AnimatedMulti } from "features/workerSelect"
-// import { fetchEmployersData, fetchEmployersDataWithoutPagination } from "entities/employer/model/slice/employersThunk.js";
-// import { getEmployersData } from "entities/employer/model/selector/employersSelector.js";
-// import { employersReducer } from "entities/employer/index.js";
-// import {  } from "shared/lib/components//.jsx";
-// import { DefaultLoader, DefaultPageLoader } from "shared/ui/defaultLoader/index.js";
-// import { Button } from "shared/ui/button"
-
-// const reducers = {
-//     employers: employersReducer
-// }
+import styles from "./platformTodoist.module.sass"
 
 const TASK_TYPES = [
-    {id: "myTasks", name: "Menig vazifalarim"},
-    {id: "givenTask", name: "Bergan vazifalarim"},
-    {id: "viewTasks", name: "Tekshirish vazifalari"},
+    { id: "myTasks", name: "Menig vazifalarim" },
+    { id: "givenTask", name: "Bergan vazifalarim" },
+    { id: "viewTasks", name: "Tekshirish vazifalari" },
 ]
 
 const NOTIFICATION_TYPES = [
-    {id: "executor", name: "Menig vazifalarim"},
-    {id: "creator", name: "Bergan vazifalarim"},
-    {id: "reviewer", name: "Tekshirish vazifalari"},
+    { id: "executor", name: "Menig vazifalarim" },
+    { id: "creator", name: "Bergan vazifalarim" },
+    { id: "reviewer", name: "Tekshirish vazifalari" },
 ]
 
 const PlatformTodoist = () => {
 
-
+    const { locationId } = useParams()
     const formDataImg = new FormData()
     const dispatch = useDispatch()
-    const {request} = useHttp()
-    const {register, handleSubmit, setValue} = useForm()
+    const { request } = useHttp()
+    const { register, handleSubmit, setValue } = useForm()
 
+    const { id } = useSelector(state => state.me)
+    const { teachers } = useSelector(state => state.teachers)
+    const { employees } = useSelector(state => state.employees)
     const {
         tasks,
         tags,
@@ -103,22 +84,6 @@ const PlatformTodoist = () => {
         notifications: notificationsList,
         notificationLoading: notificationsLoading
     } = useSelector(state => state.todoistSlice)
-
-    const userBranchId = useSelector(getUserBranchId)
-    const userLevel = useSelector(getUserLevel)
-    const userId = useSelector(getUserId)
-    const teachers = useSelector(getTeacherData)
-    const employers = useSelector(getEmployersData)
-    // const tags = useSelector(getTaskTags)
-    // const tagsLoading = useSelector(getTaskTagsLoading)
-    // const tasks = useSelector(getTasks)
-    // const tasksLoading = useSelector(getTaskLoading)
-    // const tasksProfileLoading = useSelector(getTaskProfileLoading)
-    // const statusList = useSelector(getTaskStatusList)
-    // const categoryList = useSelector(getTaskCategoryList)
-    // const recurringTypes = useSelector(getTaskRecurringTypes)
-    // const notificationsList = useSelector(getTaskNotificationsList)
-    // const notificationsLoading = useSelector(getTaskNotificationLoading)
 
     // State management
 
@@ -152,15 +117,15 @@ const PlatformTodoist = () => {
     const [nestedFormData, setNestedFormData] = useState({})
 
     useEffect(() => {
-        if (userBranchId) {
+        if (locationId) {
             dispatch(fetchTaskTags())
-            dispatch(fetchTeachersData(userBranchId))
-            dispatch(fetchEmployersDataWithoutPagination({branch: userBranchId, level: userLevel}))
+            dispatch(fetchTeachersByLocationWithoutPagination({ locationId }))
+            // dispatch(fetchEmployersDataWithoutPagination({branch: locationId, level: userLevel}))
         }
-    }, [userBranchId])
+    }, [locationId])
 
     useEffect(() => {
-        if (userId && activeTaskType) {
+        if (id && activeTaskType) {
             if (activePage === "task") {
                 console.log(selectedTags);
 
@@ -173,37 +138,37 @@ const PlatformTodoist = () => {
                     tags: selectedTags.length === 0 ? null : selectedTags.map(item => item.value)
                 }
                 if (activeTaskType === "myTasks") {
-                    dispatch(fetchTasks({executor: userId, ...props}))
+                    dispatch(fetchTasks({ executor: id, ...props }))
                 } else if (activeTaskType === "givenTask") {
-                    dispatch(fetchTasks({creator: userId, ...props}))
+                    dispatch(fetchTasks({ creator: id, ...props }))
                 } else {
-                    dispatch(fetchTasks({reviewer: userId, ...props}))
+                    dispatch(fetchTasks({ reviewer: id, ...props }))
                 }
             } else {
-                dispatch(fetchTaskNotifications({role: activeNotificationType, user_id: userId}))
+                dispatch(fetchTaskNotifications({ role: activeNotificationType, user_id: id }))
             }
         }
-    }, [userId, activeTaskType, activePage, activeNotificationType, selectedCreate, selectedDeadlineFrom, selectedDeadlineTo, selectedStatus, selectedCategory, selectedTags])
+    }, [id, activeTaskType, activePage, activeNotificationType, selectedCreate, selectedDeadlineFrom, selectedDeadlineTo, selectedStatus, selectedCategory, selectedTags])
 
     useEffect(() => {
-        if (teachers && employers)
+        if (teachers && employees)
             setTeachersList([
                 ...teachers.map(item => ({
                     id: item.user_id,
                     name: `${item.name} ${item.surname} (${item.subject[0]?.name})`
                 })),
-                ...employers.map(item => ({
+                ...employees.map(item => ({
                     id: item.user_id,
                     name: `${item.name} (${item.job})`
                 }))
             ])
-    }, [teachers, employers])
+    }, [teachers, employees])
 
     useEffect(() => {
         if (tags) {
             setTagsList(
                 tags.map(item =>
-                    ({value: item.id, label: item.name})
+                    ({ value: item.id, label: item.name })
                 )
             )
         }
@@ -216,8 +181,8 @@ const PlatformTodoist = () => {
             title: "",
             description: "",
             executor_ids: [],
-            reviewer: userId,
-            creator: userId,
+            reviewer: id,
+            creator: id,
             category: "admin",
             tags: [],
             status: "not_started",
@@ -233,7 +198,7 @@ const PlatformTodoist = () => {
         setSelectedTask(task)
         setFormData({
             ...task,
-            tags: task.tags && task.tags.map(item => ({value: item.id, label: item.name}))
+            tags: task.tags && task.tags.map(item => ({ value: item.id, label: item.name }))
         })
         setModalType("editTask")
     }
@@ -242,7 +207,7 @@ const PlatformTodoist = () => {
         setSelectedTask(task)
         setFormData({
             ...task,
-            tags: task.tags && task.tags.map(item => ({value: item.id, label: item.name}))
+            tags: task.tags && task.tags.map(item => ({ value: item.id, label: item.name }))
         })
         setModalType("changeStatus")
     }
@@ -289,16 +254,16 @@ const PlatformTodoist = () => {
 
         dispatch(notificationLoading())
 
-        request(`${API_URL}Tasks/notifications/${id}/`, "PATCH", JSON.stringify({is_read: isRead}), headers())
+        request(`${BackUrl}notifications/${id}/`, "PATCH", JSON.stringify({ is_read: isRead }), headers())
             .then(res => {
                 dispatch(editNotification(res))
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "success",
                     msg: isRead ? "O'qib chiqildi" : "Ortga qaytarildi"
                 }))
                 // NOTIFICATION_TYPES.map(item => {
-                //     request(`${API_URL}Tasks/notifications/?role=${item.id}&user_id=${userId}`, "GET", null, headers())
+                //     request(`${BackUrl}notifications/?role=${item.id}&user_id=${id}`, "GET", null, headers())
                 //         .then(res => {
                 //             const filtered = res.filter(item => !item.is_read)
                 //             if (filtered.length > 0) {
@@ -310,8 +275,8 @@ const PlatformTodoist = () => {
                 // })
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -321,7 +286,7 @@ const PlatformTodoist = () => {
 
     const onViewTask = (id) => {
 
-        request(`${API_URL}Tasks/missions/${id}/`, "GET", null, headers())
+        request(`${BackUrl}missions/${id}/`, "GET", null, headers())
             .then(res => {
                 setSelectedTask(res)
                 setModalType("viewTask")
@@ -332,9 +297,9 @@ const PlatformTodoist = () => {
 
     useEffect(() => {
         // if (notificationsList.length > 0)
-        if (userId) {
+        if (id) {
             // NOTIFICATION_TYPES.map(item => {
-            request(`${API_URL}Tasks/notifications/?user_id=${userId}`, "GET", null, headers())
+            request(`${BackUrl}notifications/?user_id=${id}`, "GET", null, headers())
                 .then(res => {
                     const filtered = res.filter(item => !item.is_read)
                     if (filtered.length > 0) {
@@ -343,7 +308,7 @@ const PlatformTodoist = () => {
                 })
             // })
         }
-    }, [userId])
+    }, [id])
 
     const onChangeRedirect = () => {
 
@@ -352,21 +317,21 @@ const PlatformTodoist = () => {
         }
 
         dispatch(taskLoading())
-        request(`${API_URL}Tasks/missions/${selectedTask.id}/`, "PATCH", JSON.stringify(patch), headers())
+        request(`${BackUrl}missions/${selectedTask.id}/`, "PATCH", JSON.stringify(patch), headers())
             .then(res => {
-                request(`${API_URL}Tasks/missions/${res.id}/`, "GET", null, headers())
+                request(`${BackUrl}missions/${res.id}/`, "GET", null, headers())
                     .then(res => {
                         dispatch(editTask(res))
-                        dispatch(onAddAlertOptions({
-                            status: true,
+                        dispatch(setMessage({
+                            active: true,
                             type: "success",
                             msg: "Vazifa yo'naltirildi"
                         }))
                         setModalType(null)
                     })
                     .catch(err => {
-                        dispatch(onAddAlertOptions({
-                            status: true,
+                        dispatch(setMessage({
+                            active: true,
                             type: "error",
                             msg: "Xatolik yuz berdi!"
                         }))
@@ -374,8 +339,8 @@ const PlatformTodoist = () => {
                     })
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -402,14 +367,14 @@ const PlatformTodoist = () => {
         }
 
         dispatch(taskLoading())
-        request(`${API_URL}Tasks/missions/`, "POST", JSON.stringify(post), headers())
+        request(`${BackUrl}missions/`, "POST", JSON.stringify(post), headers())
             .then(res => {
                 res.map(item => {
-                    request(`${API_URL}Tasks/missions/${item.id}/`, "GET", null, headers())
+                    request(`${BackUrl}missions/${item.id}/`, "GET", null, headers())
                         .then(res => {
                             dispatch(addTask(res))
-                            dispatch(onAddAlertOptions({
-                                status: true,
+                            dispatch(setMessage({
+                                active: true,
                                 type: "success",
                                 msg: "Vazifa yaratildi"
                             }))
@@ -419,8 +384,8 @@ const PlatformTodoist = () => {
                 })
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -440,22 +405,22 @@ const PlatformTodoist = () => {
         }
 
         dispatch(taskLoading())
-        request(`${API_URL}Tasks/missions/${formData.id}/`, "PATCH", JSON.stringify(patch), headers())
+        request(`${BackUrl}missions/${formData.id}/`, "PATCH", JSON.stringify(patch), headers())
             .then(res => {
 
-                request(`${API_URL}Tasks/missions/${res.id}/`, "GET", null, headers())
+                request(`${BackUrl}missions/${res.id}/`, "GET", null, headers())
                     .then(res => {
                         dispatch(editTask(res))
-                        dispatch(onAddAlertOptions({
-                            status: true,
+                        dispatch(setMessage({
+                            active: true,
                             type: "success",
                             msg: "Vazifa o`zgartirildi"
                         }))
                         setModalType(null)
                     })
                     .catch(err => {
-                        dispatch(onAddAlertOptions({
-                            status: true,
+                        dispatch(setMessage({
+                            active: true,
                             type: "error",
                             msg: "Xatolik yuz berdi!"
                         }))
@@ -463,8 +428,8 @@ const PlatformTodoist = () => {
                     })
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -474,19 +439,19 @@ const PlatformTodoist = () => {
 
     const handleDeleteTask = () => {
         dispatch(taskLoading())
-        request(`${API_URL}Tasks/missions/${selectedTask.id}/`, "DELETE", null, headers())
+        request(`${BackUrl}missions/${selectedTask.id}/`, "DELETE", null, headers())
             .then(res => {
                 dispatch(deleteTask(selectedTask.id))
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "success",
                     msg: `${selectedTask.title} - Vazifasi o'chirildi`
                 }))
                 setModalType(null)
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -496,21 +461,21 @@ const PlatformTodoist = () => {
 
     const handleChangeStatus = () => {
         dispatch(taskLoading())
-        request(`${API_URL}Tasks/missions/${formData.id}/`, "PATCH", JSON.stringify({status: formData.status}), headers())
+        request(`${BackUrl}missions/${formData.id}/`, "PATCH", JSON.stringify({ status: formData.status }), headers())
             .then(res => {
-                request(`${API_URL}Tasks/missions/${res.id}/`, "GET", null, headers())
+                request(`${BackUrl}missions/${res.id}/`, "GET", null, headers())
                     .then(res => {
                         dispatch(editTask(res))
-                        dispatch(onAddAlertOptions({
-                            status: true,
+                        dispatch(setMessage({
+                            active: true,
                             type: "success",
                             msg: "Vazifani statusi o`zgartirildi"
                         }))
                         setModalType(null)
                     })
                     .catch(err => {
-                        dispatch(onAddAlertOptions({
-                            status: true,
+                        dispatch(setMessage({
+                            active: true,
                             type: "error",
                             msg: "Xatolik yuz berdi!"
                         }))
@@ -518,8 +483,8 @@ const PlatformTodoist = () => {
                     })
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -530,11 +495,11 @@ const PlatformTodoist = () => {
     // Tag CRUD operations
     const handleCreateTag = () => {
         dispatch(taskTagsLoading())
-        request(`${API_URL}Tasks/tags/`, "POST", JSON.stringify({name: tagFormData}), headers())
+        request(`${BackUrl}tags/`, "POST", JSON.stringify({ name: tagFormData }), headers())
             .then(res => {
                 dispatch(addTag(res))
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "success",
                     msg: "Teg yaratildi"
                 }))
@@ -542,8 +507,8 @@ const PlatformTodoist = () => {
                 setTagFormData(null)
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Bu nomli teg bor yoki xatolik yuz berdi!"
                 }))
@@ -554,19 +519,19 @@ const PlatformTodoist = () => {
 
     const handleEditTag = () => {
         dispatch(taskTagsLoading())
-        request(`${API_URL}Tasks/tags/${selectedTag.id}/`, "PATCH", JSON.stringify({name: tagFormData}), headers())
+        request(`${BackUrl}tags/${selectedTag.id} `, "PUT", JSON.stringify({ name: tagFormData }), headers())
             .then(res => {
                 dispatch(editTag(res))
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "success",
                     msg: `Tegni nomi "${res.name}"ga o'zgartirildi`
                 }))
                 setModalType(null)
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -576,19 +541,19 @@ const PlatformTodoist = () => {
 
     const handleDeleteTag = () => {
         dispatch(taskTagsLoading())
-        request(`${API_URL}Tasks/tags/${selectedTag.id}/`, "DELETE", null, headers())
+        request(`${BackUrl}tags/${selectedTag.id}`, "DELETE", null, headers())
             .then(res => {
                 dispatch(deleteTag(selectedTag.id))
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "danger",
                     msg: `"${selectedTag.name}" - tegi o'chirildi`
                 }))
                 setModalType(null)
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -607,7 +572,7 @@ const PlatformTodoist = () => {
             mission: selectedTask.id
         }
 
-        request(`${API_URL}Tasks/subtasks/`, "POST", JSON.stringify(post), headers())
+        request(`${BackUrl}subtasks/`, "POST", JSON.stringify(post), headers())
             .then(res => {
                 dispatch(addSubTasks(res))
                 setSelectedTask(prev => ({
@@ -615,15 +580,15 @@ const PlatformTodoist = () => {
                     subtasks: [...prev.subtasks, res]
                 }))
                 setNestedModalType(null)
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "success",
                     msg: "Sub-task qo'shildi"
                 }))
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -641,7 +606,7 @@ const PlatformTodoist = () => {
             order: nestedFormData.order,
         }
 
-        request(`${API_URL}Tasks/subtasks/${nestedFormData.id}/`, "PATCH", JSON.stringify(patch), headers())
+        request(`${BackUrl}subtasks/${nestedFormData.id}/`, "PATCH", JSON.stringify(patch), headers())
             .then(res => {
                 dispatch(editSubTasks(res))
                 setSelectedTask({
@@ -649,15 +614,15 @@ const PlatformTodoist = () => {
                     subtasks: selectedTask.subtasks.map((s) => (s.id === res.id ? res : s)),
                 })
                 setNestedModalType(null)
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "success",
                     msg: "Sub-task o'zgartirildi"
                 }))
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -670,23 +635,23 @@ const PlatformTodoist = () => {
 
         dispatch(taskProfileLoading("subtasks"))
 
-        request(`${API_URL}Tasks/subtasks/${nestedFormData.id}`, "DELETE", null, headers())
+        request(`${BackUrl}subtasks/${nestedFormData.id}`, "DELETE", null, headers())
             .then(res => {
-                dispatch(deleteSubTasks({mission: selectedTask.id, subtask: nestedFormData.id}))
+                dispatch(deleteSubTasks({ mission: selectedTask.id, subtask: nestedFormData.id }))
                 setSelectedTask({
                     ...selectedTask,
                     subtasks: selectedTask.subtasks.filter((s) => s.id !== nestedFormData.id),
                 })
                 setNestedModalType(null)
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "danger",
                     msg: "Sub-task o'chirildi"
                 }))
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -698,7 +663,7 @@ const PlatformTodoist = () => {
 
         dispatch(taskProfileLoading("subtasks"))
 
-        request(`${API_URL}Tasks/subtasks/${id}/`, "PATCH", JSON.stringify({is_done: !isDone}), headers())
+        request(`${BackUrl}subtasks/${id}/`, "PATCH", JSON.stringify({ is_done: !isDone }), headers())
             .then(res => {
                 dispatch(editSubTasks(res))
                 setSelectedTask({
@@ -706,15 +671,15 @@ const PlatformTodoist = () => {
                     subtasks: selectedTask.subtasks.map((s) => (s.id === res.id ? res : s)),
                 })
                 setNestedModalType(null)
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: isDone ? "danger" : "success",
                     msg: isDone ? "Sub-task qaytarildi" : "Sub-task bajirildi"
                 }))
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -733,7 +698,7 @@ const PlatformTodoist = () => {
         }
         formDataImg.append("mission", selectedTask.id)
 
-        request(`${API_URL}Tasks/attachments/`, "POST", formDataImg, headerImg())
+        request(`${BackUrl}attachments/`, "POST", formDataImg, headersImg())
             .then(res => {
                 dispatch(addAttachments(res))
                 setSelectedTask(prev => ({
@@ -744,15 +709,15 @@ const PlatformTodoist = () => {
                 formDataImg.delete("note")
                 formDataImg.delete("file")
                 formDataImg.delete("mission")
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "success",
                     msg: "Qo'shimcha qo'shildi"
                 }))
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -770,7 +735,7 @@ const PlatformTodoist = () => {
             formDataImg.append("file", nestedFormData.file)
         }
 
-        request(`${API_URL}Tasks/attachments/${nestedFormData.id}/`, "PATCH", formDataImg, headerImg())
+        request(`${BackUrl}attachments/${nestedFormData.id}/`, "PATCH", formDataImg, headersImg())
             .then(res => {
                 dispatch(editAttachments(res))
                 setSelectedTask({
@@ -780,15 +745,15 @@ const PlatformTodoist = () => {
                 setNestedModalType(null)
                 formDataImg.delete("note")
                 formDataImg.delete("file")
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "success",
                     msg: "Qo'shimcha o'zgartirildi"
                 }))
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -801,23 +766,23 @@ const PlatformTodoist = () => {
 
         dispatch(taskProfileLoading("attachments"))
 
-        request(`${API_URL}Tasks/attachments/${nestedFormData.id}`, "DELETE", null, headers())
+        request(`${BackUrl}attachments/${nestedFormData.id}`, "DELETE", null, headers())
             .then(res => {
-                dispatch(deleteAttachments({mission: selectedTask.id, attachment: nestedFormData.id}))
+                dispatch(deleteAttachments({ mission: selectedTask.id, attachment: nestedFormData.id }))
                 setSelectedTask({
                     ...selectedTask,
                     attachments: selectedTask.attachments.filter((s) => s.id !== nestedFormData.id),
                 })
                 setNestedModalType(null)
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "danger",
                     msg: "Qo'shimcha o'chirildi"
                 }))
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -831,13 +796,13 @@ const PlatformTodoist = () => {
         dispatch(taskProfileLoading("comments"))
 
         formDataImg.append("text", nestedFormData.text)
-        formDataImg.append("user", userId)
+        formDataImg.append("user", id)
         if (nestedFormData.comFile && typeof nestedFormData.comFile === "object") {
             formDataImg.append("attachment", nestedFormData.comFile)
         }
         formDataImg.append("mission", selectedTask.id)
 
-        request(`${API_URL}Tasks/comments/`, "POST", formDataImg, headerImg())
+        request(`${BackUrl}comments/`, "POST", formDataImg, headersImg())
             .then(res => {
                 dispatch(addComments(res))
                 setSelectedTask(prev => ({
@@ -849,15 +814,15 @@ const PlatformTodoist = () => {
                 formDataImg.delete("user")
                 formDataImg.delete("attachment")
                 formDataImg.delete("mission")
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "success",
                     msg: "Koment qo'shildi"
                 }))
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -876,7 +841,7 @@ const PlatformTodoist = () => {
             formDataImg.append("attachment", nestedFormData.comFile)
         }
 
-        request(`${API_URL}Tasks/comments/${nestedFormData.id}/`, "PATCH", formDataImg, headerImg())
+        request(`${BackUrl}comments/${nestedFormData.id}/`, "PATCH", formDataImg, headersImg())
             .then(res => {
                 dispatch(editComments(res))
                 setSelectedTask({
@@ -886,15 +851,15 @@ const PlatformTodoist = () => {
                 setNestedModalType(null)
                 formDataImg.delete("text")
                 formDataImg.delete("attachment")
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "success",
                     msg: "Koment o'zgartirildi"
                 }))
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -907,23 +872,23 @@ const PlatformTodoist = () => {
 
         dispatch(taskProfileLoading("comments"))
 
-        request(`${API_URL}Tasks/comments/${nestedFormData.id}`, "DELETE", null, headers())
+        request(`${BackUrl}comments/${nestedFormData.id}`, "DELETE", null, headers())
             .then(res => {
-                dispatch(deleteComments({mission: selectedTask.id, comment: nestedFormData.id}))
+                dispatch(deleteComments({ mission: selectedTask.id, comment: nestedFormData.id }))
                 setSelectedTask({
                     ...selectedTask,
                     comments: selectedTask.comments.filter((s) => s.id !== nestedFormData.id),
                 })
                 setNestedModalType(null)
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "danger",
                     msg: "Koment o'chirildi"
                 }))
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -941,7 +906,7 @@ const PlatformTodoist = () => {
         }
         formDataImg.append("mission", selectedTask.id)
 
-        request(`${API_URL}Tasks/proofs/`, "POST", formDataImg, headerImg())
+        request(`${BackUrl}proofs/`, "POST", formDataImg, headersImg())
             .then(res => {
                 dispatch(addProofs(res))
                 setSelectedTask(prev => ({
@@ -952,15 +917,15 @@ const PlatformTodoist = () => {
                 formDataImg.delete("comment")
                 formDataImg.delete("file")
                 formDataImg.delete("mission")
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "success",
                     msg: "Proof qo'shildi"
                 }))
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -978,7 +943,7 @@ const PlatformTodoist = () => {
             formDataImg.append("file", nestedFormData.proofFile)
         }
 
-        request(`${API_URL}Tasks/proofs/${nestedFormData.id}/`, "PATCH", formDataImg, headerImg())
+        request(`${BackUrl}proofs/${nestedFormData.id}/`, "PATCH", formDataImg, headersImg())
             .then(res => {
                 dispatch(editProofs(res))
                 setSelectedTask({
@@ -988,15 +953,15 @@ const PlatformTodoist = () => {
                 setNestedModalType(null)
                 formDataImg.delete("comment")
                 formDataImg.delete("file")
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "success",
                     msg: "Proof o'zgartirildi"
                 }))
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -1009,23 +974,23 @@ const PlatformTodoist = () => {
 
         dispatch(taskProfileLoading("proofs"))
 
-        request(`${API_URL}Tasks/proofs/${nestedFormData.id}`, "DELETE", null, headers())
+        request(`${BackUrl}proofs/${nestedFormData.id}`, "DELETE", null, headers())
             .then(res => {
-                dispatch(deleteProofs({mission: selectedTask.id, proof: nestedFormData.id}))
+                dispatch(deleteProofs({ mission: selectedTask.id, proof: nestedFormData.id }))
                 setSelectedTask({
                     ...selectedTask,
                     proofs: selectedTask.proofs.filter((s) => s.id !== nestedFormData.id),
                 })
                 setNestedModalType(null)
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "danger",
                     msg: "Proof o'chirildi"
                 }))
             })
             .catch(err => {
-                dispatch(onAddAlertOptions({
-                    status: true,
+                dispatch(setMessage({
+                    active: true,
                     type: "error",
                     msg: "Xatolik yuz berdi!"
                 }))
@@ -1098,7 +1063,7 @@ const PlatformTodoist = () => {
         <>
             <div className={styles.container}>
                 <header className={styles.header}>
-                    <h1 className={styles.title}>Tasks</h1>
+                    <h1 className={styles.title}></h1>
                     <div className={styles.headerActions}>
                         <button className={styles.btnPrimary} onClick={openCreateTaskModal}>
                             + New Task
@@ -1110,7 +1075,7 @@ const PlatformTodoist = () => {
                 </header>
 
                 <div className={styles.content}>
-                    {/* Tasks Section */}
+                    {/* Section */}
                     <section className={styles.section}>
                         <div className={styles.sectionHeader}>
                             <h1 className={styles.sectionTitle}>
@@ -1135,7 +1100,7 @@ const PlatformTodoist = () => {
                                     Notifications
                                     {
                                         isHaveNot && (
-                                            <div className={styles.dott}/>
+                                            <div className={styles.dott} />
                                         )
                                     }
                                 </span>
@@ -1159,14 +1124,14 @@ const PlatformTodoist = () => {
                         <div
                             className={classNames(styles.grid, {
                                 [styles.loading]: tasksLoading || notificationsLoading,
-                                [styles.level]: userLevel > 2
+                                // [styles.level]: userLevel > 2
                             })}
                         >
                             {
                                 activePage === "task"
                                     ?
                                     tasksLoading
-                                        ? <DefaultPageLoader status={"none"}/>
+                                        ? <DefaultLoader status={"none"} />
                                         : sortTasks(tasks).map((task) => (
                                             <div
                                                 key={task.id}
@@ -1187,7 +1152,7 @@ const PlatformTodoist = () => {
                                                     <h3 className={styles.cardTitle}>{task.title}</h3>
                                                     <span
                                                         className={styles.status}
-                                                        style={{color: getStatusColor(task.status)}}
+                                                        style={{ color: getStatusColor(task.status) }}
                                                         onClick={() => openChangeStatusModal(task)}
                                                     >
                                                         {statusList.filter(item => item.id === task.status)[0]?.name}
@@ -1227,7 +1192,7 @@ const PlatformTodoist = () => {
                                                 </div>
                                                 <div className={styles.cardActions}>
                                                     {
-                                                        task.executor.id === userId && (
+                                                        task.executor.id === id && (
                                                             <button
                                                                 className={styles.btnRedirected}
                                                                 onClick={() => openRedirectModal(task)}
@@ -1237,18 +1202,18 @@ const PlatformTodoist = () => {
                                                         )
                                                     }
                                                     <button className={styles.btnView}
-                                                            onClick={() => openViewTaskModal(task)}>
+                                                        onClick={() => openViewTaskModal(task)}>
                                                         View More
                                                     </button>
                                                     {
-                                                        task.creator.id === userId && (
+                                                        task.creator.id === id && (
                                                             <>
                                                                 <button className={styles.btnEdit}
-                                                                        onClick={() => openEditTaskModal(task)}>
+                                                                    onClick={() => openEditTaskModal(task)}>
                                                                     Edit
                                                                 </button>
                                                                 <button className={styles.btnDelete}
-                                                                        onClick={() => openDeleteTaskModal(task)}>
+                                                                    onClick={() => openDeleteTaskModal(task)}>
                                                                     Delete
                                                                 </button>
                                                             </>
@@ -1259,10 +1224,10 @@ const PlatformTodoist = () => {
                                         ))
                                     :
                                     notificationsLoading
-                                        ? <DefaultPageLoader status={"none"}/>
+                                        ? <DefaultLoader status={"none"} />
                                         : notificationsList?.map(item => {
                                             return <NotificationCard data={item} onToggleRead={onToggleRead}
-                                                                     onViewTask={onViewTask}/>
+                                                onViewTask={onViewTask} />
                                         })
                             }
                         </div>
@@ -1270,36 +1235,36 @@ const PlatformTodoist = () => {
 
                     {/* Tags Section */}
                     {
-                        userLevel < 2 && (
-                            <section className={styles.section}>
-                                <h1 className={styles.sectionTitle}>Tags</h1>
-                                <div
-                                    className={classNames(styles.tagsList, {
-                                        [styles.loading]: tagsLoading
-                                    })}
-                                >
-                                    {
-                                        tagsLoading
-                                            ? <DefaultPageLoader status={"none"}/>
-                                            : tags.map((tag) => (
-                                                <div key={tag.id} className={styles.tagItem}>
-                                                    <span className={styles.tagName}>{tag.name}</span>
-                                                    <div className={styles.tagActions}>
-                                                        <button className={styles.btnSmallEdit}
-                                                                onClick={() => openEditTagModal(tag)}>
-                                                            Edit
-                                                        </button>
-                                                        <button className={styles.btnSmallDelete}
-                                                                onClick={() => openDeleteTagModal(tag)}>
-                                                            Delete
-                                                        </button>
-                                                    </div>
+                        // userLevel < 2 && (
+                        <section className={styles.section}>
+                            <h1 className={styles.sectionTitle}>Tags</h1>
+                            <div
+                                className={classNames(styles.tagsList, {
+                                    [styles.loading]: tagsLoading
+                                })}
+                            >
+                                {
+                                    tagsLoading
+                                        ? <DefaultLoader status={"none"} />
+                                        : tags.map((tag) => (
+                                            <div key={tag.id} className={styles.tagItem}>
+                                                <span className={styles.tagName}>{tag.name}</span>
+                                                <div className={styles.tagActions}>
+                                                    <button className={styles.btnSmallEdit}
+                                                        onClick={() => openEditTagModal(tag)}>
+                                                        Edit
+                                                    </button>
+                                                    <button className={styles.btnSmallDelete}
+                                                        onClick={() => openDeleteTagModal(tag)}>
+                                                        Delete
+                                                    </button>
                                                 </div>
-                                            ))
-                                    }
-                                </div>
-                            </section>
-                        )
+                                            </div>
+                                        ))
+                                }
+                            </div>
+                        </section>
+                        // )
                     }
                 </div>
 
@@ -1315,7 +1280,7 @@ const PlatformTodoist = () => {
                                 <input
                                     type="text"
                                     value={formData.title || ""}
-                                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                     placeholder="Task title"
                                     required
                                 />
@@ -1324,7 +1289,7 @@ const PlatformTodoist = () => {
                                 <label>Description</label>
                                 <textarea
                                     value={formData.description || ""}
-                                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                     placeholder="Task description"
                                     rows={3}
                                 />
@@ -1332,19 +1297,19 @@ const PlatformTodoist = () => {
                             <div className={styles.formRow}>
                                 <div className={styles.formGroup}>
                                     <label>Tags</label>
-                                    <AnimatedMulti
+                                    {/* <AnimatedMulti
                                         extraClass={styles.formGroup__multiSelect}
                                         options={tagsList}
-                                        onChange={(e) => setFormData({...formData, tags: e})}
+                                        onChange={(e) => setFormData({ ...formData, tags: e })}
                                         value={formData.tags}
                                         fontSize={15}
-                                    />
+                                    /> */}
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>Departmant</label>
                                     <select
                                         value={formData.category || "admin"}
-                                        onChange={(e) => setFormData({...formData, category: e.target.value})}
+                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                         required
                                     >
                                         {
@@ -1356,58 +1321,58 @@ const PlatformTodoist = () => {
                                 </div>
                             </div>
                             {
-                                !(userLevel === 4) && (
-                                    <div className={styles.formRow}>
-                                        <div className={styles.formGroup}>
-                                            <label>Executor</label>
-                                            {/* <AnimatedMulti
+                                // !(userLevel === 4) && (
+                                <div className={styles.formRow}>
+                                    <div className={styles.formGroup}>
+                                        <label>Executor</label>
+                                        {/* <AnimatedMulti
                                                 extraClass={styles.formGroup__multiSelect}
                                                 options={
                                                     teachersList
-                                                        .filter(item => item.id !== userId)
+                                                        .filter(item => item.id !== id)
                                                         .map(item => ({ value: item.id, label: item.name }))
                                                 }
                                                 onChange={(e) => setFormData({ ...formData, executor_ids: e })}
                                                 value={formData.executor_ids}
                                                 fontSize={15}
                                             /> */}
-                                            <select
-                                                value={typeof formData.executor === "object" ? formData.executor.id : formData.executor_ids || "none"}
-                                                onChange={(e) => setFormData({...formData, executor_ids: e.target.value})}
-                                                required
-                                            >
-                                                <option value={"none"}>Select Executor</option>
-                                                {
-                                                    [...teachersList].map(item =>
-                                                        <option value={item.id}>{item.name}</option>
-                                                    )
-                                                }
-                                            </select>
-                                        </div>
-                                        <div className={styles.formGroup}>
-                                            <label>Reviewer</label>
-                                            <select
-                                                value={typeof formData.reviewer === "object" ? formData.reviewer.id : formData.reviewer || "none"}
-                                                onChange={(e) => setFormData({...formData, reviewer: e.target.value})}
-                                                required
-                                            >
-                                                <option value={"none"}>Select Reviewer</option>
-                                                {
-                                                    [...teachersList].map(item =>
-                                                        <option value={item.id}>{item.name}</option>
-                                                    )
-                                                }
-                                            </select>
-                                        </div>
+                                        <select
+                                            value={typeof formData.executor === "object" ? formData.executor.id : formData.executor_ids || "none"}
+                                            onChange={(e) => setFormData({ ...formData, executor_ids: e.target.value })}
+                                            required
+                                        >
+                                            <option value={"none"}>Select Executor</option>
+                                            {
+                                                [...teachersList].map(item =>
+                                                    <option value={item.id}>{item.name}</option>
+                                                )
+                                            }
+                                        </select>
                                     </div>
-                                )
+                                    <div className={styles.formGroup}>
+                                        <label>Reviewer</label>
+                                        <select
+                                            value={typeof formData.reviewer === "object" ? formData.reviewer.id : formData.reviewer || "none"}
+                                            onChange={(e) => setFormData({ ...formData, reviewer: e.target.value })}
+                                            required
+                                        >
+                                            <option value={"none"}>Select Reviewer</option>
+                                            {
+                                                [...teachersList].map(item =>
+                                                    <option value={item.id}>{item.name}</option>
+                                                )
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                // )
                             }
                             <div className={styles.formRow}>
                                 <div className={styles.formGroup}>
                                     <label>Status</label>
                                     <select
                                         value={formData.status || "not_started"}
-                                        onChange={(e) => setFormData({...formData, status: e.target.value})}
+                                        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                                         required
                                     >
                                         {
@@ -1422,7 +1387,7 @@ const PlatformTodoist = () => {
                                     <input
                                         type="date"
                                         value={formData.deadline || ""}
-                                        onChange={(e) => setFormData({...formData, deadline: e.target.value})}
+                                        onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
                                         required
                                     />
                                 </div>
@@ -1432,7 +1397,7 @@ const PlatformTodoist = () => {
                                     <input
                                         type="checkbox"
                                         checked={formData.is_recurring || false}
-                                        onChange={(e) => setFormData({...formData, is_recurring: e.target.checked})}
+                                        onChange={(e) => setFormData({ ...formData, is_recurring: e.target.checked })}
                                     />
                                     Recurring
                                 </label>
@@ -1443,7 +1408,7 @@ const PlatformTodoist = () => {
                                         <label>Recurring Type</label>
                                         <select
                                             value={formData.recurring_type || "daily"}
-                                            onChange={(e) => setFormData({...formData, recurring_type: e.target.value})}
+                                            onChange={(e) => setFormData({ ...formData, recurring_type: e.target.value })}
                                         >
                                             {
                                                 recurringTypes.map(item =>
@@ -1571,7 +1536,7 @@ const PlatformTodoist = () => {
                                 {/* Collapsible Sections */}
                                 <div className={styles.collapsibleSection}>
                                     <div className={styles.collapsibleHeader}
-                                         onClick={() => toggleCollapsible("subtasks")}>
+                                        onClick={() => toggleCollapsible("subtasks")}>
                                         <span>Subtasks ({selectedTask.subtasks.length})</span>
                                         <span>{activeCollapsibles.has("subtasks") ? "−" : "+"}</span>
                                     </div>
@@ -1580,7 +1545,7 @@ const PlatformTodoist = () => {
                                             <div className={styles.collapsibleContent}>
                                                 {
                                                     tasksProfileLoading && tasksProfileLoading === "subtasks"
-                                                        ? <MiniLoader/>
+                                                        ? <DefaultLoaderSmall />
                                                         : [...selectedTask.subtasks]?.sort(compareByOrder)?.map((st) => (
                                                             <div key={st.id} className={styles.nestedItem}>
                                                                 <p style={st.is_done ? {
@@ -1592,13 +1557,13 @@ const PlatformTodoist = () => {
                                                                         className={classNames(
                                                                             `fa-regular ${st.is_done ? "fa-circle-xmark" : "fa-circle-check"}`,
                                                                             styles.nestedActions__icon, {
-                                                                                [styles.compledted]: st.is_done
-                                                                            }
+                                                                            [styles.compledted]: st.is_done
+                                                                        }
                                                                         )}
                                                                         onClick={() => handleCompleteSubtask(st.is_done, st.id)}
                                                                     />
                                                                     <button className={styles.btnSmallEdit}
-                                                                            onClick={() => openNestedModal("editSubtask", st)}>
+                                                                        onClick={() => openNestedModal("editSubtask", st)}>
                                                                         Edit
                                                                     </button>
                                                                     <button
@@ -1614,7 +1579,7 @@ const PlatformTodoist = () => {
                                             </div>
                                             <div className={styles.btnSmallContainer}>
                                                 <button className={styles.btnSmall}
-                                                        onClick={() => openNestedModal("createSubtask")}>
+                                                    onClick={() => openNestedModal("createSubtask")}>
                                                     + Add Subtask
                                                 </button>
                                             </div>
@@ -1624,7 +1589,7 @@ const PlatformTodoist = () => {
 
                                 <div className={styles.collapsibleSection}>
                                     <div className={styles.collapsibleHeader}
-                                         onClick={() => toggleCollapsible("attachments")}>
+                                        onClick={() => toggleCollapsible("attachments")}>
                                         <span>Attachments ({selectedTask.attachments.length})</span>
                                         <span>{activeCollapsibles.has("attachments") ? "−" : "+"}</span>
                                     </div>
@@ -1633,7 +1598,7 @@ const PlatformTodoist = () => {
                                             <div className={styles.collapsibleContent}>
                                                 {[...selectedTask.attachments]?.reverse().map((att) => (
                                                     <div key={att.id}
-                                                         className={classNames(styles.nestedItem, styles.dual)}>
+                                                        className={classNames(styles.nestedItem, styles.dual)}>
                                                         <div className={styles.nestedItem__header}>
                                                             <div
                                                                 className={classNames(styles.nestedActions, styles.btns, styles.innerDual)}
@@ -1662,7 +1627,7 @@ const PlatformTodoist = () => {
                                                         {
                                                             att.file && (
                                                                 <div className={styles.nestedItem__content}>
-                                                                    <img crossOrigin="anonymous" src={att.file} alt=""/>
+                                                                    <img crossOrigin="anonymous" src={att.file} alt="" />
                                                                 </div>
                                                             )
                                                         }
@@ -1671,7 +1636,7 @@ const PlatformTodoist = () => {
                                             </div>
                                             <div className={styles.btnSmallContainer}>
                                                 <button className={styles.btnSmall}
-                                                        onClick={() => openNestedModal("createAttachment")}>
+                                                    onClick={() => openNestedModal("createAttachment")}>
                                                     + Add Attachment
                                                 </button>
                                             </div>
@@ -1681,7 +1646,7 @@ const PlatformTodoist = () => {
 
                                 <div className={styles.collapsibleSection}>
                                     <div className={styles.collapsibleHeader}
-                                         onClick={() => toggleCollapsible("comments")}>
+                                        onClick={() => toggleCollapsible("comments")}>
                                         <span>Comments ({selectedTask.comments.length})</span>
                                         <span>{activeCollapsibles.has("comments") ? "−" : "+"}</span>
                                     </div>
@@ -1690,16 +1655,16 @@ const PlatformTodoist = () => {
                                             <div className={styles.collapsibleContent}>
                                                 {[...selectedTask.comments].reverse().map((com) => (
                                                     <div key={com.id}
-                                                         className={classNames(styles.nestedItem, styles.dual)}>
+                                                        className={classNames(styles.nestedItem, styles.dual)}>
                                                         <div className={styles.nestedItem__header}>
                                                             <div className={styles.info}>
                                                                 <p className={styles.btns__title}>{com.created_at}</p>
                                                                 {
-                                                                    com.user.id === userId || com.user === userId
+                                                                    com.user.id === id || com.user === id
                                                                         ? <div
                                                                             className={classNames(styles.nestedActions, styles.btns)}>
                                                                             <button className={styles.btnSmallEdit}
-                                                                                    onClick={() => openNestedModal("editComment", com)}>
+                                                                                onClick={() => openNestedModal("editComment", com)}>
                                                                                 Edit
                                                                             </button>
                                                                             <button
@@ -1721,7 +1686,7 @@ const PlatformTodoist = () => {
                                                             com.attachment && (
                                                                 <div className={styles.nestedItem__content}>
                                                                     <img crossOrigin="anonymous" src={com.attachment}
-                                                                         alt=""/>
+                                                                        alt="" />
                                                                 </div>
                                                             )
                                                         }
@@ -1730,7 +1695,7 @@ const PlatformTodoist = () => {
                                             </div>
                                             <div className={styles.btnSmallContainer}>
                                                 <button className={styles.btnSmall}
-                                                        onClick={() => openNestedModal("createComment")}>
+                                                    onClick={() => openNestedModal("createComment")}>
                                                     + Add Comment
                                                 </button>
                                             </div>
@@ -1740,7 +1705,7 @@ const PlatformTodoist = () => {
 
                                 <div className={styles.collapsibleSection}>
                                     <div className={styles.collapsibleHeader}
-                                         onClick={() => toggleCollapsible("proofs")}>
+                                        onClick={() => toggleCollapsible("proofs")}>
                                         <span>Proofs ({selectedTask.proofs.length})</span>
                                         <span>{activeCollapsibles.has("proofs") ? "−" : "+"}</span>
                                     </div>
@@ -1749,7 +1714,7 @@ const PlatformTodoist = () => {
                                             <div className={styles.collapsibleContent}>
                                                 {[...selectedTask.proofs].reverse().map((proof) => (
                                                     <div key={proof.id}
-                                                         className={classNames(styles.nestedItem, styles.dual)}>
+                                                        className={classNames(styles.nestedItem, styles.dual)}>
                                                         <div className={styles.nestedItem__header}>
                                                             <div
                                                                 className={classNames(styles.nestedActions, styles.btns, styles.innerDual)}
@@ -1757,7 +1722,7 @@ const PlatformTodoist = () => {
                                                                 <p className={styles.btns__title}>{proof.created_at}</p>
                                                                 <div className={styles.nestedActions}>
                                                                     <button className={styles.btnSmallEdit}
-                                                                            onClick={() => openNestedModal("editProof", proof)}>
+                                                                        onClick={() => openNestedModal("editProof", proof)}>
                                                                         Edit
                                                                     </button>
                                                                     <button
@@ -1775,7 +1740,7 @@ const PlatformTodoist = () => {
                                                         {
                                                             proof.file && (
                                                                 <div className={styles.nestedItem__content}>
-                                                                    <img crossOrigin="anonymous" src={proof.file} alt=""/>
+                                                                    <img crossOrigin="anonymous" src={proof.file} alt="" />
                                                                 </div>
                                                             )
                                                         }
@@ -1784,7 +1749,7 @@ const PlatformTodoist = () => {
                                             </div>
                                             <div className={styles.btnSmallContainer}>
                                                 <button className={styles.btnSmall}
-                                                        onClick={() => openNestedModal("createProof")}>
+                                                    onClick={() => openNestedModal("createProof")}>
                                                     + Add Proof
                                                 </button>
                                             </div>
@@ -1837,10 +1802,10 @@ const PlatformTodoist = () => {
                                     </div>
                                     {
                                         tasksProfileLoading && tasksProfileLoading === "subtasks"
-                                            ? <MiniLoader/>
+                                            ? <DefaultLoaderSmall />
                                             : <div className={styles.formActions}>
                                                 <button className={styles.btnCancel}
-                                                        onClick={() => setNestedModalType(null)}>
+                                                    onClick={() => setNestedModalType(null)}>
                                                     Cancel
                                                 </button>
                                                 <button
@@ -1861,10 +1826,10 @@ const PlatformTodoist = () => {
                                     <p className={styles.confirmText}>Are you sure?</p>
                                     {
                                         tasksProfileLoading && tasksProfileLoading === "subtasks"
-                                            ? <MiniLoader/>
+                                            ? <DefaultLoaderSmall />
                                             : <div className={styles.formActions}>
                                                 <button className={styles.btnCancel}
-                                                        onClick={() => setNestedModalType(null)}>
+                                                    onClick={() => setNestedModalType(null)}>
                                                     Cancel
                                                 </button>
                                                 <button className={styles.btnDanger} onClick={handleDeleteSubtask}>
@@ -1905,10 +1870,10 @@ const PlatformTodoist = () => {
                                     {
 
                                         tasksProfileLoading && tasksProfileLoading === "attachments"
-                                            ? <MiniLoader/>
+                                            ? <DefaultLoaderSmall />
                                             : <div className={styles.formActions}>
                                                 <button className={styles.btnCancel}
-                                                        onClick={() => setNestedModalType(null)}>
+                                                    onClick={() => setNestedModalType(null)}>
                                                     Cancel
                                                 </button>
                                                 <button
@@ -1931,10 +1896,10 @@ const PlatformTodoist = () => {
                                     {
 
                                         tasksProfileLoading && tasksProfileLoading === "attachments"
-                                            ? <MiniLoader/>
+                                            ? <DefaultLoaderSmall />
                                             : <div className={styles.formActions}>
                                                 <button className={styles.btnCancel}
-                                                        onClick={() => setNestedModalType(null)}>
+                                                    onClick={() => setNestedModalType(null)}>
                                                     Cancel
                                                 </button>
                                                 <button className={styles.btnDanger} onClick={handleDeleteAttachment}>
@@ -1974,10 +1939,10 @@ const PlatformTodoist = () => {
                                     </div>
                                     {
                                         tasksProfileLoading && tasksProfileLoading === "comments"
-                                            ? <MiniLoader/>
+                                            ? <DefaultLoaderSmall />
                                             : <div className={styles.formActions}>
                                                 <button className={styles.btnCancel}
-                                                        onClick={() => setNestedModalType(null)}>
+                                                    onClick={() => setNestedModalType(null)}>
                                                     Cancel
                                                 </button>
                                                 <button
@@ -1995,10 +1960,10 @@ const PlatformTodoist = () => {
                                     <p className={styles.confirmText}>Are you sure?</p>
                                     {
                                         tasksProfileLoading && tasksProfileLoading === "comments"
-                                            ? <MiniLoader/>
+                                            ? <DefaultLoaderSmall />
                                             : <div className={styles.formActions}>
                                                 <button className={styles.btnCancel}
-                                                        onClick={() => setNestedModalType(null)}>
+                                                    onClick={() => setNestedModalType(null)}>
                                                     Cancel
                                                 </button>
                                                 <button className={styles.btnDanger} onClick={handleDeleteComment}>
@@ -2037,10 +2002,10 @@ const PlatformTodoist = () => {
                                     </div>
                                     {
                                         tasksProfileLoading && tasksProfileLoading === "proofs"
-                                            ? <MiniLoader/>
+                                            ? <DefaultLoaderSmall />
                                             : <div className={styles.formActions}>
                                                 <button className={styles.btnCancel}
-                                                        onClick={() => setNestedModalType(null)}>
+                                                    onClick={() => setNestedModalType(null)}>
                                                     Cancel
                                                 </button>
                                                 <button
@@ -2058,10 +2023,10 @@ const PlatformTodoist = () => {
                                     <p className={styles.confirmText}>Are you sure?</p>
                                     {
                                         tasksProfileLoading && tasksProfileLoading === "proofs"
-                                            ? <MiniLoader/>
+                                            ? <DefaultLoaderSmall />
                                             : <div className={styles.formActions}>
                                                 <button className={styles.btnCancel}
-                                                        onClick={() => setNestedModalType(null)}>
+                                                    onClick={() => setNestedModalType(null)}>
                                                     Cancel
                                                 </button>
                                                 <button className={styles.btnDanger} onClick={handleDeleteProof}>
@@ -2077,13 +2042,13 @@ const PlatformTodoist = () => {
 
                 {(modalType === "changeStatus") && (
                     <div className={styles.modalBackdrop} onClick={() => setModalType(null)}>
-                        <div className={styles.modal} onClick={(e) => e.stopPropagation()} style={{width: "17%"}}>
+                        <div className={styles.modal} onClick={(e) => e.stopPropagation()} style={{ width: "17%" }}>
                             <h2 className={styles.modalTitle}>Change task status</h2>
                             <div className={styles.formGroup}>
                                 <label>Status</label>
                                 <select
                                     value={formData.status}
-                                    onChange={(e) => setFormData({...formData, status: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                                     required
                                 >
                                     {
@@ -2171,7 +2136,7 @@ const PlatformTodoist = () => {
                     <Select
                         title={"Status"}
                         extraClass={styles.mainInput}
-                        options={[{id: "all", name: "Hammasi"}, ...statusList]}
+                        options={[{ id: "all", name: "Hammasi" }, ...statusList]}
                         onChangeOption={setSelectedStatus}
                         value={selectedStatus}
                     />
@@ -2183,18 +2148,18 @@ const PlatformTodoist = () => {
                     /> */}
                     <div className={styles.tags}>
                         <span className={styles.tags__title}>Tags</span>
-                        <AnimatedMulti
+                        {/* <AnimatedMulti
                             title={"Tags"}
                             options={tagsList}
                             onChange={setSelectedTags}
                             value={selectedTags}
                             fontSize={15}
-                        />
+                        /> */}
                     </div>
                     <Select
                         title={"Departmant"}
                         extraClass={styles.mainInput}
-                        options={[{id: "all", name: "Hammasi"}, ...categoryList]}
+                        options={[{ id: "all", name: "Hammasi" }, ...categoryList]}
                         onChangeOption={setSelectedCategory}
                         value={selectedCategory}
                     />
@@ -2202,16 +2167,16 @@ const PlatformTodoist = () => {
                     <div className={styles.dualInput}>
                         <Input
                             extraClassName={styles.dualInput__inner}
-                            title={"Deadline (form)"}
+                            title={"Deadline (from)"}
                             type={"date"}
-                            onChange={(e) => setSelectedDeadlineFrom(e.target.value)}
+                            onChange={setSelectedDeadlineFrom}
                             value={selectedDeadlineFrom}
                         />
                         <Input
                             extraClassName={styles.dualInput__inner}
                             title={"Deadline (to)"}
                             type={"date"}
-                            onChange={(e) => setSelectedDeadlineTo(e.target.value)}
+                            onChange={setSelectedDeadlineTo}
                             value={selectedDeadlineTo}
                         />
                     </div>
@@ -2241,7 +2206,7 @@ const PlatformTodoist = () => {
                     title={"Select redirect"}
                     options={
                         teachersList
-                            .filter(item => item.id !== userId)
+                            .filter(item => item.id !== id)
                     }
                     onChangeOption={setSelectedRedirect}
                     value={selectedRedirect}
@@ -2257,8 +2222,8 @@ const PlatformTodoist = () => {
     )
 }
 
-export function NotificationCard({data, onToggleRead, onViewTask}) {
-    const {id, message, role, mission, deadline, is_read, created_at} = data;
+export function NotificationCard({ data, onToggleRead, onViewTask }) {
+    const { id, message, role, mission, deadline, is_read, created_at } = data;
 
     const handleToggle = () => {
         console.log("hello");

@@ -1,14 +1,14 @@
-import {createSlice} from "@reduxjs/toolkit";
-import {createAsyncThunk} from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import {useHttp, ParamUrl} from "hooks/http.hook";
-import {BackUrl, headers} from "constants/global";
+import { useHttp, ParamUrl } from "hooks/http.hook";
+import { BackUrl, headers } from "constants/global";
 
 export const fetchTasks = createAsyncThunk(
     "todoistSlice/fetchTasks",
-    ({status, creator, executor, reviewer, created_at, deadline, deadline_after, deadline_before, tags, category}) => {
-        const {request} = useHttp()
-        return request(`${BackUrl}Tasks/missions/?${ParamUrl({
+    ({ status, creator, executor, reviewer, created_at, deadline, deadline_after, deadline_before, tags, category }) => {
+        const { request } = useHttp()
+        return request(`${BackUrl}missions/?${ParamUrl({
             status,
             creator,
             executor,
@@ -25,25 +25,25 @@ export const fetchTasks = createAsyncThunk(
 
 export const fetchTaskProfile = createAsyncThunk(
     "todoistSlice/fetchTaskProfile",
-    ({id}) => {
-        const {request} = useHttp()
-        return request(`${BackUrl}Tasks/missions/${id}/`, "GET", null, headers())
+    ({ id }) => {
+        const { request } = useHttp()
+        return request(`${BackUrl}missions/${id}/`, "GET", null, headers())
     }
 )
 
 export const fetchTaskTags = createAsyncThunk(
     "todoistSlice/fetchTaskTags",
     () => {
-        const {request} = useHttp()
-        return request(`${BackUrl}Tasks/tags/`, "GET", null, headers())
+        const { request } = useHttp()
+        return request(`${BackUrl}tags/`, "GET", null, headers())
     }
 )
 
 export const fetchTaskNotifications = createAsyncThunk(
     "todoistSlice/fetchTaskNotifications",
-    ({role, user_id}) => {
-        const {request} = useHttp()
-        return request(`${BackUrl}Tasks/notifications/?role=${role}&user_id=${user_id}`, "GET", null, headers())
+    ({ role, user_id }) => {
+        const { request } = useHttp()
+        return request(`${BackUrl}notifications/?role=${role}&user_id=${user_id}`, "GET", null, headers())
     }
 )
 
@@ -57,29 +57,29 @@ const initialState = {
     profileLoading: false,
     error: null,
     recurringTypes: [
-        {id: "daily", name: "Daily", number: 1, disabled: true},
-        {id: "weekly", name: "Weekly", number: 7, disabled: true},
-        {id: "monthly", name: "Monthly", number: 30, disabled: true},
-        {id: "custom", name: "Custom", number: 1, disabled: false},
+        { id: "daily", name: "Daily", number: 1, disabled: true },
+        { id: "weekly", name: "Weekly", number: 7, disabled: true },
+        { id: "monthly", name: "Monthly", number: 30, disabled: true },
+        { id: "custom", name: "Custom", number: 1, disabled: false },
     ],
     statusList: [
-        {id: "not_started", name: "Not Started"},
-        {id: "in_progress", name: "In Progress"},
-        {id: "blocked", name: "Blocked"},
-        {id: "completed", name: "Completed"},
-        {id: "approved", name: "Approved"},
-        {id: "declined", name: "Declined"},
-        {id: "recheck", name: "Re-check"},
+        { id: "not_started", name: "Not Started" },
+        { id: "in_progress", name: "In Progress" },
+        { id: "blocked", name: "Blocked" },
+        { id: "completed", name: "Completed" },
+        { id: "approved", name: "Approved" },
+        { id: "declined", name: "Declined" },
+        { id: "recheck", name: "Re-check" },
     ],
     categoryList: [
-        {id: "academic", name: "Academic"},
-        {id: "admin", name: "Admin"},
-        {id: "student", name: "Student-related"},
-        {id: "report", name: "Report"},
-        {id: "meeting", name: "Meeting/Event"},
-        {id: "marketing", name: "Marketing"},
-        {id: "maintenance", name: "Maintenance"},
-        {id: "finance", name: "Finance"},
+        { id: "academic", name: "Academic" },
+        { id: "admin", name: "Admin" },
+        { id: "student", name: "Student-related" },
+        { id: "report", name: "Report" },
+        { id: "meeting", name: "Meeting/Event" },
+        { id: "marketing", name: "Marketing" },
+        { id: "maintenance", name: "Maintenance" },
+        { id: "finance", name: "Finance" },
     ],
     notifications: [],
     notificationLoading: false

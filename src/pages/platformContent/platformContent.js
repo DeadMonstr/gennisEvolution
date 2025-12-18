@@ -75,6 +75,7 @@ const PlatformWebsiteEdit = React.lazy(() => import('./platformWebsiteEdit/platf
 const PlatformLead = React.lazy(() => import('./platformLead/PlatformLead'));
 const PlatformCapital = React.lazy(() => import('pages/platformContent/platformCapitalCategories/PlatformCapitalCategories'));
 const PlatformTaskManager = React.lazy(() => import('./platformTaskManager/platformTaskManager'))
+const PlatformTaskManagerProfile = React.lazy(() => import('./platformTaskManager/taskManagerProfile/taskManagerProfile'))
 const PlatformNewRegister = React.lazy(() => import('pages/registerNew/register'))
 
 const PlatformAccountantStaff = React.lazy(() => import("pages/platformContent/platformAccountant/staff/AccountantStaffs"))
@@ -144,7 +145,9 @@ const PlatformContent = () => {
 
 
                     {/* <Route path="oneDay/:locationId" element={<PlatformOneDay/>}/> */}
-                    <Route path="adminItem/:locationId" element={<PlatformAdminItem />} />
+                    <Route path="adminItem/:locationId/*" element={<PlatformAdminItem />} />
+                    {/* <Route path="storyProfile/:storyId" element={<PlatformTaskManagerProfile />} /> */}
+                    {/* </Route> */}
 
 
                     {/*<Route path="newStudents/:locationId" element={<PlatformNewStudents/>}/>*/}
