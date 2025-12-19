@@ -1,10 +1,10 @@
-import React, {createContext, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import classNames from "classnames";
-import {get, useForm} from "react-hook-form";
+import { get, useForm } from "react-hook-form";
 import Calendar from "react-calendar";
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import 'react-calendar/dist/Calendar.css';
-import {motion, useDragControls, useMotionValue, useMotionValueEvent} from "framer-motion";
+import { motion, useDragControls, useMotionValue, useMotionValueEvent } from "framer-motion";
 
 import Modal from "components/platform/platformUI/modal";
 import InputForm from "components/platform/platformUI/inputForm";
@@ -14,8 +14,8 @@ import Select from "components/platform/platformUI/select";
 import Confirm from "components/platform/platformModals/confirm/confirm";
 import DefaultLoader from "components/loader/defaultLoader/DefaultLoader";
 import PlatformMessage from "components/platform/platformMessage";
-import {useHttp} from "hooks/http.hook";
-import {BackUrl, formatDate, headers} from "constants/global";
+import { useHttp } from "hooks/http.hook";
+import { BackUrl, formatDate, headers } from "constants/global";
 import {
     changeNewStudentsDel,
     changeLead,
@@ -50,12 +50,12 @@ import switchCompletedBtn from "assets/icons/progress.svg";
 
 
 import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
-import {setMessage} from "slices/messageSlice";
-import {Link, useParams} from "react-router-dom";
+import { setMessage } from "slices/messageSlice";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Input from "components/platform/platformUI/input";
 import PlatformSearch from "components/platform/platformUI/search";
 import Table from "components/platform/platformUI/table";
-import {fetchDataToChange} from "slices/dataToChangeSlice";
+import { fetchDataToChange } from "slices/dataToChangeSlice";
 import Form from "../../../components/platform/platformUI/form/Form";
 
 const FuncContext = createContext(null)
@@ -83,11 +83,11 @@ const menuList = [
         label: "Lead"
     }
 ]
-const colorStatusList = ["red", "yellow", "green", "navy", "black","noColor"]
+const colorStatusList = ["red", "yellow", "green", "navy", "black", "noColor"]
 
 const PlatformTaskManager = () => {
 
-    const {locationId} = useParams()
+    const { locationId } = useParams()
 
     const {
         unCompleted,
@@ -107,8 +107,8 @@ const PlatformTaskManager = () => {
     const [isCompleted, setIsCompleted] = useState(false)
 
     const dispatch = useDispatch()
-    const {request} = useHttp()
-    const {register, handleSubmit, setValue} = useForm()
+    const { request } = useHttp()
+    const { register, handleSubmit, setValue } = useForm()
 
 
     const [activeModal, setActiveModal] = useState(false)
@@ -186,25 +186,25 @@ const PlatformTaskManager = () => {
         if (isCompleted) {
             switch (activeMenu) {
                 case "debtors":
-                    dispatch(fetchCompletedDebtorsData({locationId, date: formatted}))
+                    dispatch(fetchCompletedDebtorsData({ locationId, date: formatted }))
                     break;
                 case "newStudents":
-                    dispatch(fetchCompletedNewStudentsTaskData({locationId, date: formatted}))
+                    dispatch(fetchCompletedNewStudentsTaskData({ locationId, date: formatted }))
                     break;
                 case "leads":
-                    dispatch(fetchCompletedLeadsData({locationId, date: formatted}))
+                    dispatch(fetchCompletedLeadsData({ locationId, date: formatted }))
                     break;
             }
         } else {
             switch (activeMenu) {
                 case "debtors":
-                    dispatch(fetchDebtorsData({locationId, date: formatted}))
+                    dispatch(fetchDebtorsData({ locationId, date: formatted }))
                     break;
                 case "newStudents":
-                    dispatch(fetchNewStudentsTaskData({locationId, date: formatted}))
+                    dispatch(fetchNewStudentsTaskData({ locationId, date: formatted }))
                     break;
                 case "leads":
-                    dispatch(fetchLeadsData({locationId, date: formatted}))
+                    dispatch(fetchLeadsData({ locationId, date: formatted }))
                     break;
 
 
@@ -357,7 +357,7 @@ const PlatformTaskManager = () => {
         if (activeMenu === "newStudents") {
 
 
-            dispatch(onDelNewStudents({id: res.id}))
+            dispatch(onDelNewStudents({ id: res.id }))
 
 
             request(`${BackUrl}task_new_students/call_to_new_students`, "POST", JSON.stringify(res), headers())
@@ -390,8 +390,8 @@ const PlatformTaskManager = () => {
                 .then(res => {
 
                     console.log(res)
-                    dispatch(onDelDebtors({id: result.id}))
-                    dispatch(onChangeProgress({progress: res.task_statistics, allProgress: res.task_daily_statistics}))
+                    dispatch(onDelDebtors({ id: result.id }))
+                    dispatch(onChangeProgress({ progress: res.task_statistics, allProgress: res.task_daily_statistics }))
 
                     showMessage(res.message)
                 })
@@ -406,7 +406,7 @@ const PlatformTaskManager = () => {
             }), headers())
                 .then(res => {
                     if (res.lead_id) {
-                        dispatch(onDelLeads({id: res?.lead_id}))
+                        dispatch(onDelLeads({ id: res?.lead_id }))
                         dispatch(onChangeProgress({
                             progress: res.task_statistics,
                             allProgress: res.task_daily_statistics
@@ -422,7 +422,7 @@ const PlatformTaskManager = () => {
 
     const onClick = (id) => {
         setActiveModal(true)
-        dispatch(fetchUserDataWithHistory({id, type: activeMenu}))
+        dispatch(fetchUserDataWithHistory({ id, type: activeMenu }))
         setStudentId(id)
     }
 
@@ -440,8 +440,8 @@ const PlatformTaskManager = () => {
             .then((res) => {
                 setIsConfirm(false)
                 setDellLead(false)
-                dispatch(onDelLeads({id: studentId?.id}))
-                dispatch(onChangeProgress({progress: res.task_statistics, allProgress: res.task_daily_statistics}))
+                dispatch(onDelLeads({ id: studentId?.id }))
+                dispatch(onChangeProgress({ progress: res.task_statistics, allProgress: res.task_daily_statistics }))
                 dispatch(setMessage({
                     msg: res.msg,
                     type: "success",
@@ -468,7 +468,7 @@ const PlatformTaskManager = () => {
                     type: "success",
                     active: true
                 }))
-                dispatch(fetchLeadsData({locationId, date: formatted}))
+                dispatch(fetchLeadsData({ locationId, date: formatted }))
                 setLeadActive(false)
                 setActiveModal(false)
 
@@ -517,11 +517,11 @@ const PlatformTaskManager = () => {
         const filteredData = data?.slice() || []
 
 
-        if (searchValue && !isNaN(+searchValue) && typeof +searchValue === "number"  ) {
+        if (searchValue && !isNaN(+searchValue) && typeof +searchValue === "number") {
             return filteredData.filter(item => {
 
                 return item.phone.includes(searchValue) ||
-                item?.parent?.includes(+searchValue)
+                    item?.parent?.includes(+searchValue)
             })
         }
 
@@ -566,11 +566,11 @@ const PlatformTaskManager = () => {
         <div className={cls.tasks}>
             <div className={cls.tasks__inner}>
                 <div className={cls.header}>
-                    <PlatformSearch search={searchValue} setSearch={setSearchValue}/>
+                    <PlatformSearch search={searchValue} setSearch={setSearchValue} />
                     {/*<h1>My tasks</h1>*/}
                     {/*<div className={cls.header__search}>*/}
 
-                    <div style={{display: "flex", gap: "2rem"}}>
+                    <div style={{ display: "flex", gap: "2rem" }}>
                         <SwitchButton
                             isCompleted={isCompleted}
                             setIsCompleted={onChangeIsCompleted}
@@ -628,13 +628,13 @@ const PlatformTaskManager = () => {
                                 <div className={cls.completeTask__precent}>
                                     <div>
                                         <div className={cls.circleProgress}>
-                                            <Completed progress={`${allProgress?.completed_tasks_percentage || 0}%`}/>
+                                            <Completed progress={`${allProgress?.completed_tasks_percentage || 0}%`} />
                                         </div>
                                         <h2>All Rating</h2>
                                     </div>
                                     <div>
                                         <div className={cls.circleProgress}>
-                                            <Completed progress={`${progress?.completed_tasks_percentage || 0}%`}/>
+                                            <Completed progress={`${progress?.completed_tasks_percentage || 0}%`} />
                                         </div>
                                         <h2>{activeMenu}</h2>
                                     </div>
@@ -651,21 +651,21 @@ const PlatformTaskManager = () => {
             <Modal activeModal={activeModal} setActiveModal={setActiveModal}>
                 <div className={cls.userbox}>
                     <div className={cls.userbox__img}>
-                        <Link to={`../profile/${studentId}`}>
-                            <img src={profile.img ? profile.img : unknownUser} alt=""/>
+                        <Link to={`../../profile/${studentId}`}>
+                            <img src={profile.img ? profile.img : unknownUser} alt="" />
                         </Link>
                         {
                             activeMenu === "leads" ?
                                 <Button extraClass={cls.userbox__btn} children={"+"} onClickBtn={() => {
                                     setLeadActive(!leadActive)
                                     setLeadId(studentId)
-                                }}/> : null
+                                }} /> : null
                         }
 
 
                     </div>
                     <h2 className={cls.userbox__name}>
-                        <span>{profile.name} {profile.surname}</span> <br/>
+                        <span>{profile.name} {profile.surname}</span> <br />
                     </h2>
                     <div className={cls.userbox__info}>
                         <div className={cls.userbox__infos}>
@@ -692,10 +692,10 @@ const PlatformTaskManager = () => {
                                 {
                                     studentSelect === "tel ko'tarmadi" ? null : <>
                                         <InputForm placeholder="koment" type="text" register={register} name={"comment"}
-                                                   required/>
+                                            required />
                                         <InputForm placeholder="keyingiga qoldirish" type="date" register={register}
-                                                   name={"date"}
-                                                   required/>
+                                            name={"date"}
+                                            required />
                                     </>
                                 }
                             </div>
@@ -770,7 +770,7 @@ const PlatformTaskManager = () => {
                 </Form>
             </Modal>
             <Modal activeModal={dellLead} setActiveModal={() => setDellLead(false)}>
-                <Confirm setActive={setDellLead} getConfirm={setIsConfirm} text={"O'chirishni hohlaysizmi"}/>
+                <Confirm setActive={setDellLead} getConfirm={setIsConfirm} text={"O'chirishni hohlaysizmi"} />
             </Modal>
             {
                 isConfirm === "yes" ?
@@ -781,16 +781,16 @@ const PlatformTaskManager = () => {
                             setIsConfirm(false)
                         }}
                     >
-                        <ConfimReason getConfirm={onDelete} reason={true}/>
+                        <ConfimReason getConfirm={onDelete} reason={true} />
                     </Modal> : null
             }
-            <PlatformMessage/>
+            <PlatformMessage />
         </div>
     )
         ;
 };
 
-const TableData = ({arr}) => {
+const TableData = ({ arr }) => {
 
     const stringCheck = (name, length = 10) => {
         if (name?.length > length) {
@@ -822,36 +822,34 @@ const TableData = ({arr}) => {
     return (
         <Table className={cls.table_results}>
             <thead>
-            <tr>
-                <th>No</th>
-                <th>Ism</th>
-                <th>Familiya</th>
-                <th>Telefon raqami</th>
-                <th>Sababi</th>
-            </tr>
+                <tr>
+                    <th>No</th>
+                    <th>Ism</th>
+                    <th>Familiya</th>
+                    <th>Telefon raqami</th>
+                    <th>Sababi</th>
+                </tr>
             </thead>
             <tbody>
-            {render}
+                {render}
             </tbody>
         </Table>
     )
 }
 
 
-const Completed = ({progress, progressStatus, style = "black"}) => {
+const Completed = ({ progress, progressStatus, style = "black" }) => {
     if (progressStatus === "loading" || progressStatus === "idle") {
-        return <DefaultLoaderSmall/>
+        return <DefaultLoaderSmall />
     } else {
         return (
-            <h1 style={{color: style, fontSize: "2.6rem"}}>{progress} </h1>
+            <h1 style={{ color: style, fontSize: "2.6rem" }}>{progress} </h1>
         )
     }
 }
 
 
-const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
-
-    console.log(arr, "arr")
+const RenderCards = ({ isCompleted, arr, status, activeType, banList }) => {
 
     const filteredItems = useCallback((color) => {
         return arr?.filter(item => {
@@ -864,7 +862,7 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
                 return item.moneyType === color
             }
 
-            if (color === "noColor" && typeof item.moneyType !== "string" ) {
+            if (color === "noColor" && typeof item.moneyType !== "string") {
                 return item
             }
 
@@ -872,7 +870,7 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
     }, [arr, activeType])
 
     if (status === "loading" || status === "idle") {
-        return <DefaultLoader/>
+        return <DefaultLoader />
     }
 
 
@@ -889,7 +887,7 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
     return colorStatusList.map((item, i) => {
 
         switch (activeType) {
-            case "debtors" :
+            case "debtors":
                 if (banList?.includes(item)) return null
 
                 return (
@@ -957,7 +955,7 @@ const RenderCards = ({isCompleted, arr, status, activeType, banList}) => {
 //     )
 // }
 
-const RenderItem = React.memo(({arr, index}) => {
+const RenderItem = React.memo(({ arr, index }) => {
 
 
     useEffect(() => {
@@ -978,7 +976,7 @@ const RenderItem = React.memo(({arr, index}) => {
     const x = useMotionValue(0)
     const [width, setWidth] = useState(0)
     const wrapper = useRef()
-    const {activeMenu, isCompleted} = useContext(FuncContext)
+    const { activeMenu, isCompleted } = useContext(FuncContext)
 
     useEffect(() => {
         setWidth(wrapper.current?.scrollWidth - wrapper.current?.offsetWidth)
@@ -1002,7 +1000,7 @@ const RenderItem = React.memo(({arr, index}) => {
                 }}
                 dragElastic={0}
                 dragMomentum={false}
-                dragConstraints={{left: -width, right: 0}}
+                dragConstraints={{ left: -width, right: 0 }}
                 dragControls={controls}
             >
                 {
@@ -1011,6 +1009,7 @@ const RenderItem = React.memo(({arr, index}) => {
                             <TaskCard
                                 item={item}
                                 index={i}
+                                type={activeMenu}
                             />
                         )
                     })
@@ -1020,9 +1019,12 @@ const RenderItem = React.memo(({arr, index}) => {
     )
 })
 
-const TaskCard = ({item, index}) => {
+const TaskCard = ({ item, index, type }) => {
 
-    const {activeMenu, click, onDelete, getStudentId, isCompleted} = useContext(FuncContext)
+    const navigate = useNavigate()
+    const { request } = useHttp()
+
+    const { activeMenu, click, onDelete, getStudentId, isCompleted } = useContext(FuncContext)
     const [style, setStyle] = useState({})
 
     const renderBgImage = (color) => {
@@ -1067,6 +1069,11 @@ const TaskCard = ({item, index}) => {
     }, [activeMenu, item.moneyType, item?.status])
 
 
+    const onPhone = () => {
+        // request(`${BackUrl}`, "POST", null, headers())
+    }
+
+
 
     return (
         <motion.div
@@ -1082,10 +1089,17 @@ const TaskCard = ({item, index}) => {
                         className={classNames("fas fa-trash", cls.icon)}
                         onClick={() => {
                             onDelete(true)
-                            getStudentId({id: item?.id, status: item?.status})
+                            getStudentId({ id: item?.id, status: item?.status })
                         }}
                     /> : null
             }
+            {/* <i
+                className={classNames(
+                    "fa-solid fa-phone-flip",
+                    cls.item__phone
+                )}
+                onClick={onPhone}
+            /> */}
             <div
                 className={classNames(cls.item__info, {
                     [cls.active]: activeMenu === "leads"
@@ -1102,7 +1116,7 @@ const TaskCard = ({item, index}) => {
                         }
                     </h2>
                 }
-                <h2 style={{color: item.moneyType === "navy" ? "white" : item?.moneyType === "black" ? "white" : ""}}
+                <h2 style={{ color: item.moneyType === "navy" ? "white" : item?.moneyType === "black" ? "white" : "" }}
                     className={cls.username}>{item?.name} {item?.surname}</h2>
                 <ul
                     className={classNames(cls.infoList, {
@@ -1158,53 +1172,54 @@ const TaskCard = ({item, index}) => {
             </div>
             <div
                 className={cls.item__image}
-                style={{backgroundImage: style.backImage}}
+                style={{ backgroundImage: style.backImage }}
             >
                 <div
                     className={cls.circle}
                     onClick={
                         () =>
+                            // navigate(`../storyProfile/${item.id}/${type}`)
                             // (item.status === "green" || isCompleted) ? null :
-                        {
+                            // {
                             click(item?.id)
-                        }
+                        // }
                     }
                 >
-                    <img src={unknownUser} alt=""/>
+                    <img src={unknownUser} alt="" />
                 </div>
             </div>
         </motion.div>
     )
 }
 
-const SwitchButton = ({isCompleted, setIsCompleted, setSearchValue}) => {
+const SwitchButton = ({ isCompleted, setIsCompleted, setSearchValue }) => {
 
 
     return (
         <div className={cls.switchBox}>
             <div className={`${cls.switch} ${isCompleted ? `${cls.completed}` : `${cls.inProgress} `}`}
-                 onClick={() => {
-                     setIsCompleted(!isCompleted)
-                     setSearchValue("")
-                 }}>
+                onClick={() => {
+                    setIsCompleted(!isCompleted)
+                    setSearchValue("")
+                }}>
                 <div className={cls.iconButton}>
                     {isCompleted ?
                         <div className={cls.icon__handlerSucces}>
-                            <img className={cls.buttonIcon} src={switchCompletedBtn} alt=""/>
+                            <img className={cls.buttonIcon} src={switchCompletedBtn} alt="" />
                         </div>
                         :
                         <div className={cls.icon__handler}>
-                            <img src={switchXButton} className={cls.buttonIcon} alt=""/>
+                            <img src={switchXButton} className={cls.buttonIcon} alt="" />
                         </div>
                     }
                 </div>
                 <span className={cls.textContent}>
-                     {isCompleted ? (
-                         <h1 className={cls.textContentSucces}>Completed</h1>
-                     ) : (
-                         <h1 className={cls.textContent}>In Progress</h1>
-                     )}
-                  </span>
+                    {isCompleted ? (
+                        <h1 className={cls.textContentSucces}>Completed</h1>
+                    ) : (
+                        <h1 className={cls.textContent}>In Progress</h1>
+                    )}
+                </span>
 
             </div>
         </div>

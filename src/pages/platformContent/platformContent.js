@@ -75,6 +75,7 @@ const PlatformWebsiteEdit = React.lazy(() => import('./platformWebsiteEdit/platf
 const PlatformLead = React.lazy(() => import('./platformLead/PlatformLead'));
 const PlatformCapital = React.lazy(() => import('pages/platformContent/platformCapitalCategories/PlatformCapitalCategories'));
 const PlatformTaskManager = React.lazy(() => import('./platformTaskManager/platformTaskManager'))
+const PlatformTaskManagerProfile = React.lazy(() => import('./platformTaskManager/taskManagerProfile/taskManagerProfile'))
 const PlatformNewRegister = React.lazy(() => import('pages/registerNew/register'))
 
 const PlatformAccountantStaff = React.lazy(() => import("pages/platformContent/platformAccountant/staff/AccountantStaffs"))
@@ -104,6 +105,7 @@ const PlatformUsersPage = React.lazy(() => import('./platformUsersPage/platformU
 const PlatformAdminItem = React.lazy(() => import('./platformAdminItem/platformAdminItem'));
 const PlatformNewAccounting = React.lazy(() => import('./platformAccounting2.0/platformNewAccounting'));
 const PlatformAccountingProfile = React.lazy(() => import("./platformAccountingProfile/platformAccountingProfile"))
+const PlatformTodoist = React.lazy(() => import('./platformTodoist/platformTodoist'))
 
 
 
@@ -143,7 +145,9 @@ const PlatformContent = () => {
 
 
                     {/* <Route path="oneDay/:locationId" element={<PlatformOneDay/>}/> */}
-                    <Route path="adminItem/:locationId" element={<PlatformAdminItem />} />
+                    <Route path="adminItem/:locationId/*" element={<PlatformAdminItem />} />
+                    {/* <Route path="storyProfile/:storyId" element={<PlatformTaskManagerProfile />} /> */}
+                    {/* </Route> */}
 
 
                     {/*<Route path="newStudents/:locationId" element={<PlatformNewStudents/>}/>*/}
@@ -246,6 +250,7 @@ const PlatformContent = () => {
                     <Route path="registeredSchoolStudents/:id" element={<PlatformSchoolStudentsRegister />} />
                     <Route path="users/:locationId/parentSection/:id" element={<PlatformParentSection />} />
                     <Route path="teacherEquipments/:id" element={<PlatformTeacherEquipments />} />
+                    <Route path="todoist/:id" element={<PlatformTodoist />} />
 
 
                     {/*<Route*/}

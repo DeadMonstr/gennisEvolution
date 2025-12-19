@@ -45,6 +45,7 @@ import teacherEquipmentsSlice from "slices/teacherEquipmentsSlice";
 import newAccountingSlice from "pages/platformContent/platformAccounting2.0/model/accountingSlice"
 import groupsAttendanceSlice from "slices/groupsAttendanceSlice";
 import accountingProfileSlice from "slices/accountingProfileSlice";
+import todoistSlice from "slices/todoistSlice";
 
 const stringMiddlewere = () => (next) => (action) => {
     if (typeof action === 'string') {
@@ -101,7 +102,8 @@ const store = configureStore({
         groupsAttendanceSlice,
         teacherEquipmentsSlice,
         newAccountingSlice,
-        accountingProfileSlice
+        accountingProfileSlice,
+        todoistSlice
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware().concat(
