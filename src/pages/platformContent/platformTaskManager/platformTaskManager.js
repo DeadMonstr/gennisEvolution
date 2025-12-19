@@ -1178,10 +1178,10 @@ const TaskCard = ({ item, index, type }) => {
                     className={cls.circle}
                     onClick={
                         () =>
-                            navigate(`../storyProfile/${item.id}/${type}`)
-                        // (item.status === "green" || isCompleted) ? null :
-                        // {
-                        // click(item?.id)
+                            // navigate(`../storyProfile/${item.id}/${type}`)
+                            // (item.status === "green" || isCompleted) ? null :
+                            // {
+                            click(item?.id)
                         // }
                     }
                 >
