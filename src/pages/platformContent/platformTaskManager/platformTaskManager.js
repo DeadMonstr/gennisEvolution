@@ -651,7 +651,7 @@ const PlatformTaskManager = () => {
             <Modal activeModal={activeModal} setActiveModal={setActiveModal}>
                 <div className={cls.userbox}>
                     <div className={cls.userbox__img}>
-                        <Link to={`../profile/${studentId}`}>
+                        <Link to={`../../profile/${studentId}`}>
                             <img src={profile.img ? profile.img : unknownUser} alt="" />
                         </Link>
                         {
@@ -1093,13 +1093,13 @@ const TaskCard = ({ item, index, type }) => {
                         }}
                     /> : null
             }
-            <i
+            {/* <i
                 className={classNames(
                     "fa-solid fa-phone-flip",
                     cls.item__phone
                 )}
                 onClick={onPhone}
-            />
+            /> */}
             <div
                 className={classNames(cls.item__info, {
                     [cls.active]: activeMenu === "leads"
