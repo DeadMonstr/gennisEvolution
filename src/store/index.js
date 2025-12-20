@@ -32,6 +32,7 @@ import capitalCategory from "slices/capitalCategorySlice";
 import taskManager from "slices/taskManagerSlice";
 import accountantSlice from "slices/accountantSlice";
 import { slice } from "../pages/webSite/test/register";
+import assistantSlice from "../slices/assistantSlice";
 import blockTestSlice from "../slices/blockTestSlice";
 import otchotSlice from "../slices/otchotSlice";
 import billSlice from "../slices/billSlice";
@@ -103,7 +104,8 @@ const store = configureStore({
         teacherEquipmentsSlice,
         newAccountingSlice,
         accountingProfileSlice,
-        todoistSlice
+        todoistSlice,
+        assistantSlice
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware().concat(
