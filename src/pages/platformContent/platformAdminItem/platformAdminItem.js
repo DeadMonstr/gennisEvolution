@@ -8,6 +8,7 @@ import TaskManagerProfile from '../platformTaskManager/taskManagerProfile/taskMa
 
 import cls from "./platformAdminItem.module.sass";
 import Button from 'components/platform/platformUI/button';
+import NewTaskManager from '../platformTaskManager/newTaskManager/newTaskManager';
 
 const studentsPage = [
     {
@@ -51,7 +52,7 @@ const PlatformAdminItem = () => {
 
     return (
         <>
-            <div className={cls.filters}>
+            {/* <div className={cls.filters}>
                 {studentsPage.map(item => (
                     <div key={item.name} className={cls.filters__item}>
                         <Button
@@ -65,10 +66,11 @@ const PlatformAdminItem = () => {
                         </Button>
                     </div>
                 ))}
-            </div>
+            </div> */}
             {/* {renderPage()} */}
             <Routes>
-                <Route path='taskManager' element={<PlatformTaskManager />} />
+                {/* <Route path='taskManager' element={<PlatformTaskManager />} /> */}
+                <Route path='taskManager' element={<NewTaskManager />} />
                 <Route path='adminRanking' element={<PlatformAdminRating />} />
                 <Route path='storyProfile/:storyId/:storyType' element={<TaskManagerProfile />} />
                 <Route index element={<Navigate to={"taskManager"} />} />

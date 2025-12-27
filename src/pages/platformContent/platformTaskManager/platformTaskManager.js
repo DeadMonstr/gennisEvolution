@@ -51,7 +51,7 @@ import switchCompletedBtn from "assets/icons/progress.svg";
 
 import DefaultLoaderSmall from "components/loader/defaultLoader/defaultLoaderSmall";
 import { setMessage } from "slices/messageSlice";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { json, Link, useNavigate, useParams } from "react-router-dom";
 import Input from "components/platform/platformUI/input";
 import PlatformSearch from "components/platform/platformUI/search";
 import Table from "components/platform/platformUI/table";
@@ -125,6 +125,11 @@ const PlatformTaskManager = () => {
 
     const [data, setData] = useState(null)
     const [banListColors, setBanListColors] = useState([])
+
+    const [selectedAudioId, setSelectedAudioId] = useState({ id: null, state: null })
+    const [isCall, setIsCall] = useState(false)
+    const [audioCom, setAudioCom] = useState(null)
+    const [audioDate, setAudioDate] = useState(null)
 
 
     useEffect(() => {
@@ -258,6 +263,53 @@ const PlatformTaskManager = () => {
         completed.leads,
     ])
 
+    useEffect(() => {
+        if (!selectedAudioId.id) return;
+
+        let isActive = true;
+        let timeoutId = null;
+
+        setIsCall(true);
+
+        const poll = async () => {
+            if (!isActive) return;
+
+            try {
+                const response = await request(
+                    `${BackUrl}task_leads/call-status/${selectedAudioId.id}`,
+                    "GET",
+                    null,
+                    headers()
+                );
+
+                setSelectedAudioId(prev => ({ ...prev, state: response?.state }))
+
+                // ❗ проверка состояния
+                if (response?.state === "SUCCESS") {
+                    // setIsCall(false);
+                    setSelectedAudioId(prev => ({ ...prev, state: response?.state, lead_id: response?.result?.lead_info_id }))
+                    isActive = false; // останавливаем polling
+                    return;
+                }
+
+                // продолжаем polling
+                timeoutId = setTimeout(poll, 5000);
+
+            } catch (error) {
+                console.error(error);
+                timeoutId = setTimeout(poll, 5000);
+            }
+        };
+
+        poll();
+
+        return () => {
+            isActive = false;
+            if (timeoutId) clearTimeout(timeoutId);
+        };
+    }, [selectedAudioId?.id]);
+
+
 
     const calcLengthData = useCallback((type, isCompleted) => {
         if (isCompleted) {
@@ -344,14 +396,17 @@ const PlatformTaskManager = () => {
         }))
     }
 
-    const onSubmit = (data) => {
+    const onSubmit = () => {
 
         console.log("hello")
 
         const res = {
-            id: studentId,
-            ...data
+            id: 18,
+            comment: audioCom,
+            date: audioDate,
         }
+
+        console.log(selectedAudioId, "selectedAudioId")
 
 
         if (activeMenu === "newStudents") {
@@ -400,7 +455,7 @@ const PlatformTaskManager = () => {
 
         } else if (activeMenu === "leads") {
 
-            request(`${BackUrl}task_leads/task_leads_update/${studentId}`, "POST", JSON.stringify({
+            request(`${BackUrl}task_leads/task_leads_update/${selectedAudioId?.lead_id}`, "POST", JSON.stringify({
                 ...res,
                 location_id: locationId
             }), headers())
@@ -413,6 +468,7 @@ const PlatformTaskManager = () => {
                         }))
                     }
                     showMessage(res.msg)
+                    setIsCall(false)
                 })
                 .catch(err => console.log(err))
 
@@ -421,8 +477,8 @@ const PlatformTaskManager = () => {
     }
 
     const onClick = (id) => {
-        setActiveModal(true)
-        dispatch(fetchUserDataWithHistory({ id, type: activeMenu }))
+        // setActiveModal(true)
+        // dispatch(fetchUserDataWithHistory({ id, type: activeMenu }))
         setStudentId(id)
     }
 
@@ -504,7 +560,8 @@ const PlatformTaskManager = () => {
         isCompleted: isCompleted,
         dispatch: dispatch,
         location: locationId,
-        completedLength: completedDebtorStudent.length
+        completedLength: completedDebtorStudent.length,
+        setSelectedAudioId: setSelectedAudioId
     }), [activeMenu, isCompleted, locationId, completedDebtorStudent])
 
 
@@ -556,6 +613,7 @@ const PlatformTaskManager = () => {
                         activeType={activeMenu}
                         banList={banListColors}
                         status={unCompletedStatus || completedStatus}
+
                     />
                 )
         }
@@ -785,9 +843,38 @@ const PlatformTaskManager = () => {
                     </Modal> : null
             }
             <PlatformMessage />
+            <Modal
+                activeModal={isCall}
+                setActiveModal={setIsCall}
+                extraClass={cls.audioModal}
+            >
+                <div className={cls.audioModal__loader}>
+                    <CallStatusLoader
+                        status={selectedAudioId.state}
+                    // status={"SUCCESS"}
+                    />
+                </div>
+                {
+                    selectedAudioId.state === "SUCCESS" && (
+                        <>
+                            <Input
+                                title={"Koment"}
+                                placeholder={"Koment"}
+                                onChange={setAudioCom}
+                            />
+                            <Input
+                                type={"date"}
+                                title={"Kun"}
+                                // placeholder={"Koment"}
+                                onChange={setAudioDate}
+                            />
+                            <Button onClickBtn={onSubmit}>Kiritish</Button>
+                        </>
+                    )
+                }
+            </Modal>
         </div>
-    )
-        ;
+    );
 };
 
 const TableData = ({ arr }) => {
@@ -976,7 +1063,7 @@ const RenderItem = React.memo(({ arr, index }) => {
     const x = useMotionValue(0)
     const [width, setWidth] = useState(0)
     const wrapper = useRef()
-    const { activeMenu, isCompleted } = useContext(FuncContext)
+    const { activeMenu, isCompleted, setSelectedAudioId } = useContext(FuncContext)
 
     useEffect(() => {
         setWidth(wrapper.current?.scrollWidth - wrapper.current?.offsetWidth)
@@ -1010,6 +1097,7 @@ const RenderItem = React.memo(({ arr, index }) => {
                                 item={item}
                                 index={i}
                                 type={activeMenu}
+                                setSelectedAudioId={setSelectedAudioId}
                             />
                         )
                     })
@@ -1019,13 +1107,14 @@ const RenderItem = React.memo(({ arr, index }) => {
     )
 })
 
-const TaskCard = ({ item, index, type }) => {
+const TaskCard = ({ item, index, type, setSelectedAudioId }) => {
 
     const navigate = useNavigate()
     const { request } = useHttp()
 
     const { activeMenu, click, onDelete, getStudentId, isCompleted } = useContext(FuncContext)
     const [style, setStyle] = useState({})
+    const [taskId, setTaskId] = useState(null)
 
     const renderBgImage = (color) => {
         switch (color) {
@@ -1070,8 +1159,22 @@ const TaskCard = ({ item, index, type }) => {
 
 
     const onPhone = () => {
-        // request(`${BackUrl}`, "POST", null, headers())
+        let post;
+        if (activeMenu === "leads") {
+            post = { lead_id: item.id }
+        }
+
+
+        request(`${BackUrl}task_leads/call-to-lead`, "POST", JSON.stringify(post), headers())
+            .then(res => {
+                setSelectedAudioId({ id: res.task_id, state: res?.state })
+                click(item?.id)
+            })
     }
+
+    // const onGet = () => {
+    //     request(`${BackUrl}task_leads/call-status/${taskId}`, "GET", null, headers())
+    // }
 
 
 
@@ -1093,13 +1196,13 @@ const TaskCard = ({ item, index, type }) => {
                         }}
                     /> : null
             }
-            {/* <i
+            <i
                 className={classNames(
                     "fa-solid fa-phone-flip",
                     cls.item__phone
                 )}
                 onClick={onPhone}
-            /> */}
+            />
             <div
                 className={classNames(cls.item__info, {
                     [cls.active]: activeMenu === "leads"
@@ -1116,8 +1219,12 @@ const TaskCard = ({ item, index, type }) => {
                         }
                     </h2>
                 }
-                <h2 style={{ color: item.moneyType === "navy" ? "white" : item?.moneyType === "black" ? "white" : "" }}
-                    className={cls.username}>{item?.name} {item?.surname}</h2>
+                <h2
+                    style={{ color: item.moneyType === "navy" ? "white" : item?.moneyType === "black" ? "white" : "" }}
+                    className={cls.username}
+                // onClick={onGet}
+                >
+                    {item?.name} {item?.surname}</h2>
                 <ul
                     className={classNames(cls.infoList, {
                         [cls.active]: activeMenu === "leads"
@@ -1178,10 +1285,10 @@ const TaskCard = ({ item, index, type }) => {
                     className={cls.circle}
                     onClick={
                         () =>
-                            // navigate(`../storyProfile/${item.id}/${type}`)
-                            // (item.status === "green" || isCompleted) ? null :
-                            // {
-                            click(item?.id)
+                            navigate(`../storyProfile/${item.id}/${type}`)
+                        // (item.status === "green" || isCompleted) ? null :
+                        // {
+                        // click(item?.id)
                         // }
                     }
                 >
@@ -1225,6 +1332,46 @@ const SwitchButton = ({ isCompleted, setIsCompleted, setSearchValue }) => {
         </div>
     );
 };
+
+const CallStatusLoader = ({ status }) => {
+    const [showCheckmark, setShowCheckmark] = useState(false)
+
+    useEffect(() => {
+        if (status === "SUCCESS") {
+            // Small delay to allow smooth transition
+            setTimeout(() => setShowCheckmark(true), 100)
+        } else {
+            setShowCheckmark(false)
+        }
+    }, [status])
+
+    return (
+        <div className={cls.container}>
+            <div className={cls.loaderWrapper}>
+                {/* Circular Loader */}
+                <span
+                    className={classNames(cls.parent, {
+                        [cls.fadeOut]: status === "SUCCESS"
+                    })}
+                >
+                    <span className={cls.loader} />
+                </span>
+
+                {/* Checkmark */}
+                <svg
+                    className={`${cls.checkmark} ${showCheckmark ? cls.show : ""}`}
+                    viewBox="0 0 100 100"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path className={cls.checkmarkPath} d="M 25 52 L 42 68 L 75 32" />
+                </svg>
+            </div>
+
+            {/* Status text */}
+            <p className={cls.statusText}>{status === "STARTED" ? "Calling in progress..." : status === "SUCCESS" ? "Call successed" : "Call connected"}</p>
+        </div>
+    )
+}
 
 
 export default PlatformTaskManager;
