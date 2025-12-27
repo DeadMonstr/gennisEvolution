@@ -359,10 +359,20 @@ const PlatformTodoist = () => {
         }
 
         const post = {
-            ...formData,
+            title: formData.title,
+            description: formData.description,
+            category: formData.category,
+            status: formData.status,
+            // ...formData,
             tags: formData.tags.map(item => item.value),
             // executor_ids: formData.executor_ids.map(item => item.value),
-            executor_ids: [Number(formData.executor_ids)],
+            // executor_ids: [Number(formData.executor_ids)],
+            executor_ids: [44, 3, 13],
+            deadline_datetime: formData.deadline,
+            creator_id: formData.creator,
+            reviewer_id: formData.reviewer,
+            is_recurring: formData.is_recurring,
+            recurring_type: formData.recurring_type,
             ...repeat,
         }
 
@@ -395,17 +405,33 @@ const PlatformTodoist = () => {
 
     const handleEditTask = () => {
 
+        let repeat = {}
+        if (formData.recurring_type !== "custom") {
+            repeat = {
+                repeat_every: recurringTypes.filter(item => item.id === formData.recurring_type)[0]?.number
+            }
+        }
+
         const patch = {
-            ...formData,
+            title: formData.title,
+            description: formData.description,
+            category: formData.category,
+            // status: formData.status,
+            // ...formData,
             tags: formData.tags.map(item => item.value),
-            creator: formData.creator.id,
             // executor_ids: formData.executor_ids.map(item => item.value),
-            executor_ids: formData.executor_ids ? [Number(formData.executor_ids)] : [formData.executor.id],
-            reviewer: typeof formData.reviewer === "object" ? formData.reviewer.id : formData.reviewer
+            // executor_ids: [Number(formData.executor_ids)],
+            // executor_ids: [44, 3, 13],
+            deadline_datetime: formData.deadline_datetime,
+            creator_id: formData.creator,
+            reviewer_id: formData.reviewer,
+            is_recurring: formData.is_recurring,
+            recurring_type: formData.recurring_type,
+            ...repeat,
         }
 
         dispatch(taskLoading())
-        request(`${BackUrl}missions/${formData.id}/`, "PATCH", JSON.stringify(patch), headers())
+        request(`${BackUrl}missions/${formData.id}/`, "PUT", JSON.stringify(patch), headers())
             .then(res => {
 
                 request(`${BackUrl}missions/${res.id}/`, "GET", null, headers())
@@ -1386,8 +1412,8 @@ const PlatformTodoist = () => {
                                     <label>Deadline</label>
                                     <input
                                         type="date"
-                                        value={formData.deadline || ""}
-                                        onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                                        value={formData.deadline_datetime || ""}
+                                        onChange={(e) => setFormData({ ...formData, deadline_datetime: e.target.value })}
                                         required
                                     />
                                 </div>
@@ -1437,9 +1463,9 @@ const PlatformTodoist = () => {
                                     Cancel
                                 </button>
                                 <button
-                                    disabled={!formData.title || !formData.deadline}
+                                    disabled={!formData.title || !formData.deadline_datetime}
                                     className={classNames(styles.btnPrimary, {
-                                        [styles.disabled]: !formData.title || !formData.deadline
+                                        [styles.disabled]: !formData.title || !formData.deadline_datetime
                                     })}
                                     onClick={modalType === "createTask" ? handleCreateTask : handleEditTask}
                                 >

@@ -408,7 +408,7 @@ const UserContent = ({ userId }) => {
                             </div>
                         )
                     }
-                    {
+                    {/* {
                         info.old_debt && (
                             <div className="profile__right__card">
                                 <div className="profile__right__card__header">
@@ -420,7 +420,7 @@ const UserContent = ({ userId }) => {
                                 </div>
                             </div>
                         )
-                    }
+                    } */}
                     {
                         user.groups?.length > 0 ? (
                             <div style={{ width: "40%" }} className="profile__right__card">
