@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef, useCallback } from "react"
-import { motion, useDragControls, useMotionValue, useMotionValueEvent } from "framer-motion";
-import { useLocation, useNavigate, useParams } from "react-router-dom"
-import { useDispatch, useSelector } from "react-redux"
+import React, {useEffect, useState, useRef, useCallback} from "react"
+import {motion, useDragControls, useMotionValue, useMotionValueEvent} from "framer-motion";
+import {useLocation, useNavigate, useParams} from "react-router-dom"
+import {useDispatch, useSelector} from "react-redux"
 import {
     PhoneIcon,
     SearchIcon,
@@ -21,8 +21,9 @@ import {
     onDelDebtors,
     onDelLeads
 } from "slices/taskManagerSlice"
-import { BackUrl, formatDate, headers } from "constants/global";
-import { useHttp } from "hooks/http.hook";
+import {BackUrl, BackUrlForDoc, formatDate, headers} from "constants/global";
+import {useHttp} from "hooks/http.hook";
+import {setMessage} from "slices/messageSlice";
 import DefaultLoader from "components/loader/defaultLoader/DefaultLoader";
 import Table from "components/platform/platformUI/table";
 import Modal from "components/platform/platformUI/modal";
@@ -30,15 +31,16 @@ import Input from "components/platform/platformUI/input";
 import Button from "components/platform/platformUI/button";
 
 import styles from "./newTaskManager.module.sass"
-import { setMessage } from "slices/messageSlice";
+import switchCompletedBtn from "assets/icons/progress.svg";
+import switchXButton from "assets/icons/bx_task-x.svg";
 
 const NewTaskManager = () => {
 
     const location = useLocation()
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { locationId } = useParams()
-    const { request } = useHttp()
+    const {locationId} = useParams()
+    const {request} = useHttp()
 
     const {
         unCompleted,
@@ -66,7 +68,7 @@ const NewTaskManager = () => {
     const [data, setData] = useState([])
 
 
-    const [selectedAudioId, setSelectedAudioId] = useState({ id: null, state: null })
+    const [selectedAudioId, setSelectedAudioId] = useState({id: null, state: null})
     const [isCall, setIsCall] = useState(false)
     const [audioCom, setAudioCom] = useState(null)
     const [audioDate, setAudioDate] = useState(null)
@@ -75,6 +77,7 @@ const NewTaskManager = () => {
     const [phonesList, setPhonesList] = useState([])
     const [isSelectedStudent, setIsSelectedStudent] = useState(null)
     const [selectedPhone, setSelectedPhone] = useState(null)
+    const [selectedId, setSelectedId] = useState(null)
 
 
     useEffect(() => {
@@ -85,25 +88,25 @@ const NewTaskManager = () => {
         if (isCompleted) {
             switch (activeCategory) {
                 case "debtors":
-                    dispatch(fetchCompletedDebtorsData({ locationId, date: formatted }))
+                    dispatch(fetchCompletedDebtorsData({locationId, date: formatted}))
                     break;
                 case "newStudents":
-                    dispatch(fetchCompletedNewStudentsTaskData({ locationId, date: formatted }))
+                    dispatch(fetchCompletedNewStudentsTaskData({locationId, date: formatted}))
                     break;
                 case "leads":
-                    dispatch(fetchCompletedLeadsData({ locationId, date: formatted }))
+                    dispatch(fetchCompletedLeadsData({locationId, date: formatted}))
                     break;
             }
         } else {
             switch (activeCategory) {
                 case "debtors":
-                    dispatch(fetchDebtorsData({ locationId, date: formatted }))
+                    dispatch(fetchDebtorsData({locationId, date: formatted}))
                     break;
                 case "newStudents":
-                    dispatch(fetchNewStudentsTaskData({ locationId, date: formatted }))
+                    dispatch(fetchNewStudentsTaskData({locationId, date: formatted}))
                     break;
                 case "leads":
-                    dispatch(fetchLeadsData({ locationId, date: formatted }))
+                    dispatch(fetchLeadsData({locationId, date: formatted}))
                     break;
 
 
@@ -165,8 +168,17 @@ const NewTaskManager = () => {
             if (!isActive && callStatus === "loading") return;
 
             try {
+                let url;
+                if (activeCategory === "leads") {
+                    url = "task_leads"
+                } else if (activeCategory === "debtors") {
+                    url = "task_debts"
+                } else {
+                    url = "task_new_students"
+                }
+
                 const response = await request(
-                    `${BackUrl}task_leads/call-status/${callId}`,
+                    `${BackUrl}${url}/call-status/${callId}`,
                     "GET",
                     null,
                     headers()
@@ -195,11 +207,19 @@ const NewTaskManager = () => {
                         }
                         dispatch(callStart(result))
                     } else {
+                        console.log(response.result.attempts)
                         dispatch(callStart({
                             callId: null,
                             callStatus: "success",
                             callState: "error"
                         }))
+                        if (response.result.attempts === 2) {
+                            if (activeCategory === "leads") {
+                                dispatch(onDelLeads({id: selectedId}))
+                            } else {
+                                dispatch(onDelDebtors({id: selectedId, type: activeCategory}))
+                            }
+                        }
                     }
                     // setIsCall(false);
                     // setSelectedAudioId(prev => ({ ...prev, state: response?.state, lead_id: response?.result?.lead_info_id }))
@@ -225,9 +245,13 @@ const NewTaskManager = () => {
     }, [callId]);
 
 
-    const onSubmit = () => {
+    const onChangeIsCompleted = (status) => {
+        setData([])
+        setIsCompleted(status)
+    }
 
-        console.log("hello")
+
+    const onSubmit = () => {
 
         let post;
         let postURL;
@@ -248,7 +272,7 @@ const NewTaskManager = () => {
         } else {
             postURL = "task_new_students/call_to_new_students"
             post = {
-                excuse_id: audioId,
+                id: audioId,
                 phone: selectedPhone,
                 comment: audioCom,
                 date: audioDate,
@@ -257,11 +281,10 @@ const NewTaskManager = () => {
 
         request(`${BackUrl}${postURL}`, "POST", JSON.stringify(post), headers())
             .then(res => {
-                console.log(res)
                 if (activeCategory === "leads") {
-                    dispatch(onDelLeads({ id: res?.lead_id }))
+                    dispatch(onDelLeads({id: res?.lead_id}))
                 } else {
-                    dispatch(onDelDebtors({ id: post.id }))
+                    dispatch(onDelDebtors({id: res.student_id, type: activeCategory}))
                 }
                 dispatch(onChangeProgress({
                     progress: res.task_statistics,
@@ -350,13 +373,13 @@ const NewTaskManager = () => {
         let postURL;
         if (activeCategory === "leads") {
             postURL = "task_leads/call-to-lead"
-            post = { lead_id: id }
+            post = {lead_id: id}
         } else if (activeCategory === "debtors") {
             postURL = "task_debts/call_to_debt"
-            post = { student_id: id, phone: "901101664" }
+            post = {student_id: id, phone}
         } else {
             postURL = "task_new_students/call_to_new_student"
-            post = { student_id: id, phone: "901101664" }
+            post = {student_id: id, phone}
         }
         request(`${BackUrl}${postURL}`, "POST", JSON.stringify(post), headers())
             .then(res => {
@@ -367,8 +390,15 @@ const NewTaskManager = () => {
                     callState: "processing"
                 }))
                 setSelectedPhone(phone)
+                setSelectedId(id)
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                dispatch(setMessage({
+                    msg: "Missing 'crm_username'",
+                    type: "error",
+                    active: true
+                }))
+            })
     }
 
 
@@ -380,7 +410,7 @@ const NewTaskManager = () => {
                 {/* Top Navigation */}
                 <div className={styles.topNav}>
                     <div className={styles.searchBox}>
-                        <SearchIcon size={20} />
+                        <SearchIcon size={20}/>
                         <input
                             type="text"
                             placeholder="Qidiruv"
@@ -389,9 +419,14 @@ const NewTaskManager = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    <button className={styles.inProgressButton}>
-                        <span>📋</span> In Progress
-                    </button>
+                    <SwitchButton
+                        isCompleted={isCompleted}
+                        setIsCompleted={onChangeIsCompleted}
+                        setSearchValue={setSearchTerm}
+                    />
+                    {/*<button className={styles.inProgressButton}>*/}
+                    {/*    <span>📋</span> In Progress*/}
+                    {/*</button>*/}
                 </div>
 
                 {/* Category Tabs */}
@@ -399,13 +434,13 @@ const NewTaskManager = () => {
                     <h2 className={styles.categoryTitle}>My tasks</h2>
                     <div className={styles.tabsContainer}>
                         {[
-                            { id: "debtors", label: "Qarzdorlar", count: calcLengthData("debtors", isCompleted) },
+                            {id: "debtors", label: "Qarzdorlar", count: calcLengthData("debtors", isCompleted)},
                             {
                                 id: "newStudents",
                                 label: "Yangi o'quvchilar",
                                 count: calcLengthData("newStudents", isCompleted)
                             },
-                            { id: "leads", label: "Lead", count: calcLengthData("leads", isCompleted) },
+                            {id: "leads", label: "Lead", count: calcLengthData("leads", isCompleted)},
                             // { id: "completed", label: "Completed", count: 0 },
                         ].map((tab) => (
                             <button
@@ -429,15 +464,23 @@ const NewTaskManager = () => {
                 {
                     (unCompletedStatus === "loading" || completedStatus === "loading")
                         ? <div classNames={styles.main__loader}>
-                            <DefaultLoader />
+                            <DefaultLoader/>
                         </div>
                         : isTable
                             ? <div className={styles.main__table}>
-                                <TableData
-                                    isCompleted={isCompleted}
-                                    arr={sortedData}
-                                    activeType={activeCategory}
-                                />
+                                {
+                                    sortedData.map(item => (
+                                        <CommentCard
+                                            comment={item}
+                                            activeCategory={activeCategory}
+                                        />
+                                    ))
+                                }
+                                {/*<TableData*/}
+                                {/*    isCompleted={isCompleted}*/}
+                                {/*    arr={sortedData}*/}
+                                {/*    activeType={activeCategory}*/}
+                                {/*/>*/}
                             </div>
                             : <>
                                 <WrapperSlide
@@ -547,7 +590,7 @@ const NewTaskManager = () => {
                     </div>
                     <div className={styles.statItem}>
                         <div className={styles.statCircle}>
-                            <span className={styles.statValue}>{progress?.completed_tasks_percentage || 0}</span>
+                            <span className={styles.statValue}>{progress?.completed_tasks_percentage || 0}%</span>
                         </div>
                         <span className={styles.statLabel}>{activeCategory}</span>
                     </div>
@@ -596,7 +639,7 @@ const NewTaskManager = () => {
                                 setIsSelectPhone(false)
                             }}
                         >
-                            <span>{item.personal ? "Presonal" : item.parent ? "Parent" : "Other"}:</span>
+                            <span>{item.personal ? "Personal" : item.parent ? "Parent" : "Other"}:</span>
                             {item.phone}
                         </div>
                     ))
@@ -606,9 +649,18 @@ const NewTaskManager = () => {
     )
 }
 
-const WrapperSlide = ({ arr, index, activeCategory, getCardColor, setIsSelectPhone, setPhonesList, onCall, setIsSelectedStudent }) => {
+const WrapperSlide = ({
+                          arr,
+                          index,
+                          activeCategory,
+                          getCardColor,
+                          setIsSelectPhone,
+                          setPhonesList,
+                          onCall,
+                          setIsSelectedStudent
+                      }) => {
 
-    const { request } = useHttp()
+    const {request} = useHttp()
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -646,7 +698,7 @@ const WrapperSlide = ({ arr, index, activeCategory, getCardColor, setIsSelectPho
                 drag={"x"}
                 dragElastic={0}
                 dragMomentum={false}
-                dragConstraints={{ left: -width, right: 0 }}
+                dragConstraints={{left: -width, right: 0}}
                 dragControls={controls}
             >
                 {
@@ -666,24 +718,39 @@ const WrapperSlide = ({ arr, index, activeCategory, getCardColor, setIsSelectPho
                                 <div className={styles.cardHeader}>
                                     <div
                                         className={styles.avatar}
-                                        onClick={() => navigate("")}
+                                        onClick={() => activeCategory !== "leads" && navigate(`../../profile/${student.id}`)}
                                     />
-                                    <button
-                                        className={styles.phoneButton}
-                                        onClick={() =>
-                                            activeCategory === "leads"
-                                                ?
-                                                onCall(student.id)
-                                                : onGetPnohe(student.id)
-                                        }
-                                    >
-                                        <PhoneIcon size={20} />
-                                    </button>
+                                    <div className={styles.icons}>
+                                        <i
+                                            className={classNames(
+                                                "fa-solid fa-list-ul",
+                                                styles.icons__audio
+                                            )}
+                                            onClick={() => navigate(`../storyProfile/${student.student ?? student.id}/${activeCategory}`)}
+                                        />
+                                        <button
+                                            className={styles.phoneButton}
+                                            onClick={() =>
+                                                activeCategory === "leads"
+                                                    ?
+                                                    onCall(student.id)
+                                                    : onGetPnohe(student.student)
+                                            }
+                                        >
+                                            <PhoneIcon size={20}/>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className={styles.cardContent}>
-                                    <p className={styles.cardName}>{student.name} {student.surname}</p>
-                                    {activeCategory === "debtors" && <p className={styles.debtAmount}>{student.balance}</p>}
-                                    {activeCategory === "newStudents" && <p className={styles.subject}>{student.subjects[0]}</p>}
+                                    <p
+                                        className={styles.cardName}
+                                    >
+                                        {student.name} {student.surname}
+                                    </p>
+                                    {activeCategory === "debtors" &&
+                                        <p className={styles.debtAmount}>{student.balance}</p>}
+                                    {activeCategory === "newStudents" &&
+                                        <p className={styles.subject}>{student.subjects[0]}</p>}
                                     {activeCategory === "leads" && <p className={styles.regDate}>{student.day}</p>}
                                 </div>
                                 <div className={styles.cardFooter}>
@@ -703,7 +770,7 @@ const WrapperSlide = ({ arr, index, activeCategory, getCardColor, setIsSelectPho
                                         <>
                                             <div className={styles.footerItem}>
                                                 <span className={styles.label}>number:</span>
-                                                <span className={styles.value}>{student.number}</span>
+                                                <span className={styles.value}>{student.phone}</span>
                                             </div>
                                         </>
                                     )}
@@ -729,54 +796,7 @@ const WrapperSlide = ({ arr, index, activeCategory, getCardColor, setIsSelectPho
     )
 }
 
-const TableData = ({ arr }) => {
-
-    const stringCheck = (name, length = 10) => {
-        if (name?.length > length) {
-            return (
-                <>
-                    {name.substring(0, length)}...
-                    <div className={styles.popup}>
-                        {name}
-                    </div>
-                </>
-            )
-        }
-        return name
-    }
-    const renderData = () => {
-        return arr?.map((item, i) => (
-            <tr>
-                <td>{i + 1}</td>
-                <td>{stringCheck(item.name)}</td>
-                <td>{stringCheck(item.surname)}</td>
-                <td>{item?.phone}</td>
-                <td>{stringCheck(item?.reason, 20)}</td>
-            </tr>
-        ))
-    }
-    const render = renderData()
-
-
-    return (
-        <Table className={styles.table_results}>
-            <thead className={styles.tableHeader}>
-                <tr>
-                    <th>No</th>
-                    <th>Ism</th>
-                    <th>Familiya</th>
-                    <th>Telefon raqami</th>
-                    <th>Sababi</th>
-                </tr>
-            </thead>
-            <tbody>
-                {render}
-            </tbody>
-        </Table>
-    )
-}
-
-const CallStatusLoader = ({ status, state }) => {
+const CallStatusLoader = ({status, state}) => {
     const [showCheckmark, setShowCheckmark] = useState(false)
 
     useEffect(() => {
@@ -795,7 +815,7 @@ const CallStatusLoader = ({ status, state }) => {
                         [styles.fadeOut]: status === "success"
                     })}
                 >
-                    <span className={styles.loader} />
+                    <span className={styles.loader}/>
                 </span>
 
                 {
@@ -806,7 +826,7 @@ const CallStatusLoader = ({ status, state }) => {
                             xmlns="http://www.w3.org/2000/svg"
                         >
                             <path
-                                style={{ stroke: "#e53935" }}
+                                style={{stroke: "#e53935"}}
                                 className={styles.checkmarkPath}
                                 d="M 30 30 L 70 70 M 70 30 L 30 70"
                             />
@@ -816,16 +836,15 @@ const CallStatusLoader = ({ status, state }) => {
                             viewBox="0 0 100 100"
                             xmlns="http://www.w3.org/2000/svg"
                         >
-                            <path className={styles.checkmarkPath} d="M 25 52 L 42 68 L 75 32" />
+                            <path className={styles.checkmarkPath} d="M 25 52 L 42 68 L 75 32"/>
                         </svg>
                 }
-
 
 
             </div>
 
             <p
-                style={state === "error" ? { color: "#e53935" } : null}
+                style={state === "error" ? {color: "#e53935"} : null}
                 className={styles.statusText}
             >
                 {
@@ -838,6 +857,207 @@ const CallStatusLoader = ({ status, state }) => {
                             : "Call connecting..."
                 }
             </p>
+        </div>
+    )
+}
+
+const SwitchButton = ({isCompleted, setIsCompleted, setSearchValue}) => {
+    return (
+        <div className={styles.switchBox}>
+            <div className={`${styles.switch} ${isCompleted ? `${styles.completed}` : `${styles.inProgress} `}`}
+                 onClick={() => {
+                     setIsCompleted(!isCompleted)
+                     setSearchValue("")
+                 }}>
+                <div className={styles.iconButton}>
+                    {isCompleted ?
+                        <div className={styles.icon__handlerSucces}>
+                            <img className={styles.buttonIcon} src={switchCompletedBtn} alt=""/>
+                        </div>
+                        :
+                        <div className={styles.icon__handler}>
+                            <img src={switchXButton} className={styles.buttonIcon} alt=""/>
+                        </div>
+                    }
+                </div>
+                <span className={styles.textContent}>
+                    {isCompleted ? (
+                        <h1 className={styles.textContentSucces}>Completed</h1>
+                    ) : (
+                        <h1 className={styles.textContent}>In Progress</h1>
+                    )}
+                </span>
+
+            </div>
+        </div>
+    );
+};
+
+
+const CommentCard = ({comment, activeCategory}) => {
+    const {request} = useHttp()
+    const navigate = useNavigate()
+    const audioRef = useRef(null)
+
+    // const [audioSrc, setAudioSrc] = useState(null)
+    const [isPlaying, setIsPlaying] = useState(false)
+    const [progress, setProgress] = useState(0)
+    const [currentTime, setCurrentTime] = useState(0)
+    const [duration, setDuration] = useState(0)
+
+    // useEffect(() => {
+    //     if (isPlaying && comment?.audio_url) {
+    //         request(`${BackUrl}media/${comment?.audio_url.slice(1, 999)}`, "GET", null, headers())
+    //             .then(res => console.log(res))
+    //     }
+    // }, [isPlaying,comment?.audio_url])
+
+    const audioSrc = comment?.audio_url
+        ? BackUrlForDoc + comment.audio_url
+        : null
+
+    const togglePlay = () => {
+        const audio = audioRef.current
+        if (!audio || !audioSrc) return
+
+        if (!audio.src) {
+            audio.src = audioSrc
+        }
+
+        if (audio.paused) {
+            audio.play()
+            setIsPlaying(true)
+        } else {
+            audio.pause()
+            setIsPlaying(false)
+        }
+    }
+
+    const stopAudio = () => {
+        const audio = audioRef.current
+        if (!audio) return
+
+        audio.pause()
+        audio.currentTime = 0
+        setIsPlaying(false)
+        setProgress(0)
+        setCurrentTime(0)
+    }
+
+    const onTimeUpdate = () => {
+        const audio = audioRef.current
+        if (!audio) return
+
+        setCurrentTime(audio.currentTime)
+        setDuration(audio.duration || 0)
+        setProgress((audio.currentTime / audio.duration) * 100 || 0)
+    }
+
+    const onSeek = (e) => {
+        const audio = audioRef.current
+        if (!audio) return
+
+        const value = Number(e.target.value)
+        audio.currentTime = (audio.duration * value) / 100
+        setProgress(value)
+    }
+
+    const formatTime = (time = 0) => {
+        const min = Math.floor(time / 60)
+        const sec = Math.floor(time % 60)
+        return `${min}:${sec < 10 ? "0" : ""}${sec}`
+    }
+
+    return (
+        <div className={styles.column}>
+            <div className={styles.commentCard}>
+                <div className={styles.commentHeader}>
+                    {/*<strong>*/}
+                    {/*    Telefon qilingan: {comment.added_date} / {comment.to_date}*/}
+                    {/*</strong>*/}
+
+                    <strong>
+                        {comment.name} {comment.surname}
+                        {" "}
+                        <span>
+                            ({comment.added_date} / {comment.to_date ?? comment.date})
+                        </span>
+                    </strong>
+
+                    <div className={styles.icons}>
+                        <div className={styles.icons__options}>
+                            {/* STOP */}
+                            {/*<i*/}
+                            {/*    className={classNames(*/}
+                            {/*        "fa-solid fa-stop",*/}
+                            {/*        styles.icons__audio*/}
+                            {/*    )}*/}
+                            {/*    onClick={stopAudio}*/}
+                            {/*/>*/}
+
+                            {/* PLAY / PAUSE */}
+                            <i
+                                className={classNames(
+                                    "fa-solid fa-list-ul",
+                                    styles.icons__audio
+                                )}
+                                onClick={() => navigate(`../storyProfile/${comment.student_id ?? comment.lead_id}/${activeCategory}`)}
+                            />
+                            {
+                                activeCategory !== "leads" && (
+                                    <i
+                                        className={classNames(
+                                            "fa-solid fa-user",
+                                            styles.icons__audio
+                                        )}
+                                        onClick={() => navigate(`../../profile/${comment.user_id}`)}
+                                    />
+                                )
+                            }
+                            {
+                                comment?.audio_url && (
+                                    <i
+                                        className={classNames(
+                                            `fa-solid fa-${isPlaying ? "pause" : "play"}`,
+                                            styles.icons__audio
+                                        )}
+                                        onClick={togglePlay}
+                                    />
+                                )
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div className={styles.commentText}>
+                    Comment: {comment.comment || ""}
+                </div>
+
+                {/* TIME + SEEK */}
+                {
+                    comment?.audio_url && (
+                        <div className={styles.audio}>
+                            <p className={styles.audio__subTitle}>
+                                {formatTime(currentTime)} / {duration ? formatTime(duration) : `0:${comment.duration ? Number(comment.duration) <= 10 ? `0${comment.duration}` : comment.duration : "00"}`}
+                            </p>
+
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value={progress}
+                                onChange={onSeek}
+                            />
+                        </div>
+                    )
+                }
+            </div>
+
+            <audio
+                ref={audioRef}
+                onTimeUpdate={onTimeUpdate}
+                onEnded={stopAudio}
+            />
         </div>
     )
 }

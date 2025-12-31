@@ -76,7 +76,7 @@ const PlatformUserChange = () => {
         if (role === ROLES.Admin || role === ROLES.Director || role === ROLES.Programmer) {
 
             data.activeToChange = user.activeToChange
-            data.extraInfo = { ...user.info, address: { value: user.address } }
+            data.extraInfo = { ...user.info, address: { value: user.address }, crm_username: user.crm_username }
             data.contract = user.contract_url
             return data
         }

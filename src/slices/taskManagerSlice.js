@@ -138,12 +138,10 @@ export const fetchCompletedLeadsData = createAsyncThunk(
 
 export const fetchUserDataWithHistory = createAsyncThunk(
     'taskManager/fetchUserDataWithHistory',
-    async (data) => {
-
-        const { id, type } = data
+    async ({url}) => {
 
         const { request } = useHttp();
-        return await request(`${BackUrl}task_debts/get_comment/${id}/${type}`, "GET", null, headers())
+        return await request(`${BackUrl}${url}`, "GET", null, headers())
     }
 )
 
@@ -177,7 +175,11 @@ const TaskManagerSlice = createSlice({
 
 
         onDelDebtors: (state, action) => {
-            state.unCompleted.debtors = [...state.unCompleted.debtors.filter(item => item.id !== action.payload.id)]
+            if (action.payload.type === "debtors") {
+                state.unCompleted.debtors = [...state.unCompleted.debtors.filter(item => item.student !== action.payload.id)]
+            } else {
+                state.unCompleted.students = [...state.unCompleted.students.filter(item => item.student !== action.payload.id)]
+            }
 
             console.log(action.payload.id)
         },
@@ -221,7 +223,7 @@ const TaskManagerSlice = createSlice({
                 state.progressStatus = "loading"
             })
             .addCase(fetchCompletedDebtorsData.fulfilled, (state, action) => {
-                state.completed.debtors = action.payload.students || []
+                state.completed.debtors = action.payload.records || []
                 state.allProgress = action.payload.task_daily_statistics
                 state.progress = action.payload.task_statistics
                 state.isTable = action.payload.table
@@ -260,7 +262,7 @@ const TaskManagerSlice = createSlice({
                 state.progressStatus = "loading"
             })
             .addCase(fetchCompletedNewStudentsTaskData.fulfilled, (state, action) => {
-                state.completed.students = action.payload.students || []
+                state.completed.students = action.payload.records || []
                 state.allProgress = action.payload.task_daily_statistics
                 state.progress = action.payload.task_statistics
                 state.isTable = action.payload.table || false
@@ -299,10 +301,10 @@ const TaskManagerSlice = createSlice({
                 state.progressStatus = "loading"
             })
             .addCase(fetchCompletedLeadsData.fulfilled, (state, action) => {
-                state.completed.leads = action.payload.leads || []
+                state.completed.leads = action.payload.lead_infos || []
                 state.allProgress = action.payload.task_daily_statistics
                 state.progress = action.payload.task_statistics
-                state.isTable = action.payload.table || false
+                state.isTable = true
                 state.completedStatus = "success"
                 state.progressStatus = "success"
             })

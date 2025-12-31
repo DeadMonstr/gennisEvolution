@@ -375,7 +375,6 @@ const PlatformTaskManager = () => {
 
 
     const onChangeIsCompleted = (status) => {
-        localStorage.setItem("isCompleted", status)
         setData([])
         setIsCompleted(status)
     }
@@ -1300,8 +1299,6 @@ const TaskCard = ({ item, index, type, setSelectedAudioId }) => {
 }
 
 const SwitchButton = ({ isCompleted, setIsCompleted, setSearchValue }) => {
-
-
     return (
         <div className={cls.switchBox}>
             <div className={`${cls.switch} ${isCompleted ? `${cls.completed}` : `${cls.inProgress} `}`}

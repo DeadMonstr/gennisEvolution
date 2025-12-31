@@ -328,6 +328,27 @@ const AllLabels = React.memo(({ data, extraInfo, userId }) => {
                     </label> : null
             }
             {
+                data?.crm_username ?
+                    <label htmlFor="crm_username">
+                        <span className="name-field">Crm Username</span>
+                        <input
+                            defaultValue={extraInfo?.crm_username}
+                            id="username"
+                            className="input-fields"
+                            {...register("crm_username", {
+                                required: "Iltimos to'ldiring",
+                                // onBlur: event => checkUsername(event.target.value)
+                            })}
+                        />
+                        {
+                            errors?.crm_username &&
+                            <span className="error-field">
+                                {errors?.crm_username?.message}
+                            </span>
+                        }
+                    </label> : null
+            }
+            {
                 data?.name ?
                     <label htmlFor="name">
                         <span className="name-field">Ism</span>
