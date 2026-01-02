@@ -468,6 +468,7 @@ const CreatOverhead = ({
                 day
             }
         }
+        console.log("zaybal")
 
         request(`${BackUrl}account/add_overhead/${locationId}`, "POST", JSON.stringify(newData), headers())
             .then(res => {
