@@ -11,7 +11,7 @@ import { useMemo } from "react";
 // export const ClassroomUrlForDoc = "http://26.12.122.72:5001/"
 //
 export const BackUrl = "https://admin.gennis.uz/api/"
-export const BackUrlForDoc = "https://admin.gennis.uz"
+export const BackUrlForDoc = "https://admin.gennis.uz/"
 //
 
 
